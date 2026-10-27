@@ -1363,3 +1363,139 @@ footer > a:last-child {
     gap: 8px;
   }
 }
+.demo-button {
+  margin-top: 12px;
+  width: 100%;
+}
+.redaction-tools {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid #41495a;
+  border-bottom: 1px solid #41495a;
+  padding: 17px 0;
+  margin: 0 0 18px;
+}
+.redaction-tools > div {
+  width: 100%;
+}
+.redaction-tools strong {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+.redaction-tools p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 7px 0;
+  color: #b2bdd4;
+}
+.redaction-tools > p {
+  width: 100%;
+}
+.redaction-tools .redaction-limit {
+  font-size: 11px;
+  color: #b6c6f0;
+  margin: 0;
+}
+.redaction-tools .secondary {
+  background: #eaf0ff;
+}
+.redaction-tools .primary {
+  background: #214eef;
+  border-color: #6284ff;
+}
+.tile-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  z-index: 1;
+}
+.tile-overlay button {
+  border: 1px solid #fff9;
+  background: #214eef20;
+  color: #fff;
+  font: 11px Arial;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  text-shadow: 0 1px 3px #000;
+  overflow: hidden;
+}
+.tile-overlay .tile-selected {
+  background: #214eefb3;
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.tile-overlay .tile-hidden {
+  background: #111d;
+  opacity: 1;
+  font-size: 9px;
+  color: #c3cdef;
+}
+.verdict-banner.demo .verdict-icon {
+  background: #214eef;
+}
+.verdict-banner.demo .eyebrow {
+  color: #214eef;
+}
+.redaction-tools #export-redacted:disabled {
+  opacity: 0.45;
+}
+@media (max-width: 760px) {
+  .redaction-tools > button {
+    min-height: 44px;
+  }
+  .redaction-tools p {
+    font-size: 12px;
+  }
+  .tile-overlay button {
+    font-size: 10px;
+  }
+  .redaction-tools .redaction-limit {
+    font-size: 11px;
+  }
+}
+.informational .check-icon,
+.informational .check-tag {
+  color: #214eef;
+}
+.rectangle-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.rectangle-fields label,
+.redaction-method {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: #c5cde0;
+}
+.rectangle-fields input,
+.redaction-method select {
+  background: #fff;
+  color: #17181b;
+  border: 1px solid #8c9bb7;
+  border-radius: 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  width: 100%;
+  font: 12px Arial;
+}
+.rectangle-fields button {
+  grid-column: 1/-1;
+  justify-content: center;
+}
+.redaction-method {
+  width: 100%;
+}
+.redaction-method select {
+  max-width: 350px;
+}
+.tile-overlay {
+  touch-action: none;
+}

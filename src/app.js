@@ -1,7 +1,10 @@
 const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
-let operation = 0,
+let currentContainer = null,
+  redactionEditing = false,
+  selectedTiles = new Set(),
+  operation = 0,
   currentReport = null,
   bitmap = null,
   held = null,
@@ -28,6 +31,16 @@ function bytesLabel(n) {
       : (n / 1024 / 1024).toFixed(1) + " MiB";
 }
 function disposeImage() {
+  currentContainer = null;
+  redactionEditing = false;
+  selectedTiles.clear();
+  $("tile-overlay").replaceChildren();
+  $("tile-overlay").hidden = true;
+  $("redaction-tools").hidden = true;
+  $("legacy-redaction-note").hidden = true;
+  $("redact-mode").setAttribute("aria-pressed", "false");
+  $("redact-mode").textContent = "Mark tiles";
+  $("export-redacted").disabled = true;
   clearInterval(clock);
   clock = null;
   held = null;
@@ -69,7 +82,9 @@ function renderResult(report) {
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
-  const genuine = report.genuine;
+  const genuine =
+    report.genuine ||
+    (report.viewable && report.regionVerified && !report.demo);
   const messages = {
     GENUINE: [
       "GENUINE",
@@ -102,10 +117,46 @@ function renderResult(report) {
       "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
     ],
   };
+  messages["VERIFIED WITH REDACTIONS"] = [
+    "VERIFIED WITH REDACTIONS",
+    "RETAINED PIXELS VERIFIED.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+  ];
+  messages.DEMO = [
+    "DEMONSTRATION / NOT TRUSTED EVIDENCE",
+    "REDACTION EXAMPLE.",
+    `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+  ];
+  messages["UNTRUSTED SIGNER"] = [
+    "UNTRUSTED SIGNER",
+    "SIGNER NOT RECOGNISED.",
+    "The tile proof matches this key, but its identity is not trusted by this viewer. Image withheld.",
+  ];
+  messages["REVOKED KEY"] = [
+    "REVOKED KEY",
+    "SIGNER REVOKED.",
+    "This signing key is rejected by the bundled offline revocation policy. No before-revocation exception is made without validated timestamp evidence.",
+  ];
+  messages["FULLY REDACTED"] = [
+    "FULLY REDACTED",
+    "NO VISIBLE PIXELS.",
+    "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
+  ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
+  if (report.version === 2 && report.genuine) {
+    words[1] = "SIGNED TILE GRID VERIFIED.";
+    words[2] =
+      "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
+  }
   $("verdict-banner").className =
     "verdict-banner " +
-    (genuine ? "good" : report.verdict === "TAMPERED" ? "bad" : "neutral");
+    (report.demo
+      ? "demo"
+      : genuine
+        ? "good"
+        : report.verdict === "TAMPERED"
+          ? "bad"
+          : "neutral");
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
@@ -119,14 +170,33 @@ function renderResult(report) {
     const row = el(
       "div",
       undefined,
-      "check-row " + (item.status === "pass" ? "" : "failed"),
+      "check-row " +
+        (item.status === "pass"
+          ? ""
+          : item.status === "info"
+            ? "informational"
+            : "failed"),
     );
-    row.append(el("span", item.status === "pass" ? "✓" : "×", "check-icon"));
+    row.append(
+      el(
+        "span",
+        item.status === "pass" ? "✓" : item.status === "info" ? "i" : "×",
+        "check-icon",
+      ),
+    );
     const copy = el("div");
     copy.append(el("strong", item.name), el("small", item.detail));
     row.append(
       copy,
-      el("span", item.status === "pass" ? "PASSED" : "FAILED", "check-tag"),
+      el(
+        "span",
+        item.status === "pass"
+          ? "PASSED"
+          : item.status === "info"
+            ? "DEMO ONLY"
+            : "FAILED",
+        "check-tag",
+      ),
     );
     $("checks").append(row);
   }
@@ -166,7 +236,14 @@ function metadata(report) {
     ["Original file", m.original_filename],
     ["Dimensions", m.width + " × " + m.height + " px"],
     ["Created · signed claim", m.created_utc ?? m.created_melbourne],
-    ["Trusted signer", report.signer],
+    [report.demo ? "Demo signer" : "Signer", report.signer],
+    [
+      "Retained tiles",
+      report.version === 2
+        ? `${report.tilesVisible} / ${report.tilesTotal}`
+        : undefined,
+    ],
+    ["Redacted tiles", report.redactedTiles?.length],
   ]);
   pairs($("technical-data"), [
     ["File SHA-256", report.fileHash],
@@ -180,7 +257,15 @@ function metadata(report) {
         ? "Present · not validated by this viewer"
         : "Not present",
     ],
-    ["Format", "GRD1 / version " + report.version],
+    ["Format", "GRD" + report.version],
+    ["Signed Merkle root", report.root],
+    [
+      "Offline trust snapshot",
+      report.revocation
+        ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
+        : undefined,
+    ],
+    ["Redacted pixel rectangles", report.redactionMap],
     ["Viewer session", SESSION],
   ]);
   $("session-label").textContent = "SESSION / " + SESSION;
@@ -189,6 +274,7 @@ function shield(reason) {
   held = null;
   keyboardPoint = null;
   if (!bitmap) return;
+  $("tile-overlay").hidden = true;
   stage.classList.add("shielded");
   $("shield").hidden = false;
   $("shield-reason").textContent = reason;
@@ -210,11 +296,15 @@ function showImage() {
   $("shield").hidden = true;
   setMode(true);
   canvas.focus({ preventScroll: true });
+  if (redactionEditing) {
+    setMode(false);
+    renderTileOverlay();
+  }
   queueDraw();
 }
 function overlay(ctx, w, h) {
   const message =
-    "GUARD · " +
+    (currentReport?.demo ? "DEMO / NOT EVIDENCE · " : "GUARD · ") +
     SESSION +
     " · " +
     new Date().toISOString().slice(11, 19) +
@@ -265,6 +355,21 @@ function draw() {
     }
   } else ctx.drawImage(bitmap, 0, 0, w, h);
   overlay(ctx, w, h);
+  if (currentReport?.redactionMap) {
+    const m = currentReport.meta;
+    for (const region of currentReport.redactionMap) {
+      const x = (region.x * w) / m.width,
+        y = (region.y * h) / m.height,
+        rw = (region.width * w) / m.width,
+        rh = (region.height * h) / m.height;
+      ctx.strokeStyle = "#b7caff";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 1, y + 1, Math.max(0, rw - 2), Math.max(0, rh - 2));
+      ctx.fillStyle = "#dbe5ff";
+      ctx.font = `bold ${Math.max(7, Math.min(12, rw / 8))}px Arial`;
+      ctx.fillText("REDACTED", x + 4, y + Math.min(rh - 3, 15));
+    }
+  }
   ctx.restore();
 }
 function queueDraw() {
@@ -294,6 +399,25 @@ function point(event) {
 }
 
 async function decode(report) {
+  if (report.version === 2) {
+    const surface = document.createElement("canvas");
+    surface.width = report.meta.width;
+    surface.height = report.meta.height;
+    surface
+      .getContext("2d")
+      .putImageData(
+        new ImageData(
+          new Uint8ClampedArray(report.imageRgba),
+          surface.width,
+          surface.height,
+        ),
+        0,
+        0,
+      );
+    return typeof createImageBitmap === "function"
+      ? await createImageBitmap(surface)
+      : surface;
+  }
   const m = report.meta,
     [width, height] = encodedDimensions(report.payload, m.mime);
   if (width !== m.width || height !== m.height)
@@ -348,9 +472,12 @@ async function openFile(file) {
         changed: ["file size"],
         byteLength: file.size,
       };
-    else report = await verifyGRD(await file.arrayBuffer());
+    else {
+      const bytes = await file.arrayBuffer();
+      report = await (isGRD2(bytes) ? verifyGRD2(bytes) : verifyGRD(bytes));
+    }
     if (token !== operation) return;
-    if (report.genuine) {
+    if (report.genuine || report.viewable) {
       try {
         const decoded = await decode(report);
         if (token !== operation) {
@@ -359,16 +486,20 @@ async function openFile(file) {
         }
         bitmap = decoded;
         report.checks.push({
-          name: "Image dimensions",
+          name:
+            report.version === 2 ? "Rendered tile grid" : "Image dimensions",
           status: "pass",
           detail:
             report.meta.width +
             " × " +
             report.meta.height +
-            " · encoded and decoded dimensions match",
+            (report.version === 2
+              ? " · exact visible tiles; hidden tiles are placeholders"
+              : " · encoded and decoded dimensions match"),
         });
       } catch (error) {
         report.genuine = false;
+        report.viewable = false;
         report.verdict = "UNREADABLE";
         report.problems.push(error.message);
         report.checks.push({
@@ -383,14 +514,24 @@ async function openFile(file) {
     report.fileName = file.name;
     report.checkedAt = new Date().toISOString();
     report.viewerSession = SESSION;
+    currentContainer = report.container ?? null;
+    delete report.container;
+    delete report.imageRgba;
     renderResult(report);
-    if (report.genuine && bitmap) {
+    if ((report.genuine || report.viewable) && bitmap) {
       metadata(report);
       $("image-panel").hidden = false;
       const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
       canvas.width = Math.max(1, Math.round(bitmap.width * scale));
       canvas.height = Math.max(1, Math.round(bitmap.height * scale));
       setMode(true);
+      $("redaction-tools").hidden = !currentContainer;
+      $("legacy-redaction-note").hidden = !!currentContainer;
+      if (currentContainer) {
+        $("redaction-status").textContent =
+          `${report.tilesVisible} retained / ${report.tilesTotal} total. ${report.redactedTiles.length} already redacted. Choose Mark tiles to hide more.`;
+        setMode(false);
+      }
       queueDraw();
       clock = setInterval(queueDraw, 1000);
       if (document.hidden || !document.hasFocus())
@@ -450,9 +591,9 @@ window.addEventListener("drop", (event) => event.preventDefault());
 $("download-report").onclick = () => {
   if (!currentReport) return;
   const report = {
-    ...currentReport,
+    ...verificationReport(currentReport),
     scope:
-      "Local GRD1 verification using pinned viewer keys. Not proof of authorship, ownership, timestamp authority validation or copy tracing.",
+      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo files are not trusted evidence. Not proof of authorship, ownership, capture time or copy tracing.",
   };
   delete report.payload;
   download(
@@ -562,4 +703,302 @@ window.addEventListener("pagehide", () => {
   disposeImage();
 });
 // Compatibility entry point; trust anchors are closed over and cannot be changed through this API.
-window.verifyGRD = verifyGRD;
+window.verifyGRD = (input) =>
+  isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
+
+function positionTileOverlay() {
+  if (!currentContainer || !redactionEditing) return;
+  const overlay = $("tile-overlay"),
+    m = currentContainer.manifest;
+  const box = canvas.getBoundingClientRect();
+  overlay.style.width = box.width + "px";
+  overlay.style.height = box.height + "px";
+  overlay.style.gridTemplateColumns = Array.from(
+    { length: Math.ceil(m.width / m.tileSize) },
+    (_, col) => Math.min(m.tileSize, m.width - col * m.tileSize) + "fr",
+  ).join(" ");
+  overlay.style.gridTemplateRows = Array.from(
+    { length: Math.ceil(m.height / m.tileSize) },
+    (_, row) => Math.min(m.tileSize, m.height - row * m.tileSize) + "fr",
+  ).join(" ");
+}
+function renderTileOverlay() {
+  const overlay = $("tile-overlay");
+  const activeTile = overlay.contains(document.activeElement)
+    ? document.activeElement.dataset.tileIndex
+    : null;
+  overlay.hidden =
+    !redactionEditing ||
+    !currentContainer ||
+    stage.classList.contains("shielded");
+  overlay.replaceChildren();
+  if (overlay.hidden) return;
+  const m = currentContainer.manifest,
+    cols = Math.ceil(m.width / m.tileSize);
+  for (const tile of currentContainer.tiles) {
+    const hidden = Object.hasOwn(tile, "commitment"),
+      chosen = selectedTiles.has(tile.index),
+      button = el(
+        "button",
+        hidden ? "HIDDEN" : chosen ? "HIDE" : "+",
+        hidden ? "tile-hidden" : chosen ? "tile-selected" : "tile-visible",
+      );
+    button.type = "button";
+    button.dataset.tileIndex = String(tile.index);
+    button.disabled = hidden;
+    button.tabIndex =
+      String(tile.index) ===
+      (activeTile ??
+        String(
+          currentContainer.tiles.find((t) => Object.hasOwn(t, "salt"))?.index,
+        ))
+        ? 0
+        : -1;
+    button.setAttribute(
+      "aria-label",
+      `Tile ${tile.index + 1}, row ${Math.floor(tile.index / cols) + 1}, column ${(tile.index % cols) + 1}${hidden ? ", already redacted" : ""}`,
+    );
+    button.setAttribute("aria-pressed", String(chosen));
+    button.onclick = () => {
+      if (selectedTiles.has(tile.index)) selectedTiles.delete(tile.index);
+      else selectedTiles.add(tile.index);
+      renderTileOverlay();
+      $("export-redacted").disabled = !selectedTiles.size;
+      $("redaction-status").textContent =
+        `${selectedTiles.size} selected. Redactions are applied only when you export. Hidden tiles contain no original pixels in the exported file.`;
+    };
+    overlay.append(button);
+  }
+  positionTileOverlay();
+  if (activeTile !== null)
+    overlay
+      .querySelector(`[data-tile-index="${activeTile}"]`)
+      ?.focus({ preventScroll: true });
+}
+$("redact-mode").onclick = () => {
+  redactionEditing = !redactionEditing;
+  $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
+  $("redact-mode").textContent = redactionEditing
+    ? "Finish marking"
+    : "Mark tiles";
+  if (redactionEditing) setMode(false);
+  renderTileOverlay();
+};
+new ResizeObserver(positionTileOverlay).observe(canvas);
+$("export-redacted").onclick = async () => {
+  if (!currentContainer || !selectedTiles.size) return;
+  const source = currentContainer,
+    selection = [...selectedTiles],
+    token = operation;
+  $("export-redacted").disabled = true;
+  try {
+    const bytes = await redactGRD2(
+      source,
+      selection,
+      $("redaction-method").value,
+    );
+    if (operation !== token || currentContainer !== source) return;
+    const name =
+      (currentReport.fileName ?? "image.GRD").replace(
+        /(?:\.redacted)?\.grd$/i,
+        "",
+      ) + ".redacted.GRD";
+    download(bytes, name, "application/octet-stream");
+    await openFile(new File([bytes], name));
+    setStatus(
+      "Redacted copy exported. The selected tiles were replaced and their original salts were removed.",
+    );
+  } catch (error) {
+    if (operation === token) {
+      $("redaction-status").textContent = "Export failed: " + error.message;
+      $("export-redacted").disabled = false;
+    }
+  }
+};
+$("try-redaction").onclick = async () => {
+  const token = operation;
+  $("try-redaction").disabled = true;
+  try {
+    const sample = document.createElement("canvas");
+    sample.width = 384;
+    sample.height = 256;
+    const ctx = sample.getContext("2d");
+    ctx.fillStyle = "#eef0f5";
+    ctx.fillRect(0, 0, 384, 256);
+    ctx.fillStyle = "#17213b";
+    ctx.fillRect(0, 0, 384, 48);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 19px Arial";
+    ctx.fillText("DEMONSTRATION IMAGE", 16, 31);
+    ctx.fillStyle = "#9aaee3";
+    ctx.beginPath();
+    ctx.arc(90, 112, 33, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#35456d";
+    ctx.fillRect(47, 146, 86, 59);
+    ctx.fillStyle = "#17213b";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText("FICTIONAL PERSON", 174, 94);
+    ctx.font = "12px Arial";
+    ctx.fillText("EXAMPLE ADDRESS", 174, 128);
+    ctx.fillText("123 SAMPLE STREET", 174, 149);
+    ctx.fillText("ID: 000-123", 174, 184);
+    ctx.fillStyle = "#214eef";
+    ctx.fillRect(16, 224, 352, 2);
+    ctx.font = "10px Arial";
+    ctx.fillText("EXAMPLE ONLY / SELECT TILES TO REDACT", 16, 242);
+    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
+        "sign",
+        "verify",
+      ]),
+      publicKey = new Uint8Array(
+        await crypto.subtle.exportKey("raw", key.publicKey),
+      );
+    const doc = await sealRgba({
+      rgba: new Uint8Array(ctx.getImageData(0, 0, 384, 256).data),
+      width: 384,
+      height: 256,
+      tileSize: 64,
+      publicKey,
+      purpose: "demo",
+      label: "Demonstration only",
+      sign: (bytes) =>
+        crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
+    });
+    if (operation !== token) return;
+    await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
+    $("image-panel").scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
+  } catch (error) {
+    setStatus("The demo could not start: " + error.message);
+    $("file-help").textContent =
+      "The demo needs browser Ed25519 support: " + error.message;
+  } finally {
+    $("try-redaction").disabled = false;
+  }
+};
+
+function setTileSelection(indices) {
+  for (const i of indices)
+    if (
+      currentContainer.tiles[i] &&
+      Object.hasOwn(currentContainer.tiles[i], "salt")
+    )
+      selectedTiles.add(i);
+  renderTileOverlay();
+  $("export-redacted").disabled = !selectedTiles.size;
+  $("redaction-status").textContent =
+    `${selectedTiles.size} tiles selected. The exported redaction mask will show the exact 64px boundaries.`;
+}
+$("select-rectangle").onclick = () => {
+  if (!currentContainer) return;
+  try {
+    redactionEditing = true;
+    $("redact-mode").setAttribute("aria-pressed", "true");
+    $("redact-mode").textContent = "Finish marking";
+    setMode(false);
+    setTileSelection(
+      tilesForRect(currentContainer.manifest, {
+        x: Number($("rect-x").value),
+        y: Number($("rect-y").value),
+        width: Number($("rect-width").value),
+        height: Number($("rect-height").value),
+      }),
+    );
+  } catch (error) {
+    $("redaction-status").textContent = error.message;
+  }
+};
+let rectangleStart = null,
+  rectangleMoved = false,
+  skipTileClick = false;
+const overlayElement = $("tile-overlay");
+function imagePoint(event) {
+  const box = canvas.getBoundingClientRect(),
+    m = currentContainer.manifest;
+  return {
+    x: Math.max(
+      0,
+      Math.min(m.width, ((event.clientX - box.left) * m.width) / box.width),
+    ),
+    y: Math.max(
+      0,
+      Math.min(m.height, ((event.clientY - box.top) * m.height) / box.height),
+    ),
+  };
+}
+overlayElement.addEventListener("pointerdown", (event) => {
+  if (!currentContainer || !redactionEditing) return;
+  rectangleStart = imagePoint(event);
+  rectangleMoved = false;
+});
+overlayElement.addEventListener("pointermove", (event) => {
+  if (!rectangleStart || !currentContainer) return;
+  const p = imagePoint(event);
+  if (Math.abs(p.x - rectangleStart.x) + Math.abs(p.y - rectangleStart.y) > 8) {
+    rectangleMoved = true;
+    overlayElement.setPointerCapture(event.pointerId);
+  }
+});
+overlayElement.addEventListener("pointerup", (event) => {
+  if (!rectangleStart || !currentContainer) return;
+  const start = rectangleStart;
+  rectangleStart = null;
+  if (!rectangleMoved) return;
+  const p = imagePoint(event);
+  skipTileClick = true;
+  event.preventDefault();
+  setTileSelection(
+    tilesForRect(currentContainer.manifest, {
+      x: Math.min(start.x, p.x),
+      y: Math.min(start.y, p.y),
+      width: Math.max(1, Math.abs(start.x - p.x)),
+      height: Math.max(1, Math.abs(start.y - p.y)),
+    }),
+  );
+  setTimeout(() => (skipTileClick = false), 0);
+});
+overlayElement.addEventListener("pointercancel", () => {
+  rectangleStart = null;
+  rectangleMoved = false;
+});
+overlayElement.addEventListener(
+  "click",
+  (event) => {
+    if (skipTileClick) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  },
+  true,
+);
+overlayElement.addEventListener("keydown", (event) => {
+  if (!currentContainer || !event.key.startsWith("Arrow")) return;
+  const i = Number(event.target.dataset.tileIndex),
+    cols = Math.ceil(currentContainer.manifest.width / 64);
+  if (!Number.isInteger(i)) return;
+  const step =
+    event.key === "ArrowLeft"
+      ? -1
+      : event.key === "ArrowRight"
+        ? 1
+        : event.key === "ArrowUp"
+          ? -cols
+          : cols;
+  let next = i + step;
+  while (next >= 0 && next < currentContainer.tiles.length) {
+    const button = overlayElement.querySelector(`[data-tile-index="${next}"]`);
+    if (button && !button.disabled) {
+      event.target.tabIndex = -1;
+      button.tabIndex = 0;
+      button.focus();
+      break;
+    }
+    next += step;
+  }
+  event.preventDefault();
+});

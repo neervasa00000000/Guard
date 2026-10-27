@@ -1,6 +1,16 @@
-# Guard — offline GRD1 image verification
+# Guard / GRD Inspector — selective redaction
 
-A single-file, dependency-free viewer for the `.GRD` format in the supplied `grd_viewer.html`. It verifies signed bytes against a pinned Ed25519 public key, then provides intentional image viewing and a downloadable verification report.
+## New: partial redaction, revocation and C2PA export
+
+[Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
+
+Mark private regions and export a copy whose **retained pixels** still match the signed original. No private key is needed to redact. Hidden regions are clearly marked and excluded from the authenticity claim. The built-in example and `examples/` assets are fictional **DEMO / NOT TRUSTED EVIDENCE**.
+
+GRD2 is a new experimental canonical-JSON wire format, not a binary extension understood by existing GRD1 tools. GRD1 support is retained. Both versions check a bundled offline revoked-key snapshot; an old viewer cannot know newer revocations. An optional bridge exports a standard C2PA PNG with a custom GRD proof assertion, using the official CAI SDK and your exporter certificate. Standard tools recognise the PNG credentials; regional verification requires the Guard profile.
+
+No claim is made that this is the first open format or ready for legal evidence. The [C2PA specification](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html) already covers assertion redaction, regions and Merkle structures. This prototype needs independent cryptographic review before sensitive use.
+
+A single-file, dependency-free browser viewer for the `.GRD` format in the supplied `grd_viewer.html`. It verifies signed bytes against a pinned Ed25519 public key, then provides intentional image viewing and a downloadable verification report.
 
 **The original repository was empty.** This implementation starts from the supplied offline viewer, preserved in `reference/grd_viewer.original.html`. The original server, Convert, Check/copy-tracing service, Android app, private signing keys and Goose Bumps sample were not supplied. Their behaviour and the previously reported 9,118 mutation tests cannot be independently confirmed here.
 
@@ -16,7 +26,7 @@ Or run locally:
 npm run dev
 ```
 
-Open http://127.0.0.1:4195/. No npm install is required. Node.js 22+ is used for builds/tests; Python 3 serves the local preview.
+Open http://127.0.0.1:4195/. The standalone viewer needs no installation. Use `npm ci` before builds/tests. Node.js 22+ is used for builds/tests; Python 3 serves the local preview.
 
 ## What changed
 
@@ -52,7 +62,9 @@ npm test
 
 Build produces identical `index.html` and `grd_viewer.html` files with inline CSS and JavaScript. Both are directly usable; GitHub Pages can serve the repository root.
 
-The automated suite includes **7,504 single-bit mutations** across a generated 938-byte GRD1 fixture, all rejected; unknown keys with valid signatures; truncated and extended files; unsafe offsets; duplicate sections; invalid metadata; size limits; typed-array offsets; optional sections; and acceptance comparison with the supplied reference verifier. It does not reproduce the absent Goose Bumps/server test suite.
+The automated suite additionally covers GRD2 proof/mask/pixel tampering, chained redaction, full redaction, revoked keys, 2,000 deterministic GRD2 bit mutations, and independent Python ↔ JavaScript issue/redact/verify round trips. Optional C2PA integration checks a real SDK-signed PNG with an explicitly trusted temporary test CA and rejects a pixel-modified export. These mutation counts are not a security proof.
+
+The legacy suite includes **7,504 single-bit mutations** across a generated 938-byte GRD1 fixture, all rejected; unknown keys with valid signatures; truncated and extended files; unsafe offsets; duplicate sections; invalid metadata; size limits; typed-array offsets; optional sections; and acceptance comparison with the supplied reference verifier. It does not reproduce the absent Goose Bumps/server test suite.
 
 For UI testing only:
 

@@ -1,3 +1,4 @@
+import { checkRevocation, TRUST_POLICY } from "./trust.js";
 // GRD1 compatibility: Ed25519 signs SHA-256(header + table + non-signature sections).
 // The embedded public key is never sufficient: it must match a pinned trust anchor.
 export const LIMITS = Object.freeze({
@@ -54,7 +55,7 @@ function validTree(value, depth = 0) {
     return Object.values(value).every((v) => validTree(v, depth + 1));
   return true;
 }
-export function createVerifier(anchors) {
+export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
   const trusted = anchors.map((k) => ({ ...k }));
   return async function verifyGRD(input) {
     const r = {
@@ -249,6 +250,25 @@ export function createVerifier(anchors) {
         keyId = hex(keyBytes.subarray(0, 8)),
         publicKey = keyBytes.subarray(8);
       r.keyId = keyId;
+      r.revocation = await checkRevocation(publicKey, revocationPolicy);
+      if (r.revocation.revoked) {
+        r.verdict = "REVOKED KEY";
+        issue(
+          "Signing key is revoked: " + r.revocation.reason,
+          "revoked signer",
+        );
+        check(
+          "Offline revocation",
+          "fail",
+          "Revoked in policy v" + r.revocation.policyVersion,
+        );
+        return finish();
+      }
+      check(
+        "Offline revocation",
+        "pass",
+        "Not listed in bundled snapshot · " + r.revocation.asOf,
+      );
       const keyIdentity = (await sha(publicKey)).slice(0, 16) === keyId;
       const anchor = trusted.find(
         (k) => k.key_id === keyId && k.public_key_hex === hex(publicKey),

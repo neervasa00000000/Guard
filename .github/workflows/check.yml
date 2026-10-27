@@ -12,7 +12,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -r requirements.txt
+      - run: npm ci
       - run: npm test
       - run: npm run build
       - name: Standalone output matches source
         run: git diff --exit-code -- index.html grd_viewer.html
+  c2pa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -r requirements-c2pa.txt
+      - run: python tests/c2pa_roundtrip.py

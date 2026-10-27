@@ -23,7 +23,7 @@
       <div class="header-inner">
         <a class="brand" href="#" aria-label="Guard home"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 / OFFLINE INSPECTOR</span
+        ><span class="header-label">GRD1 + GRD2 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -34,10 +34,12 @@
         <div class="intro-copy">
           <p class="eyebrow">GUARD / IMAGE VERIFICATION</p>
           <h1>.GRD <span>INSPECTOR</span></h1>
-          <p class="intro-text">Check the signature. Inspect the image.</p>
+          <p class="intro-text">
+            Verify an image. Redact private regions. Keep the remaining proof.
+          </p>
         </div>
         <div class="format-block">
-          <span class="format-label">SIGNED CONTAINER / VERSION 01</span>
+          <span class="format-label">SIGNED IMAGE / SELECTIVE DISCLOSURE</span>
           <div class="format-sections" aria-label="Signed file structure">
             <span>META</span><span>IMAGE</span><span>KEY</span><span>SIG</span>
           </div>
@@ -46,7 +48,7 @@
       </section>
       <div class="workspace-heading">
         <h2>FILE INSPECTION</h2>
-        <span class="format-note">.GRD / MAX 64 MiB</span>
+        <span class="format-note">.GRD / LOCAL FILES</span>
       </div>
       <section
         id="workspace"
@@ -70,7 +72,14 @@
             ><span class="drop-local">Drag & drop / .GRD</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            64 MiB maximum. Your file is read locally and never uploaded.
+            GRD1: up to 64 MiB. GRD2: up to 32 MiB / 4 megapixels. Files stay on
+            your device.
+          </p>
+          <button id="try-redaction" class="secondary demo-button">
+            Try redaction with an example <span aria-hidden="true">↗</span>
+          </button>
+          <p class="file-help">
+            The example is self-signed demo data, not trusted evidence.
           </p>
           <div id="file-card" class="file-card" hidden>
             <div class="file-icon" aria-hidden="true">.grd</div>
@@ -99,7 +108,7 @@
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1</span>
+            <span>02 / VERIFICATION</span><span>GRD1 / GRD2</span>
           </div>
           <div
             id="live-status"
@@ -184,6 +193,62 @@
                 Hide image <span aria-hidden="true">↘</span>
               </button>
             </div>
+            <div id="redaction-tools" class="redaction-tools" hidden>
+              <div>
+                <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
+                <p>
+                  Drag a rectangle or select tiles. Areas round up to 64px
+                  blocks. Blackout removes original pixels; blur can still
+                  retain private details.
+                </p>
+              </div>
+              <div class="rectangle-fields">
+                <label
+                  >X<input id="rect-x" type="number" min="0" value="0" /></label
+                ><label
+                  >Y<input id="rect-y" type="number" min="0" value="0" /></label
+                ><label
+                  >Width<input
+                    id="rect-width"
+                    type="number"
+                    min="1"
+                    value="64" /></label
+                ><label
+                  >Height<input
+                    id="rect-height"
+                    type="number"
+                    min="1"
+                    value="64" /></label
+                ><button id="select-rectangle" class="secondary">
+                  Select rectangle
+                </button>
+              </div>
+              <label class="redaction-method"
+                >Method<select id="redaction-method">
+                  <option value="black">Blackout · recommended</option>
+                  <option value="blur">
+                    Blur · may retain private details
+                  </option>
+                </select></label
+              ><button id="redact-mode" class="secondary" aria-pressed="false">
+                Mark tiles</button
+              ><button id="export-redacted" class="primary" disabled>
+                Export redacted .GRD ↓
+              </button>
+              <p id="redaction-status" role="status">
+                Choose Mark tiles, then select the areas to hide.
+              </p>
+              <p class="redaction-limit">
+                Retained pixels match the signed original. Redactor approval is
+                not attested. The file label and signer fingerprint remain
+                public.
+              </p>
+            </div>
+            <p id="legacy-redaction-note" class="copy-note" hidden>
+              GRD1 signs the entire image. Redaction needs a GRD2 file issued
+              with tile commitments; an existing GRD1 cannot be upgraded without
+              its signer.
+            </p>
             <div class="stage" id="stage">
               <canvas
                 id="canvas"
@@ -191,6 +256,13 @@
                 aria-label="Protected signed image. Hold Space or Enter to reveal the centre. Arrow keys move the reveal area."
                 aria-describedby="reveal-hint"
               ></canvas>
+              <div
+                id="tile-overlay"
+                class="tile-overlay"
+                hidden
+                role="group"
+                aria-label="Select image tiles to redact"
+              ></div>
               <div id="shield" class="shield" hidden>
                 <span aria-hidden="true">◈</span>
                 <h3>IMAGE HIDDEN</h3>
@@ -262,7 +334,7 @@
       </details>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
-        ><span>GRD1 / LOCAL VERIFICATION</span
+        ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span
         ><a
           href="https://github.com/neervasa00000000/Guard"
           target="_blank"

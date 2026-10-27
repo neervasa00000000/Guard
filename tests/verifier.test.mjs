@@ -161,3 +161,23 @@ test("a signed invalid image is not called genuine", async () => {
   assert.equal(r.signature_valid, true);
   assert.equal(r.payload, undefined);
 });
+test("GRD1 rejects a revoked pinned key before accepting its signature", async () => {
+  const fingerprint = await (
+    await import("../src/trust.js")
+  ).checkRevocation(key.raw);
+  const policy = {
+    version: 2,
+    asOf: "2026-10-27T00:00:00Z",
+    revoked: [
+      {
+        fingerprint: fingerprint.fingerprint,
+        reason: "Fixture revoked",
+        revokedAt: "2026-10-26T00:00:00Z",
+      },
+    ],
+  };
+  const revoked = await createVerifier([key.anchor], policy)(valid);
+  assert.equal(revoked.verdict, "REVOKED KEY");
+  assert.equal(revoked.genuine, false);
+  assert.equal(revoked.payload, undefined);
+});

@@ -1379,6 +1379,142 @@ footer > a:last-child {
     gap: 8px;
   }
 }
+.demo-button {
+  margin-top: 12px;
+  width: 100%;
+}
+.redaction-tools {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid #41495a;
+  border-bottom: 1px solid #41495a;
+  padding: 17px 0;
+  margin: 0 0 18px;
+}
+.redaction-tools > div {
+  width: 100%;
+}
+.redaction-tools strong {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+.redaction-tools p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 7px 0;
+  color: #b2bdd4;
+}
+.redaction-tools > p {
+  width: 100%;
+}
+.redaction-tools .redaction-limit {
+  font-size: 11px;
+  color: #b6c6f0;
+  margin: 0;
+}
+.redaction-tools .secondary {
+  background: #eaf0ff;
+}
+.redaction-tools .primary {
+  background: #214eef;
+  border-color: #6284ff;
+}
+.tile-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  z-index: 1;
+}
+.tile-overlay button {
+  border: 1px solid #fff9;
+  background: #214eef20;
+  color: #fff;
+  font: 11px Arial;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  text-shadow: 0 1px 3px #000;
+  overflow: hidden;
+}
+.tile-overlay .tile-selected {
+  background: #214eefb3;
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.tile-overlay .tile-hidden {
+  background: #111d;
+  opacity: 1;
+  font-size: 9px;
+  color: #c3cdef;
+}
+.verdict-banner.demo .verdict-icon {
+  background: #214eef;
+}
+.verdict-banner.demo .eyebrow {
+  color: #214eef;
+}
+.redaction-tools #export-redacted:disabled {
+  opacity: 0.45;
+}
+@media (max-width: 760px) {
+  .redaction-tools > button {
+    min-height: 44px;
+  }
+  .redaction-tools p {
+    font-size: 12px;
+  }
+  .tile-overlay button {
+    font-size: 10px;
+  }
+  .redaction-tools .redaction-limit {
+    font-size: 11px;
+  }
+}
+.informational .check-icon,
+.informational .check-tag {
+  color: #214eef;
+}
+.rectangle-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.rectangle-fields label,
+.redaction-method {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: #c5cde0;
+}
+.rectangle-fields input,
+.redaction-method select {
+  background: #fff;
+  color: #17181b;
+  border: 1px solid #8c9bb7;
+  border-radius: 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  width: 100%;
+  font: 12px Arial;
+}
+.rectangle-fields button {
+  grid-column: 1/-1;
+  justify-content: center;
+}
+.redaction-method {
+  width: 100%;
+}
+.redaction-method select {
+  max-width: 350px;
+}
+.tile-overlay {
+  touch-action: none;
+}
 
     </style>
   </head>
@@ -1388,7 +1524,7 @@ footer > a:last-child {
       <div class="header-inner">
         <a class="brand" href="#" aria-label="Guard home"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 / OFFLINE INSPECTOR</span
+        ><span class="header-label">GRD1 + GRD2 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -1399,10 +1535,12 @@ footer > a:last-child {
         <div class="intro-copy">
           <p class="eyebrow">GUARD / IMAGE VERIFICATION</p>
           <h1>.GRD <span>INSPECTOR</span></h1>
-          <p class="intro-text">Check the signature. Inspect the image.</p>
+          <p class="intro-text">
+            Verify an image. Redact private regions. Keep the remaining proof.
+          </p>
         </div>
         <div class="format-block">
-          <span class="format-label">SIGNED CONTAINER / VERSION 01</span>
+          <span class="format-label">SIGNED IMAGE / SELECTIVE DISCLOSURE</span>
           <div class="format-sections" aria-label="Signed file structure">
             <span>META</span><span>IMAGE</span><span>KEY</span><span>SIG</span>
           </div>
@@ -1411,7 +1549,7 @@ footer > a:last-child {
       </section>
       <div class="workspace-heading">
         <h2>FILE INSPECTION</h2>
-        <span class="format-note">.GRD / MAX 64 MiB</span>
+        <span class="format-note">.GRD / LOCAL FILES</span>
       </div>
       <section
         id="workspace"
@@ -1435,7 +1573,14 @@ footer > a:last-child {
             ><span class="drop-local">Drag & drop / .GRD</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            64 MiB maximum. Your file is read locally and never uploaded.
+            GRD1: up to 64 MiB. GRD2: up to 32 MiB / 4 megapixels. Files stay on
+            your device.
+          </p>
+          <button id="try-redaction" class="secondary demo-button">
+            Try redaction with an example <span aria-hidden="true">↗</span>
+          </button>
+          <p class="file-help">
+            The example is self-signed demo data, not trusted evidence.
           </p>
           <div id="file-card" class="file-card" hidden>
             <div class="file-icon" aria-hidden="true">.grd</div>
@@ -1464,7 +1609,7 @@ footer > a:last-child {
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1</span>
+            <span>02 / VERIFICATION</span><span>GRD1 / GRD2</span>
           </div>
           <div
             id="live-status"
@@ -1549,6 +1694,62 @@ footer > a:last-child {
                 Hide image <span aria-hidden="true">↘</span>
               </button>
             </div>
+            <div id="redaction-tools" class="redaction-tools" hidden>
+              <div>
+                <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
+                <p>
+                  Drag a rectangle or select tiles. Areas round up to 64px
+                  blocks. Blackout removes original pixels; blur can still
+                  retain private details.
+                </p>
+              </div>
+              <div class="rectangle-fields">
+                <label
+                  >X<input id="rect-x" type="number" min="0" value="0" /></label
+                ><label
+                  >Y<input id="rect-y" type="number" min="0" value="0" /></label
+                ><label
+                  >Width<input
+                    id="rect-width"
+                    type="number"
+                    min="1"
+                    value="64" /></label
+                ><label
+                  >Height<input
+                    id="rect-height"
+                    type="number"
+                    min="1"
+                    value="64" /></label
+                ><button id="select-rectangle" class="secondary">
+                  Select rectangle
+                </button>
+              </div>
+              <label class="redaction-method"
+                >Method<select id="redaction-method">
+                  <option value="black">Blackout · recommended</option>
+                  <option value="blur">
+                    Blur · may retain private details
+                  </option>
+                </select></label
+              ><button id="redact-mode" class="secondary" aria-pressed="false">
+                Mark tiles</button
+              ><button id="export-redacted" class="primary" disabled>
+                Export redacted .GRD ↓
+              </button>
+              <p id="redaction-status" role="status">
+                Choose Mark tiles, then select the areas to hide.
+              </p>
+              <p class="redaction-limit">
+                Retained pixels match the signed original. Redactor approval is
+                not attested. The file label and signer fingerprint remain
+                public.
+              </p>
+            </div>
+            <p id="legacy-redaction-note" class="copy-note" hidden>
+              GRD1 signs the entire image. Redaction needs a GRD2 file issued
+              with tile commitments; an existing GRD1 cannot be upgraded without
+              its signer.
+            </p>
             <div class="stage" id="stage">
               <canvas
                 id="canvas"
@@ -1556,6 +1757,13 @@ footer > a:last-child {
                 aria-label="Protected signed image. Hold Space or Enter to reveal the centre. Arrow keys move the reveal area."
                 aria-describedby="reveal-hint"
               ></canvas>
+              <div
+                id="tile-overlay"
+                class="tile-overlay"
+                hidden
+                role="group"
+                aria-label="Select image tiles to redact"
+              ></div>
               <div id="shield" class="shield" hidden>
                 <span aria-hidden="true">◈</span>
                 <h3>IMAGE HIDDEN</h3>
@@ -1627,7 +1835,7 @@ footer > a:last-child {
       </details>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
-        ><span>GRD1 / LOCAL VERIFICATION</span
+        ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span
         ><a
           href="https://github.com/neervasa00000000/Guard"
           target="_blank"
@@ -1645,6 +1853,54 @@ footer > a:last-child {
     <script>
       (()=>{
 'use strict';
+const policy={
+  "version": 1,
+  "asOf": "2026-10-27T00:00:00Z",
+  "revoked": []
+}
+;
+const TRUST_POLICY = Object.freeze({
+  ...policy,
+  revoked: Object.freeze(
+    policy.revoked.map((entry) => Object.freeze({ ...entry })),
+  ),
+});
+async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
+  if (
+    !snapshot ||
+    !Number.isSafeInteger(snapshot.version) ||
+    snapshot.version < 1 ||
+    typeof snapshot.asOf !== "string" ||
+    !Number.isFinite(Date.parse(snapshot.asOf)) ||
+    !Array.isArray(snapshot.revoked) ||
+    snapshot.revoked.some(
+      (r) =>
+        !r ||
+        typeof r.fingerprint !== "string" ||
+        !/^[0-9a-f]{64}$/.test(r.fingerprint) ||
+        typeof r.reason !== "string" ||
+        !Number.isFinite(Date.parse(r.revokedAt)),
+    )
+  )
+    throw new Error("Invalid offline revocation policy.");
+  const digest = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", publicKey),
+    ),
+    fingerprint = Array.from(digest)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join(""),
+    entry = snapshot.revoked.find((r) => r.fingerprint === fingerprint);
+  return {
+    revoked: !!entry,
+    fingerprint,
+    reason: entry?.reason,
+    revokedAt: entry?.revokedAt,
+    policyVersion: snapshot.version,
+    asOf: snapshot.asOf,
+    scope: "Bundled offline snapshot only; newer revocations may be unknown.",
+  };
+}
+
 // GRD1 compatibility: Ed25519 signs SHA-256(header + table + non-signature sections).
 // The embedded public key is never sufficient: it must match a pinned trust anchor.
 const LIMITS = Object.freeze({
@@ -1701,7 +1957,7 @@ function validTree(value, depth = 0) {
     return Object.values(value).every((v) => validTree(v, depth + 1));
   return true;
 }
-function createVerifier(anchors) {
+function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
   const trusted = anchors.map((k) => ({ ...k }));
   return async function verifyGRD(input) {
     const r = {
@@ -1896,6 +2152,25 @@ function createVerifier(anchors) {
         keyId = hex(keyBytes.subarray(0, 8)),
         publicKey = keyBytes.subarray(8);
       r.keyId = keyId;
+      r.revocation = await checkRevocation(publicKey, revocationPolicy);
+      if (r.revocation.revoked) {
+        r.verdict = "REVOKED KEY";
+        issue(
+          "Signing key is revoked: " + r.revocation.reason,
+          "revoked signer",
+        );
+        check(
+          "Offline revocation",
+          "fail",
+          "Revoked in policy v" + r.revocation.policyVersion,
+        );
+        return finish();
+      }
+      check(
+        "Offline revocation",
+        "pass",
+        "Not listed in bundled snapshot · " + r.revocation.asOf,
+      );
       const keyIdentity = (await sha(publicKey)).slice(0, 16) === keyId;
       const anchor = trusted.find(
         (k) => k.key_id === keyId && k.public_key_hex === hex(publicKey),
@@ -2093,10 +2368,745 @@ function encodedDimensions(bytes, mime) {
   throw new Error("Unsupported or invalid encoded image header.");
 }
 
+// GRD2 canonical image codec: 8-bit RGB, non-interlaced PNG with no ancillary chunks.
+// Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
+const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+function pngCrc(bytes) {
+  let c = 0xffffffff;
+  for (const b of bytes) {
+    c ^= b;
+    for (let i = 0; i < 8; i++) c = (c >>> 1) ^ (c & 1 ? 0xedb88320 : 0);
+  }
+  return (c ^ 0xffffffff) >>> 0;
+}
+function pngJoin(arrays) {
+  const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
+  let offset = 0;
+  for (const a of arrays) {
+    out.set(a, offset);
+    offset += a.length;
+  }
+  return out;
+}
+function pngChunk(type, data) {
+  const name = new TextEncoder().encode(type),
+    out = new Uint8Array(12 + data.length),
+    view = new DataView(out.buffer);
+  view.setUint32(0, data.length);
+  out.set(name, 4);
+  out.set(data, 8);
+  view.setUint32(8 + data.length, pngCrc(out.subarray(4, 8 + data.length)));
+  return out;
+}
+async function pngStream(bytes, compress, limit) {
+  const stream = new Blob([bytes])
+      .stream()
+      .pipeThrough(
+        compress
+          ? new CompressionStream("deflate")
+          : new DecompressionStream("deflate"),
+      ),
+    reader = stream.getReader(),
+    parts = [];
+  let length = 0;
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      length += value.length;
+      if (length > limit) throw new Error("PNG decompression limit exceeded.");
+      parts.push(value);
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  return pngJoin(parts);
+}
+async function encodeRgbPng(rgb, width, height) {
+  if (rgb.length !== width * height * 3)
+    throw new Error("Invalid RGB image length.");
+  const rows = new Uint8Array(height * (width * 3 + 1));
+  for (let y = 0; y < height; y++)
+    rows.set(
+      rgb.subarray(y * width * 3, (y + 1) * width * 3),
+      y * (width * 3 + 1) + 1,
+    );
+  const hdr = new Uint8Array(13),
+    view = new DataView(hdr.buffer);
+  view.setUint32(0, width);
+  view.setUint32(4, height);
+  hdr[8] = 8;
+  hdr[9] = 2;
+  return pngJoin([
+    PNG_SIGNATURE,
+    pngChunk("IHDR", hdr),
+    pngChunk("IDAT", await pngStream(rows, true, 32 * 1024 * 1024)),
+    pngChunk("IEND", new Uint8Array()),
+  ]);
+}
+async function decodeRgbPng(bytes) {
+  if (
+    !(bytes instanceof Uint8Array) ||
+    bytes.length < 45 ||
+    PNG_SIGNATURE.some((b, i) => bytes[i] !== b)
+  )
+    throw new Error("Not a GRD2 RGB PNG.");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    idats = [];
+  let offset = 8,
+    width,
+    height,
+    ended = false,
+    seenData = false;
+  while (offset + 12 <= bytes.length) {
+    const size = view.getUint32(offset),
+      end = offset + 12 + size;
+    if (end > bytes.length) throw new Error("Truncated PNG chunk.");
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8)),
+      data = bytes.subarray(offset + 8, end - 4);
+    if (pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4))
+      throw new Error("PNG checksum failed.");
+    if (type === "IHDR") {
+      if (offset !== 8 || size !== 13)
+        throw new Error("Invalid PNG header order.");
+      width = view.getUint32(offset + 8);
+      height = view.getUint32(offset + 12);
+      if (
+        width < 1 ||
+        height < 1 ||
+        width > 4096 ||
+        height > 4096 ||
+        width * height > 4_194_304 ||
+        data[8] !== 8 ||
+        data[9] !== 2 ||
+        data[10] ||
+        data[11] ||
+        data[12]
+      )
+        throw new Error("GRD2 needs bounded 8-bit RGB, non-interlaced PNG.");
+    } else if (type === "IDAT") {
+      if (!width || ended) throw new Error("Invalid PNG data order.");
+      idats.push(data);
+      seenData = true;
+    } else if (type === "IEND") {
+      if (size || !seenData || end !== bytes.length)
+        throw new Error("Invalid PNG end.");
+      ended = true;
+      offset = end;
+      break;
+    } else
+      throw new Error(
+        "GRD2 PNG contains unsupported ancillary or critical chunks: " + type,
+      );
+    offset = end;
+  }
+  if (!ended || !idats.length) throw new Error("Incomplete PNG.");
+  const stride = width * 3,
+    raw = await pngStream(pngJoin(idats), false, height * (stride + 1));
+  if (raw.length !== height * (stride + 1))
+    throw new Error("Wrong PNG pixel length.");
+  const rgb = new Uint8Array(width * height * 3);
+  const paeth = (a, b, c) => {
+    const p = a + b - c,
+      pa = Math.abs(p - a),
+      pb = Math.abs(p - b),
+      pc = Math.abs(p - c);
+    return pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+  };
+  for (let y = 0; y < height; y++) {
+    const filter = raw[y * (stride + 1)];
+    if (filter > 4) throw new Error("Unknown PNG filter.");
+    for (let x = 0; x < stride; x++) {
+      const at = y * stride + x,
+        a = x >= 3 ? rgb[at - 3] : 0,
+        b = y ? rgb[at - stride] : 0,
+        c = y && x >= 3 ? rgb[at - stride - 3] : 0;
+      const predict =
+        filter === 0
+          ? 0
+          : filter === 1
+            ? a
+            : filter === 2
+              ? b
+              : filter === 3
+                ? Math.floor((a + b) / 2)
+                : paeth(a, b, c);
+      rgb[at] = (raw[y * (stride + 1) + 1 + x] + predict) & 255;
+    }
+  }
+  return { rgb, width, height };
+}
+
+const TILE_LIMITS = Object.freeze({
+  bytes: 32 * 1024 * 1024,
+  pixels: 4_194_304,
+  dimension: 4096,
+  tiles: 1024,
+});
+const textEncoder = new TextEncoder();
+const MANIFEST_FIELDS = [
+  "format",
+  "version",
+  "width",
+  "height",
+  "tileSize",
+  "pixelFormat",
+  "root",
+  "commitments",
+  "publicKey",
+  "keyId",
+  "policy",
+  "purpose",
+  "label",
+];
+const unhex = (value) =>
+  Uint8Array.from(value.match(/../g), (v) => parseInt(v, 16));
+const joinBytes = (...arrays) => {
+  const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
+  let at = 0;
+  for (const a of arrays) {
+    out.set(a, at);
+    at += a.length;
+  }
+  return out;
+};
+function base64(bytes) {
+  let raw = "";
+  for (let i = 0; i < bytes.length; i += 32768)
+    raw += String.fromCharCode(...bytes.subarray(i, i + 32768));
+  return btoa(raw);
+}
+function decodeBase64(value, length) {
+  if (
+    typeof value !== "string" ||
+    value.length > Math.ceil(TILE_LIMITS.bytes / 3) * 4 ||
+    value.length % 4 ||
+    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(
+      value,
+    )
+  )
+    throw new Error("Invalid base64 payload length or encoding.");
+  const bytes = Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
+  if (
+    (length !== undefined && bytes.length !== length) ||
+    base64(bytes) !== value
+  )
+    throw new Error("Noncanonical base64 payload.");
+  return bytes;
+}
+const exactKeys = (value, keys) =>
+  value &&
+  typeof value === "object" &&
+  !Array.isArray(value) &&
+  Object.keys(value).length === keys.length &&
+  keys.every((k) => Object.hasOwn(value, k));
+const hashHex = (value) =>
+  typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+function isGRD2(input) {
+  const d = input instanceof Uint8Array ? input : new Uint8Array(input);
+  return (
+    d[0] === 71 && d[1] === 82 && d[2] === 68 && d[3] === 50 && d[4] === 10
+  );
+}
+function tileBounds(m, index) {
+  const columns = Math.ceil(m.width / m.tileSize),
+    x = (index % columns) * m.tileSize,
+    y = Math.floor(index / columns) * m.tileSize;
+  return {
+    x,
+    y,
+    width: Math.min(m.tileSize, m.width - x),
+    height: Math.min(m.tileSize, m.height - y),
+  };
+}
+function validateManifest(m) {
+  if (
+    !exactKeys(m, MANIFEST_FIELDS) ||
+    m.format !== "GRD2" ||
+    m.version !== 2 ||
+    m.pixelFormat !== "RGB8" ||
+    m.policy !== "tile-redaction-v1" ||
+    !["asset", "demo"].includes(m.purpose)
+  )
+    throw new Error("Unsupported GRD2 manifest or policy.");
+  if (
+    !Number.isInteger(m.width) ||
+    !Number.isInteger(m.height) ||
+    m.width < 1 ||
+    m.height < 1 ||
+    m.width > TILE_LIMITS.dimension ||
+    m.height > TILE_LIMITS.dimension ||
+    m.width * m.height > TILE_LIMITS.pixels ||
+    m.tileSize !== 64
+  )
+    throw new Error("GRD2 needs a bounded RGB image and 64px tiles.");
+  if (
+    !hashHex(m.root) ||
+    !hashHex(m.publicKey) ||
+    !hashHex(m.keyId) ||
+    typeof m.label !== "string" ||
+    m.label.length > 120 ||
+    !m.label.isWellFormed()
+  )
+    throw new Error("Invalid GRD2 root, key or label.");
+  const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
+  if (
+    count > TILE_LIMITS.tiles ||
+    !Array.isArray(m.commitments) ||
+    m.commitments.length !== count ||
+    !m.commitments.every(hashHex)
+  )
+    throw new Error("Invalid signed tile commitments.");
+  return count;
+}
+async function tileCommitment(m, index, salt, rgb) {
+  void m;
+  const idx = new Uint8Array(4);
+  new DataView(idx.buffer).setUint32(0, index);
+  return sha(joinBytes(textEncoder.encode("GRD-TILE"), idx, unhex(salt), rgb));
+}
+async function merkleRoot(commitments) {
+  if (!commitments.length) throw new Error("Empty Merkle tree.");
+  let layer = await Promise.all(
+    commitments.map((c) => sha(joinBytes(new Uint8Array([0]), unhex(c)))),
+  );
+  while (layer.length > 1) {
+    const next = [];
+    for (let i = 0; i < layer.length; i += 2)
+      next.push(
+        await sha(
+          joinBytes(
+            new Uint8Array([1]),
+            unhex(layer[i]),
+            unhex(layer[i + 1] ?? layer[i]),
+          ),
+        ),
+      );
+    layer = next;
+  }
+  return layer[0];
+}
+async function manifestDigest(manifest) {
+  return crypto.subtle.digest(
+    "SHA-256",
+    joinBytes(
+      textEncoder.encode("GUARD-GRD2-MANIFEST-V1\0"),
+      textEncoder.encode(canon(manifest)),
+    ),
+  );
+}
+function encodeGRD2(document) {
+  const encoded = textEncoder.encode("GRD2\n" + canon(document));
+  if (encoded.length > TILE_LIMITS.bytes)
+    throw new Error("GRD2 exceeds 32 MiB.");
+  return encoded;
+}
+function tilePixels(rgb, m, index) {
+  const b = tileBounds(m, index),
+    out = new Uint8Array(b.width * b.height * 3);
+  for (let row = 0; row < b.height; row++)
+    out.set(
+      rgb.subarray(
+        ((b.y + row) * m.width + b.x) * 3,
+        ((b.y + row) * m.width + b.x + b.width) * 3,
+      ),
+      row * b.width * 3,
+    );
+  return out;
+}
+async function sealRgba({
+  rgba,
+  width,
+  height,
+  tileSize = 64,
+  publicKey,
+  sign,
+  purpose = "asset",
+  label = "",
+}) {
+  if (
+    !(rgba instanceof Uint8Array) ||
+    rgba.length !== width * height * 4 ||
+    tileSize !== 64
+  )
+    throw new Error("Expected exact RGBA8 bytes and 64px tiles.");
+  const count = Math.ceil(width / 64) * Math.ceil(height / 64),
+    manifest = {
+      format: "GRD2",
+      version: 2,
+      width,
+      height,
+      tileSize,
+      pixelFormat: "RGB8",
+      root: "0".repeat(64),
+      commitments: Array(count).fill("0".repeat(64)),
+      publicKey: hex(publicKey),
+      keyId: await sha(publicKey),
+      policy: "tile-redaction-v1",
+      purpose,
+      label,
+    };
+  validateManifest(manifest);
+  const rgb = new Uint8Array(width * height * 3);
+  for (let i = 0; i < width * height; i++)
+    for (let c = 0; c < 3; c++)
+      rgb[i * 3 + c] = Math.floor(
+        (rgba[i * 4 + c] * rgba[i * 4 + 3] +
+          255 * (255 - rgba[i * 4 + 3]) +
+          127) /
+          255,
+      );
+  const tiles = [];
+  for (let index = 0; index < count; index++) {
+    const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+    manifest.commitments[index] = await tileCommitment(
+      manifest,
+      index,
+      salt,
+      tilePixels(rgb, manifest, index),
+    );
+    tiles.push({ index, salt });
+  }
+  manifest.root = await merkleRoot(manifest.commitments);
+  const signature = new Uint8Array(await sign(await manifestDigest(manifest)));
+  if (signature.length !== 64)
+    throw new Error("Expected an Ed25519 signature.");
+  return {
+    manifest,
+    signature: base64(signature),
+    image: base64(await encodeRgbPng(rgb, width, height)),
+    tiles,
+    redactions: [],
+  };
+}
+async function verifyGRD2(
+  input,
+  anchors = TRUSTED,
+  revocationPolicy = TRUST_POLICY,
+) {
+  const r = {
+    version: 2,
+    verdict: "TAMPERED",
+    genuine: false,
+    viewable: false,
+    checks: [],
+    sections: [],
+    problems: [],
+    failed: [],
+    changed: [],
+    meta: null,
+    signature_valid: false,
+  };
+  const check = (name, status, detail) =>
+    r.checks.push({ name, status: status ? "pass" : "fail", detail });
+  try {
+    const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+    r.byteLength = bytes.length;
+    if (bytes.length > TILE_LIMITS.bytes) {
+      r.verdict = "LIMIT EXCEEDED";
+      throw new Error("GRD2 is limited to 32 MiB.");
+    }
+    if (!isGRD2(bytes)) {
+      r.verdict = "NOT A GRD";
+      throw new Error("Missing GRD2 header.");
+    }
+    const raw = new TextDecoder("utf-8", { fatal: true }).decode(
+        bytes.subarray(5),
+      ),
+      doc = JSON.parse(raw);
+    if (
+      !exactKeys(doc, ["manifest", "signature", "image", "tiles", "redactions"])
+    )
+      throw new Error("Unexpected container fields.");
+    const m = doc.manifest,
+      count = validateManifest(m);
+    if (
+      !Array.isArray(doc.tiles) ||
+      doc.tiles.length !== count ||
+      !Array.isArray(doc.redactions) ||
+      doc.redactions.length > count
+    )
+      throw new Error("Tile grid or redaction list is incomplete.");
+    const redacted = [];
+    for (let index = 0; index < count; index++) {
+      const t = doc.tiles[index];
+      if (
+        !t ||
+        t.index !== index ||
+        !(
+          exactKeys(t, ["index", "salt"]) ||
+          exactKeys(t, ["index", "commitment"])
+        )
+      )
+        throw new Error(
+          "Tiles must be ordered, unique and have only permitted disclosure fields.",
+        );
+      if (Object.hasOwn(t, "commitment")) redacted.push(index);
+    }
+    for (let i = 0; i < doc.redactions.length; i++) {
+      const item = doc.redactions[i];
+      if (
+        !exactKeys(item, ["index", "method"]) ||
+        item.index !== redacted[i] ||
+        !["black", "blur"].includes(item.method)
+      )
+        throw new Error("REDACTIONS does not match the hidden tile set.");
+    }
+    if (doc.redactions.length !== redacted.length)
+      throw new Error("REDACTIONS does not match TILES.");
+    if (canon(doc) !== raw)
+      throw new Error(
+        "GRD2 must use canonical JSON without duplicate keys or extra bytes.",
+      );
+    check(
+      "Container structure",
+      true,
+      count + " ordered tiles · redaction records agree",
+    );
+    r.fileHash = await sha(bytes);
+    r.keyId = m.keyId;
+    r.root = m.root;
+    if ((await sha(unhex(m.publicKey))) !== m.keyId)
+      throw new Error("Signer fingerprint does not match public key.");
+    r.revocation = await checkRevocation(unhex(m.publicKey), revocationPolicy);
+    if (r.revocation.revoked) {
+      r.verdict = "REVOKED KEY";
+      throw new Error("Signing key is revoked: " + r.revocation.reason);
+    }
+    check(
+      "Offline revocation",
+      true,
+      "Not listed in bundled snapshot · " + r.revocation.asOf,
+    );
+    const pk = await crypto.subtle.importKey(
+      "raw",
+      unhex(m.publicKey),
+      { name: "Ed25519" },
+      false,
+      ["verify"],
+    );
+    r.signature_valid = await crypto.subtle.verify(
+      { name: "Ed25519" },
+      pk,
+      decodeBase64(doc.signature, 64),
+      await manifestDigest(m),
+    );
+    check(
+      "Signed Merkle root",
+      r.signature_valid,
+      "Ed25519 · immutable manifest and tile commitments",
+    );
+    if (!r.signature_valid) throw new Error("Manifest signature is invalid.");
+    if ((await merkleRoot(m.commitments)) !== m.root)
+      throw new Error("Signed commitment vector and Merkle root disagree.");
+    const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
+    r.demo = m.purpose === "demo";
+    r.trusted = !!anchor && !r.demo;
+    r.signer = r.demo
+      ? "Demonstration signer (not an identity claim)"
+      : (anchor?.owner ?? "Untrusted signer");
+    check(
+      "Signer trust",
+      r.trusted,
+      r.demo ? "DEMO ONLY · identity not verified" : r.signer,
+    );
+    if (r.demo) r.checks.at(-1).status = "info";
+    const decoded = await decodeRgbPng(decodeBase64(doc.image));
+    if (decoded.width !== m.width || decoded.height !== m.height)
+      throw new Error("PNG dimensions differ from the signed tile grid.");
+    const leaves = [];
+    for (let index = 0; index < count; index++) {
+      const t = doc.tiles[index];
+      if (Object.hasOwn(t, "commitment")) {
+        if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
+          throw new Error(
+            "Redacted tile " + index + " has the wrong commitment.",
+          );
+        leaves.push(t.commitment);
+      } else {
+        if (typeof t.salt !== "string" || !/^[0-9a-f]{32}$/.test(t.salt))
+          throw new Error("Invalid salt at tile " + index + ".");
+        const actual = await tileCommitment(
+          m,
+          index,
+          t.salt,
+          tilePixels(decoded.rgb, m, index),
+        );
+        if (actual !== m.commitments[index])
+          throw new Error("Non-redacted tile " + index + " was changed.");
+        leaves.push(actual);
+      }
+    }
+    if ((await merkleRoot(leaves)) !== m.root)
+      throw new Error("Current tile disclosures do not match the signed root.");
+    check(
+      "Tile commitments",
+      true,
+      count -
+        redacted.length +
+        " retained tiles match · " +
+        redacted.length +
+        " redacted tiles excluded",
+    );
+    r.tilesTotal = count;
+    r.tilesVisible = count - redacted.length;
+    r.redactedTiles = redacted;
+    r.redactionMap = redacted.map((index) => ({
+      index,
+      ...tileBounds(m, index),
+      method: doc.redactions.find((x) => x.index === index).method,
+    }));
+    r.redactionApproval = "not_attested";
+    r.tileSize = 64;
+    r.regionVerified = true;
+    r.meta = {
+      asset_id: m.root,
+      key_id: m.keyId,
+      width: m.width,
+      height: m.height,
+      mime: "image/raw-rgba",
+      original_filename: m.label || undefined,
+    };
+    if (!r.trusted && !r.demo) {
+      r.verdict = "UNTRUSTED SIGNER";
+      r.problems.push(
+        "The pixels match this key’s root, but the key is not pinned as trusted. Image withheld.",
+      );
+      return r;
+    }
+    if (!r.tilesVisible) {
+      r.verdict = "FULLY REDACTED";
+      r.problems.push(
+        "No original pixels remain to inspect. No visible content is being called genuine.",
+      );
+      return r;
+    }
+    r.verdict = r.demo
+      ? "DEMO"
+      : redacted.length
+        ? "VERIFIED WITH REDACTIONS"
+        : "GENUINE";
+    r.genuine = r.trusted && !redacted.length;
+    r.viewable = true;
+    const rgba = new Uint8Array(m.width * m.height * 4);
+    for (let i = 0; i < m.width * m.height; i++)
+      rgba.set([...decoded.rgb.subarray(i * 3, i * 3 + 3), 255], i * 4);
+    for (const index of redacted) {
+      const b = tileBounds(m, index);
+      for (let row = 0; row < b.height; row++)
+        for (let col = 0; col < b.width; col++)
+          rgba.set(
+            (row + col) % 20 < 3 ? [71, 82, 119, 255] : [27, 33, 49, 255],
+            ((b.y + row) * m.width + b.x + col) * 4,
+          );
+    }
+    r.imageRgba = rgba;
+    r.container = doc;
+    return r;
+  } catch (error) {
+    if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle)
+      r.verdict = "UNSUPPORTED";
+    r.problems.push(error.message);
+    r.failed.push("GRD2 proof");
+    r.changed = [...r.failed];
+    check("GRD2 verification", false, error.message);
+    return r;
+  }
+}
+async function redactGRD2(document, indices, method = "black") {
+  const m = document.manifest,
+    count = validateManifest(m),
+    selected = new Set(indices);
+  if (!selected.size || !["black", "blur"].includes(method))
+    throw new Error("Select tiles and a valid redaction mode.");
+  for (const index of selected)
+    if (!Number.isInteger(index) || index < 0 || index >= count)
+      throw new Error("Invalid redaction index.");
+  const result = await verifyGRD2(encodeGRD2(document), []);
+  if (!result.regionVerified)
+    throw new Error("Cannot redact an invalid source proof.");
+  const decoded = await decodeRgbPng(decodeBase64(document.image)),
+    rgb = decoded.rgb,
+    tiles = [],
+    methods = new Map(document.redactions.map((r) => [r.index, r.method]));
+  for (let index = 0; index < count; index++) {
+    const t = document.tiles[index];
+    if (selected.has(index) && Object.hasOwn(t, "salt")) {
+      const b = tileBounds(m, index),
+        original = tilePixels(rgb, m, index);
+      tiles.push({ index, commitment: m.commitments[index] });
+      methods.set(index, method);
+      for (let row = 0; row < b.height; row++)
+        for (let col = 0; col < b.width; col++) {
+          const dst = ((b.y + row) * m.width + b.x + col) * 3;
+          if (method === "black") rgb.fill(0, dst, dst + 3);
+          else {
+            const sums = [0, 0, 0];
+            let n = 0;
+            for (
+              let yy = Math.max(0, row - 12);
+              yy <= Math.min(b.height - 1, row + 12);
+              yy += 3
+            )
+              for (
+                let xx = Math.max(0, col - 12);
+                xx <= Math.min(b.width - 1, col + 12);
+                xx += 3
+              ) {
+                for (let c = 0; c < 3; c++)
+                  sums[c] += original[(yy * b.width + xx) * 3 + c];
+                n++;
+              }
+            for (let c = 0; c < 3; c++) rgb[dst + c] = Math.round(sums[c] / n);
+          }
+        }
+    } else tiles.push({ ...t });
+  }
+  return encodeGRD2({
+    manifest: { ...m },
+    signature: document.signature,
+    image: base64(await encodeRgbPng(rgb, m.width, m.height)),
+    tiles,
+    redactions: [...methods]
+      .sort((a, b) => a[0] - b[0])
+      .map(([index, method]) => ({ index, method })),
+  });
+}
+function tilesForRect(m, { x, y, width, height }) {
+  if (
+    ![x, y, width, height].every(Number.isFinite) ||
+    width <= 0 ||
+    height <= 0
+  )
+    throw new Error("Invalid rectangle.");
+  const indices = [];
+  for (let i = 0; i < Math.ceil(m.width / 64) * Math.ceil(m.height / 64); i++) {
+    const b = tileBounds(m, i);
+    if (
+      b.x < x + width &&
+      b.x + b.width > x &&
+      b.y < y + height &&
+      b.y + b.height > y
+    )
+      indices.push(i);
+  }
+  return indices;
+}
+function verificationReport(result) {
+  const { payload, imageRgba, container, ...evidence } = result;
+  void payload;
+  void imageRgba;
+  void container;
+  return evidence;
+}
+
 const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
-let operation = 0,
+let currentContainer = null,
+  redactionEditing = false,
+  selectedTiles = new Set(),
+  operation = 0,
   currentReport = null,
   bitmap = null,
   held = null,
@@ -2123,6 +3133,16 @@ function bytesLabel(n) {
       : (n / 1024 / 1024).toFixed(1) + " MiB";
 }
 function disposeImage() {
+  currentContainer = null;
+  redactionEditing = false;
+  selectedTiles.clear();
+  $("tile-overlay").replaceChildren();
+  $("tile-overlay").hidden = true;
+  $("redaction-tools").hidden = true;
+  $("legacy-redaction-note").hidden = true;
+  $("redact-mode").setAttribute("aria-pressed", "false");
+  $("redact-mode").textContent = "Mark tiles";
+  $("export-redacted").disabled = true;
   clearInterval(clock);
   clock = null;
   held = null;
@@ -2164,7 +3184,9 @@ function renderResult(report) {
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
-  const genuine = report.genuine;
+  const genuine =
+    report.genuine ||
+    (report.viewable && report.regionVerified && !report.demo);
   const messages = {
     GENUINE: [
       "GENUINE",
@@ -2197,10 +3219,46 @@ function renderResult(report) {
       "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
     ],
   };
+  messages["VERIFIED WITH REDACTIONS"] = [
+    "VERIFIED WITH REDACTIONS",
+    "RETAINED PIXELS VERIFIED.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+  ];
+  messages.DEMO = [
+    "DEMONSTRATION / NOT TRUSTED EVIDENCE",
+    "REDACTION EXAMPLE.",
+    `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+  ];
+  messages["UNTRUSTED SIGNER"] = [
+    "UNTRUSTED SIGNER",
+    "SIGNER NOT RECOGNISED.",
+    "The tile proof matches this key, but its identity is not trusted by this viewer. Image withheld.",
+  ];
+  messages["REVOKED KEY"] = [
+    "REVOKED KEY",
+    "SIGNER REVOKED.",
+    "This signing key is rejected by the bundled offline revocation policy. No before-revocation exception is made without validated timestamp evidence.",
+  ];
+  messages["FULLY REDACTED"] = [
+    "FULLY REDACTED",
+    "NO VISIBLE PIXELS.",
+    "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
+  ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
+  if (report.version === 2 && report.genuine) {
+    words[1] = "SIGNED TILE GRID VERIFIED.";
+    words[2] =
+      "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
+  }
   $("verdict-banner").className =
     "verdict-banner " +
-    (genuine ? "good" : report.verdict === "TAMPERED" ? "bad" : "neutral");
+    (report.demo
+      ? "demo"
+      : genuine
+        ? "good"
+        : report.verdict === "TAMPERED"
+          ? "bad"
+          : "neutral");
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
@@ -2214,14 +3272,33 @@ function renderResult(report) {
     const row = el(
       "div",
       undefined,
-      "check-row " + (item.status === "pass" ? "" : "failed"),
+      "check-row " +
+        (item.status === "pass"
+          ? ""
+          : item.status === "info"
+            ? "informational"
+            : "failed"),
     );
-    row.append(el("span", item.status === "pass" ? "✓" : "×", "check-icon"));
+    row.append(
+      el(
+        "span",
+        item.status === "pass" ? "✓" : item.status === "info" ? "i" : "×",
+        "check-icon",
+      ),
+    );
     const copy = el("div");
     copy.append(el("strong", item.name), el("small", item.detail));
     row.append(
       copy,
-      el("span", item.status === "pass" ? "PASSED" : "FAILED", "check-tag"),
+      el(
+        "span",
+        item.status === "pass"
+          ? "PASSED"
+          : item.status === "info"
+            ? "DEMO ONLY"
+            : "FAILED",
+        "check-tag",
+      ),
     );
     $("checks").append(row);
   }
@@ -2261,7 +3338,14 @@ function metadata(report) {
     ["Original file", m.original_filename],
     ["Dimensions", m.width + " × " + m.height + " px"],
     ["Created · signed claim", m.created_utc ?? m.created_melbourne],
-    ["Trusted signer", report.signer],
+    [report.demo ? "Demo signer" : "Signer", report.signer],
+    [
+      "Retained tiles",
+      report.version === 2
+        ? `${report.tilesVisible} / ${report.tilesTotal}`
+        : undefined,
+    ],
+    ["Redacted tiles", report.redactedTiles?.length],
   ]);
   pairs($("technical-data"), [
     ["File SHA-256", report.fileHash],
@@ -2275,7 +3359,15 @@ function metadata(report) {
         ? "Present · not validated by this viewer"
         : "Not present",
     ],
-    ["Format", "GRD1 / version " + report.version],
+    ["Format", "GRD" + report.version],
+    ["Signed Merkle root", report.root],
+    [
+      "Offline trust snapshot",
+      report.revocation
+        ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
+        : undefined,
+    ],
+    ["Redacted pixel rectangles", report.redactionMap],
     ["Viewer session", SESSION],
   ]);
   $("session-label").textContent = "SESSION / " + SESSION;
@@ -2284,6 +3376,7 @@ function shield(reason) {
   held = null;
   keyboardPoint = null;
   if (!bitmap) return;
+  $("tile-overlay").hidden = true;
   stage.classList.add("shielded");
   $("shield").hidden = false;
   $("shield-reason").textContent = reason;
@@ -2305,11 +3398,15 @@ function showImage() {
   $("shield").hidden = true;
   setMode(true);
   canvas.focus({ preventScroll: true });
+  if (redactionEditing) {
+    setMode(false);
+    renderTileOverlay();
+  }
   queueDraw();
 }
 function overlay(ctx, w, h) {
   const message =
-    "GUARD · " +
+    (currentReport?.demo ? "DEMO / NOT EVIDENCE · " : "GUARD · ") +
     SESSION +
     " · " +
     new Date().toISOString().slice(11, 19) +
@@ -2360,6 +3457,21 @@ function draw() {
     }
   } else ctx.drawImage(bitmap, 0, 0, w, h);
   overlay(ctx, w, h);
+  if (currentReport?.redactionMap) {
+    const m = currentReport.meta;
+    for (const region of currentReport.redactionMap) {
+      const x = (region.x * w) / m.width,
+        y = (region.y * h) / m.height,
+        rw = (region.width * w) / m.width,
+        rh = (region.height * h) / m.height;
+      ctx.strokeStyle = "#b7caff";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 1, y + 1, Math.max(0, rw - 2), Math.max(0, rh - 2));
+      ctx.fillStyle = "#dbe5ff";
+      ctx.font = `bold ${Math.max(7, Math.min(12, rw / 8))}px Arial`;
+      ctx.fillText("REDACTED", x + 4, y + Math.min(rh - 3, 15));
+    }
+  }
   ctx.restore();
 }
 function queueDraw() {
@@ -2389,6 +3501,25 @@ function point(event) {
 }
 
 async function decode(report) {
+  if (report.version === 2) {
+    const surface = document.createElement("canvas");
+    surface.width = report.meta.width;
+    surface.height = report.meta.height;
+    surface
+      .getContext("2d")
+      .putImageData(
+        new ImageData(
+          new Uint8ClampedArray(report.imageRgba),
+          surface.width,
+          surface.height,
+        ),
+        0,
+        0,
+      );
+    return typeof createImageBitmap === "function"
+      ? await createImageBitmap(surface)
+      : surface;
+  }
   const m = report.meta,
     [width, height] = encodedDimensions(report.payload, m.mime);
   if (width !== m.width || height !== m.height)
@@ -2443,9 +3574,12 @@ async function openFile(file) {
         changed: ["file size"],
         byteLength: file.size,
       };
-    else report = await verifyGRD(await file.arrayBuffer());
+    else {
+      const bytes = await file.arrayBuffer();
+      report = await (isGRD2(bytes) ? verifyGRD2(bytes) : verifyGRD(bytes));
+    }
     if (token !== operation) return;
-    if (report.genuine) {
+    if (report.genuine || report.viewable) {
       try {
         const decoded = await decode(report);
         if (token !== operation) {
@@ -2454,16 +3588,20 @@ async function openFile(file) {
         }
         bitmap = decoded;
         report.checks.push({
-          name: "Image dimensions",
+          name:
+            report.version === 2 ? "Rendered tile grid" : "Image dimensions",
           status: "pass",
           detail:
             report.meta.width +
             " × " +
             report.meta.height +
-            " · encoded and decoded dimensions match",
+            (report.version === 2
+              ? " · exact visible tiles; hidden tiles are placeholders"
+              : " · encoded and decoded dimensions match"),
         });
       } catch (error) {
         report.genuine = false;
+        report.viewable = false;
         report.verdict = "UNREADABLE";
         report.problems.push(error.message);
         report.checks.push({
@@ -2478,14 +3616,24 @@ async function openFile(file) {
     report.fileName = file.name;
     report.checkedAt = new Date().toISOString();
     report.viewerSession = SESSION;
+    currentContainer = report.container ?? null;
+    delete report.container;
+    delete report.imageRgba;
     renderResult(report);
-    if (report.genuine && bitmap) {
+    if ((report.genuine || report.viewable) && bitmap) {
       metadata(report);
       $("image-panel").hidden = false;
       const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
       canvas.width = Math.max(1, Math.round(bitmap.width * scale));
       canvas.height = Math.max(1, Math.round(bitmap.height * scale));
       setMode(true);
+      $("redaction-tools").hidden = !currentContainer;
+      $("legacy-redaction-note").hidden = !!currentContainer;
+      if (currentContainer) {
+        $("redaction-status").textContent =
+          `${report.tilesVisible} retained / ${report.tilesTotal} total. ${report.redactedTiles.length} already redacted. Choose Mark tiles to hide more.`;
+        setMode(false);
+      }
       queueDraw();
       clock = setInterval(queueDraw, 1000);
       if (document.hidden || !document.hasFocus())
@@ -2545,9 +3693,9 @@ window.addEventListener("drop", (event) => event.preventDefault());
 $("download-report").onclick = () => {
   if (!currentReport) return;
   const report = {
-    ...currentReport,
+    ...verificationReport(currentReport),
     scope:
-      "Local GRD1 verification using pinned viewer keys. Not proof of authorship, ownership, timestamp authority validation or copy tracing.",
+      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo files are not trusted evidence. Not proof of authorship, ownership, capture time or copy tracing.",
   };
   delete report.payload;
   download(
@@ -2657,7 +3805,305 @@ window.addEventListener("pagehide", () => {
   disposeImage();
 });
 // Compatibility entry point; trust anchors are closed over and cannot be changed through this API.
-window.verifyGRD = verifyGRD;
+window.verifyGRD = (input) =>
+  isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
+
+function positionTileOverlay() {
+  if (!currentContainer || !redactionEditing) return;
+  const overlay = $("tile-overlay"),
+    m = currentContainer.manifest;
+  const box = canvas.getBoundingClientRect();
+  overlay.style.width = box.width + "px";
+  overlay.style.height = box.height + "px";
+  overlay.style.gridTemplateColumns = Array.from(
+    { length: Math.ceil(m.width / m.tileSize) },
+    (_, col) => Math.min(m.tileSize, m.width - col * m.tileSize) + "fr",
+  ).join(" ");
+  overlay.style.gridTemplateRows = Array.from(
+    { length: Math.ceil(m.height / m.tileSize) },
+    (_, row) => Math.min(m.tileSize, m.height - row * m.tileSize) + "fr",
+  ).join(" ");
+}
+function renderTileOverlay() {
+  const overlay = $("tile-overlay");
+  const activeTile = overlay.contains(document.activeElement)
+    ? document.activeElement.dataset.tileIndex
+    : null;
+  overlay.hidden =
+    !redactionEditing ||
+    !currentContainer ||
+    stage.classList.contains("shielded");
+  overlay.replaceChildren();
+  if (overlay.hidden) return;
+  const m = currentContainer.manifest,
+    cols = Math.ceil(m.width / m.tileSize);
+  for (const tile of currentContainer.tiles) {
+    const hidden = Object.hasOwn(tile, "commitment"),
+      chosen = selectedTiles.has(tile.index),
+      button = el(
+        "button",
+        hidden ? "HIDDEN" : chosen ? "HIDE" : "+",
+        hidden ? "tile-hidden" : chosen ? "tile-selected" : "tile-visible",
+      );
+    button.type = "button";
+    button.dataset.tileIndex = String(tile.index);
+    button.disabled = hidden;
+    button.tabIndex =
+      String(tile.index) ===
+      (activeTile ??
+        String(
+          currentContainer.tiles.find((t) => Object.hasOwn(t, "salt"))?.index,
+        ))
+        ? 0
+        : -1;
+    button.setAttribute(
+      "aria-label",
+      `Tile ${tile.index + 1}, row ${Math.floor(tile.index / cols) + 1}, column ${(tile.index % cols) + 1}${hidden ? ", already redacted" : ""}`,
+    );
+    button.setAttribute("aria-pressed", String(chosen));
+    button.onclick = () => {
+      if (selectedTiles.has(tile.index)) selectedTiles.delete(tile.index);
+      else selectedTiles.add(tile.index);
+      renderTileOverlay();
+      $("export-redacted").disabled = !selectedTiles.size;
+      $("redaction-status").textContent =
+        `${selectedTiles.size} selected. Redactions are applied only when you export. Hidden tiles contain no original pixels in the exported file.`;
+    };
+    overlay.append(button);
+  }
+  positionTileOverlay();
+  if (activeTile !== null)
+    overlay
+      .querySelector(`[data-tile-index="${activeTile}"]`)
+      ?.focus({ preventScroll: true });
+}
+$("redact-mode").onclick = () => {
+  redactionEditing = !redactionEditing;
+  $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
+  $("redact-mode").textContent = redactionEditing
+    ? "Finish marking"
+    : "Mark tiles";
+  if (redactionEditing) setMode(false);
+  renderTileOverlay();
+};
+new ResizeObserver(positionTileOverlay).observe(canvas);
+$("export-redacted").onclick = async () => {
+  if (!currentContainer || !selectedTiles.size) return;
+  const source = currentContainer,
+    selection = [...selectedTiles],
+    token = operation;
+  $("export-redacted").disabled = true;
+  try {
+    const bytes = await redactGRD2(
+      source,
+      selection,
+      $("redaction-method").value,
+    );
+    if (operation !== token || currentContainer !== source) return;
+    const name =
+      (currentReport.fileName ?? "image.GRD").replace(
+        /(?:\.redacted)?\.grd$/i,
+        "",
+      ) + ".redacted.GRD";
+    download(bytes, name, "application/octet-stream");
+    await openFile(new File([bytes], name));
+    setStatus(
+      "Redacted copy exported. The selected tiles were replaced and their original salts were removed.",
+    );
+  } catch (error) {
+    if (operation === token) {
+      $("redaction-status").textContent = "Export failed: " + error.message;
+      $("export-redacted").disabled = false;
+    }
+  }
+};
+$("try-redaction").onclick = async () => {
+  const token = operation;
+  $("try-redaction").disabled = true;
+  try {
+    const sample = document.createElement("canvas");
+    sample.width = 384;
+    sample.height = 256;
+    const ctx = sample.getContext("2d");
+    ctx.fillStyle = "#eef0f5";
+    ctx.fillRect(0, 0, 384, 256);
+    ctx.fillStyle = "#17213b";
+    ctx.fillRect(0, 0, 384, 48);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 19px Arial";
+    ctx.fillText("DEMONSTRATION IMAGE", 16, 31);
+    ctx.fillStyle = "#9aaee3";
+    ctx.beginPath();
+    ctx.arc(90, 112, 33, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#35456d";
+    ctx.fillRect(47, 146, 86, 59);
+    ctx.fillStyle = "#17213b";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText("FICTIONAL PERSON", 174, 94);
+    ctx.font = "12px Arial";
+    ctx.fillText("EXAMPLE ADDRESS", 174, 128);
+    ctx.fillText("123 SAMPLE STREET", 174, 149);
+    ctx.fillText("ID: 000-123", 174, 184);
+    ctx.fillStyle = "#214eef";
+    ctx.fillRect(16, 224, 352, 2);
+    ctx.font = "10px Arial";
+    ctx.fillText("EXAMPLE ONLY / SELECT TILES TO REDACT", 16, 242);
+    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
+        "sign",
+        "verify",
+      ]),
+      publicKey = new Uint8Array(
+        await crypto.subtle.exportKey("raw", key.publicKey),
+      );
+    const doc = await sealRgba({
+      rgba: new Uint8Array(ctx.getImageData(0, 0, 384, 256).data),
+      width: 384,
+      height: 256,
+      tileSize: 64,
+      publicKey,
+      purpose: "demo",
+      label: "Demonstration only",
+      sign: (bytes) =>
+        crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
+    });
+    if (operation !== token) return;
+    await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
+    $("image-panel").scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
+  } catch (error) {
+    setStatus("The demo could not start: " + error.message);
+    $("file-help").textContent =
+      "The demo needs browser Ed25519 support: " + error.message;
+  } finally {
+    $("try-redaction").disabled = false;
+  }
+};
+
+function setTileSelection(indices) {
+  for (const i of indices)
+    if (
+      currentContainer.tiles[i] &&
+      Object.hasOwn(currentContainer.tiles[i], "salt")
+    )
+      selectedTiles.add(i);
+  renderTileOverlay();
+  $("export-redacted").disabled = !selectedTiles.size;
+  $("redaction-status").textContent =
+    `${selectedTiles.size} tiles selected. The exported redaction mask will show the exact 64px boundaries.`;
+}
+$("select-rectangle").onclick = () => {
+  if (!currentContainer) return;
+  try {
+    redactionEditing = true;
+    $("redact-mode").setAttribute("aria-pressed", "true");
+    $("redact-mode").textContent = "Finish marking";
+    setMode(false);
+    setTileSelection(
+      tilesForRect(currentContainer.manifest, {
+        x: Number($("rect-x").value),
+        y: Number($("rect-y").value),
+        width: Number($("rect-width").value),
+        height: Number($("rect-height").value),
+      }),
+    );
+  } catch (error) {
+    $("redaction-status").textContent = error.message;
+  }
+};
+let rectangleStart = null,
+  rectangleMoved = false,
+  skipTileClick = false;
+const overlayElement = $("tile-overlay");
+function imagePoint(event) {
+  const box = canvas.getBoundingClientRect(),
+    m = currentContainer.manifest;
+  return {
+    x: Math.max(
+      0,
+      Math.min(m.width, ((event.clientX - box.left) * m.width) / box.width),
+    ),
+    y: Math.max(
+      0,
+      Math.min(m.height, ((event.clientY - box.top) * m.height) / box.height),
+    ),
+  };
+}
+overlayElement.addEventListener("pointerdown", (event) => {
+  if (!currentContainer || !redactionEditing) return;
+  rectangleStart = imagePoint(event);
+  rectangleMoved = false;
+});
+overlayElement.addEventListener("pointermove", (event) => {
+  if (!rectangleStart || !currentContainer) return;
+  const p = imagePoint(event);
+  if (Math.abs(p.x - rectangleStart.x) + Math.abs(p.y - rectangleStart.y) > 8) {
+    rectangleMoved = true;
+    overlayElement.setPointerCapture(event.pointerId);
+  }
+});
+overlayElement.addEventListener("pointerup", (event) => {
+  if (!rectangleStart || !currentContainer) return;
+  const start = rectangleStart;
+  rectangleStart = null;
+  if (!rectangleMoved) return;
+  const p = imagePoint(event);
+  skipTileClick = true;
+  event.preventDefault();
+  setTileSelection(
+    tilesForRect(currentContainer.manifest, {
+      x: Math.min(start.x, p.x),
+      y: Math.min(start.y, p.y),
+      width: Math.max(1, Math.abs(start.x - p.x)),
+      height: Math.max(1, Math.abs(start.y - p.y)),
+    }),
+  );
+  setTimeout(() => (skipTileClick = false), 0);
+});
+overlayElement.addEventListener("pointercancel", () => {
+  rectangleStart = null;
+  rectangleMoved = false;
+});
+overlayElement.addEventListener(
+  "click",
+  (event) => {
+    if (skipTileClick) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  },
+  true,
+);
+overlayElement.addEventListener("keydown", (event) => {
+  if (!currentContainer || !event.key.startsWith("Arrow")) return;
+  const i = Number(event.target.dataset.tileIndex),
+    cols = Math.ceil(currentContainer.manifest.width / 64);
+  if (!Number.isInteger(i)) return;
+  const step =
+    event.key === "ArrowLeft"
+      ? -1
+      : event.key === "ArrowRight"
+        ? 1
+        : event.key === "ArrowUp"
+          ? -cols
+          : cols;
+  let next = i + step;
+  while (next >= 0 && next < currentContainer.tiles.length) {
+    const button = overlayElement.querySelector(`[data-tile-index="${next}"]`);
+    if (button && !button.disabled) {
+      event.target.tabIndex = -1;
+      button.tabIndex = 0;
+      button.focus();
+      break;
+    }
+    next += step;
+  }
+  event.preventDefault();
+});
 
 })();
     </script>
