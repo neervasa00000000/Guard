@@ -1561,6 +1561,29 @@ footer > a:last-child {
   padding: 10px 16px;
   cursor: pointer;
 }
+.convert-form .convert-resize {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  min-height: 44px;
+}
+.convert-form .convert-resize input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: #214eef;
+}
+.convert-resize small {
+  display: block;
+  margin-top: 5px;
+  color: #626873;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
 .convert-form .file-help {
   margin: 0;
 }
@@ -1649,9 +1672,10 @@ footer > a:last-child {
           <h2 id="convert-heading">MAKE A .GRD</h2>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
-            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 4 megapixels. Animated
-            images use the first frame. Other files, including HEIC and PDF,
-            need exporting to PNG or JPG first.
+            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 50 megapixels. Large
+            photos are fitted to GRD’s 4-megapixel output limit. Animated images
+            use the first frame. Other files, including HEIC and PDF, need
+            exporting to PNG or JPG first.
           </p>
         </div>
         <form id="convert-form" class="convert-form">
@@ -1662,6 +1686,16 @@ footer > a:last-child {
             accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
             aria-describedby="convert-help convert-status"
           />
+          <label class="convert-resize" for="convert-resize">
+            <input id="convert-resize" type="checkbox" checked />
+            <span
+              >Fit large photos
+              <small
+                >Preview shows the output size. Your original stays
+                unchanged.</small
+              ></span
+            >
+          </label>
           <div class="convert-preview" id="convert-preview" hidden>
             <img id="convert-image" alt="Image selected for conversion" />
             <span id="convert-details"></span>
@@ -3243,7 +3277,7 @@ function verificationReport(result) {
 
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
-function inspectConversionImage(bytes) {
+function inspectConversionImage(bytes, { allowResize = false } = {}) {
   if (
     !(bytes instanceof Uint8Array) ||
     !bytes.length ||
@@ -3286,14 +3320,48 @@ function inspectConversionImage(bytes) {
     !Number.isSafeInteger(height) ||
     width < 1 ||
     height < 1 ||
-    width > TILE_LIMITS.dimension ||
-    height > TILE_LIMITS.dimension ||
-    width * height > TILE_LIMITS.pixels
+    width > 16384 ||
+    height > 16384 ||
+    width * height > 50_000_000
   )
     throw new Error(
-      "Choose an image up to 4 megapixels and 4,096 pixels per edge. Resize it first; conversion never silently reduces quality.",
+      "Choose a photo up to 50 megapixels and 16,384 pixels per edge. This image needs resizing before it can be safely opened here.",
+    );
+  const fitted = fitConversionDimensions(width, height);
+  if (!allowResize && (fitted.width !== width || fitted.height !== height))
+    throw new Error(
+      "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
     );
   return { mime, width, height };
+}
+
+function fitConversionDimensions(width, height) {
+  if (
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1
+  )
+    throw new Error("Invalid image dimensions.");
+  const fits = (w, h) =>
+    w <= TILE_LIMITS.dimension &&
+    h <= TILE_LIMITS.dimension &&
+    w * h <= TILE_LIMITS.pixels &&
+    Math.ceil(w / 64) * Math.ceil(h / 64) <= TILE_LIMITS.tiles;
+  if (fits(width, height)) return { width, height };
+  let low = 0,
+    high = 1;
+  for (let i = 0; i < 50; i++) {
+    const scale = (low + high) / 2,
+      w = Math.max(1, Math.floor(width * scale)),
+      h = Math.max(1, Math.floor(height * scale));
+    if (fits(w, h)) low = scale;
+    else high = scale;
+  }
+  return {
+    width: Math.max(1, Math.floor(width * low)),
+    height: Math.max(1, Math.floor(height * low)),
+  };
 }
 
 const $ = (id) => document.getElementById(id);
@@ -4339,27 +4407,38 @@ $("convert-input").onchange = async () => {
       throw new Error("Choose an image up to 32 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
-    const info = inspectConversionImage(bytes);
+    const allowResize = $("convert-resize").checked;
+    const info = inspectConversionImage(bytes, { allowResize });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
     if (token !== conversionVersion) return;
     if (
       !decoded.width ||
       !decoded.height ||
-      decoded.width > TILE_LIMITS.dimension ||
-      decoded.height > TILE_LIMITS.dimension ||
-      decoded.width * decoded.height > TILE_LIMITS.pixels ||
+      decoded.width > 16384 ||
+      decoded.height > 16384 ||
+      decoded.width * decoded.height > 50_000_000 ||
       decoded.width * decoded.height !== info.width * info.height
     )
       throw new Error(
         "Decoded image dimensions are unsupported. Export it to PNG and try again.",
       );
+    const originalWidth = decoded.width,
+      originalHeight = decoded.height;
+    const fitted = fitConversionDimensions(originalWidth, originalHeight);
+    const resized =
+      fitted.width !== originalWidth || fitted.height !== originalHeight;
+    if (resized && !allowResize)
+      throw new Error("Enable “Fit large photos” to convert this image here.");
     const surface = document.createElement("canvas");
-    surface.width = decoded.width;
-    surface.height = decoded.height;
+    surface.width = fitted.width;
+    surface.height = fitted.height;
     const context = surface.getContext("2d", { willReadFrequently: true });
     context.fillStyle = "#fff";
     context.fillRect(0, 0, surface.width, surface.height);
-    context.drawImage(decoded, 0, 0);
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.drawImage(decoded, 0, 0, surface.width, surface.height);
+    decoded.close();
     const rgba = new Uint8Array(
       context.getImageData(0, 0, surface.width, surface.height).data,
     );
@@ -4378,10 +4457,13 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${surface.width} × ${surface.height} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height}` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
-      "Ready. Creates a self-signed GRD2; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+      (resized
+        ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
+        : "Ready at original size. ") +
+        "Self-signed; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
     );
   } catch (error) {
     if (token === conversionVersion)
@@ -4394,6 +4476,7 @@ $("convert-input").onchange = async () => {
     decoded?.close?.();
   }
 };
+$("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
   if ($("convert-submit").disabled) return;
@@ -4410,6 +4493,7 @@ $("convert-form").onsubmit = async (event) => {
     viewerToken = operation;
   $("convert-submit").disabled = true;
   $("convert-input").disabled = true;
+  $("convert-resize").disabled = true;
   $("convert-form").setAttribute("aria-busy", "true");
   conversionStatus("Converting and signing on your device…");
   try {
@@ -4452,6 +4536,7 @@ $("convert-form").onsubmit = async (event) => {
   } finally {
     $("convert-submit").disabled = false;
     $("convert-input").disabled = false;
+    $("convert-resize").disabled = false;
     $("convert-form").removeAttribute("aria-busy");
   }
 };

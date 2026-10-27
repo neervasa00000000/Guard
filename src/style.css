@@ -1545,6 +1545,29 @@ footer > a:last-child {
   padding: 10px 16px;
   cursor: pointer;
 }
+.convert-form .convert-resize {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  min-height: 44px;
+}
+.convert-form .convert-resize input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: #214eef;
+}
+.convert-resize small {
+  display: block;
+  margin-top: 5px;
+  color: #626873;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
 .convert-form .file-help {
   margin: 0;
 }

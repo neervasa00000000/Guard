@@ -56,9 +56,10 @@
           <h2 id="convert-heading">MAKE A .GRD</h2>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
-            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 4 megapixels. Animated
-            images use the first frame. Other files, including HEIC and PDF,
-            need exporting to PNG or JPG first.
+            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 50 megapixels. Large
+            photos are fitted to GRD’s 4-megapixel output limit. Animated images
+            use the first frame. Other files, including HEIC and PDF, need
+            exporting to PNG or JPG first.
           </p>
         </div>
         <form id="convert-form" class="convert-form">
@@ -69,6 +70,16 @@
             accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
             aria-describedby="convert-help convert-status"
           />
+          <label class="convert-resize" for="convert-resize">
+            <input id="convert-resize" type="checkbox" checked />
+            <span
+              >Fit large photos
+              <small
+                >Preview shows the output size. Your original stays
+                unchanged.</small
+              ></span
+            >
+          </label>
           <div class="convert-preview" id="convert-preview" hidden>
             <img id="convert-image" alt="Image selected for conversion" />
             <span id="convert-details"></span>

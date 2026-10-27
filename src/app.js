@@ -1041,27 +1041,38 @@ $("convert-input").onchange = async () => {
       throw new Error("Choose an image up to 32 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
-    const info = inspectConversionImage(bytes);
+    const allowResize = $("convert-resize").checked;
+    const info = inspectConversionImage(bytes, { allowResize });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
     if (token !== conversionVersion) return;
     if (
       !decoded.width ||
       !decoded.height ||
-      decoded.width > TILE_LIMITS.dimension ||
-      decoded.height > TILE_LIMITS.dimension ||
-      decoded.width * decoded.height > TILE_LIMITS.pixels ||
+      decoded.width > 16384 ||
+      decoded.height > 16384 ||
+      decoded.width * decoded.height > 50_000_000 ||
       decoded.width * decoded.height !== info.width * info.height
     )
       throw new Error(
         "Decoded image dimensions are unsupported. Export it to PNG and try again.",
       );
+    const originalWidth = decoded.width,
+      originalHeight = decoded.height;
+    const fitted = fitConversionDimensions(originalWidth, originalHeight);
+    const resized =
+      fitted.width !== originalWidth || fitted.height !== originalHeight;
+    if (resized && !allowResize)
+      throw new Error("Enable “Fit large photos” to convert this image here.");
     const surface = document.createElement("canvas");
-    surface.width = decoded.width;
-    surface.height = decoded.height;
+    surface.width = fitted.width;
+    surface.height = fitted.height;
     const context = surface.getContext("2d", { willReadFrequently: true });
     context.fillStyle = "#fff";
     context.fillRect(0, 0, surface.width, surface.height);
-    context.drawImage(decoded, 0, 0);
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.drawImage(decoded, 0, 0, surface.width, surface.height);
+    decoded.close();
     const rgba = new Uint8Array(
       context.getImageData(0, 0, surface.width, surface.height).data,
     );
@@ -1080,10 +1091,13 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${surface.width} × ${surface.height} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height}` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
-      "Ready. Creates a self-signed GRD2; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+      (resized
+        ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
+        : "Ready at original size. ") +
+        "Self-signed; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
     );
   } catch (error) {
     if (token === conversionVersion)
@@ -1096,6 +1110,7 @@ $("convert-input").onchange = async () => {
     decoded?.close?.();
   }
 };
+$("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
   if ($("convert-submit").disabled) return;
@@ -1112,6 +1127,7 @@ $("convert-form").onsubmit = async (event) => {
     viewerToken = operation;
   $("convert-submit").disabled = true;
   $("convert-input").disabled = true;
+  $("convert-resize").disabled = true;
   $("convert-form").setAttribute("aria-busy", "true");
   conversionStatus("Converting and signing on your device…");
   try {
@@ -1154,6 +1170,7 @@ $("convert-form").onsubmit = async (event) => {
   } finally {
     $("convert-submit").disabled = false;
     $("convert-input").disabled = false;
+    $("convert-resize").disabled = false;
     $("convert-form").removeAttribute("aria-busy");
   }
 };

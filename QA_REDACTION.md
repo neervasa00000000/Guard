@@ -20,3 +20,9 @@ All fixtures are generated test data. The original Goose Bumps sample and origin
 - Submission without a ready image explained the next action. A text file renamed .jpg was rejected and its preview cleared.
 - The converter remained within the viewport at 390px, with no horizontal document overflow or off-screen inputs/buttons; mobile screenshot inspected.
 - Optional official C2PA integration still passes. Personal files are not promoted to a trusted C2PA export.
+
+## Large-camera-photo follow-up
+
+- 33 core tests pass, including portrait/landscape/panoramic output bounds, tile-count limits, no upscaling and bounded source inspection.
+- A generated 6000 × 4000 (24 MP) JPG previews at 2496 × 1664 with Fit large photos enabled. Opting out explains the output limit; enabling it again recovers the preview.
+- The downloaded GRD is made from the displayed fitted pixels; original source pixels and metadata are not embedded. Core verifier limits remain unchanged.

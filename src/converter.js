@@ -2,7 +2,7 @@ import { encodedDimensions } from "./verifier.js";
 import { TILE_LIMITS } from "./redactable.js";
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
-export function inspectConversionImage(bytes) {
+export function inspectConversionImage(bytes, { allowResize = false } = {}) {
   if (
     !(bytes instanceof Uint8Array) ||
     !bytes.length ||
@@ -45,12 +45,46 @@ export function inspectConversionImage(bytes) {
     !Number.isSafeInteger(height) ||
     width < 1 ||
     height < 1 ||
-    width > TILE_LIMITS.dimension ||
-    height > TILE_LIMITS.dimension ||
-    width * height > TILE_LIMITS.pixels
+    width > 16384 ||
+    height > 16384 ||
+    width * height > 50_000_000
   )
     throw new Error(
-      "Choose an image up to 4 megapixels and 4,096 pixels per edge. Resize it first; conversion never silently reduces quality.",
+      "Choose a photo up to 50 megapixels and 16,384 pixels per edge. This image needs resizing before it can be safely opened here.",
+    );
+  const fitted = fitConversionDimensions(width, height);
+  if (!allowResize && (fitted.width !== width || fitted.height !== height))
+    throw new Error(
+      "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
     );
   return { mime, width, height };
+}
+
+export function fitConversionDimensions(width, height) {
+  if (
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1
+  )
+    throw new Error("Invalid image dimensions.");
+  const fits = (w, h) =>
+    w <= TILE_LIMITS.dimension &&
+    h <= TILE_LIMITS.dimension &&
+    w * h <= TILE_LIMITS.pixels &&
+    Math.ceil(w / 64) * Math.ceil(h / 64) <= TILE_LIMITS.tiles;
+  if (fits(width, height)) return { width, height };
+  let low = 0,
+    high = 1;
+  for (let i = 0; i < 50; i++) {
+    const scale = (low + high) / 2,
+      w = Math.max(1, Math.floor(width * scale)),
+      h = Math.max(1, Math.floor(height * scale));
+    if (fits(w, h)) low = scale;
+    else high = scale;
+  }
+  return {
+    width: Math.max(1, Math.floor(width * low)),
+    height: Math.max(1, Math.floor(height * low)),
+  };
 }
