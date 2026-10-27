@@ -20,7 +20,7 @@ let html = await readFile(
 );
 for (const field of ["key_id", "public_key_hex", "owner"])
   html = html.replace(TRUSTED[0][field], key.anchor[field]);
-html = html.replace("<title>Guard —", "<title>QA FIXTURE ONLY — Guard —");
+html = html.replace("<title>Guard /", "<title>QA FIXTURE ONLY — Guard /");
 const bad = Buffer.from(valid);
 const imageTable = 10 + 50;
 const imageOffset = Number(bad.readBigUInt64LE(imageTable + 2));

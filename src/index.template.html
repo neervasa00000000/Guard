@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#122d29" />
+    <meta name="theme-color" content="#161719" />
     <meta
       name="description"
       content="Guard verifies signed .GRD images locally. Inspect integrity, confirm the trusted signer and reveal protected images without uploading your files."
@@ -12,7 +12,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
-    <title>Guard — Look closer. Trust the proof.</title>
+    <title>Guard / GRD Inspector</title>
     <style>
       /*__STYLE__*/
     </style>
@@ -22,45 +22,31 @@
     <header class="header">
       <div class="header-inner">
         <a class="brand" href="#" aria-label="Guard home"
-          ><span class="brand-mark" aria-hidden="true">g</span>guard<span
-            class="brand-dot"
-            >.</span
-          ></a
-        ><span class="header-label">IMAGE INTEGRITY / GRD1</span
+          ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
+        ><span class="header-label">GRD1 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
-          ><span aria-hidden="true">◉</span> On your device</a
+          ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
       </div>
     </header>
     <main>
       <section class="intro">
         <div class="intro-copy">
-          <p class="eyebrow">
-            <span class="line"></span> THE OFFLINE VERIFICATION DESK
-          </p>
-          <h1>Look closer.<br /><em>Trust the proof.</em></h1>
-          <p class="intro-text">
-            Open a signed image. Check what’s intact.<br />See who signed it.
-            All without an upload.
-          </p>
+          <p class="eyebrow">GUARD / IMAGE VERIFICATION</p>
+          <h1>.GRD <span>INSPECTOR</span></h1>
+          <p class="intro-text">Check the signature. Inspect the image.</p>
         </div>
-        <div class="proof-object" aria-hidden="true">
-          <div class="proof-back"></div>
-          <div class="proof-sheet">
-            <span>GRD / 01</span>
-            <div class="fingerprint"><i></i><i></i><i></i><i></i><b>g.</b></div>
-            <div class="proof-rule"></div>
-            <small>SIGNED. SEALED. CHECKED.</small>
+        <div class="format-block">
+          <span class="format-label">SIGNED CONTAINER / VERSION 01</span>
+          <div class="format-sections" aria-label="Signed file structure">
+            <span>META</span><span>IMAGE</span><span>KEY</span><span>SIG</span>
           </div>
-          <div class="proof-stamp">LOCAL<br /><b>ONLY ↗</b></div>
+          <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
       </section>
       <div class="workspace-heading">
-        <div>
-          <span class="eyebrow">01 / THE WORKSPACE</span>
-          <h2>Bring your file. We’ll check the rest.</h2>
-        </div>
-        <span class="format-note">.GRD · up to 64 MiB</span>
+        <h2>FILE INSPECTION</h2>
+        <span class="format-note">.GRD / MAX 64 MiB</span>
       </div>
       <section
         id="workspace"
@@ -68,6 +54,9 @@
         aria-label="GRD verification workspace"
       >
         <div class="file-column">
+          <div class="column-label">
+            <span>01 / INPUT</span><span>LOCAL FILE</span>
+          </div>
           <button
             id="drop"
             class="drop"
@@ -75,14 +64,13 @@
             aria-describedby="file-help"
           >
             <span class="file-symbol" aria-hidden="true"
-              ><span>.grd</span><i>↗</i></span
-            ><strong>Drop your .GRD here</strong
-            ><span>or choose a file <span aria-hidden="true">↗</span></span
-            ><span class="drop-local">No account. No upload.</span></button
+              ><span>↑</span><i>.GRD</i></span
+            ><strong>DROP A FILE</strong
+            ><span>Browse files <span aria-hidden="true">↗</span></span
+            ><span class="drop-local">Drag & drop / .GRD</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            Your file stays in this browser. You can also choose a file using
-            the keyboard.
+            64 MiB maximum. Your file is read locally and never uploaded.
           </p>
           <div id="file-card" class="file-card" hidden>
             <div class="file-icon" aria-hidden="true">.grd</div>
@@ -101,18 +89,18 @@
           <div class="local-note" id="privacy">
             <span class="note-icon" aria-hidden="true">↳</span>
             <div>
-              <strong>Private by design.</strong>
-              <p>
-                Signature and hash checks run here. This viewer makes no network
-                requests.
-              </p>
+              <strong>Nothing leaves this window.</strong>
+              <p>No account, server connection or external dependencies.</p>
               <button id="download-viewer" class="text-button">
-                Save offline viewer <span aria-hidden="true">↓</span>
+                Download offline viewer <span aria-hidden="true">↓</span>
               </button>
             </div>
           </div>
         </div>
         <div class="result-column">
+          <div class="column-label">
+            <span>02 / VERIFICATION</span><span>GRD1</span>
+          </div>
           <div
             id="live-status"
             class="sr-only"
@@ -120,24 +108,21 @@
             aria-live="polite"
           ></div>
           <div id="empty" class="empty">
-            <span class="empty-number">00</span>
-            <p class="eyebrow">NOTHING TO GUESS</p>
-            <h3>Evidence, before the image.</h3>
-            <p>
-              We check the structure, every section hash and the signature
-              against the viewer’s pinned signing key.
-            </p>
+            <span class="empty-number" aria-hidden="true">—</span>
+            <p class="eyebrow">AWAITING INPUT</p>
+            <h3>NO FILE<br />LOADED.</h3>
             <div class="empty-checks">
-              <span>01 <b>File integrity</b></span
-              ><span>02 <b>Trusted signer</b></span
-              ><span>03 <b>Image binding</b></span>
+              <span
+                ><b>File structure &amp; section hashes</b><i>WAITING</i></span
+              ><span><b>Pinned signing key</b><i>WAITING</i></span
+              ><span><b>Signature &amp; image binding</b><i>WAITING</i></span>
             </div>
-            <span class="waiting"><i></i> Ready for your file</span>
+            <p class="waiting">Choose a .GRD to start verification.</p>
           </div>
           <div id="loading" class="loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <p class="eyebrow">CHECKING YOUR FILE</p>
-            <h3>Following the evidence.</h3>
+            <h3>VERIFYING FILE…</h3>
             <p>Reading the structure, hashes and signing key…</p>
             <button id="cancel" class="secondary">Cancel check</button>
           </div>
@@ -179,7 +164,7 @@
         <div class="panel-heading">
           <div>
             <p class="eyebrow">02 / THE SIGNED IMAGE</p>
-            <h2 id="image-title">A closer look.</h2>
+            <h2 id="image-title">IMAGE PREVIEW</h2>
           </div>
           <span class="session-pill" id="session-label"></span>
         </div>
@@ -208,7 +193,7 @@
               ></canvas>
               <div id="shield" class="shield" hidden>
                 <span aria-hidden="true">◈</span>
-                <h3>Out of sight.</h3>
+                <h3>IMAGE HIDDEN</h3>
                 <p id="shield-reason">
                   The image is hidden while this window is away.
                 </p>
@@ -229,7 +214,7 @@
           </div>
           <aside class="image-info">
             <p class="eyebrow">THE SIGNED DETAILS</p>
-            <h3>Behind the image.</h3>
+            <h3>FILE DETAILS</h3>
             <dl id="metadata"></dl>
             <details class="technical">
               <summary>File evidence <span aria-hidden="true">+</span></summary>
@@ -243,45 +228,41 @@
           </aside>
         </div>
       </section>
-      <section class="explanation">
-        <div>
-          <p class="eyebrow">KNOW WHAT THE BADGE MEANS</p>
-          <h2>Proof has boundaries.</h2>
-          <p>Useful protection starts with knowing exactly what was checked.</p>
-        </div>
+      <details class="explanation" id="about-verification">
+        <summary>
+          <span>WHAT DOES GENUINE MEAN?</span><span aria-hidden="true">+</span>
+        </summary>
         <div class="explanation-grid">
           <article>
-            <span>01 / VERIFIED</span>
-            <h3>Bytes, bound to a signer.</h3>
+            <span>01 / INTEGRITY</span>
+            <h3>Unchanged signed bytes.</h3>
             <p>
-              Genuine means the signed bytes passed these checks and the signing
-              key matches this viewer’s pinned trust list. It does not prove who
-              owns the image.
+              The section hashes, image binding and signature pass against this
+              viewer’s pinned key. This does not independently prove authorship
+              or ownership.
             </p>
           </article>
           <article>
-            <span>02 / LOCAL</span>
-            <h3>Your image stays here.</h3>
+            <span>02 / PRIVACY</span>
+            <h3>No uploads.</h3>
             <p>
-              No analytics, external fonts or upload service. Save this page and
-              use the single HTML file offline in a current browser.
+              Checks run on your device. Download the HTML viewer to use it
+              offline in a current browser.
             </p>
           </article>
           <article>
-            <span>03 / HONEST LIMITS</span>
-            <h3>A viewer, not a vault.</h3>
+            <span>03 / LIMITS</span>
+            <h3>Viewing controls aren’t DRM.</h3>
             <p>
-              Blur, focus hiding and session stamps discourage casual copying.
-              They cannot prevent screenshots or guarantee watermark survival.
-              Copy tracing needs the separate Check service.
+              Screenshots cannot be reliably blocked. Timestamp validation and
+              copy tracing are not performed by this viewer.
             </p>
           </article>
         </div>
-      </section>
+      </details>
       <footer>
-        <a class="brand footer-brand" href="#"
-          >guard<span class="brand-dot">.</span></a
-        ><span>VERIFY LOCALLY. VIEW INTENTIONALLY.</span
+        <a class="brand footer-brand" href="#">GUARD</a
+        ><span>GRD1 / LOCAL VERIFICATION</span
         ><a
           href="https://github.com/neervasa00000000/Guard"
           target="_blank"

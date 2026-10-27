@@ -14,3 +14,7 @@
 - No console warnings/errors were observed in the tested flows. No external network dependencies are used by the viewer.
 
 Not verified: the absent Goose Bumps sample, original server parity, conversion, copy tracing/localisation, Android screenshot blocking, timestamp authority validation or private-key operations.
+
+## Inspector redesign
+
+Replaced the original cream/green editorial layout with a charcoal/cobalt utility interface, bold sans-serif hierarchy, a compact masthead and split import/verification workspace. Verified the empty state at 320, 390, 761, 768 and 1440 CSS pixels with no page overflow. Rechecked the generated genuine state and phone image controls; the canvas stays inside its frame. Cryptographic logic is unchanged.

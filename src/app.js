@@ -73,32 +73,32 @@ function renderResult(report) {
   const messages = {
     GENUINE: [
       "GENUINE",
-      "The signed image is intact.",
+      "FILE VERIFIED.",
       "Every section matched, the signature verified and the signer is pinned as trusted in this viewer.",
     ],
     TAMPERED: [
       "TAMPERED",
-      "This file did not pass.",
+      "VERIFICATION FAILED.",
       "The image is withheld. One or more integrity or signer checks failed. Review the evidence below.",
     ],
     "NOT A GRD": [
       "NOT A GRD",
-      "A different kind of file.",
+      "INVALID FILE.",
       "Choose a signed .GRD file. Renaming an ordinary image does not turn it into one.",
     ],
     UNSUPPORTED: [
       "UNSUPPORTED",
-      "We can’t verify this here.",
+      "UNSUPPORTED.",
       "The browser, file version or image format is not supported. No genuine claim has been made.",
     ],
     "LIMIT EXCEEDED": [
       "LIMIT EXCEEDED",
-      "This file is too large.",
+      "FILE TOO LARGE.",
       "Choose a .GRD up to 64 MiB. The file was not read into memory.",
     ],
     UNREADABLE: [
       "IMAGE UNREADABLE",
-      "Verified bytes. Unreadable image.",
+      "IMAGE UNREADABLE.",
       "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
     ],
   };
