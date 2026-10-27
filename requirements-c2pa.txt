@@ -1,2 +1,2 @@
 -r requirements.txt
-c2pa-python==0.38.2
+c2pa-python==0.38.1
