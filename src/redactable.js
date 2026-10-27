@@ -421,7 +421,8 @@ export async function verifyGRD2(
     r.redactionMap = redacted.map((index) => ({
       index,
       ...tileBounds(m, index),
-      method: doc.redactions.find((x) => x.index === index).method,
+      claimedMethod: doc.redactions.find((x) => x.index === index).method,
+      methodAttested: false,
     }));
     r.redactionApproval = "not_attested";
     r.tileSize = 64;
@@ -451,7 +452,7 @@ export async function verifyGRD2(
     r.verdict = r.demo
       ? "DEMO"
       : r.personal
-        ? "SELF-SIGNED"
+        ? "UNVERIFIED: SELF-SIGNED"
         : redacted.length
           ? "VERIFIED WITH REDACTIONS"
           : "GENUINE";
@@ -486,8 +487,8 @@ export async function redactGRD2(document, indices, method = "black") {
   const m = document.manifest,
     count = validateManifest(m),
     selected = new Set(indices);
-  if (!selected.size || !["black", "blur"].includes(method))
-    throw new Error("Select tiles and a valid redaction mode.");
+  if (!selected.size || method !== "black")
+    throw new Error("Select tiles. Only blackout exports are supported.");
   for (const index of selected)
     if (!Number.isInteger(index) || index < 0 || index >= count)
       throw new Error("Invalid redaction index.");
@@ -497,38 +498,17 @@ export async function redactGRD2(document, indices, method = "black") {
   const decoded = await decodeRgbPng(decodeBase64(document.image)),
     rgb = decoded.rgb,
     tiles = [],
-    methods = new Map(document.redactions.map((r) => [r.index, r.method]));
+    methods = new Map();
   for (let index = 0; index < count; index++) {
     const t = document.tiles[index];
-    if (selected.has(index) && Object.hasOwn(t, "salt")) {
-      const b = tileBounds(m, index),
-        original = tilePixels(rgb, m, index);
+    if (selected.has(index) || Object.hasOwn(t, "commitment")) {
+      const b = tileBounds(m, index);
       tiles.push({ index, commitment: m.commitments[index] });
-      methods.set(index, method);
-      for (let row = 0; row < b.height; row++)
-        for (let col = 0; col < b.width; col++) {
-          const dst = ((b.y + row) * m.width + b.x + col) * 3;
-          if (method === "black") rgb.fill(0, dst, dst + 3);
-          else {
-            const sums = [0, 0, 0];
-            let n = 0;
-            for (
-              let yy = Math.max(0, row - 12);
-              yy <= Math.min(b.height - 1, row + 12);
-              yy += 3
-            )
-              for (
-                let xx = Math.max(0, col - 12);
-                xx <= Math.min(b.width - 1, col + 12);
-                xx += 3
-              ) {
-                for (let c = 0; c < 3; c++)
-                  sums[c] += original[(yy * b.width + xx) * 3 + c];
-                n++;
-              }
-            for (let c = 0; c < 3; c++) rgb[dst + c] = Math.round(sums[c] / n);
-          }
-        }
+      methods.set(index, "black");
+      for (let row = 0; row < b.height; row++) {
+        const start = ((b.y + row) * m.width + b.x) * 3;
+        rgb.fill(0, start, start + b.width * 3);
+      }
     } else tiles.push({ ...t });
   }
   return encodeGRD2({

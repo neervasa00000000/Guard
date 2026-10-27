@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#161719" />
     <meta
@@ -85,8 +86,9 @@
             <span id="convert-details"></span>
           </div>
           <p class="file-help">
-            Self-signed locally. The key is discarded after conversion. No
-            account, upload or trusted-identity claim.
+            Anyone can make a self-signed file, including from an edited image.
+            Conversion does not verify authenticity. Your files stay on your
+            device.
           </p>
           <button class="primary" id="convert-submit" type="submit">
             Convert & download .GRD <span aria-hidden="true">↓</span>
@@ -153,8 +155,12 @@
           <div class="local-note" id="privacy">
             <span class="note-icon" aria-hidden="true">↳</span>
             <div>
-              <strong>Nothing leaves this window.</strong>
-              <p>No account, server connection or external dependencies.</p>
+              <strong>Your files are processed locally.</strong>
+              <p>
+                No file uploads or analytics. GitHub Pages logs visitors’ IP
+                addresses when serving this website.
+                <a href="#privacy-details">Privacy details</a>
+              </p>
               <button id="download-viewer" class="text-button">
                 Download offline viewer <span aria-hidden="true">↓</span>
               </button>
@@ -253,8 +259,8 @@
                 <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
                 <p>
                   Drag a rectangle or select tiles. Areas round up to 64px
-                  blocks. Blackout removes original pixels; blur can still
-                  retain private details.
+                  blocks. Exports replace hidden pixels with solid black and
+                  remove their original salts.
                 </p>
               </div>
               <div class="rectangle-fields">
@@ -278,14 +284,11 @@
                   Select rectangle
                 </button>
               </div>
-              <label class="redaction-method"
-                >Method<select id="redaction-method">
-                  <option value="black">Blackout · recommended</option>
-                  <option value="blur">
-                    Blur · may retain private details
-                  </option>
-                </select></label
-              ><button id="redact-mode" class="secondary" aria-pressed="false">
+              <p class="file-help">
+                Blackout only. Method labels are unsigned claims; hidden pixels
+                and redactor identity are not authenticated.
+              </p>
+              <button id="redact-mode" class="secondary" aria-pressed="false">
                 Mark tiles</button
               ><button id="export-redacted" class="primary" disabled>
                 Export redacted .GRD ↓
@@ -387,6 +390,43 @@
           </article>
         </div>
       </details>
+      <section
+        class="privacy-details"
+        id="privacy-details"
+        aria-labelledby="privacy-heading"
+      >
+        <h2 id="privacy-heading">Privacy, plainly.</h2>
+        <p>
+          Images and .GRD files are checked and converted on your device. Guard
+          does not upload their contents, add analytics or store them in browser
+          storage. Downloaded files remain on your device.
+        </p>
+        <p>
+          This website is hosted on GitHub Pages. GitHub logs and stores
+          visitors’ IP addresses for security, even when they are not signed in.
+          See
+          <a
+            href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"
+            rel="noreferrer"
+            >GitHub Pages data collection</a
+          >
+          and
+          <a
+            href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+            rel="noreferrer"
+            >GitHub’s Privacy Statement</a
+          >. Download the viewer and disconnect to use it without contacting the
+          host.
+        </p>
+        <p>
+          New browser conversions omit the original filename from the signed
+          public label. Existing files may contain public labels and other
+          metadata, also included in reports. Review them before sharing.
+          Exported files include retained pixels, signer fingerprints and
+          redaction information; blackout cannot remove copies someone already
+          has.
+        </p>
+      </section>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
         ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span

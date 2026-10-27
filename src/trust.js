@@ -5,13 +5,21 @@ export const TRUST_POLICY = Object.freeze({
     policy.revoked.map((entry) => Object.freeze({ ...entry })),
   ),
 });
+function policyDate(value) {
+  return (
+    typeof value === "string" &&
+    !value.startsWith("0000") &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value) &&
+    Number.isFinite(Date.parse(value)) &&
+    new Date(value).toISOString() === value.replace("Z", ".000Z")
+  );
+}
 export async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
   if (
     !snapshot ||
     !Number.isSafeInteger(snapshot.version) ||
     snapshot.version < 1 ||
-    typeof snapshot.asOf !== "string" ||
-    !Number.isFinite(Date.parse(snapshot.asOf)) ||
+    !policyDate(snapshot.asOf) ||
     !Array.isArray(snapshot.revoked) ||
     snapshot.revoked.some(
       (r) =>
@@ -19,7 +27,7 @@ export async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
         typeof r.fingerprint !== "string" ||
         !/^[0-9a-f]{64}$/.test(r.fingerprint) ||
         typeof r.reason !== "string" ||
-        !Number.isFinite(Date.parse(r.revokedAt)),
+        !policyDate(r.revokedAt),
     )
   )
     throw new Error("Invalid offline revocation policy.");

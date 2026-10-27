@@ -1,4 +1,16 @@
 const $ = (id) => document.getElementById(id);
+if (window.self !== window.top) {
+  const warning = document.createElement("p");
+  warning.textContent =
+    "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
+  const link = document.createElement("a");
+  link.textContent = "Open Guard";
+  link.href = location.href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.replaceChildren(warning, link);
+  return;
+}
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
 let currentContainer = null,
@@ -127,10 +139,10 @@ function renderResult(report) {
     "REDACTION EXAMPLE.",
     `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
   ];
-  messages["SELF-SIGNED"] = [
-    "SELF-SIGNED / IDENTITY NOT VERIFIED",
-    "YOUR FILE. YOUR SIGNATURE.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. This proves consistency since conversion, not who created the image or whether the scene is real.`,
+  messages["UNVERIFIED: SELF-SIGNED"] = [
+    "UNVERIFIED: SELF-SIGNED",
+    "IDENTITY NOT VERIFIED.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -155,13 +167,15 @@ function renderResult(report) {
   }
   $("verdict-banner").className =
     "verdict-banner " +
-    (report.demo
-      ? "demo"
-      : genuine
-        ? "good"
-        : report.verdict === "TAMPERED"
-          ? "bad"
-          : "neutral");
+    (report.personal
+      ? "unverified"
+      : report.demo
+        ? "demo"
+        : genuine
+          ? "good"
+          : report.verdict === "TAMPERED"
+            ? "bad"
+            : "neutral");
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
@@ -199,7 +213,7 @@ function renderResult(report) {
           ? "PASSED"
           : item.status === "info"
             ? report.personal
-              ? "SELF-SIGNED"
+              ? "UNVERIFIED"
               : "DEMO ONLY"
             : "FAILED",
         "check-tag",
@@ -240,7 +254,7 @@ function metadata(report) {
     ["Asset ID", m.asset_id],
     ["Author · signed claim", m.author],
     ["Issued by · signed claim", m.issued_by],
-    ["Original file", m.original_filename],
+    ["Public label · signed claim", m.original_filename],
     ["Dimensions", m.width + " × " + m.height + " px"],
     ["Created · signed claim", m.created_utc ?? m.created_melbourne],
     [report.demo ? "Demo signer" : "Signer", report.signer],
@@ -272,7 +286,7 @@ function metadata(report) {
         ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
         : undefined,
     ],
-    ["Redacted pixel rectangles", report.redactionMap],
+    ["Hidden rectangles · method is an unsigned claim", report.redactionMap],
     ["Viewer session", SESSION],
   ]);
   $("session-label").textContent = "SESSION / " + SESSION;
@@ -314,7 +328,7 @@ function overlay(ctx, w, h) {
     (currentReport?.demo
       ? "DEMO / NOT EVIDENCE · "
       : currentReport?.personal
-        ? "SELF-SIGNED / IDENTITY NOT VERIFIED · "
+        ? "UNVERIFIED: SELF-SIGNED · "
         : "GUARD · ") +
     SESSION +
     " · " +
@@ -604,7 +618,7 @@ $("download-report").onclick = () => {
   const report = {
     ...verificationReport(currentReport),
     scope:
-      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo files are not trusted evidence. Not proof of authorship, ownership, capture time or copy tracing.",
+      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo and self-signed files are not trusted evidence; anyone can edit and re-sign a replacement. Method labels are unsigned claims. Not proof of authorship, ownership, capture time or copy tracing.",
   };
   delete report.payload;
   download(
@@ -803,11 +817,7 @@ $("export-redacted").onclick = async () => {
     token = operation;
   $("export-redacted").disabled = true;
   try {
-    const bytes = await redactGRD2(
-      source,
-      selection,
-      $("redaction-method").value,
-    );
+    const bytes = await redactGRD2(source, selection, "black");
     if (operation !== token || currentContainer !== source) return;
     const name =
       (currentReport.fileName ?? "image.GRD").replace(
@@ -1144,12 +1154,12 @@ $("convert-form").onsubmit = async (event) => {
       height: source.height,
       publicKey,
       purpose: "personal",
-      label: Array.from(source.name).slice(0, 60).join(""),
+      label: "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
     const bytes = encodeGRD2(doc),
       result = await verifyGRD2(bytes);
-    if (result.verdict !== "SELF-SIGNED" || !result.viewable)
+    if (result.verdict !== "UNVERIFIED: SELF-SIGNED" || !result.viewable)
       throw new Error(
         "The generated file did not pass its integrity check. No download was created.",
       );
@@ -1157,11 +1167,11 @@ $("convert-form").onsubmit = async (event) => {
       throw new Error(
         "Another file was opened. Convert again when you are ready.",
       );
-    const name = (source.name.replace(/\.[^.]+$/, "") || "image") + ".GRD";
+    const name = "image.GRD";
     download(bytes, name, "application/octet-stream");
     await openFile(new File([bytes], name));
     conversionStatus(
-      `Downloaded ${name}. Opened below for verification and redaction. Self-signed; identity not verified.`,
+      `Downloaded ${name}. Opened below for verification and redaction. Unverified: self-signed.`,
     );
     $("convert-status").tabIndex = -1;
     $("convert-status").focus();

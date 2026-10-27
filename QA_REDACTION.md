@@ -26,3 +26,14 @@ All fixtures are generated test data. The original Goose Bumps sample and origin
 - 33 core tests pass, including portrait/landscape/panoramic output bounds, tile-count limits, no upscaling and bounded source inspection.
 - A generated 6000 × 4000 (24 MP) JPG previews at 2496 × 1664 with Fit large photos enabled. Opting out explains the output limit; enabling it again recovers the preview.
 - The downloaded GRD is made from the displayed fitted pixels; original source pixels and metadata are not embedded. Core verifier limits remain unchanged.
+
+## Trust/privacy audit follow-up
+
+- 40 tests pass. CLI exit 0 is now restricted to GENUINE; personal, demo, partial and fully redacted files return 2 even when their mathematical proofs are valid.
+- Every shipped .GRD example is checked in both implementations. The double-encoded redacted asset was regenerated and now reports DEMO with one hidden tile.
+- New tests cover an edited image re-signed as personal, rejection of blur exports, unsigned-method reporting, and clearing all hidden pixel bytes (including legacy blur regions) on re-export in JS and Python.
+- Cross-language cases include UTF-16 Unicode key ordering, fractional/unsafe metadata numbers, boolean dimensions, lone surrogates, impossible policy dates and extra inflated PNG data. Both reject the covered invalid cases. Legacy fractional metadata is now intentionally outside the acceptance profile.
+- The issuer-key helper is tested for restricted private-key permissions and refusal to overwrite existing keys.
+- Browser conversion reopened as UNVERIFIED: SELF-SIGNED, with the explicit anyone-can-edit-and-re-sign warning, amber styling, an empty public label and generic image.GRD filename. No blur control is present. Mobile width 390px had no horizontal overflow.
+- A cross-origin-port iframe displayed only the open-directly warning and did not initialize the app. This confirms the JS fallback, not HTTP-header enforcement on GitHub Pages. Header-level protection remains host-dependent and is documented in PRIVACY.md.
+- Official C2PA round-trip integration still passes. No production trust-list admission, cryptographic audit or universal legacy decoder parity is inferred.

@@ -45,7 +45,7 @@ SHA256(UTF8("GUARD-GRD2-MANIFEST-V1\0") || canonical_json(manifest))
 
 `signature` is standard padded base64 of the 64-byte signature. Dimensions, grid, commitment vector, purpose and label are therefore bound to the signer. A trusted public key must be pinned out of band; an embedded key is not an identity credential.
 
-A `personal` purpose marks browser-converted self-signed files. Their identity is never trusted and their verdict is SELF-SIGNED, even if their key appears in the anchor list. They may be displayed and redacted with an explicit identity-not-verified label. Revocation still rejects them. The browser generates a non-exportable ephemeral signing key and retains no private key after conversion. Earlier experimental viewers must update to understand this signed purpose.
+A `personal` purpose marks browser-converted self-signed files. Their identity is never trusted and their verdict is UNVERIFIED: SELF-SIGNED, even if their key appears in the anchor list. They may be displayed and redacted with an explicit identity-not-verified label. Revocation still rejects them. The browser generates a non-exportable ephemeral signing key and retains no private key after conversion. Earlier experimental viewers must update to understand this signed purpose.
 
 ## Mutable redaction representation
 
@@ -54,9 +54,9 @@ A `personal` purpose marks browser-converted self-signed files. Their identity i
 - Retained: `{ "index": i, "salt": "32 lowercase hex characters" }`.
 - Hidden: `{ "index": i, "commitment": "original C[i]" }`; the original salt is absent.
 
-`redactions` is a sorted array of `{ "index": i, "method": "black" | "blur" }`. Its indices must exactly equal the hidden records. Rectangles round outward to intersecting whole tiles. No timestamp or identity of the redactor is attested.
+`redactions` is a sorted array of `{ "index": i, "method": "black" | "blur" }`. Its indices must exactly equal the hidden records. The method value is an **unsigned claim**, exposed as `claimedMethod` and `methodAttested:false` in reports; it is not authenticated by the original manifest. New exports permit only black and sanitize every hidden tile, including legacy blur disclosures. Rectangles round outward to intersecting whole tiles. No timestamp or identity of the redactor is attested.
 
-A holder may replace tiles without the signing key. Keep the original manifest and signature byte-equivalent, discard selected salts, retain their original commitments, replace selected RGB pixels, and append the matching mask entries. Further redactions take the union of hidden tiles. Blackout is the default. Blur can leak private details; it is not guaranteed anonymisation. Labels and signer fingerprints remain public.
+A holder may replace tiles without the signing key. Keep the original manifest and signature byte-equivalent, discard selected salts, retain their original commitments, replace selected RGB pixels, and append the matching mask entries. Further redactions take the union of hidden tiles. Blackout is the only export mode. Legacy blur records remain readable for compatibility, but their replacement pixels and method claims are never verified. A re-export blackens all hidden tiles and removes their original salts. Labels and signer fingerprints remain public.
 
 The verifier checks the signature, pinned identity, offline revocation policy, full commitment vector/root, exact hidden-mask agreement, and every retained pixel commitment. It reports the index of a mismatching retained tile. Hidden pixel contents are **not verified**; the viewer reconstructs them as fixed labelled placeholders, rather than presenting attacker-chosen hidden pixels as genuine. Restoring a hidden tile requires the original pixels and salt. Someone with the original can reconstruct it; this is not DRM or revocable access control.
 
@@ -66,7 +66,7 @@ The verifier checks the signature, pinned identity, offline revocation policy, f
 | ------------------------------ | ---------------------------------------------------------------------------------------------- |
 | GENUINE                        | All original pixels match, signature valid, signer pinned, key not revoked in bundled snapshot |
 | VERIFIED WITH REDACTIONS       | Retained pixels match; hidden regions explicitly excluded; `genuine:false`                     |
-| SELF-SIGNED                    | Personal conversion; pixel consistency only; identity not verified; `genuine:false`            |
+| UNVERIFIED: SELF-SIGNED        | Personal conversion; pixel consistency only; identity not verified; `genuine:false`            |
 | DEMO                           | Cryptographic demonstration only; signer identity not trusted; never evidence                  |
 | FULLY REDACTED                 | No visible original pixels remain; no positive image-authenticity claim                        |
 | UNTRUSTED SIGNER / REVOKED KEY | No trusted positive verdict or image rendering                                                 |
@@ -89,3 +89,7 @@ Custom assertion `io.github.neervasa00000000.guard.grd2` contains `profile: "grd
 Mainstream C2PA tools can recognise the exported PNG's Content Credentials. They need the custom Guard profile to interpret its regional proof. Native `.GRD` is not automatically recognised. Bridge acceptance requires **both** C2PA `Trusted` status under the inspecting tool's certificate policy and a trusted GRD regional verdict. A self-signed demo or an unknown exporter certificate is not globally trusted. No production certificate, TSA or online revocation service is bundled.
 
 The official [C2PA specification](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html) already describes assertion redaction, regions and Merkle structures. No claim is made that this is the first open format, that C2PA lacks all redaction, or that this prototype is ready for court or insurance evidence.
+
+## Cross-language acceptance profile
+
+GRD1 metadata now permits finite safe integers only (no fractional numbers), valid Unicode strings/keys, and depth at most 32. Canonical object keys use UTF-16 code-unit order in both languages. Python validates bounded PNG inflated scanline lengths and rejects unused/trailing compressed data, matching the JS profile. UTC policy dates use exact second-resolution ISO syntax with valid calendar dates. These restrictions intentionally reject some previously accepted legacy inputs rather than claiming universal number/decoder equivalence. Regression vectors include Unicode key ordering, fractional/unsafe numbers, boolean dimensions, lone surrogates, invalid dates and extra PNG scanlines.

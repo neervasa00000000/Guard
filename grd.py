@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent GRD1 verifier and GRD2 issuer/redactor. No private key is needed to redact."""
-import argparse, base64, hashlib, io, json, os, re, struct, sys, zlib
+import argparse, base64, hashlib, io, json, os, re, struct, sys, zlib, math
 from pathlib import Path
 from datetime import datetime
 from PIL import Image
@@ -9,7 +9,23 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey, 
 ROOT=Path(__file__).resolve().parent
 PINNED=['97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691']
 MF={'format','version','width','height','tileSize','pixelFormat','root','commitments','publicKey','keyId','policy','purpose','label'}
-def canon(v):return json.dumps(v,sort_keys=True,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+def canon(v):
+ if isinstance(v,dict):return '{'+','.join(json.dumps(k,ensure_ascii=False)+':'+canon(v[k]) for k in sorted(v,key=lambda x:x.encode('utf-16-be')))+'}'
+ if isinstance(v,list):return '['+','.join(canon(x) for x in v)+']'
+ if type(v) is float and math.isfinite(v) and v.is_integer():v=int(v)
+ return json.dumps(v,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+def valid_tree(v,depth=0):
+ if depth>32:return False
+ if type(v) in (int,float):return math.isfinite(v) and v==int(v) and abs(v)<=9007199254740991
+ if isinstance(v,str):
+  try:v.encode('utf-8');return True
+  except UnicodeError:return False
+ if isinstance(v,list):return all(valid_tree(x,depth+1) for x in v)
+ if isinstance(v,dict):return all(valid_tree(k,depth+1) and valid_tree(x,depth+1) for k,x in v.items())
+ return v is None or type(v) is bool
+def policy_date(v):
+ if not isinstance(v,str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',v):raise ValueError('Invalid policy date')
+ datetime.strptime(v,'%Y-%m-%dT%H:%M:%SZ')
 def sha(v):return hashlib.sha256(v).hexdigest()
 def un64(v):
  if not isinstance(v,str):raise ValueError('Invalid base64 field')
@@ -36,16 +52,16 @@ def encode(doc):
  return data
 def policy_check(pk,policy=None):
  p=policy if policy is not None else json.loads((ROOT/'src/trust-policy.json').read_text())
- if not isinstance(p,dict) or type(p.get('version')) is not int or p['version']<1 or not isinstance(p.get('asOf'),str) or not isinstance(p.get('revoked'),list):raise ValueError('Invalid offline trust policy')
- datetime.fromisoformat(p['asOf'].replace('Z','+00:00'))
+ if not isinstance(p,dict) or type(p.get('version')) is not int or not 1<=p['version']<=9007199254740991 or not isinstance(p.get('asOf'),str) or not isinstance(p.get('revoked'),list):raise ValueError('Invalid offline trust policy')
+ policy_date(p['asOf'])
  for entry in p['revoked']:
   if not isinstance(entry,dict) or not hx(entry.get('fingerprint')) or not isinstance(entry.get('reason'),str) or not isinstance(entry.get('revokedAt'),str):raise ValueError('Invalid revocation entry')
-  datetime.fromisoformat(entry['revokedAt'].replace('Z','+00:00'))
+  policy_date(entry['revokedAt'])
  entry=next((e for e in p['revoked'] if e['fingerprint']==sha(pk)),None)
  return dict(revoked=bool(entry),fingerprint=sha(pk),reason=entry['reason'] if entry else None,policyVersion=p['version'],asOf=p['asOf'],scope='Bundled snapshot only; newer revocations may be unknown.')
 def png_read(data):
  if len(data)<45 or data[:8]!=b'\x89PNG\r\n\x1a\n':raise ValueError('Invalid PNG')
- at=8;size=None;found=False;ended=False
+ at=8;size=None;found=False;ended=False;idats=[]
  while at+12<=len(data):
   n=struct.unpack_from('>I',data,at)[0];end=at+12+n
   if end>len(data):raise ValueError('Truncated PNG')
@@ -58,13 +74,16 @@ def png_read(data):
    size=(w,h)
   elif kind==b'IDAT':
    if size is None:raise ValueError('PNG data before header')
-   found=True
+   found=True;idats.append(body)
   elif kind==b'IEND':
    if n or not found or end!=len(data):raise ValueError('Invalid PNG end')
    ended=True;break
   else:raise ValueError('Unsupported PNG chunk')
   at=end
  if not ended:raise ValueError('Incomplete PNG')
+ expected=size[1]*(size[0]*3+1);inflater=zlib.decompressobj();raw=inflater.decompress(b''.join(idats),expected+1)
+ if len(raw)!=expected or not inflater.eof or inflater.unused_data or inflater.unconsumed_tail:raise ValueError('Invalid PNG pixel stream')
+ if any(raw[row*(size[0]*3+1)]>4 for row in range(size[1])):raise ValueError('Unknown PNG filter')
  with Image.open(io.BytesIO(data)) as im:
   im.load()
   if im.mode!='RGB' or im.size!=size:raise ValueError('Wrong PNG dimensions or mode')
@@ -118,11 +137,11 @@ def verify_v2(data,trusted=None,policy=None):
     if t['commitment']!=m['commitments'][i]:raise ValueError('Wrong commitment at tile '+str(i))
    else:
     if not isinstance(t['salt'],str) or not re.fullmatch('[0-9a-f]{32}',t['salt']) or commit(m,i,t['salt'],pixels(rgb,m,i))!=m['commitments'][i]:raise ValueError('Non-redacted tile '+str(i)+' changed')
-  r.update(root=m['root'],tilesTotal=count,tilesVisible=count-len(hidden),redactedTiles=hidden,redactionMap=[dict(index=i,**bounds(m,i),method=doc['redactions'][n]['method']) for n,i in enumerate(hidden)],regionVerified=True,redactionApproval='not_attested',_document=doc,_rgb=rgb)
+  r.update(root=m['root'],tilesTotal=count,tilesVisible=count-len(hidden),redactedTiles=hidden,redactionMap=[dict(index=i,**bounds(m,i),claimedMethod=doc['redactions'][n]['method'],methodAttested=False) for n,i in enumerate(hidden)],regionVerified=True,redactionApproval='not_attested',_document=doc,_rgb=rgb)
   is_demo=m['purpose']=='demo';is_personal=m['purpose']=='personal';is_trusted=not is_personal and m['publicKey'] in (PINNED if trusted is None else trusted)
   if not is_trusted and not is_demo and not is_personal:r['verdict']='UNTRUSTED SIGNER'
   elif not r['tilesVisible']:r['verdict']='FULLY REDACTED'
-  else:r.update(verdict='DEMO' if is_demo else 'SELF-SIGNED' if is_personal else 'VERIFIED WITH REDACTIONS' if hidden else 'GENUINE',genuine=is_trusted and not is_demo and not hidden,viewable=True)
+  else:r.update(verdict='DEMO' if is_demo else 'UNVERIFIED: SELF-SIGNED' if is_personal else 'VERIFIED WITH REDACTIONS' if hidden else 'GENUINE',genuine=is_trusted and not is_demo and not hidden,viewable=True)
  except Exception as exc:r['problems'].append(str(exc) or type(exc).__name__)
  return r
 def verify_v1(data,trusted=None,policy=None):
@@ -150,7 +169,8 @@ def verify_v1(data,trusted=None,policy=None):
   Ed25519PublicKey.from_public_bytes(pk).verify(sections[7],hashlib.sha256(data[:entries[-1][1]]).digest())
   if not sections[1] or len(sections[1])>256*1024:raise ValueError('Metadata size limit')
   raw=sections[1].decode();m=json.loads(raw)
-  if not isinstance(m,dict) or canon(m)!=raw or m.get('asset_id')!=sha(sections[2])[:15] or m.get('key_id')!=kid:raise ValueError('Metadata mismatch')
+  if not isinstance(m,dict) or not valid_tree(m) or canon(m)!=raw or m.get('asset_id')!=sha(sections[2])[:15] or m.get('key_id')!=kid:raise ValueError('Metadata mismatch')
+  if m.get('mime') not in ('image/png','image/jpeg','image/webp') or any(type(m.get(k)) is not int or m[k]<1 or m[k]>16384 for k in ('width','height')) or m['width']*m['height']>40000000:raise ValueError('Unsupported image metadata')
   with Image.open(io.BytesIO(sections[2])) as image:
    if image.format not in ('PNG','JPEG','WEBP') or min(image.size)<1 or max(image.size)>16384 or image.width*image.height>40000000:raise ValueError('Unsupported or oversized image')
    if image.size!=(m.get('width'),m.get('height')):raise ValueError('Image dimension mismatch')
@@ -160,6 +180,7 @@ def verify_v1(data,trusted=None,policy=None):
  return r
 def verify(data,trusted=None,policy=None):return verify_v2(data,trusted,policy) if data.startswith(b'GRD2\n') else verify_v1(data,trusted,policy)
 def redact(data,rects,mode='black'):
+ if mode!='black':raise ValueError('Only blackout exports are supported')
  r=verify_v2(data)
  if not r.get('regionVerified'):raise ValueError('Source proof does not verify: '+str(r['problems']))
  doc=r['_document'];m=doc['manifest'];rgb=bytearray(r['_rgb']);selected=set()
@@ -169,24 +190,17 @@ def redact(data,rects,mode='black'):
    b=bounds(m,i)
    if b['x']<x+w and b['x']+b['width']>x and b['y']<y+h and b['y']+b['height']>y:selected.add(i)
  if not selected:raise ValueError('No tiles selected')
- methods={x['index']:x['method'] for x in doc['redactions']}
- for i in selected:
-  t=doc['tiles'][i]
-  if 'salt' not in t:continue
-  b=bounds(m,i);original=pixels(rgb,m,i);doc['tiles'][i]=dict(index=i,commitment=m['commitments'][i]);methods[i]=mode
-  for y in range(b['height']):
-   for x in range(b['width']):
-    dst=((b['y']+y)*m['width']+b['x']+x)*3
-    if mode=='black':rgb[dst:dst+3]=b'\0\0\0'
-    else:
-     samples=[original[(yy*b['width']+xx)*3:(yy*b['width']+xx)*3+3] for yy in range(max(0,y-12),min(b['height']-1,y+12)+1,3) for xx in range(max(0,x-12),min(b['width']-1,x+12)+1,3)]
-     rgb[dst:dst+3]=bytes(int(sum(s[c] for s in samples)/len(samples)+.5) for c in range(3))
- doc['image']=b64(png_write(rgb,m['width'],m['height']));doc['redactions']=[dict(index=i,method=methods[i]) for i in sorted(methods)];return encode(doc)
+ hidden=set(r['redactedTiles'])|selected
+ for i in sorted(hidden):
+  b=bounds(m,i);doc['tiles'][i]=dict(index=i,commitment=m['commitments'][i])
+  for row in range(b['height']):
+   start=((b['y']+row)*m['width']+b['x'])*3;rgb[start:start+b['width']*3]=bytes(b['width']*3)
+ doc['image']=b64(png_write(rgb,m['width'],m['height']));doc['redactions']=[dict(index=i,method='black') for i in sorted(hidden)];return encode(doc)
 def main():
  parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='command',required=True)
  s=sub.add_parser('seal');s.add_argument('input');s.add_argument('--key',required=True);s.add_argument('-o','--output',required=True);s.add_argument('--label',default='')
  v=sub.add_parser('verify');v.add_argument('input');v.add_argument('--trusted-key',action='append',default=[]);v.add_argument('--policy')
- rd=sub.add_parser('redact');rd.add_argument('input');rd.add_argument('--rect',action='append',required=True);rd.add_argument('--mode',choices=['black','blur'],default='black');rd.add_argument('-o','--output',required=True)
+ rd=sub.add_parser('redact');rd.add_argument('input');rd.add_argument('--rect',action='append',required=True);rd.add_argument('--mode',choices=['black'],default='black');rd.add_argument('-o','--output',required=True)
  args=parser.parse_args()
  try:
   if Path(args.input).stat().st_size>64*1024*1024:raise ValueError('Input size limit')
@@ -197,7 +211,7 @@ def main():
    with Image.open(io.BytesIO(data)) as im:output=encode(seal(im,key,label=args.label))
   elif args.command=='redact':output=redact(data,[tuple(map(int,r.split(','))) for r in args.rect],args.mode)
   else:
-   trusted=PINNED+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in args.trusted_key];r=verify(data,trusted,json.loads(Path(args.policy).read_text()) if args.policy else None);print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2));return 0 if r['verdict'] in ('GENUINE','VERIFIED WITH REDACTIONS','DEMO','SELF-SIGNED','FULLY REDACTED') else 2
+   trusted=PINNED+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in args.trusted_key];r=verify(data,trusted,json.loads(Path(args.policy).read_text()) if args.policy else None);print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2));return 0 if r['verdict']=='GENUINE' else 2
   with open(args.output,'xb') as handle:handle.write(output)
   print('Wrote '+args.output);return 0
  except Exception as exc:print('GRD error: '+str(exc),file=sys.stderr);return 1

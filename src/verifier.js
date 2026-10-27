@@ -46,13 +46,13 @@ export function canon(value) {
 }
 function validTree(value, depth = 0) {
   if (depth > 32) return false;
-  if (
-    typeof value === "number" &&
-    (!Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER)
-  )
-    return false;
+  if (typeof value === "number" && !Number.isSafeInteger(value)) return false;
+  if (typeof value === "string") return value.isWellFormed();
   if (value && typeof value === "object")
-    return Object.values(value).every((v) => validTree(v, depth + 1));
+    return (
+      Object.keys(value).every((k) => k.isWellFormed()) &&
+      Object.values(value).every((v) => validTree(v, depth + 1))
+    );
   return true;
 }
 export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {

@@ -166,16 +166,16 @@ test("fully redacted files make no visible authenticity claim", async () => {
   assert.equal(r.verdict, "FULLY REDACTED");
   assert.equal(r.viewable, false);
 });
-test("chained black and blur redactions preserve the union and original signed root", async () => {
+test("chained blackout exports preserve the union and original signed root", async () => {
   const first = parse(await redactGRD2(doc, [0]));
-  const second = await redactGRD2(first, [2, 5], "blur"),
+  const second = await redactGRD2(first, [2, 5], "black"),
     r = await verify(second);
   assert.equal(r.root, doc.manifest.root);
   assert.deepEqual(r.redactedTiles, [0, 2, 5]);
   assert.deepEqual(parse(second).redactions, [
     { index: 0, method: "black" },
-    { index: 2, method: "blur" },
-    { index: 5, method: "blur" },
+    { index: 2, method: "black" },
+    { index: 5, method: "black" },
   ]);
 });
 test("rectangles round up to intersecting 64px tiles including edge tiles", () => {
@@ -194,7 +194,15 @@ test("report includes redaction map but no image, salts or complete container", 
   assert.equal(report.container, undefined);
   assert.equal(report.payload, undefined);
   assert.deepEqual(report.redactionMap, [
-    { index: 1, x: 64, y: 0, width: 64, height: 64, method: "black" },
+    {
+      index: 1,
+      x: 64,
+      y: 0,
+      width: 64,
+      height: 64,
+      claimedMethod: "black",
+      methodAttested: false,
+    },
   ]);
   assert.ok(!JSON.stringify(report).includes(doc.tiles[0].salt));
 });
@@ -268,6 +276,14 @@ test("Python and JS verify and redact each other’s output", async () => {
         encoding: "utf8",
         stdio: "pipe",
       });
+    const report = (args) => {
+      try {
+        return JSON.parse(run(args));
+      } catch (e) {
+        if (e.status === 2) return JSON.parse(e.stdout);
+        throw e;
+      }
+    };
     assert.equal(
       JSON.parse(run(["verify", input, "--trusted-key", pem])).verdict,
       "GENUINE",
@@ -280,7 +296,7 @@ test("Python and JS verify and redact each other’s output", async () => {
     const js = await redactGRD2(doc, [1, 4]);
     await writeFile(input, js);
     assert.deepEqual(
-      JSON.parse(run(["verify", input, "--trusted-key", pem])).redactedTiles,
+      report(["verify", input, "--trusted-key", pem]).redactedTiles,
       [1, 4],
     );
     await writeFile(image, png(70, 68));
@@ -296,16 +312,23 @@ test("Python and JS verify and redact each other’s output", async () => {
     });
     await writeFile(input, encodeGRD2(personal));
     const personalReport = await verify(await readFile(input));
-    assert.equal(personalReport.verdict, "SELF-SIGNED");
+    assert.equal(personalReport.verdict, "UNVERIFIED: SELF-SIGNED");
     assert.equal(personalReport.genuine, false);
     assert.equal(personalReport.trusted, false);
     assert.equal(personalReport.viewable, true);
     assert.equal(
-      JSON.parse(run(["verify", input, "--trusted-key", pem])).verdict,
-      "SELF-SIGNED",
+      report(["verify", input, "--trusted-key", pem]).verdict,
+      "UNVERIFIED: SELF-SIGNED",
+    );
+    assert.throws(
+      () => run(["verify", input, "--trusted-key", pem]),
+      (e) => e.status === 2,
     );
     const hiddenPersonal = await redactGRD2(personal, [0]);
-    assert.equal((await verify(hiddenPersonal)).verdict, "SELF-SIGNED");
+    assert.equal(
+      (await verify(hiddenPersonal)).verdict,
+      "UNVERIFIED: SELF-SIGNED",
+    );
     const revokedPersonal = await verifyGRD2(
       encodeGRD2(personal),
       [key.anchor],

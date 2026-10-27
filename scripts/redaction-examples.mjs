@@ -28,6 +28,6 @@ await writeFile(
 );
 await writeFile(
   new URL("../examples/colour-grid.redacted.GRD", import.meta.url),
-  encodeGRD2(await redactGRD2(document, [0])),
+  await redactGRD2(document, [0]),
 );
 console.log("Wrote two DEMO files. No private key was saved.");

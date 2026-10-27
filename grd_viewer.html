@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#161719" />
     <meta
@@ -1619,6 +1620,19 @@ footer > a:last-child {
   color: #a82525;
   font-weight: 700;
 }
+.privacy-details {
+  border-top: 1px solid #858b96;
+  padding: 32px 0;
+  margin-top: 32px;
+}
+.privacy-details h2 {
+  font-size: 26px;
+}
+.privacy-details p {
+  max-width: 85ch;
+  line-height: 1.65;
+  font-size: 14px;
+}
 @media (max-width: 760px) {
   .convert-panel {
     grid-template-columns: 1fr;
@@ -1629,6 +1643,15 @@ footer > a:last-child {
     font-size: 12px;
     padding: 8px;
   }
+}
+.verdict-banner.unverified {
+  background: #fff0d1;
+  border-color: #936000;
+  color: #382900;
+}
+.unverified .verdict-icon {
+  background: #714b00;
+  color: #fff;
 }
 
     </style>
@@ -1701,8 +1724,9 @@ footer > a:last-child {
             <span id="convert-details"></span>
           </div>
           <p class="file-help">
-            Self-signed locally. The key is discarded after conversion. No
-            account, upload or trusted-identity claim.
+            Anyone can make a self-signed file, including from an edited image.
+            Conversion does not verify authenticity. Your files stay on your
+            device.
           </p>
           <button class="primary" id="convert-submit" type="submit">
             Convert & download .GRD <span aria-hidden="true">↓</span>
@@ -1769,8 +1793,12 @@ footer > a:last-child {
           <div class="local-note" id="privacy">
             <span class="note-icon" aria-hidden="true">↳</span>
             <div>
-              <strong>Nothing leaves this window.</strong>
-              <p>No account, server connection or external dependencies.</p>
+              <strong>Your files are processed locally.</strong>
+              <p>
+                No file uploads or analytics. GitHub Pages logs visitors’ IP
+                addresses when serving this website.
+                <a href="#privacy-details">Privacy details</a>
+              </p>
               <button id="download-viewer" class="text-button">
                 Download offline viewer <span aria-hidden="true">↓</span>
               </button>
@@ -1869,8 +1897,8 @@ footer > a:last-child {
                 <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
                 <p>
                   Drag a rectangle or select tiles. Areas round up to 64px
-                  blocks. Blackout removes original pixels; blur can still
-                  retain private details.
+                  blocks. Exports replace hidden pixels with solid black and
+                  remove their original salts.
                 </p>
               </div>
               <div class="rectangle-fields">
@@ -1894,14 +1922,11 @@ footer > a:last-child {
                   Select rectangle
                 </button>
               </div>
-              <label class="redaction-method"
-                >Method<select id="redaction-method">
-                  <option value="black">Blackout · recommended</option>
-                  <option value="blur">
-                    Blur · may retain private details
-                  </option>
-                </select></label
-              ><button id="redact-mode" class="secondary" aria-pressed="false">
+              <p class="file-help">
+                Blackout only. Method labels are unsigned claims; hidden pixels
+                and redactor identity are not authenticated.
+              </p>
+              <button id="redact-mode" class="secondary" aria-pressed="false">
                 Mark tiles</button
               ><button id="export-redacted" class="primary" disabled>
                 Export redacted .GRD ↓
@@ -2003,6 +2028,43 @@ footer > a:last-child {
           </article>
         </div>
       </details>
+      <section
+        class="privacy-details"
+        id="privacy-details"
+        aria-labelledby="privacy-heading"
+      >
+        <h2 id="privacy-heading">Privacy, plainly.</h2>
+        <p>
+          Images and .GRD files are checked and converted on your device. Guard
+          does not upload their contents, add analytics or store them in browser
+          storage. Downloaded files remain on your device.
+        </p>
+        <p>
+          This website is hosted on GitHub Pages. GitHub logs and stores
+          visitors’ IP addresses for security, even when they are not signed in.
+          See
+          <a
+            href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"
+            rel="noreferrer"
+            >GitHub Pages data collection</a
+          >
+          and
+          <a
+            href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+            rel="noreferrer"
+            >GitHub’s Privacy Statement</a
+          >. Download the viewer and disconnect to use it without contacting the
+          host.
+        </p>
+        <p>
+          New browser conversions omit the original filename from the signed
+          public label. Existing files may contain public labels and other
+          metadata, also included in reports. Review them before sharing.
+          Exported files include retained pixels, signer fingerprints and
+          redaction information; blackout cannot remove copies someone already
+          has.
+        </p>
+      </section>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
         ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span
@@ -2035,13 +2097,21 @@ const TRUST_POLICY = Object.freeze({
     policy.revoked.map((entry) => Object.freeze({ ...entry })),
   ),
 });
+function policyDate(value) {
+  return (
+    typeof value === "string" &&
+    !value.startsWith("0000") &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value) &&
+    Number.isFinite(Date.parse(value)) &&
+    new Date(value).toISOString() === value.replace("Z", ".000Z")
+  );
+}
 async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
   if (
     !snapshot ||
     !Number.isSafeInteger(snapshot.version) ||
     snapshot.version < 1 ||
-    typeof snapshot.asOf !== "string" ||
-    !Number.isFinite(Date.parse(snapshot.asOf)) ||
+    !policyDate(snapshot.asOf) ||
     !Array.isArray(snapshot.revoked) ||
     snapshot.revoked.some(
       (r) =>
@@ -2049,7 +2119,7 @@ async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
         typeof r.fingerprint !== "string" ||
         !/^[0-9a-f]{64}$/.test(r.fingerprint) ||
         typeof r.reason !== "string" ||
-        !Number.isFinite(Date.parse(r.revokedAt)),
+        !policyDate(r.revokedAt),
     )
   )
     throw new Error("Invalid offline revocation policy.");
@@ -2118,13 +2188,13 @@ function canon(value) {
 }
 function validTree(value, depth = 0) {
   if (depth > 32) return false;
-  if (
-    typeof value === "number" &&
-    (!Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER)
-  )
-    return false;
+  if (typeof value === "number" && !Number.isSafeInteger(value)) return false;
+  if (typeof value === "string") return value.isWellFormed();
   if (value && typeof value === "object")
-    return Object.values(value).every((v) => validTree(v, depth + 1));
+    return (
+      Object.keys(value).every((k) => k.isWellFormed()) &&
+      Object.values(value).every((v) => validTree(v, depth + 1))
+    );
   return true;
 }
 function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
@@ -3127,7 +3197,8 @@ async function verifyGRD2(
     r.redactionMap = redacted.map((index) => ({
       index,
       ...tileBounds(m, index),
-      method: doc.redactions.find((x) => x.index === index).method,
+      claimedMethod: doc.redactions.find((x) => x.index === index).method,
+      methodAttested: false,
     }));
     r.redactionApproval = "not_attested";
     r.tileSize = 64;
@@ -3157,7 +3228,7 @@ async function verifyGRD2(
     r.verdict = r.demo
       ? "DEMO"
       : r.personal
-        ? "SELF-SIGNED"
+        ? "UNVERIFIED: SELF-SIGNED"
         : redacted.length
           ? "VERIFIED WITH REDACTIONS"
           : "GENUINE";
@@ -3192,8 +3263,8 @@ async function redactGRD2(document, indices, method = "black") {
   const m = document.manifest,
     count = validateManifest(m),
     selected = new Set(indices);
-  if (!selected.size || !["black", "blur"].includes(method))
-    throw new Error("Select tiles and a valid redaction mode.");
+  if (!selected.size || method !== "black")
+    throw new Error("Select tiles. Only blackout exports are supported.");
   for (const index of selected)
     if (!Number.isInteger(index) || index < 0 || index >= count)
       throw new Error("Invalid redaction index.");
@@ -3203,38 +3274,17 @@ async function redactGRD2(document, indices, method = "black") {
   const decoded = await decodeRgbPng(decodeBase64(document.image)),
     rgb = decoded.rgb,
     tiles = [],
-    methods = new Map(document.redactions.map((r) => [r.index, r.method]));
+    methods = new Map();
   for (let index = 0; index < count; index++) {
     const t = document.tiles[index];
-    if (selected.has(index) && Object.hasOwn(t, "salt")) {
-      const b = tileBounds(m, index),
-        original = tilePixels(rgb, m, index);
+    if (selected.has(index) || Object.hasOwn(t, "commitment")) {
+      const b = tileBounds(m, index);
       tiles.push({ index, commitment: m.commitments[index] });
-      methods.set(index, method);
-      for (let row = 0; row < b.height; row++)
-        for (let col = 0; col < b.width; col++) {
-          const dst = ((b.y + row) * m.width + b.x + col) * 3;
-          if (method === "black") rgb.fill(0, dst, dst + 3);
-          else {
-            const sums = [0, 0, 0];
-            let n = 0;
-            for (
-              let yy = Math.max(0, row - 12);
-              yy <= Math.min(b.height - 1, row + 12);
-              yy += 3
-            )
-              for (
-                let xx = Math.max(0, col - 12);
-                xx <= Math.min(b.width - 1, col + 12);
-                xx += 3
-              ) {
-                for (let c = 0; c < 3; c++)
-                  sums[c] += original[(yy * b.width + xx) * 3 + c];
-                n++;
-              }
-            for (let c = 0; c < 3; c++) rgb[dst + c] = Math.round(sums[c] / n);
-          }
-        }
+      methods.set(index, "black");
+      for (let row = 0; row < b.height; row++) {
+        const start = ((b.y + row) * m.width + b.x) * 3;
+        rgb.fill(0, start, start + b.width * 3);
+      }
     } else tiles.push({ ...t });
   }
   return encodeGRD2({
@@ -3365,6 +3415,18 @@ function fitConversionDimensions(width, height) {
 }
 
 const $ = (id) => document.getElementById(id);
+if (window.self !== window.top) {
+  const warning = document.createElement("p");
+  warning.textContent =
+    "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
+  const link = document.createElement("a");
+  link.textContent = "Open Guard";
+  link.href = location.href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.replaceChildren(warning, link);
+  return;
+}
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
 let currentContainer = null,
@@ -3493,10 +3555,10 @@ function renderResult(report) {
     "REDACTION EXAMPLE.",
     `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
   ];
-  messages["SELF-SIGNED"] = [
-    "SELF-SIGNED / IDENTITY NOT VERIFIED",
-    "YOUR FILE. YOUR SIGNATURE.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. This proves consistency since conversion, not who created the image or whether the scene is real.`,
+  messages["UNVERIFIED: SELF-SIGNED"] = [
+    "UNVERIFIED: SELF-SIGNED",
+    "IDENTITY NOT VERIFIED.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -3521,13 +3583,15 @@ function renderResult(report) {
   }
   $("verdict-banner").className =
     "verdict-banner " +
-    (report.demo
-      ? "demo"
-      : genuine
-        ? "good"
-        : report.verdict === "TAMPERED"
-          ? "bad"
-          : "neutral");
+    (report.personal
+      ? "unverified"
+      : report.demo
+        ? "demo"
+        : genuine
+          ? "good"
+          : report.verdict === "TAMPERED"
+            ? "bad"
+            : "neutral");
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
@@ -3565,7 +3629,7 @@ function renderResult(report) {
           ? "PASSED"
           : item.status === "info"
             ? report.personal
-              ? "SELF-SIGNED"
+              ? "UNVERIFIED"
               : "DEMO ONLY"
             : "FAILED",
         "check-tag",
@@ -3606,7 +3670,7 @@ function metadata(report) {
     ["Asset ID", m.asset_id],
     ["Author · signed claim", m.author],
     ["Issued by · signed claim", m.issued_by],
-    ["Original file", m.original_filename],
+    ["Public label · signed claim", m.original_filename],
     ["Dimensions", m.width + " × " + m.height + " px"],
     ["Created · signed claim", m.created_utc ?? m.created_melbourne],
     [report.demo ? "Demo signer" : "Signer", report.signer],
@@ -3638,7 +3702,7 @@ function metadata(report) {
         ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
         : undefined,
     ],
-    ["Redacted pixel rectangles", report.redactionMap],
+    ["Hidden rectangles · method is an unsigned claim", report.redactionMap],
     ["Viewer session", SESSION],
   ]);
   $("session-label").textContent = "SESSION / " + SESSION;
@@ -3680,7 +3744,7 @@ function overlay(ctx, w, h) {
     (currentReport?.demo
       ? "DEMO / NOT EVIDENCE · "
       : currentReport?.personal
-        ? "SELF-SIGNED / IDENTITY NOT VERIFIED · "
+        ? "UNVERIFIED: SELF-SIGNED · "
         : "GUARD · ") +
     SESSION +
     " · " +
@@ -3970,7 +4034,7 @@ $("download-report").onclick = () => {
   const report = {
     ...verificationReport(currentReport),
     scope:
-      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo files are not trusted evidence. Not proof of authorship, ownership, capture time or copy tracing.",
+      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo and self-signed files are not trusted evidence; anyone can edit and re-sign a replacement. Method labels are unsigned claims. Not proof of authorship, ownership, capture time or copy tracing.",
   };
   delete report.payload;
   download(
@@ -4169,11 +4233,7 @@ $("export-redacted").onclick = async () => {
     token = operation;
   $("export-redacted").disabled = true;
   try {
-    const bytes = await redactGRD2(
-      source,
-      selection,
-      $("redaction-method").value,
-    );
+    const bytes = await redactGRD2(source, selection, "black");
     if (operation !== token || currentContainer !== source) return;
     const name =
       (currentReport.fileName ?? "image.GRD").replace(
@@ -4510,12 +4570,12 @@ $("convert-form").onsubmit = async (event) => {
       height: source.height,
       publicKey,
       purpose: "personal",
-      label: Array.from(source.name).slice(0, 60).join(""),
+      label: "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
     const bytes = encodeGRD2(doc),
       result = await verifyGRD2(bytes);
-    if (result.verdict !== "SELF-SIGNED" || !result.viewable)
+    if (result.verdict !== "UNVERIFIED: SELF-SIGNED" || !result.viewable)
       throw new Error(
         "The generated file did not pass its integrity check. No download was created.",
       );
@@ -4523,11 +4583,11 @@ $("convert-form").onsubmit = async (event) => {
       throw new Error(
         "Another file was opened. Convert again when you are ready.",
       );
-    const name = (source.name.replace(/\.[^.]+$/, "") || "image") + ".GRD";
+    const name = "image.GRD";
     download(bytes, name, "application/octet-stream");
     await openFile(new File([bytes], name));
     conversionStatus(
-      `Downloaded ${name}. Opened below for verification and redaction. Self-signed; identity not verified.`,
+      `Downloaded ${name}. Opened below for verification and redaction. Unverified: self-signed.`,
     );
     $("convert-status").tabIndex = -1;
     $("convert-status").focus();

@@ -2,7 +2,7 @@
 
 ## Convert, redact and verify
 
-Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **SELF-SIGNED**, not identity-trusted. Inputs up to 32 MiB / 50 megapixels; “Fit large photos” previews a smaller copy within GRD’s 4-megapixel output limit. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
+Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. Inputs up to 32 MiB / 50 megapixels; “Fit large photos” previews a smaller copy within GRD’s 4-megapixel output limit. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
 
 [Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
 
@@ -51,9 +51,15 @@ Open http://127.0.0.1:4195/. The standalone viewer needs no installation. Use `n
 
 Signed metadata is a signer claim. A timestamp section is integrity-checked as file bytes, but this viewer does **not** validate the timestamp authority signature, certificate chain or claimed time. The original viewer extracted a date-like string and labelled it trusted; that misleading claim was removed.
 
-Browser blur, session stamps, print styles and focus hiding are deterrents, not DRM. They cannot reliably block screenshots, extraction with developer tools or camera capture. This viewer does not assert that a watermark survives screenshots or edits. Copy tracing and edit localisation require the separate Check implementation, which is not included. No Hugging Face token is needed to host this offline viewer; that does not implement Convert or Check.
+Browser blur, session stamps, print styles and focus hiding are deterrents, not DRM. They cannot reliably block screenshots, extraction with developer tools or camera capture. This viewer does not assert that a watermark survives screenshots or edits. Copy tracing and edit localisation require the separate Check implementation, which is not included. No Hugging Face token is needed to host this offline viewer; that does not implement the original Convert or Check services.
 
 The added size/schema/image limits are stricter than the supplied viewer. Files outside those limits may be refused even if a different implementation accepts them. Exact server parity needs the original server and real compatibility fixtures.
+
+## Licence, privacy and issuer setup
+
+This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Browser conversions use an empty public label and generic download name. Redaction exports are blackout-only; method labels are unsigned claims.
+
+`grd.py verify` exits 0 only for GENUINE. All other verdicts, including cryptographically valid partial redactions and demos, exit 2. See SIGNERS.md before automating acceptance.
 
 ## Build and test
 
