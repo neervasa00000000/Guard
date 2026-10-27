@@ -72,7 +72,7 @@ def png_read(data):
 def png_write(rgb,w,h):
  im=Image.frombytes('RGB',(w,h),bytes(rgb));out=io.BytesIO();im.save(out,format='PNG');return out.getvalue()
 def validate_manifest(m):
- if not isinstance(m,dict) or set(m)!=MF or m['format']!='GRD2' or type(m['version']) is not int or m['version']!=2 or m['pixelFormat']!='RGB8' or type(m['tileSize']) is not int or m['tileSize']!=64 or m['policy']!='tile-redaction-v1' or m['purpose'] not in ('asset','demo'):raise ValueError('Unsupported manifest')
+ if not isinstance(m,dict) or set(m)!=MF or m['format']!='GRD2' or type(m['version']) is not int or m['version']!=2 or m['pixelFormat']!='RGB8' or type(m['tileSize']) is not int or m['tileSize']!=64 or m['policy']!='tile-redaction-v1' or m['purpose'] not in ('asset','demo','personal'):raise ValueError('Unsupported manifest')
  if any(type(m[k]) is not int or m[k]<1 or m[k]>4096 for k in ('width','height')) or m['width']*m['height']>4194304:raise ValueError('Image limit exceeded')
  count=((m['width']+63)//64)*((m['height']+63)//64)
  if count>1024 or not isinstance(m['commitments'],list) or len(m['commitments'])!=count or not all(hx(c) for c in m['commitments']):raise ValueError('Invalid commitment grid')
@@ -119,10 +119,10 @@ def verify_v2(data,trusted=None,policy=None):
    else:
     if not isinstance(t['salt'],str) or not re.fullmatch('[0-9a-f]{32}',t['salt']) or commit(m,i,t['salt'],pixels(rgb,m,i))!=m['commitments'][i]:raise ValueError('Non-redacted tile '+str(i)+' changed')
   r.update(root=m['root'],tilesTotal=count,tilesVisible=count-len(hidden),redactedTiles=hidden,redactionMap=[dict(index=i,**bounds(m,i),method=doc['redactions'][n]['method']) for n,i in enumerate(hidden)],regionVerified=True,redactionApproval='not_attested',_document=doc,_rgb=rgb)
-  is_demo=m['purpose']=='demo';is_trusted=m['publicKey'] in (PINNED if trusted is None else trusted)
-  if not is_trusted and not is_demo:r['verdict']='UNTRUSTED SIGNER'
+  is_demo=m['purpose']=='demo';is_personal=m['purpose']=='personal';is_trusted=not is_personal and m['publicKey'] in (PINNED if trusted is None else trusted)
+  if not is_trusted and not is_demo and not is_personal:r['verdict']='UNTRUSTED SIGNER'
   elif not r['tilesVisible']:r['verdict']='FULLY REDACTED'
-  else:r.update(verdict='DEMO' if is_demo else 'VERIFIED WITH REDACTIONS' if hidden else 'GENUINE',genuine=is_trusted and not is_demo and not hidden,viewable=True)
+  else:r.update(verdict='DEMO' if is_demo else 'SELF-SIGNED' if is_personal else 'VERIFIED WITH REDACTIONS' if hidden else 'GENUINE',genuine=is_trusted and not is_demo and not hidden,viewable=True)
  except Exception as exc:r['problems'].append(str(exc) or type(exc).__name__)
  return r
 def verify_v1(data,trusted=None,policy=None):
@@ -197,7 +197,7 @@ def main():
    with Image.open(io.BytesIO(data)) as im:output=encode(seal(im,key,label=args.label))
   elif args.command=='redact':output=redact(data,[tuple(map(int,r.split(','))) for r in args.rect],args.mode)
   else:
-   trusted=PINNED+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in args.trusted_key];r=verify(data,trusted,json.loads(Path(args.policy).read_text()) if args.policy else None);print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2));return 0 if r['verdict'] in ('GENUINE','VERIFIED WITH REDACTIONS','DEMO','FULLY REDACTED') else 2
+   trusted=PINNED+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in args.trusted_key];r=verify(data,trusted,json.loads(Path(args.policy).read_text()) if args.policy else None);print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2));return 0 if r['verdict'] in ('GENUINE','VERIFIED WITH REDACTIONS','DEMO','SELF-SIGNED','FULLY REDACTED') else 2
   with open(args.output,'xb') as handle:handle.write(output)
   print('Wrote '+args.output);return 0
  except Exception as exc:print('GRD error: '+str(exc),file=sys.stderr);return 1

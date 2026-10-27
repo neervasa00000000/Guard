@@ -46,6 +46,50 @@
           <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
       </section>
+      <section
+        class="convert-panel"
+        id="convert"
+        aria-labelledby="convert-heading"
+      >
+        <div class="convert-intro">
+          <p class="eyebrow">IMAGE → GRD2 / ON YOUR DEVICE</p>
+          <h2 id="convert-heading">MAKE A .GRD</h2>
+          <p>Choose a photo. Download a signed, redactable copy.</p>
+          <p class="file-help" id="convert-help">
+            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 4 megapixels. Animated
+            images use the first frame. Other files, including HEIC and PDF,
+            need exporting to PNG or JPG first.
+          </p>
+        </div>
+        <form id="convert-form" class="convert-form">
+          <label for="convert-input">Choose an image</label>
+          <input
+            id="convert-input"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+            aria-describedby="convert-help convert-status"
+          />
+          <div class="convert-preview" id="convert-preview" hidden>
+            <img id="convert-image" alt="Image selected for conversion" />
+            <span id="convert-details"></span>
+          </div>
+          <p class="file-help">
+            Self-signed locally. The key is discarded after conversion. No
+            account, upload or trusted-identity claim.
+          </p>
+          <button class="primary" id="convert-submit" type="submit">
+            Convert & download .GRD <span aria-hidden="true">↓</span>
+          </button>
+          <p
+            id="convert-status"
+            class="convert-status"
+            role="status"
+            aria-live="polite"
+          >
+            Choose an image to begin. Your original stays unchanged.
+          </p>
+        </form>
+      </section>
       <div class="workspace-heading">
         <h2>FILE INSPECTION</h2>
         <span class="format-note">.GRD / LOCAL FILES</span>

@@ -21,12 +21,15 @@ const redactable = (await readFile(new URL("src/redactable.js", root), "utf8"))
   .replace(/^import[\s\S]*?;\n/gm, "")
   .replace(/^export /gm, "");
 const app = await readFile(new URL("src/app.js", root), "utf8");
+const converter = (await readFile(new URL("src/converter.js", root), "utf8"))
+  .replace(/^import[^\n]*\n/gm, "")
+  .replace(/^export /gm, "");
 html = html
   .replace("/*__STYLE__*/", () => css)
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${trust}\n${core}\n${png}\n${redactable}\n${app}\n})();`,
+      `(()=>{\n'use strict';\n${trust}\n${core}\n${png}\n${redactable}\n${converter}\n${app}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

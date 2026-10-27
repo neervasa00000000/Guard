@@ -1,6 +1,8 @@
 # Guard / GRD Inspector — selective redaction
 
-## New: partial redaction, revocation and C2PA export
+## Convert, redact and verify
+
+Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **SELF-SIGNED**, not identity-trusted. Up to 32 MiB / 4 megapixels; unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
 
 [Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
 

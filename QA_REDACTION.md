@@ -11,3 +11,12 @@
 - Standalone HTML build is dependency-free at runtime. Actual file:// automation was unavailable in this environment; browser QA used local HTTP. Opening the downloaded HTML offline remains a manual release check.
 
 All fixtures are generated test data. The original Goose Bumps sample and original server are absent. This is regression evidence, not a cryptographic audit or a claim of universal browser/legacy-server parity.
+
+## Browser conversion follow-up
+
+- Core suite now has 32 passing tests. Added encoded-image inspection before decode, image size limits, GIF/BMP header bounds, unsupported-content rejection, personal-signature trust isolation, revocation and Python parity.
+- Browser PNG conversion downloaded a real GRD2 and reopened it as SELF-SIGNED, with all 6 tiles matching. The downloaded file independently passed Python with the same dimensions, counts and self-signed verdict.
+- JPG, WebP, GIF and BMP inputs all produced ready previews at the expected 192 × 128 dimensions.
+- Submission without a ready image explained the next action. A text file renamed .jpg was rejected and its preview cleared.
+- The converter remained within the viewport at 390px, with no horizontal document overflow or off-screen inputs/buttons; mobile screenshot inspected.
+- Optional official C2PA integration still passes. Personal files are not promoted to a trusted C2PA export.

@@ -84,7 +84,7 @@ function renderResult(report) {
   $("empty").hidden = true;
   const genuine =
     report.genuine ||
-    (report.viewable && report.regionVerified && !report.demo);
+    (report.viewable && report.regionVerified && report.trusted);
   const messages = {
     GENUINE: [
       "GENUINE",
@@ -126,6 +126,11 @@ function renderResult(report) {
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
     `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+  ];
+  messages["SELF-SIGNED"] = [
+    "SELF-SIGNED / IDENTITY NOT VERIFIED",
+    "YOUR FILE. YOUR SIGNATURE.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. This proves consistency since conversion, not who created the image or whether the scene is real.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -193,7 +198,9 @@ function renderResult(report) {
         item.status === "pass"
           ? "PASSED"
           : item.status === "info"
-            ? "DEMO ONLY"
+            ? report.personal
+              ? "SELF-SIGNED"
+              : "DEMO ONLY"
             : "FAILED",
         "check-tag",
       ),
@@ -304,7 +311,11 @@ function showImage() {
 }
 function overlay(ctx, w, h) {
   const message =
-    (currentReport?.demo ? "DEMO / NOT EVIDENCE · " : "GUARD · ") +
+    (currentReport?.demo
+      ? "DEMO / NOT EVIDENCE · "
+      : currentReport?.personal
+        ? "SELF-SIGNED / IDENTITY NOT VERIFIED · "
+        : "GUARD · ") +
     SESSION +
     " · " +
     new Date().toISOString().slice(11, 19) +
@@ -1002,3 +1013,147 @@ overlayElement.addEventListener("keydown", (event) => {
   }
   event.preventDefault();
 });
+
+let conversionImage = null,
+  conversionVersion = 0,
+  conversionPreviewUrl = null;
+function conversionStatus(message, error = false) {
+  $("convert-status").textContent = message;
+  $("convert-status").classList.toggle("error", error);
+  $("convert-input").setAttribute("aria-invalid", String(error));
+}
+$("convert-input").onchange = async () => {
+  const token = ++conversionVersion,
+    file = $("convert-input").files[0];
+  conversionImage = null;
+  $("convert-preview").hidden = true;
+  $("convert-image").removeAttribute("src");
+  if (conversionPreviewUrl) URL.revokeObjectURL(conversionPreviewUrl);
+  conversionPreviewUrl = null;
+  if (!file) {
+    conversionStatus("Choose an image to begin.");
+    return;
+  }
+  conversionStatus("Reading image locally…");
+  let decoded;
+  try {
+    if (file.size > TILE_LIMITS.bytes)
+      throw new Error("Choose an image up to 32 MiB.");
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (token !== conversionVersion) return;
+    const info = inspectConversionImage(bytes);
+    decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
+    if (token !== conversionVersion) return;
+    if (
+      !decoded.width ||
+      !decoded.height ||
+      decoded.width > TILE_LIMITS.dimension ||
+      decoded.height > TILE_LIMITS.dimension ||
+      decoded.width * decoded.height > TILE_LIMITS.pixels ||
+      decoded.width * decoded.height !== info.width * info.height
+    )
+      throw new Error(
+        "Decoded image dimensions are unsupported. Export it to PNG and try again.",
+      );
+    const surface = document.createElement("canvas");
+    surface.width = decoded.width;
+    surface.height = decoded.height;
+    const context = surface.getContext("2d", { willReadFrequently: true });
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, surface.width, surface.height);
+    context.drawImage(decoded, 0, 0);
+    const rgba = new Uint8Array(
+      context.getImageData(0, 0, surface.width, surface.height).data,
+    );
+    const preview = await new Promise((resolve) =>
+      surface.toBlob(resolve, "image/png"),
+    );
+    if (token !== conversionVersion) return;
+    if (!preview)
+      throw new Error("Could not prepare this image. Try a PNG or JPG export.");
+    conversionImage = {
+      rgba,
+      width: surface.width,
+      height: surface.height,
+      name: file.name,
+    };
+    conversionPreviewUrl = URL.createObjectURL(preview);
+    $("convert-image").src = conversionPreviewUrl;
+    $("convert-details").textContent =
+      `${file.name} · ${surface.width} × ${surface.height} · ${bytesLabel(file.size)}`;
+    $("convert-preview").hidden = false;
+    conversionStatus(
+      "Ready. Creates a self-signed GRD2; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+    );
+  } catch (error) {
+    if (token === conversionVersion)
+      conversionStatus(
+        error.message ||
+          "This browser cannot decode that image. Try PNG or JPG.",
+        true,
+      );
+  } finally {
+    decoded?.close?.();
+  }
+};
+$("convert-form").onsubmit = async (event) => {
+  event.preventDefault();
+  if ($("convert-submit").disabled) return;
+  if (!conversionImage) {
+    conversionStatus(
+      "Choose a supported image and wait for its preview before converting.",
+      true,
+    );
+    $("convert-input").focus();
+    return;
+  }
+  const source = conversionImage,
+    token = conversionVersion,
+    viewerToken = operation;
+  $("convert-submit").disabled = true;
+  $("convert-input").disabled = true;
+  $("convert-form").setAttribute("aria-busy", "true");
+  conversionStatus("Converting and signing on your device…");
+  try {
+    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
+      "sign",
+      "verify",
+    ]);
+    const publicKey = new Uint8Array(
+      await crypto.subtle.exportKey("raw", key.publicKey),
+    );
+    const doc = await sealRgba({
+      rgba: source.rgba,
+      width: source.width,
+      height: source.height,
+      publicKey,
+      purpose: "personal",
+      label: Array.from(source.name).slice(0, 60).join(""),
+      sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
+    });
+    const bytes = encodeGRD2(doc),
+      result = await verifyGRD2(bytes);
+    if (result.verdict !== "SELF-SIGNED" || !result.viewable)
+      throw new Error(
+        "The generated file did not pass its integrity check. No download was created.",
+      );
+    if (token !== conversionVersion || viewerToken !== operation)
+      throw new Error(
+        "Another file was opened. Convert again when you are ready.",
+      );
+    const name = (source.name.replace(/\.[^.]+$/, "") || "image") + ".GRD";
+    download(bytes, name, "application/octet-stream");
+    await openFile(new File([bytes], name));
+    conversionStatus(
+      `Downloaded ${name}. Opened below for verification and redaction. Self-signed; identity not verified.`,
+    );
+    $("convert-status").tabIndex = -1;
+    $("convert-status").focus();
+  } catch (error) {
+    conversionStatus("Conversion failed: " + error.message, true);
+  } finally {
+    $("convert-submit").disabled = false;
+    $("convert-input").disabled = false;
+    $("convert-form").removeAttribute("aria-busy");
+  }
+};

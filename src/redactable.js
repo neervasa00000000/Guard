@@ -90,7 +90,7 @@ function validateManifest(m) {
     m.version !== 2 ||
     m.pixelFormat !== "RGB8" ||
     m.policy !== "tile-redaction-v1" ||
-    !["asset", "demo"].includes(m.purpose)
+    !["asset", "demo", "personal"].includes(m.purpose)
   )
     throw new Error("Unsupported GRD2 manifest or policy.");
   if (
@@ -365,16 +365,19 @@ export async function verifyGRD2(
       throw new Error("Signed commitment vector and Merkle root disagree.");
     const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
     r.demo = m.purpose === "demo";
-    r.trusted = !!anchor && !r.demo;
+    r.personal = m.purpose === "personal";
+    r.trusted = !!anchor && !r.demo && !r.personal;
     r.signer = r.demo
       ? "Demonstration signer (not an identity claim)"
-      : (anchor?.owner ?? "Untrusted signer");
+      : r.personal
+        ? "Self-signed personal file (identity not verified)"
+        : (anchor?.owner ?? "Untrusted signer");
     check(
       "Signer trust",
       r.trusted,
       r.demo ? "DEMO ONLY · identity not verified" : r.signer,
     );
-    if (r.demo) r.checks.at(-1).status = "info";
+    if (r.demo || r.personal) r.checks.at(-1).status = "info";
     const decoded = await decodeRgbPng(decodeBase64(doc.image));
     if (decoded.width !== m.width || decoded.height !== m.height)
       throw new Error("PNG dimensions differ from the signed tile grid.");
@@ -431,7 +434,7 @@ export async function verifyGRD2(
       mime: "image/raw-rgba",
       original_filename: m.label || undefined,
     };
-    if (!r.trusted && !r.demo) {
+    if (!r.trusted && !r.demo && !r.personal) {
       r.verdict = "UNTRUSTED SIGNER";
       r.problems.push(
         "The pixels match this key’s root, but the key is not pinned as trusted. Image withheld.",
@@ -447,9 +450,11 @@ export async function verifyGRD2(
     }
     r.verdict = r.demo
       ? "DEMO"
-      : redacted.length
-        ? "VERIFIED WITH REDACTIONS"
-        : "GENUINE";
+      : r.personal
+        ? "SELF-SIGNED"
+        : redacted.length
+          ? "VERIFIED WITH REDACTIONS"
+          : "GENUINE";
     r.genuine = r.trusted && !redacted.length;
     r.viewable = true;
     const rgba = new Uint8Array(m.width * m.height * 4);

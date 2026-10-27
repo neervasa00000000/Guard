@@ -1499,3 +1499,95 @@ footer > a:last-child {
 .tile-overlay {
   touch-action: none;
 }
+.convert-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  background: #fff;
+  border: 1px solid #17181b;
+  padding: 32px;
+  margin: 0 0 40px;
+}
+.convert-panel h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.04em;
+  margin: 12px 0;
+}
+.convert-intro > p {
+  line-height: 1.6;
+  max-width: 52ch;
+}
+.convert-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.convert-form > label {
+  font-weight: 700;
+  font-size: 14px;
+}
+.convert-form input {
+  width: 100%;
+  min-width: 0;
+  background: #eef0f5;
+  border: 1px solid #858b96;
+  padding: 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.convert-form input::file-selector-button {
+  min-height: 44px;
+  background: #17181b;
+  color: #fff;
+  border: 0;
+  margin-right: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.convert-form .file-help {
+  margin: 0;
+}
+.convert-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.convert-preview img {
+  width: 100px;
+  height: 84px;
+  object-fit: contain;
+  background: #eef0f5;
+  border: 1px solid #a4a8af;
+}
+.convert-preview span {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.convert-form .primary {
+  justify-content: space-between;
+  min-height: 48px;
+}
+.convert-status {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.convert-status.error {
+  color: #a82525;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  .convert-panel {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .convert-form input {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

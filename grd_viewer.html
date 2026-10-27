@@ -1515,6 +1515,98 @@ footer > a:last-child {
 .tile-overlay {
   touch-action: none;
 }
+.convert-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  background: #fff;
+  border: 1px solid #17181b;
+  padding: 32px;
+  margin: 0 0 40px;
+}
+.convert-panel h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.04em;
+  margin: 12px 0;
+}
+.convert-intro > p {
+  line-height: 1.6;
+  max-width: 52ch;
+}
+.convert-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.convert-form > label {
+  font-weight: 700;
+  font-size: 14px;
+}
+.convert-form input {
+  width: 100%;
+  min-width: 0;
+  background: #eef0f5;
+  border: 1px solid #858b96;
+  padding: 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.convert-form input::file-selector-button {
+  min-height: 44px;
+  background: #17181b;
+  color: #fff;
+  border: 0;
+  margin-right: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.convert-form .file-help {
+  margin: 0;
+}
+.convert-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.convert-preview img {
+  width: 100px;
+  height: 84px;
+  object-fit: contain;
+  background: #eef0f5;
+  border: 1px solid #a4a8af;
+}
+.convert-preview span {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.convert-form .primary {
+  justify-content: space-between;
+  min-height: 48px;
+}
+.convert-status {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.convert-status.error {
+  color: #a82525;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  .convert-panel {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .convert-form input {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
 
     </style>
   </head>
@@ -1546,6 +1638,50 @@ footer > a:last-child {
           </div>
           <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
+      </section>
+      <section
+        class="convert-panel"
+        id="convert"
+        aria-labelledby="convert-heading"
+      >
+        <div class="convert-intro">
+          <p class="eyebrow">IMAGE → GRD2 / ON YOUR DEVICE</p>
+          <h2 id="convert-heading">MAKE A .GRD</h2>
+          <p>Choose a photo. Download a signed, redactable copy.</p>
+          <p class="file-help" id="convert-help">
+            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 4 megapixels. Animated
+            images use the first frame. Other files, including HEIC and PDF,
+            need exporting to PNG or JPG first.
+          </p>
+        </div>
+        <form id="convert-form" class="convert-form">
+          <label for="convert-input">Choose an image</label>
+          <input
+            id="convert-input"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+            aria-describedby="convert-help convert-status"
+          />
+          <div class="convert-preview" id="convert-preview" hidden>
+            <img id="convert-image" alt="Image selected for conversion" />
+            <span id="convert-details"></span>
+          </div>
+          <p class="file-help">
+            Self-signed locally. The key is discarded after conversion. No
+            account, upload or trusted-identity claim.
+          </p>
+          <button class="primary" id="convert-submit" type="submit">
+            Convert & download .GRD <span aria-hidden="true">↓</span>
+          </button>
+          <p
+            id="convert-status"
+            class="convert-status"
+            role="status"
+            aria-live="polite"
+          >
+            Choose an image to begin. Your original stays unchanged.
+          </p>
+        </form>
       </section>
       <div class="workspace-heading">
         <h2>FILE INSPECTION</h2>
@@ -2626,7 +2762,7 @@ function validateManifest(m) {
     m.version !== 2 ||
     m.pixelFormat !== "RGB8" ||
     m.policy !== "tile-redaction-v1" ||
-    !["asset", "demo"].includes(m.purpose)
+    !["asset", "demo", "personal"].includes(m.purpose)
   )
     throw new Error("Unsupported GRD2 manifest or policy.");
   if (
@@ -2901,16 +3037,19 @@ async function verifyGRD2(
       throw new Error("Signed commitment vector and Merkle root disagree.");
     const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
     r.demo = m.purpose === "demo";
-    r.trusted = !!anchor && !r.demo;
+    r.personal = m.purpose === "personal";
+    r.trusted = !!anchor && !r.demo && !r.personal;
     r.signer = r.demo
       ? "Demonstration signer (not an identity claim)"
-      : (anchor?.owner ?? "Untrusted signer");
+      : r.personal
+        ? "Self-signed personal file (identity not verified)"
+        : (anchor?.owner ?? "Untrusted signer");
     check(
       "Signer trust",
       r.trusted,
       r.demo ? "DEMO ONLY · identity not verified" : r.signer,
     );
-    if (r.demo) r.checks.at(-1).status = "info";
+    if (r.demo || r.personal) r.checks.at(-1).status = "info";
     const decoded = await decodeRgbPng(decodeBase64(doc.image));
     if (decoded.width !== m.width || decoded.height !== m.height)
       throw new Error("PNG dimensions differ from the signed tile grid.");
@@ -2967,7 +3106,7 @@ async function verifyGRD2(
       mime: "image/raw-rgba",
       original_filename: m.label || undefined,
     };
-    if (!r.trusted && !r.demo) {
+    if (!r.trusted && !r.demo && !r.personal) {
       r.verdict = "UNTRUSTED SIGNER";
       r.problems.push(
         "The pixels match this key’s root, but the key is not pinned as trusted. Image withheld.",
@@ -2983,9 +3122,11 @@ async function verifyGRD2(
     }
     r.verdict = r.demo
       ? "DEMO"
-      : redacted.length
-        ? "VERIFIED WITH REDACTIONS"
-        : "GENUINE";
+      : r.personal
+        ? "SELF-SIGNED"
+        : redacted.length
+          ? "VERIFIED WITH REDACTIONS"
+          : "GENUINE";
     r.genuine = r.trusted && !redacted.length;
     r.viewable = true;
     const rgba = new Uint8Array(m.width * m.height * 4);
@@ -3100,6 +3241,61 @@ function verificationReport(result) {
   return evidence;
 }
 
+
+// Inspect encoded dimensions before giving compressed bytes to an image decoder.
+function inspectConversionImage(bytes) {
+  if (
+    !(bytes instanceof Uint8Array) ||
+    !bytes.length ||
+    bytes.length > TILE_LIMITS.bytes
+  )
+    throw new Error("Choose an image up to 32 MiB.");
+  const ascii = (at, count) =>
+    String.fromCharCode(...bytes.subarray(at, at + count));
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let mime, width, height;
+  if (bytes[0] === 137 && ascii(1, 3) === "PNG") mime = "image/png";
+  else if (bytes[0] === 255 && bytes[1] === 216) mime = "image/jpeg";
+  else if (ascii(0, 4) === "RIFF" && ascii(8, 4) === "WEBP")
+    mime = "image/webp";
+  else if (["GIF87a", "GIF89a"].includes(ascii(0, 6)) && bytes.length >= 13) {
+    mime = "image/gif";
+    width = view.getUint16(6, true);
+    height = view.getUint16(8, true);
+  } else if (ascii(0, 2) === "BM" && bytes.length >= 26) {
+    mime = "image/bmp";
+    const dib = view.getUint32(14, true);
+    if (dib === 12) {
+      width = view.getUint16(18, true);
+      height = view.getUint16(20, true);
+    } else if (
+      [40, 52, 56, 108, 124].includes(dib) &&
+      bytes.length >= 14 + dib
+    ) {
+      width = view.getInt32(18, true);
+      height = Math.abs(view.getInt32(22, true));
+    }
+  } else
+    throw new Error(
+      "Use PNG, JPG, WebP, GIF or BMP. Export HEIC, AVIF, PDF and other files to PNG or JPG first.",
+    );
+  if (width === undefined && !["image/gif", "image/bmp"].includes(mime))
+    [width, height] = encodedDimensions(bytes, mime);
+  if (
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1 ||
+    width > TILE_LIMITS.dimension ||
+    height > TILE_LIMITS.dimension ||
+    width * height > TILE_LIMITS.pixels
+  )
+    throw new Error(
+      "Choose an image up to 4 megapixels and 4,096 pixels per edge. Resize it first; conversion never silently reduces quality.",
+    );
+  return { mime, width, height };
+}
+
 const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
@@ -3186,7 +3382,7 @@ function renderResult(report) {
   $("empty").hidden = true;
   const genuine =
     report.genuine ||
-    (report.viewable && report.regionVerified && !report.demo);
+    (report.viewable && report.regionVerified && report.trusted);
   const messages = {
     GENUINE: [
       "GENUINE",
@@ -3228,6 +3424,11 @@ function renderResult(report) {
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
     `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+  ];
+  messages["SELF-SIGNED"] = [
+    "SELF-SIGNED / IDENTITY NOT VERIFIED",
+    "YOUR FILE. YOUR SIGNATURE.",
+    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. This proves consistency since conversion, not who created the image or whether the scene is real.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -3295,7 +3496,9 @@ function renderResult(report) {
         item.status === "pass"
           ? "PASSED"
           : item.status === "info"
-            ? "DEMO ONLY"
+            ? report.personal
+              ? "SELF-SIGNED"
+              : "DEMO ONLY"
             : "FAILED",
         "check-tag",
       ),
@@ -3406,7 +3609,11 @@ function showImage() {
 }
 function overlay(ctx, w, h) {
   const message =
-    (currentReport?.demo ? "DEMO / NOT EVIDENCE · " : "GUARD · ") +
+    (currentReport?.demo
+      ? "DEMO / NOT EVIDENCE · "
+      : currentReport?.personal
+        ? "SELF-SIGNED / IDENTITY NOT VERIFIED · "
+        : "GUARD · ") +
     SESSION +
     " · " +
     new Date().toISOString().slice(11, 19) +
@@ -4104,6 +4311,150 @@ overlayElement.addEventListener("keydown", (event) => {
   }
   event.preventDefault();
 });
+
+let conversionImage = null,
+  conversionVersion = 0,
+  conversionPreviewUrl = null;
+function conversionStatus(message, error = false) {
+  $("convert-status").textContent = message;
+  $("convert-status").classList.toggle("error", error);
+  $("convert-input").setAttribute("aria-invalid", String(error));
+}
+$("convert-input").onchange = async () => {
+  const token = ++conversionVersion,
+    file = $("convert-input").files[0];
+  conversionImage = null;
+  $("convert-preview").hidden = true;
+  $("convert-image").removeAttribute("src");
+  if (conversionPreviewUrl) URL.revokeObjectURL(conversionPreviewUrl);
+  conversionPreviewUrl = null;
+  if (!file) {
+    conversionStatus("Choose an image to begin.");
+    return;
+  }
+  conversionStatus("Reading image locally…");
+  let decoded;
+  try {
+    if (file.size > TILE_LIMITS.bytes)
+      throw new Error("Choose an image up to 32 MiB.");
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (token !== conversionVersion) return;
+    const info = inspectConversionImage(bytes);
+    decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
+    if (token !== conversionVersion) return;
+    if (
+      !decoded.width ||
+      !decoded.height ||
+      decoded.width > TILE_LIMITS.dimension ||
+      decoded.height > TILE_LIMITS.dimension ||
+      decoded.width * decoded.height > TILE_LIMITS.pixels ||
+      decoded.width * decoded.height !== info.width * info.height
+    )
+      throw new Error(
+        "Decoded image dimensions are unsupported. Export it to PNG and try again.",
+      );
+    const surface = document.createElement("canvas");
+    surface.width = decoded.width;
+    surface.height = decoded.height;
+    const context = surface.getContext("2d", { willReadFrequently: true });
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, surface.width, surface.height);
+    context.drawImage(decoded, 0, 0);
+    const rgba = new Uint8Array(
+      context.getImageData(0, 0, surface.width, surface.height).data,
+    );
+    const preview = await new Promise((resolve) =>
+      surface.toBlob(resolve, "image/png"),
+    );
+    if (token !== conversionVersion) return;
+    if (!preview)
+      throw new Error("Could not prepare this image. Try a PNG or JPG export.");
+    conversionImage = {
+      rgba,
+      width: surface.width,
+      height: surface.height,
+      name: file.name,
+    };
+    conversionPreviewUrl = URL.createObjectURL(preview);
+    $("convert-image").src = conversionPreviewUrl;
+    $("convert-details").textContent =
+      `${file.name} · ${surface.width} × ${surface.height} · ${bytesLabel(file.size)}`;
+    $("convert-preview").hidden = false;
+    conversionStatus(
+      "Ready. Creates a self-signed GRD2; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+    );
+  } catch (error) {
+    if (token === conversionVersion)
+      conversionStatus(
+        error.message ||
+          "This browser cannot decode that image. Try PNG or JPG.",
+        true,
+      );
+  } finally {
+    decoded?.close?.();
+  }
+};
+$("convert-form").onsubmit = async (event) => {
+  event.preventDefault();
+  if ($("convert-submit").disabled) return;
+  if (!conversionImage) {
+    conversionStatus(
+      "Choose a supported image and wait for its preview before converting.",
+      true,
+    );
+    $("convert-input").focus();
+    return;
+  }
+  const source = conversionImage,
+    token = conversionVersion,
+    viewerToken = operation;
+  $("convert-submit").disabled = true;
+  $("convert-input").disabled = true;
+  $("convert-form").setAttribute("aria-busy", "true");
+  conversionStatus("Converting and signing on your device…");
+  try {
+    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
+      "sign",
+      "verify",
+    ]);
+    const publicKey = new Uint8Array(
+      await crypto.subtle.exportKey("raw", key.publicKey),
+    );
+    const doc = await sealRgba({
+      rgba: source.rgba,
+      width: source.width,
+      height: source.height,
+      publicKey,
+      purpose: "personal",
+      label: Array.from(source.name).slice(0, 60).join(""),
+      sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
+    });
+    const bytes = encodeGRD2(doc),
+      result = await verifyGRD2(bytes);
+    if (result.verdict !== "SELF-SIGNED" || !result.viewable)
+      throw new Error(
+        "The generated file did not pass its integrity check. No download was created.",
+      );
+    if (token !== conversionVersion || viewerToken !== operation)
+      throw new Error(
+        "Another file was opened. Convert again when you are ready.",
+      );
+    const name = (source.name.replace(/\.[^.]+$/, "") || "image") + ".GRD";
+    download(bytes, name, "application/octet-stream");
+    await openFile(new File([bytes], name));
+    conversionStatus(
+      `Downloaded ${name}. Opened below for verification and redaction. Self-signed; identity not verified.`,
+    );
+    $("convert-status").tabIndex = -1;
+    $("convert-status").focus();
+  } catch (error) {
+    conversionStatus("Conversion failed: " + error.message, true);
+  } finally {
+    $("convert-submit").disabled = false;
+    $("convert-input").disabled = false;
+    $("convert-form").removeAttribute("aria-busy");
+  }
+};
 
 })();
     </script>

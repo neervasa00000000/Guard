@@ -24,7 +24,7 @@ Required fields:
 | publicKey              | Raw Ed25519 public key, 32-byte lowercase hex |
 | keyId                  | Full SHA-256 of raw public key, lowercase hex |
 | policy                 | `tile-redaction-v1`                           |
-| purpose                | `asset` or `demo`                             |
+| purpose                | `asset`, `demo` or `personal`                 |
 | label                  | Public string, at most 120 UTF-16 code units  |
 
 Tiles are indexed from zero, left-to-right then top-to-bottom. Right and bottom edges are cropped to actual image dimensions. Tile RGB bytes are row-major, with no padding or separators.
@@ -45,6 +45,8 @@ SHA256(UTF8("GUARD-GRD2-MANIFEST-V1\0") || canonical_json(manifest))
 
 `signature` is standard padded base64 of the 64-byte signature. Dimensions, grid, commitment vector, purpose and label are therefore bound to the signer. A trusted public key must be pinned out of band; an embedded key is not an identity credential.
 
+A `personal` purpose marks browser-converted self-signed files. Their identity is never trusted and their verdict is SELF-SIGNED, even if their key appears in the anchor list. They may be displayed and redacted with an explicit identity-not-verified label. Revocation still rejects them. The browser generates a non-exportable ephemeral signing key and retains no private key after conversion. Earlier experimental viewers must update to understand this signed purpose.
+
 ## Mutable redaction representation
 
 `image` is padded base64 of the current RGB PNG. `tiles` contains exactly one ordered record per original tile:
@@ -64,6 +66,7 @@ The verifier checks the signature, pinned identity, offline revocation policy, f
 | ------------------------------ | ---------------------------------------------------------------------------------------------- |
 | GENUINE                        | All original pixels match, signature valid, signer pinned, key not revoked in bundled snapshot |
 | VERIFIED WITH REDACTIONS       | Retained pixels match; hidden regions explicitly excluded; `genuine:false`                     |
+| SELF-SIGNED                    | Personal conversion; pixel consistency only; identity not verified; `genuine:false`            |
 | DEMO                           | Cryptographic demonstration only; signer identity not trusted; never evidence                  |
 | FULLY REDACTED                 | No visible original pixels remain; no positive image-authenticity claim                        |
 | UNTRUSTED SIGNER / REVOKED KEY | No trusted positive verdict or image rendering                                                 |

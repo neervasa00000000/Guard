@@ -1,5 +1,13 @@
 # Redaction and interoperability guide
 
+## Convert an image in the browser
+
+Use **Make a .GRD** at the top of the inspector. Choose PNG, JPG, WebP, GIF or BMP, review the preview, then choose **Convert & download .GRD**. It downloads a real GRD2 container and opens it below for verification and further redaction. All processing stays on your device.
+
+Input limits are 32 MiB, 4 megapixels and 4,096 pixels per edge. Unsupported formats (including HEIC, AVIF, PDF and SVG) need a PNG/JPG export first. Encoded dimensions are inspected before decoding. Animated images use their first frame; transparency becomes white. Original EXIF/other metadata is not copied; the filename remains a public label. No resizing is performed silently.
+
+Each conversion creates an ephemeral Ed25519 key; its private half is never exported or retained by the application. The signed purpose is `personal`, and both verifiers return **SELF-SIGNED**, never genuine or identity-trusted, even if the public key were separately pinned. Reopening and redaction preserve that status. This is a consistency proof since conversion, not proof of the scene's truth or the creator's identity. Revocation checks still apply. Earlier experimental GRD2 viewers need updating to recognise this purpose. The C2PA bridge does not promote personal files to trusted evidence.
+
 ## Browser
 
 Open the [inspector](https://neervasa00000000.github.io/Guard/), then choose **Try redaction with an example**. Drag a rectangle, select tiles, or enter rectangle coordinates. Export a redacted `.GRD`; it reopens automatically. Rectangles round outward to 64px tile boundaries. Blackout is recommended; blur can leave private information visible. Further redactions work on exported copies.

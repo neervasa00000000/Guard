@@ -286,6 +286,42 @@ test("Python and JS verify and redact each other’s output", async () => {
     await writeFile(image, png(70, 68));
     run(["seal", image, "--key", privatePem, "-o", sealed]);
     assert.equal((await verify(await readFile(sealed))).genuine, true);
+    const personal = await sealRgba({
+      rgba,
+      width,
+      height,
+      publicKey: key.raw,
+      purpose: "personal",
+      sign: (b) => nodeSign(null, Buffer.from(b), key.privateKey),
+    });
+    await writeFile(input, encodeGRD2(personal));
+    const personalReport = await verify(await readFile(input));
+    assert.equal(personalReport.verdict, "SELF-SIGNED");
+    assert.equal(personalReport.genuine, false);
+    assert.equal(personalReport.trusted, false);
+    assert.equal(personalReport.viewable, true);
+    assert.equal(
+      JSON.parse(run(["verify", input, "--trusted-key", pem])).verdict,
+      "SELF-SIGNED",
+    );
+    const hiddenPersonal = await redactGRD2(personal, [0]);
+    assert.equal((await verify(hiddenPersonal)).verdict, "SELF-SIGNED");
+    const revokedPersonal = await verifyGRD2(
+      encodeGRD2(personal),
+      [key.anchor],
+      {
+        version: 2,
+        asOf: "2026-10-27T00:00:00Z",
+        revoked: [
+          {
+            fingerprint: personal.manifest.keyId,
+            reason: "Test only",
+            revokedAt: "2026-10-26T00:00:00Z",
+          },
+        ],
+      },
+    );
+    assert.equal(revokedPersonal.verdict, "REVOKED KEY");
     const unicode = await sealRgba({
       rgba,
       width,
