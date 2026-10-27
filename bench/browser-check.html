@@ -1,7 +1,7 @@
 <!doctype html><meta charset="utf-8"><title>Guard local browser checks</title>
 <h1>Guard browser verification</h1><button id="run">Run real browser checks</button><pre id="results">Ready</pre>
 <script type="module">
-import {verifyGRD2,sealRgba,encodeGRD2,redactGRD2,exportPlainImage} from '../src/redactable.js';
+import {verifyGRD2,sealRgba,encodeGRD2,redactGRD2,exportPlainImage,GRD3_LIMITS} from '../src/redactable.js';
 import {decodeRgbPng} from '../src/png.js';
 const output=document.querySelector('#results');
 document.querySelector('#run').onclick=async()=>{
@@ -15,15 +15,18 @@ document.querySelector('#run').onclick=async()=>{
   const key=await crypto.subtle.generateKey('Ed25519',true,['sign','verify']);
   const publicKey=new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
   const anchor={public_key_hex:Array.from(publicKey,b=>b.toString(16).padStart(2,'0')).join('')};
-  const rgba=new Uint8Array(2048*2048*4);let seed=42;
+  const large=new URLSearchParams(location.search).get('scale')==='33';
+  const width=large?7680:2048,height=large?4320:2048;
+  const rgba=new Uint8Array(width*height*4);let seed=42;
   for(let i=0;i<rgba.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;rgba[i]=seed&255;rgba[i+1]=seed>>>8&255;rgba[i+2]=seed>>>16&255;rgba[i+3]=255;}
   const start=performance.now();
-  const doc=await sealRgba({rgba,width:2048,height:2048,publicKey,sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
-  const bytes=encodeGRD2(doc);const r=await verifyGRD2(bytes,[anchor]);assert(r.verdict==='GENUINE',JSON.stringify(r.problems));
+  const doc=await sealRgba({rgba,width,height,publicKey,sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
+  const sealedAt=performance.now();
+  const bytes=encodeGRD2(doc),verifyAt=performance.now();const r=await verifyGRD2(bytes,[anchor]);const verifiedAt=performance.now();assert(r.verdict==='GENUINE',JSON.stringify(r.problems));
   const selected=Array.from({length:Math.ceil(doc.tiles.length*.1)},(_,i)=>i);
   const redacted=await redactGRD2(doc,selected);const redReport=await verifyGRD2(redacted,[anchor]);assert(redReport.verdict==='VERIFIED WITH REDACTIONS',JSON.stringify(redReport.problems));
-  const plain=await exportPlainImage(redacted);const decoded=await decodeRgbPng(plain);assert(decoded.width===2048&&decoded.height===2048,'plain size');
-  log({largeImage:'2048x2048',containerBytes:bytes.length,verdict:r.verdict,redactedVerdict:redReport.verdict,hiddenTiles:selected.length,totalTiles:doc.tiles.length,elapsedMs:performance.now()-start,status:'PASS'});
+  const plain=await exportPlainImage(redacted);const decoded=await decodeRgbPng(plain,GRD3_LIMITS);assert(decoded.width===width&&decoded.height===height,'plain size');
+  log({largeImage:width+'x'+height,containerBytes:bytes.length,verdict:r.verdict,redactedVerdict:redReport.verdict,hiddenTiles:selected.length,totalTiles:doc.tiles.length,sealMs:sealedAt-start,verifyMs:verifiedAt-verifyAt,elapsedMs:performance.now()-start,workers:r.hashWorkers??0,heapBytes:performance.memory?.usedJSHeapSize,status:'PASS'});
   log({result:'ALL PASS'});
  }catch(error){log({result:'FAIL',message:error.stack})}
 };

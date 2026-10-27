@@ -26,7 +26,12 @@ const png = (await readFile(new URL("src/png.js", root), "utf8")).replace(
 );
 const redactable = (await readFile(new URL("src/redactable.js", root), "utf8"))
   .replace(/^import[\s\S]*?;\n/gm, "")
+  .replace(/^export \{[^}]+\};\n/gm, "")
   .replace(/^export /gm, "");
+const hashWorker = (await readFile(new URL("src/hash-worker.js", root), "utf8")).replace(/^export /gm, "");
+const grd3 = (await readFile(new URL("src/grd3.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
+const visual = (await readFile(new URL("src/visual.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
+const subtiles = (await readFile(new URL("src/subtiles.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
 const app = (await readFile(new URL("src/app.js", root), "utf8")).replace(
   /^\/\/ SPDX[^\n]*\n/gm,
   "",
@@ -41,7 +46,7 @@ html = html
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${redactable}\n${converter}\n${app}\n})();`,
+      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${converter}\n${app}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

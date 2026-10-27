@@ -80,3 +80,10 @@ console.log(
     dir +
     ". The production trust list is unchanged.",
 );
+
+if (process.argv.includes("--large")) {
+  const width=4096,height=1025,pixels=new Uint8Array(width*height*4);let seed=42;
+  for(let i=0;i<pixels.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;pixels.set([seed&255,seed>>>8&255,seed>>>16&255,255],i);}
+  const large=await sealRgba({rgba:pixels,width,height,version:3,visual:false,publicKey:key.raw,sign:b=>sign(null,b,key.privateKey)});
+  await writeFile(dir+"/genuine-grd3-large.GRD",encodeGRD2(large));
+}

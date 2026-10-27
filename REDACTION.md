@@ -4,13 +4,13 @@
 
 Use **Make a .GRD** at the top of the inspector. Choose PNG, JPG, WebP, GIF or BMP, review the preview, then choose **Convert & download .GRD**. It downloads a real GRD2 container and opens it below for verification and further redaction. All processing stays on your device.
 
-Input limits are 32 MiB, 50 megapixels and 16,384 pixels per edge. “Fit large photos” is enabled by default and fits the output within 4,194,304 pixels, 4,096 pixels per edge and 1,024 tiles, preserving aspect ratio. The preview shows original and output dimensions before conversion; smaller photos are not enlarged. Turn it off to require original-size conversion. Unsupported formats (including HEIC, AVIF, PDF and SVG) need a PNG/JPG export first. Encoded dimensions are inspected before decoding. Animated images use their first frame; transparency becomes white. Original EXIF/other metadata is not copied; new conversions omit the filename from their public label and download as `image.GRD`. The resized pixels become the signed original of the new GRD; the higher-resolution source file is not embedded or changed.
+In this upgrade checkout, input limits are 256 MiB, 50 megapixels and 16,384 pixels per edge. “Fit large photos” is enabled by default and fits the output within 36,000,000 pixels, 8,192 pixels per edge and 9,000 parent tiles, preserving aspect ratio. The preview shows original and output dimensions before conversion; smaller photos are not enlarged. Turn it off to require original-size conversion. Unsupported formats (including HEIC, AVIF, PDF and SVG) need a PNG/JPG export first. Encoded dimensions are inspected before decoding. Animated images use their first frame; transparency becomes white. Original EXIF/other metadata is not copied; new conversions omit the filename from their public label and download as `image.GRD`. The resized pixels become the signed original of the new GRD; the higher-resolution source file is not embedded or changed.
 
 Each conversion creates an ephemeral Ed25519 key; its private half is never exported or retained by the application. The signed purpose is `personal`, and both verifiers return **UNVERIFIED: SELF-SIGNED**, never genuine or identity-trusted, even if the public key were separately pinned. Reopening and redaction preserve that status. This is a consistency proof since conversion, not proof of the scene's truth or the creator's identity. Revocation checks still apply. Earlier experimental GRD2 viewers need updating to recognise this purpose. The C2PA bridge does not promote personal files to trusted evidence.
 
 ## Browser
 
-Open the [inspector](https://neervasa00000000.github.io/Guard/), then choose **Try redaction with an example**. Drag a rectangle, select tiles, or enter rectangle coordinates. Export a redacted `.GRD`; it reopens automatically. Rectangles round outward to 64px tile boundaries. Blackout is the only export mode. Older blur containers can still be inspected, but hidden contents are not verified; re-exporting replaces all hidden pixels with black. Further redactions work on exported copies.
+Open the [inspector](https://neervasa00000000.github.io/Guard/), then choose **Try redaction with an example**. Drag a rectangle, select tiles, or enter rectangle coordinates. Export a redacted `.GRD`; it reopens automatically. Rectangles round outward to the selected sealed grid (new browser files default to 16 px; legacy files remain 64 px). Blackout is the only export mode. Older blur containers can still be inspected, but hidden contents are not verified; re-exporting replaces all hidden pixels with black. Further redactions work on exported copies.
 
 Demo keys are ephemeral and never pinned. The example always says **DEMO**, even when its proof is mathematically valid. The shipped viewer cannot import an arbitrary key and promote it to genuine. The original production public anchor is unchanged.
 
@@ -74,3 +74,11 @@ The viewer withholds images and this button for UNTRUSTED SIGNER. The CLI permit
 python3 grd.py export source.GRD --plain -o copy.png
 python3 grd.py export source.GRD --plain --format jpeg --quality 95 -o copy.jpg
 ```
+
+## Fine redaction and visual-copy checks
+
+The signed sub-tile size fixes the smallest permitted grid. You may choose a coarser grid at export. A partly hidden parent drops its seed and discloses salts only for retained children. Further redactions preserve the union. Dense grids use rectangle coordinates and drag selection to avoid creating hundreds of thousands of focusable buttons.
+
+Visual proofs check 8×8 brightness and 16×16 colour averages with tolerance 9. They do not verify finer detail or turn self-signed/untrusted files into trusted identities. JPEG/resize acceptance is empirical, not guaranteed for every image. Mean-preserving edits and some blurs may pass.
+
+A visual sidecar omits features and nonces for wholly hidden parents. A partial parent cannot export its original aggregate feature without potentially leaking hidden information, so this combined export is deliberately refused. Use whole 64 px blackouts when visual-copy checking is needed. Plain exports retain only the actually hidden sub-tiles as black.

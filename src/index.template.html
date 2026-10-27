@@ -11,7 +11,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <title>Guard / GRD Inspector</title>
     <style>
@@ -24,7 +24,7 @@
       <div class="header-inner">
         <a class="brand" href="#" aria-label="Guard home"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 + GRD2 / OFFLINE INSPECTOR</span
+        ><span class="header-label">GRD1 + GRD2 + GRD3 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -53,12 +53,12 @@
         aria-labelledby="convert-heading"
       >
         <div class="convert-intro">
-          <p class="eyebrow">IMAGE → GRD2 / ON YOUR DEVICE</p>
+          <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
           <h2 id="convert-heading">MAKE A .GRD</h2>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
-            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 50 megapixels. Large
-            photos are fitted to GRD’s 4-megapixel output limit. Animated images
+            PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
+            photos are fitted to GRD3’s 36-megapixel output limit. Animated images
             use the first frame. Other files, including HEIC and PDF, need
             exporting to PNG or JPG first.
           </p>
@@ -129,7 +129,7 @@
             ><span class="drop-local">Drag & drop / .GRD</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            GRD1: up to 64 MiB. GRD2: up to 32 MiB / 4 megapixels. Files stay on
+            GRD1: up to 64 MiB. GRD2: 32 MiB / 4 MP. GRD3: 256 MiB / 36 MP. Files stay on
             your device.
           </p>
           <button id="try-redaction" class="secondary demo-button">
@@ -169,7 +169,7 @@
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1 / GRD2</span>
+            <span>02 / VERIFICATION</span><span>GRD1 / GRD2 / GRD3</span>
           </div>
           <div
             id="live-status"
@@ -219,13 +219,24 @@
               <button id="download-report" class="secondary">
                 Save verification report
                 <span aria-hidden="true">↓</span></button
-              ><button id="download-plain" class="secondary" hidden>Download plain image</button><button id="choose-another" class="text-button">
+              ><button id="download-plain" class="secondary" hidden>Download plain image</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
                 Choose another file <span aria-hidden="true">↗</span>
               </button>
             </div>
+            <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
             <p id="plain-note" hidden>Sealing never restricts use: 'Download plain image' saves an ordinary PNG with no Guard data and no overlay. Redacted areas stay black. The plain copy can no longer be verified as genuine; keep the .GRD if you need proof.</p>
           </section>
         </div>
+      </section>
+      <section class="convert-section" aria-labelledby="copy-heading" style="padding: 24px; border: 1px solid currentColor; margin: 24px 0;">
+        <h2 id="copy-heading">Check a recompressed or resized copy</h2>
+        <p id="copy-help">Choose a visual proof downloaded from Guard and the PNG, JPEG or WebP copy. This checks block averages; it never verifies exact pixels as genuine. Fine edits, mean-preserving changes and some blurs can pass.</p>
+        <form id="copy-form" aria-describedby="copy-help">
+          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
+          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
+          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
+          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
+        </form>
       </section>
       <section
         id="image-panel"
@@ -258,10 +269,9 @@
             </div>
             <div id="redaction-tools" class="redaction-tools" hidden>
               <div>
-                <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
+                <strong>REDACT REGIONS / EXACT PROOF</strong>
                 <p>
-                  Drag a rectangle or select tiles. Areas round up to 64px
-                  blocks. Exports replace hidden pixels with solid black and
+                  Drag a rectangle or select tiles. Areas round up to the selected grid. Exports replace hidden pixels with solid black and
                   remove their original salts.
                 </p>
               </div>
@@ -286,9 +296,14 @@
                   Select rectangle
                 </button>
               </div>
+              <fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
+                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
+              </fieldset><p id="grid-help">The smallest available grid is fixed when the image is sealed. Whole 64px redactions also support visual copy proofs.</p>
               <p class="file-help">
-                Blackout only. Method labels are unsigned claims; hidden pixels
-                and redactor identity are not authenticated.
+                Blackout only. Method labels are unsigned claims; blackout pixels must be zero; redactor identity is not authenticated.
               </p>
               <button id="redact-mode" class="secondary" aria-pressed="false">
                 Mark tiles</button
@@ -433,7 +448,7 @@
       </section>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
-        ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span
+        ><span>GRD1 + GRD2 + GRD3 / LOCAL VERIFICATION</span
         ><a
           href="https://github.com/neervasa00000000/Guard"
           target="_blank"

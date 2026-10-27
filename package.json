@@ -9,7 +9,8 @@
     "dev": "python3 -m http.server 4195 --bind 127.0.0.1"
   },
   "dependencies": {
-    "pngjs": "^7.0.0"
+    "pngjs": "^7.0.0",
+    "sharp": "0.35.5"
   },
   "license": "MIT"
 }

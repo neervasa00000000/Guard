@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
+import { subTileBounds, subTileCount, sealSubTile, validateSubRecord, verifySubTile, subRedactionMap, redactRects } from "./subtiles.js";
+import { visualFeatures, visualSalt, visualCommitment, exportProof, verifyVisual } from "./visual.js";
+import { GRD3_LIMITS, isGRD3, encodeGRD3, decodeGRD3, verifyGRD3 } from "./grd3.js";
 import { checkRevocation, TRUST_POLICY } from "./trust.js";
 import { canon, sha, hex, TRUSTED, validateTrustedKeys, IntegrityError } from "./verifier.js";
 import { encodeRgbPng, decodeRgbPng, PngFormatError } from "./png.js";
 
-export { IntegrityError };
+export { visualFeatures, exportProof, verifyVisual, redactRects, subTileBounds };
+export { IntegrityError, encodeGRD3, decodeGRD3, isGRD3, GRD3_LIMITS };
 export class ProofError extends IntegrityError {}
-class ResourceLimitError extends IntegrityError {}
+class ResourceLimitError extends IntegrityError { constructor(message) { super(message); this.name = "ResourceLimitError"; } }
 
 export const TILE_LIMITS = Object.freeze({
   bytes: 32 * 1024 * 1024,
@@ -91,7 +95,7 @@ const hashHex = (value) =>
   typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 export function isGRD2(input) {
   const d = input instanceof Uint8Array ? input : new Uint8Array(input);
-  return (
+  return isGRD3(d) || (
     d[0] === 71 && d[1] === 82 && d[2] === 68 && d[3] === 50 && d[4] === 10
   );
 }
@@ -106,18 +110,20 @@ export function tileBounds(m, index) {
     height: Math.min(m.tileSize, m.height - y),
   };
 }
-function validateManifest(m) {
+export function validateManifest(m) {
+  const v3 = m?.version === 3, limits = v3 ? GRD3_LIMITS : TILE_LIMITS;
   if (
-    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created"] : MANIFEST_FIELDS) ||
-    m.format !== "GRD2" ||
-    m.version !== 2 ||
+    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created", ...(m.visual ? ["visual"] : []), ...(m.subTile ? ["subTile"] : [])] : MANIFEST_FIELDS) ||
+    m.format !== (v3 ? "GRD3" : "GRD2") ||
+    ![2, 3].includes(m.version) ||
     m.pixelFormat !== "RGB8" ||
     m.policy !== "tile-redaction-v1" ||
     !["asset", "demo", "personal"].includes(m.purpose)
   )
     throw new ProofError("Unsupported GRD2 manifest or policy.");
+  if (m.subTile !== undefined && ![8,16,32].includes(m.subTile)) throw new ProofError("Invalid sealed sub-tile size.");
   if (Object.hasOwn(m, "profile")) {
-    if (m.profile !== "2.1") throw new ProofError("Unsupported manifest profile.");
+    if (m.profile !== (v3 ? (m.subTile ? (m.visual ? "3.3" : "3.1") : (m.visual ? "3.2" : "3.0")) : (m.subTile ? (m.visual ? "2.4" : "2.2") : (m.visual ? "2.3" : "2.1")))) throw new ProofError("Unsupported manifest profile.");
     decodeBase64(m.assetId, 16);
     if (typeof m.created !== "string" ||
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(m.created) ||
@@ -126,18 +132,18 @@ function validateManifest(m) {
       throw new ProofError("Invalid signer-claimed creation time.");
   }
   if (Number.isInteger(m.width) && Number.isInteger(m.height) &&
-      (m.width > TILE_LIMITS.dimension || m.height > TILE_LIMITS.dimension ||
-       m.width * m.height > TILE_LIMITS.pixels ||
-       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > TILE_LIMITS.tiles))
+      (m.width > limits.dimension || m.height > limits.dimension ||
+       m.width * m.height > limits.pixels ||
+       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > limits.tiles))
     throw new ResourceLimitError("GRD2 image or tile limit exceeded.");
   if (
     !Number.isInteger(m.width) ||
     !Number.isInteger(m.height) ||
     m.width < 1 ||
     m.height < 1 ||
-    m.width > TILE_LIMITS.dimension ||
-    m.height > TILE_LIMITS.dimension ||
-    m.width * m.height > TILE_LIMITS.pixels ||
+    m.width > limits.dimension ||
+    m.height > limits.dimension ||
+    m.width * m.height > limits.pixels ||
     m.tileSize !== 64
   )
     throw new ProofError("GRD2 needs a bounded RGB image and 64px tiles.");
@@ -151,8 +157,12 @@ function validateManifest(m) {
   )
     throw new ProofError("Invalid GRD2 root, key or label.");
   const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
+  if (m.visual && (!exactKeys(m.visual, ["version","tau","commitments"]) ||
+      m.visual.version !== "y8c16-v1" || m.visual.tau !== 9 || !Array.isArray(m.visual.commitments) ||
+      m.visual.commitments.length !== count || !m.visual.commitments.every(hashHex)))
+    throw new ProofError("Invalid signed visual layer.");
   if (
-    count > TILE_LIMITS.tiles ||
+    count > limits.tiles ||
     !Array.isArray(m.commitments) ||
     m.commitments.length !== count ||
     !m.commitments.every(hashHex)
@@ -193,12 +203,13 @@ export async function manifestDigest(manifest) {
   return crypto.subtle.digest(
     "SHA-256",
     joinBytes(
-      textEncoder.encode("GUARD-GRD2-MANIFEST-V1\0"),
+      textEncoder.encode(manifest.version === 3 ? "GUARD-GRD3-MANIFEST-V1\0" : "GUARD-GRD2-MANIFEST-V1\0"),
       textEncoder.encode(canon(manifest)),
     ),
   );
 }
 export function encodeGRD2(document) {
+  if (document.manifest?.version === 3) return encodeGRD3(document);
   const encoded = textEncoder.encode("GRD2\n" + canon(document));
   if (encoded.length > TILE_LIMITS.bytes)
     throw new Error("GRD2 exceeds 32 MiB.");
@@ -226,6 +237,9 @@ export async function sealRgba({
   sign,
   purpose = "asset",
   label = "",
+  subTile = 64,
+  visual = true,
+  version = width * height > TILE_LIMITS.pixels || Math.max(width, height) > TILE_LIMITS.dimension || Math.ceil(width/64)*Math.ceil(height/64) > TILE_LIMITS.tiles ? 3 : 2,
 }) {
   if (
     !(rgba instanceof Uint8Array) ||
@@ -235,9 +249,9 @@ export async function sealRgba({
     throw new Error("Expected exact RGBA8 bytes and 64px tiles.");
   const count = Math.ceil(width / 64) * Math.ceil(height / 64),
     manifest = {
-      format: "GRD2",
-      version: 2,
-      profile: "2.1",
+      format: version === 3 ? "GRD3" : "GRD2",
+      version,
+      profile: version === 3 ? (subTile !== 64 ? (visual ? "3.3" : "3.1") : (visual ? "3.2" : "3.0")) : (subTile !== 64 ? (visual ? "2.4" : "2.2") : (visual ? "2.3" : "2.1")),
       assetId: base64(crypto.getRandomValues(new Uint8Array(16))),
       created: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
       width,
@@ -252,6 +266,8 @@ export async function sealRgba({
       purpose,
       label,
     };
+  if (subTile !== 64) manifest.subTile = subTile;
+  if (visual) manifest.visual = {version:"y8c16-v1",tau:9,commitments:Array(count).fill("0".repeat(64))};
   validateManifest(manifest);
   const rgb = new Uint8Array(width * height * 3);
   for (let i = 0; i < width * height; i++)
@@ -265,13 +281,17 @@ export async function sealRgba({
   const tiles = [];
   for (let index = 0; index < count; index++) {
     const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
-    manifest.commitments[index] = await tileCommitment(
+    manifest.commitments[index] = manifest.subTile ? (await sealSubTile(manifest,index,salt,tilePixels(rgb,manifest,index))).commitment : await tileCommitment(
       manifest,
       index,
       salt,
       tilePixels(rgb, manifest, index),
     );
-    tiles.push({ index, salt });
+    if (visual) {
+      const bounds = tileBounds(manifest,index);
+      manifest.visual.commitments[index] = await visualCommitment(index,await visualSalt(salt),visualFeatures(tilePixels(rgb,manifest,index),bounds.width,bounds.height));
+    }
+    tiles.push(manifest.subTile ? {index,seed:salt} : { index, salt });
   }
   manifest.root = await merkleRoot(manifest.commitments);
   const signature = new Uint8Array(await sign(await manifestDigest(manifest)));
@@ -280,7 +300,7 @@ export async function sealRgba({
   return {
     manifest,
     signature: base64(signature),
-    image: base64(await encodeRgbPng(rgb, width, height)),
+    image: version === 3 ? await encodeRgbPng(rgb, width, height) : base64(await encodeRgbPng(rgb, width, height)),
     tiles,
     redactions: [],
   };
@@ -290,6 +310,7 @@ export async function verifyGRD2(
   anchors = TRUSTED,
   revocationPolicy = TRUST_POLICY,
 ) {
+  if (isGRD3(input)) return verifyGRD3(input, anchors, revocationPolicy);
   const r = {
     version: 2,
     verdict: "TAMPERED",
@@ -354,6 +375,11 @@ export async function verifyGRD2(
     const redacted = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
+      if (m.subTile) {
+        if (!t || typeof t !== "object" || Array.isArray(t)) throw new ProofError("Invalid tile record.");
+        validateSubRecord(m,t,index);
+        if (Object.hasOwn(t,"commitment") || t.sub) redacted.push(index);
+      } else {
       if (
         !t ||
         t.index !== index ||
@@ -366,6 +392,7 @@ export async function verifyGRD2(
           "Tiles must be ordered, unique and have only permitted disclosure fields.",
         );
       if (Object.hasOwn(t, "commitment")) redacted.push(index);
+      }
     }
     for (let i = 0; i < doc.redactions.length; i++) {
       const item = doc.redactions[i];
@@ -458,6 +485,8 @@ export async function verifyGRD2(
       throw new ProofError("PNG dimensions differ from the signed tile grid.");
 
     for (const entry of doc.redactions) {
+      if (m.subTile && entry.method !== "black") throw new ProofError("Sub-tile files support blackout only.");
+      if (m.subTile && doc.tiles[entry.index].sub) continue;
       if (entry.method === "blur") {
         r.hiddenPixelsCleared = false;
         r.problems.push("Legacy blur redaction (tile " + entry.index + "): replacement pixels are not verified.");
@@ -474,6 +503,11 @@ export async function verifyGRD2(
     const leaves = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
+      if (m.subTile) {
+        await verifySubTile(m,t,index,tilePixels(decoded.rgb,m,index));
+        leaves.push(m.commitments[index]);
+        continue;
+      }
       if (Object.hasOwn(t, "commitment")) {
         if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
           throw new ProofError(
@@ -508,7 +542,7 @@ export async function verifyGRD2(
     r.tilesTotal = count;
     r.tilesVisible = count - redacted.length;
     r.redactedTiles = redacted;
-    r.redactionMap = redacted.map((index) => ({
+    r.redactionMap = m.subTile ? subRedactionMap(doc) : redacted.map((index) => ({
       index,
       ...tileBounds(m, index),
       claimedMethod: doc.redactions.find((x) => x.index === index).method,
@@ -516,6 +550,7 @@ export async function verifyGRD2(
     }));
     r.redactionApproval = "not_attested";
     r.tileSize = 64;
+    if (m.subTile) { r.subTile=m.subTile; r.subTilesTotal=doc.tiles.reduce((n,t)=>n+subTileCount(m,t.index),0); r.subTilesVisible=doc.tiles.reduce((n,t)=>n+(t.seed?subTileCount(m,t.index):t.sub?t.sub.filter(s=>s.salt).length:0),0); }
     r.regionVerified = true;
     r.meta = {
       asset_id: m.assetId ?? m.root,
@@ -533,7 +568,7 @@ export async function verifyGRD2(
       );
       return r;
     }
-    if (!r.tilesVisible) {
+    if (!doc.tiles.some(t => t.salt || t.seed || t.sub?.some(s => s.salt))) {
       r.verdict = "FULLY REDACTED";
       r.problems.push(
         "No original pixels remain to inspect. No visible content is being called genuine.",
@@ -559,8 +594,7 @@ export async function verifyGRD2(
       rgba[dst + 2] = rgb[src + 2];
       rgba[dst + 3] = 255;
     }
-    for (const index of redacted) {
-      const b = tileBounds(m, index);
+    for (const b of r.redactionMap) {
       for (let row = 0; row < b.height; row++)
         for (let col = 0; col < b.width; col++)
           rgba.set(
@@ -572,6 +606,7 @@ export async function verifyGRD2(
     r.container = doc;
     return r;
   } catch (error) {
+    if (error.message?.startsWith("blackout incomplete")) r.hiddenPixelsCleared = false;
     if (error instanceof ResourceLimitError) {
       r.verdict = "LIMIT EXCEEDED";
     } else if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
@@ -596,6 +631,11 @@ export async function verifyGRD2(
   }
 }
 export async function redactGRD2(document, indices, method = "black") {
+  if (document.manifest.subTile) {
+    if (!Array.isArray(indices) || !indices.length || indices.some(index => !Number.isInteger(index) || index < 0 || index >= document.tiles.length)) throw new Error("Invalid redaction index.");
+    if (method !== "black") throw new Error("Only blackout exports are supported.");
+    return redactRects(document,indices.map(index => tileBounds(document.manifest,index)),{granularity:64});
+  }
   const m = document.manifest,
     count = validateManifest(m),
     selected = new Set(indices);
@@ -607,7 +647,7 @@ export async function redactGRD2(document, indices, method = "black") {
   const result = await verifyGRD2(encodeGRD2(document), []);
   if (!result.regionVerified)
     throw new Error("Cannot redact an invalid source proof.");
-  const decoded = await decodeRgbPng(decodeBase64(document.image)),
+  const decoded = await decodeRgbPng(containerImage(document), document.manifest.version === 3 ? GRD3_LIMITS : undefined),
     rgb = decoded.rgb,
     tiles = [];
   const hidden = new Set([
@@ -634,7 +674,7 @@ export async function redactGRD2(document, indices, method = "black") {
   return encodeGRD2({
     manifest: m,
     signature: document.signature,
-    image: base64(await encodeRgbPng(rgb, m.width, m.height)),
+    image: m.version === 3 ? await encodeRgbPng(rgb, m.width, m.height) : base64(await encodeRgbPng(rgb, m.width, m.height)),
     tiles,
     redactions,
   });
@@ -670,9 +710,9 @@ export async function exportPlainImage(container) {
   if (!report.regionVerified || report.verdict === "REVOKED KEY")
     throw new Error("Cannot export an invalid source proof: " + report.verdict);
   const doc = report.container ?? JSON.parse(new TextDecoder().decode(new Uint8Array(bytes).subarray(5)));
-  const { rgb, width, height } = await decodeRgbPng(decodeBase64(doc.image));
-  for (const entry of doc.redactions) {
-    const b = tileBounds(doc.manifest, entry.index);
+  const { rgb, width, height } = await decodeRgbPng(containerImage(doc), doc.manifest.version === 3 ? GRD3_LIMITS : undefined);
+  const regions = doc.manifest.subTile ? subRedactionMap(doc) : doc.redactions.map(entry => tileBounds(doc.manifest,entry.index));
+  for (const b of regions) {
     for (let row = 0; row < b.height; row++) {
       const start = ((b.y + row) * width + b.x) * 3;
       rgb.fill(0, start, start + b.width * 3);
@@ -680,3 +720,5 @@ export async function exportPlainImage(container) {
   }
   return encodeRgbPng(rgb, width, height);
 }
+
+export function containerImage(doc) { return doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image); }

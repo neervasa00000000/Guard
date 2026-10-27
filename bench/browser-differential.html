@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Guard native browser differential checks</title>
+<style>body{font:16px system-ui;max-width:70rem;margin:2rem auto;padding:1rem}button{font:inherit;padding:.7rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<h1>Browser / Python differential checks</h1>
+<p>Local synthetic exact-container corpus. This exercises native browser WebCrypto and PNG decoding. No images or results are uploaded. It does not establish visual-codec equivalence or reproduce the external attack corpus.</p>
+<button id="run">Run browser cross-check</button> <button id="save" disabled>Download browser report</button>
+<pre id="status" role="status">Generate results/browser-corpus.json first with python3 bench/browser-differential.py.</pre>
+<script type="module">
+import {verifyGRD2,isGRD2} from '../src/redactable.js';
+import {createVerifier} from '../src/verifier.js';
+const status=document.querySelector('#status'),run=document.querySelector('#run'),save=document.querySelector('#save');let report=null;
+run.onclick=async()=>{
+ run.disabled=true;save.disabled=true;report=null;
+ try{
+  const response=await fetch('../results/browser-corpus.json');if(!response.ok)throw Error('Generate the browser corpus first.');
+  const bytes=new Uint8Array(await response.arrayBuffer()),corpus=JSON.parse(new TextDecoder().decode(bytes));
+  if(corpus.format!=='GUARD-BROWSER-DIFF-1'||corpus.cases.length>11000)throw Error('Unsupported corpus');
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
+  const anchors=corpus.keys.map(public_key_hex=>({public_key_hex})),legacy=createVerifier(anchors),results=[],mismatches=[];const start=performance.now();
+  for(const c of corpus.cases){
+   const data=Uint8Array.from(atob(c.container),x=>x.charCodeAt(0));let actual;
+   try{const r=await(isGRD2(data)?verifyGRD2(data,anchors):legacy(data));actual={verdict:r.verdict,genuine:!!r.genuine,regionVerified:!!r.regionVerified};}catch(error){actual={exception:error.name+': '+error.message};}
+   results.push({id:c.id,actual});if(JSON.stringify(actual)!==JSON.stringify(c.expected)){
+    // Python canonical JSON sorts object keys; compare fields explicitly.
+    if(actual.verdict!==c.expected.verdict||actual.genuine!==c.expected.genuine||actual.regionVerified!==c.expected.regionVerified)mismatches.push({id:c.id,expected:c.expected,actual});
+   }
+   if(results.length%25===0){status.textContent=`Checked ${results.length}/${corpus.cases.length}; disagreements ${mismatches.length}`;await new Promise(resolve=>requestAnimationFrame(resolve));}
+  }
+  report={format:'GUARD-BROWSER-DIFF-REPORT-1',runtime:navigator.userAgent,corpusSha256:digest,elapsedMs:performance.now()-start,results};
+  status.textContent=JSON.stringify({result:mismatches.length?'FAIL':'ALL PASS',cases:results.length,disagreements:mismatches.length,corpusSha256:digest,runtime:report.runtime,elapsedMs:report.elapsedMs,mismatches},null,2);save.disabled=false;
+ }catch(error){status.textContent='FAILED: '+error.message;}finally{run.disabled=false;}
+};
+save.onclick=()=>{if(!report)return;const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='guard-browser-differential.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+</script></html>

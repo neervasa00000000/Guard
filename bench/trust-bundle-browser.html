@@ -1,0 +1,15 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Guard signed trust bundle checks</title>
+<style>body{font:16px system-ui;max-width:70rem;margin:2rem auto;padding:1rem}button{font:inherit;padding:.7rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<h1>Signed trust bundle / native browser checks</h1><p>TEST ONLY deterministic public root. The production viewer’s trust list is unchanged.</p>
+<button id="run">Check trust bundles</button><pre id="status" role="status">Generate fixtures with python3 scripts/make-trust-bundle-vectors.py.</pre>
+<script type="module">
+import {verifyTrustBundle} from '../src/trust-bundle.js';
+const stable=v=>Array.isArray(v)?'['+v.map(stable).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}':JSON.stringify(v);
+const button=document.querySelector('#run'),status=document.querySelector('#status');
+button.onclick=async()=>{button.disabled=true;try{
+ const response=await fetch('../results/trust-bundle-vectors.json');if(!response.ok)throw Error('Generate test fixtures first');const vectors=await response.json(),rows=[];
+ for(const c of vectors.cases){let actual;try{actual={ok:true,result:await verifyTrustBundle(Uint8Array.from(atob(c.bundle),x=>x.charCodeAt(0)),vectors.root,{now:vectors.now,...c.options})};}catch(error){actual={ok:false};}
+ rows.push({id:c.id,accepted:actual.ok,match:stable(actual)===stable(c.expected)});}
+ status.textContent=JSON.stringify({result:rows.every(r=>r.match)?'ALL PASS':'FAIL',runtime:navigator.userAgent,cases:rows.length,disagreements:rows.filter(r=>!r.match).length,rows},null,2);
+}catch(error){status.textContent='FAILED: '+error.message;}finally{button.disabled=false;}};
+</script></html>

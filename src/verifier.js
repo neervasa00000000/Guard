@@ -190,7 +190,7 @@ export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLIC
         d[3] !== 49
       ) {
         r.verdict = "NOT A GRD";
-        issue("The file has no readable GRD1 header.", "file header");
+        issue("Not a GRD file: no GRD1 or GRD2 header.", "file header");
         return finish();
       }
       const dv = new DataView(d.buffer, d.byteOffset, d.byteLength),

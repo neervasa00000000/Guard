@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { encodedDimensions } from "./verifier.js";
-import { TILE_LIMITS } from "./redactable.js";
+import { TILE_LIMITS, GRD3_LIMITS } from "./redactable.js";
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
-export function inspectConversionImage(bytes, { allowResize = false } = {}) {
+export function inspectConversionImage(bytes, { allowResize = false, large = false } = {}) {
   if (
     !(bytes instanceof Uint8Array) ||
     !bytes.length ||
-    bytes.length > TILE_LIMITS.bytes
+    bytes.length > (large ? GRD3_LIMITS.bytes : TILE_LIMITS.bytes)
   )
     throw new Error("Choose an image up to 32 MiB.");
   const ascii = (at, count) =>
@@ -53,7 +53,7 @@ export function inspectConversionImage(bytes, { allowResize = false } = {}) {
     throw new Error(
       "Choose a photo up to 50 megapixels and 16,384 pixels per edge. This image needs resizing before it can be safely opened here.",
     );
-  const fitted = fitConversionDimensions(width, height);
+  const fitted = fitConversionDimensions(width, height, { large });
   if (!allowResize && (fitted.width !== width || fitted.height !== height))
     throw new Error(
       "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
@@ -61,7 +61,8 @@ export function inspectConversionImage(bytes, { allowResize = false } = {}) {
   return { mime, width, height };
 }
 
-export function fitConversionDimensions(width, height) {
+export function fitConversionDimensions(width, height, { large = false } = {}) {
+  const limits = large ? GRD3_LIMITS : TILE_LIMITS;
   if (
     !Number.isSafeInteger(width) ||
     !Number.isSafeInteger(height) ||
@@ -70,10 +71,10 @@ export function fitConversionDimensions(width, height) {
   )
     throw new Error("Invalid image dimensions.");
   const fits = (w, h) =>
-    w <= TILE_LIMITS.dimension &&
-    h <= TILE_LIMITS.dimension &&
-    w * h <= TILE_LIMITS.pixels &&
-    Math.ceil(w / 64) * Math.ceil(h / 64) <= TILE_LIMITS.tiles;
+    w <= limits.dimension &&
+    h <= limits.dimension &&
+    w * h <= limits.pixels &&
+    Math.ceil(w / 64) * Math.ceil(h / 64) <= limits.tiles;
   if (fits(width, height)) return { width, height };
   let low = 0,
     high = 1;

@@ -62,3 +62,64 @@ To run that protocol, recover its harness, analysis scripts and baseline, fetch 
 `node scripts/browser-fixtures.mjs` writes a copy of the built viewer and synthetic files into `/tmp/guard-qa`, with a complete ephemeral TEST ONLY trust record. Serve that folder on a separate localhost port. Never deploy those HTML copies. Use the real production `index.html` and `grd_viewer.html` for release; their trust records remain unchanged.
 
 The browser conversion smoke must actually click **Convert & download .GRD** and inspect the downloaded result. Calling the core sealer alone does not cover submit-handler scope errors. The follow-up audit demonstrated and fixed such an error.
+
+## First upgrade batch (U0 / U1 / U3 / U2)
+
+The current local results and their limits are in [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md). Rebuild and check with:
+
+```sh
+npm ci
+npm test
+python3 tests/test_vectors.py
+FUZZ_N=50002 python3 bench/differential.py
+FLIPS=10000 node bench/attacks-local.mjs
+python3 scripts/make-grd3-vectors.py
+python3 scripts/make-upgrade-vectors.py
+npm run build
+node bench/v2-scale.mjs
+python3 bench/scale-python.py --adaptive-verification
+python3 bench/overredaction.py
+GUARD_C2PA_VERSION=3 .venv-c2pa/bin/python tests/c2pa_roundtrip.py
+```
+
+Repeat vector generation and build, comparing SHA-256 before/after. Use `bench/browser-check.html?scale=33` for the native-browser 33 MP run. The scale scripts use synthetic pixels and disable visual/fine layers for the exact-only diagnostic; the browser run includes visual features. End-of-run heap and process high-water RSS have different meanings.
+
+`grd.py seal` accepts `--format-version 3 --sub-tile 16`; visual features are enabled unless `--no-visual`. `grd.py redact --granularity 16` cannot go finer than the signed grid. `grd.py export-proof INPUT.GRD -o OUTPUT.grdp` exports the visual sidecar; `grd.py verify-visual OUTPUT.grdp COPY.jpg` checks a candidate. A visual match exits 5 and never asserts exact-pixel genuineness; inconsistency exits 2. Supply `--trusted-key PUBLIC.pem` to recognize a test signer. Partial-parent masks deliberately cannot export whole-parent visual means.
+
+Node visual tests use pinned Sharp/libvips, Python uses Pillow and the browser uses native codecs. Integer features are shared, but held-out decoder/resampler agreement is not inferred from a small fixture set. The external attack harness, photographic datasets and research claims in the supplied roadmap still require separate reproduction.
+
+## Native-browser / Python differential report
+
+```sh
+python3 bench/browser-differential.py --count 1000
+python3 -m http.server 4195 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:4195/bench/browser-differential.html`, run the cross-check and download its per-case report. Then run:
+
+```sh
+python3 bench/browser-differential.py --check /path/to/guard-browser-differential.json
+```
+
+The checker requires the same corpus SHA-256, case order, verdicts and acceptance flags. It writes `results/browser-differential.json`. This exercises native browser codecs/WebCrypto on exact containers; visual-copy codec agreement is a separate experiment. Bundle fixtures and explicit-root CLI/API usage are documented in [TRUST_BUNDLES.md](TRUST_BUNDLES.md).
+
+## Submission resize regression and visual-on/off scale
+
+```sh
+python3 scripts/make-area-vectors.py
+npm test
+python3 tests/test_vectors.py
+.venv-c2pa/bin/python tests/c2pa_roundtrip.py
+node bench/v2-scale.mjs
+python3 bench/scale-python.py
+python3 bench/visual-corpus.py --fetch
+python3 bench/visual-corpus.py
+node bench/visual-corpus.mjs
+python3 bench/visual-corpus.py --check results/visual-corpus/node-report.json
+```
+
+Run the two scale scripts sequentially, without other benchmarks. They now emit ten rows each (five sizes × visual off/on); the Python script uses separate processes. Seal timings exclude input generation and the separately reported container encoding. Candidate transforms deliberately use Pillow during fixture creation; the verifiers themselves do not resize.
+
+Serve localhost and run `bench/visual-corpus.html` in Chrome. Expand Per-case report and save its JSON as `results/visual-corpus/chrome-report.json`, then run `python3 bench/visual-corpus.py --check results/visual-corpus/chrome-report.json`. This checks case IDs, candidate hashes and verdict/acceptance flags. The photographic dataset is downloaded from r0k.us with TLS certificate checking, and kept under ignored data/. The generator's fixed signing seed is public TEST ONLY.
+
+Tau is still nine, with BORDERLINE for worstError seven through eleven inclusive, exit five and no positive consistency flag. Do not aggregate it with consistent results. Raw vectors at .5/.75/1/1.25/1.5× require exact bytes; encoded photographic candidates can still have decoder differences.

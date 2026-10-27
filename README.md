@@ -2,7 +2,7 @@
 
 ## Convert, redact and verify
 
-Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. Inputs up to 32 MiB / 50 megapixels; “Fit large photos” previews a smaller copy within GRD’s 4-megapixel output limit. GRD2 files are lossless and typically 3–8× larger than the source JPEG. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
+Use **Make a .GRD** in the built viewer to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. This checkout accepts inputs up to 256 MiB / 50 megapixels; “Fit large photos” previews a copy within the GRD3 36-megapixel / 8,192-edge output limit. GRD2 remains bounded to 4.19 MP; larger outputs use binary GRD3. Lossless files can be substantially larger than JPEG originals. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
 
 [Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
 
@@ -130,3 +130,25 @@ See [REPRODUCE.md](REPRODUCE.md) for local tests and the distinction between loc
 ```
 
 The bridge's `export` and `verify` commands are described in [REDACTION.md](REDACTION.md). A supplied test anchor establishes trust only under that test policy; mainstream C2PA trust requires an appropriately trusted certificate authority.
+
+## Upgrade profiles in this checkout
+
+These changes are currently local; do not assume the hosted site has this build. [UPGRADE_STATUS.md](UPGRADE_STATUS.md) distinguishes the completed first batch from later phases and missing external validation.
+
+- GRD3 supports up to 36,000,000 pixels, 8,192 pixels per edge, 9,000 parent tiles and 256 MiB. Exact verification streams 64-row bands. Browser hash workers are embedded locally in the standalone viewer.
+- New browser conversions seal a 16 px sub-tile grid. Redaction may round to 16, 32 or 64 px; files sealed with 8 px support that option too. Old 64 px files stay readable and cannot acquire finer openings without resealing. Hidden positions remain visible.
+- New seals include a signed visual feature layer. **Download visual proof** exports a `.grdp` sidecar for **Check a recompressed or resized copy**. Visual consistency checks low-resolution block averages and always leaves `genuine:false`. Trust status remains explicit. Candidate features use shared exact integer area mapping from native pixels. Near-threshold errors (7..11) return BORDERLINE with a warning and no positive consistency flag. Mean-preserving edits and some blurs can pass.
+- Partial sub-tile redactions cannot safely disclose their original whole-tile visual features. Their visual-proof button is withheld with an explanation. Choose whole 64 px redactions when a visual sidecar is needed; exact fine-redaction verification and plain PNG export still work.
+
+```sh
+python3 grd.py seal photo.png --key issuer.pem --sub-tile 16 -o photo.GRD
+python3 grd.py redact photo.GRD --rect 10,20,40,40 --granularity 16 -o hidden.GRD
+python3 grd.py export-proof photo.GRD -o photo.grdp
+python3 grd.py verify-visual photo.grdp copy.jpg --trusted-key issuer-public.pem
+```
+
+The CLI defaults to the legacy 64 px parent-only grid unless `--sub-tile` is supplied. `--format-version 2|3` chooses a container explicitly; otherwise size selects it. `--no-visual` creates an exact-only profile, including writable GRD2 profile 2.1 for compatibility. The browser remains entirely offline; the pinned `sharp` package is used only by the Node image-copy checker, not shipped as a browser dependency.
+
+See [GRD_SPEC.md](GRD_SPEC.md), [SECURITY_MODEL.md](SECURITY_MODEL.md), and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md). Reported prototype detection rates, research novelty and comparisons with ZK systems require their own reproduced evidence.
+
+Signed trust-bundle tooling is available as an opt-in [CLI and JavaScript API](TRUST_BUNDLES.md). Production root provisioning and standalone-viewer integration remain pending. Native browser/Python cross-check instructions and measured limits are in [REPRODUCE.md](REPRODUCE.md) and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md).

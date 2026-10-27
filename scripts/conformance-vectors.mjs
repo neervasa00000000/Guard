@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { execFileSync } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -432,3 +433,6 @@ await writeFile(
 );
 
 console.log(`Generated ${vectors.length} conformance vectors in conformance/`);
+
+// Preserve the deterministic binary-profile cases when rebuilding the legacy corpus.
+execFileSync("python3", ["scripts/make-grd3-vectors.py"], {cwd:root,stdio:"inherit"});

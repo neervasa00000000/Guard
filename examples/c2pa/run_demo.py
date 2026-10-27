@@ -1,5 +1,5 @@
 """Real C2PA demo with ephemeral TEST ONLY certificates; all files are removed on exit."""
-import sys,tempfile,json
+import sys,tempfile,json,os
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from datetime import datetime,timedelta,timezone
@@ -14,7 +14,7 @@ root=(x509.CertificateBuilder().subject_name(root_name).issuer_name(root_name).p
 leaf=(x509.CertificateBuilder().subject_name(leaf_name).issuer_name(root_name).public_key(leaf_key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-timedelta(days=1)).not_valid_after(now+timedelta(days=30)).add_extension(x509.BasicConstraints(ca=False,path_length=None),True).add_extension(x509.KeyUsage(True,False,False,False,False,False,False,None,None),True).add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.EMAIL_PROTECTION]),False).add_extension(x509.SubjectKeyIdentifier.from_public_key(leaf_key.public_key()),False).add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(root_key.public_key()),False).sign(root_key,hashes.SHA256()))
 with tempfile.TemporaryDirectory(prefix='guard-c2pa-test-') as folder:
  d=Path(folder);key=ed25519.Ed25519PrivateKey.generate();pub=d/'grd-public.pem';pub.write_bytes(key.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo));certificate=d/'chain.pem';certificate.write_bytes(leaf.public_bytes(serialization.Encoding.PEM)+root.public_bytes(serialization.Encoding.PEM));anchor=d/'root.pem';anchor.write_bytes(root.public_bytes(serialization.Encoding.PEM));private=d/'exporter.key';private.write_bytes(leaf_key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()));private.chmod(0o600)
- image=Image.new('RGB',(192,128));image.putdata([(x%256,y%256,(x+y)%256) for y in range(128) for x in range(192)]);original=grd.encode(grd.seal(image,key));redacted=grd.redact(original,[(1,1,30,30)]);source=d/'sample.GRD';source.write_bytes(redacted);output=d/'credential.png';c2pa_bridge.export(source,output,private,certificate,[pub]);report=c2pa_bridge.inspect(output,[pub],anchor)
+ image=Image.new('RGB',(192,128));image.putdata([(x%256,y%256,(x+y)%256) for y in range(128) for x in range(192)]);original=grd.encode(grd.seal(image,key,version=int(os.environ.get('GUARD_C2PA_VERSION','2'))));redacted=grd.redact(original,[(1,1,30,30)]);source=d/'sample.GRD';source.write_bytes(redacted);output=d/'credential.png';c2pa_bridge.export(source,output,private,certificate,[pub]);report=c2pa_bridge.inspect(output,[pub],anchor)
  assert report['accepted'],report
  unanchored=c2pa_bridge.inspect(output,[pub])
  assert unanchored['c2pa']['validation_state']=='Valid',unanchored
@@ -44,4 +44,4 @@ with tempfile.TemporaryDirectory(prefix='guard-c2pa-test-') as folder:
  assert negative['c2pa']['validation_state']=='Invalid',negative['c2pa']
  assert negative['grd']['verdict']=='TAMPERED'
  assert 'assertion.dataHash.mismatch' in json.dumps(negative['c2pa'])
- print(json.dumps({'sdk':'c2pa-python','grd':report['grd']['verdict'],'validation_state':report['c2pa'].get('validation_state'),'validation_status':report['c2pa'].get('validation_status'),'validation_results':report['c2pa'].get('validation_results'),'custom_assertion':True,'assetId':report['grd']['assetId'],'without_anchor':unanchored['c2pa']['validation_state'],'without_anchor_accepted':unanchored['accepted'],'edited_c2pa':negative['c2pa']['validation_state'],'edited_grd':negative['grd']['verdict']},indent=2))
+ print(json.dumps({'sdk':'c2pa-python','format_version':int(os.environ.get('GUARD_C2PA_VERSION','2')),'grd':report['grd']['verdict'],'validation_state':report['c2pa'].get('validation_state'),'validation_status':report['c2pa'].get('validation_status'),'validation_results':report['c2pa'].get('validation_results'),'custom_assertion':True,'assetId':report['grd']['assetId'],'without_anchor':unanchored['c2pa']['validation_state'],'without_anchor_accepted':unanchored['accepted'],'edited_c2pa':negative['c2pa']['validation_state'],'edited_grd':negative['grd']['verdict']},indent=2))

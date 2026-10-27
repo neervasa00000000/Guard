@@ -80,3 +80,8 @@ Therefore the live site cannot be described as fully working. The fixes are pres
 ![Observed public-site conversion error](results/live-conversion-failure.png)
 
 Raw follow-up evidence: `results/recheck-npm.log`, `results/recheck-python.log`, `results/recheck-c2pa.json`, `results/browser-verdict-checks.json`, and `results/browser-conversion-roundtrip.json`.
+
+
+## Later upgrade batch
+
+The observations above are historical. The conversion repair was subsequently pushed and checked live. New U0/U1/U3/U2 implementation evidence is recorded in [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md), with remaining scope in [UPGRADE_STATUS.md](UPGRADE_STATUS.md). This upgrade batch has not been deployed; older live-site observations do not describe the current local source.

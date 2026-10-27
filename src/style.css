@@ -1639,3 +1639,5 @@ footer > a:last-child {
   background: #714b00;
   color: #fff;
 }
+
+#copy-status.borderline { color: #775000; background: #fff3cd; border-left: 4px solid #a66a00; padding: 1rem; }

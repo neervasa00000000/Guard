@@ -177,5 +177,29 @@
     "format": 2,
     "expected_verdict": "TAMPERED",
     "expected_exit": 2
+  },
+  {
+    "id": "grd3-sealed",
+    "file": "conformance/files/grd3-sealed.GRD",
+    "description": "GRD3 TEST ONLY sealed",
+    "format": 3,
+    "expected_verdict": "GENUINE",
+    "expected_exit": 0
+  },
+  {
+    "id": "grd3-redacted",
+    "file": "conformance/files/grd3-redacted.GRD",
+    "description": "GRD3 TEST ONLY redacted",
+    "format": 3,
+    "expected_verdict": "VERIFIED WITH REDACTIONS",
+    "expected_exit": 5
+  },
+  {
+    "id": "grd3-tampered",
+    "file": "conformance/files/grd3-tampered.GRD",
+    "description": "GRD3 TEST ONLY tampered",
+    "format": 3,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 2
   }
 ]

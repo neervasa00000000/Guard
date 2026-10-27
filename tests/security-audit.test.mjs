@@ -244,16 +244,18 @@ test("invalid or impossible offline-policy dates fail closed in both checkers", 
 test("extra decompressed PNG bytes are rejected by both checkers", () =>
   withPython(async (run) => {
     const png = Buffer.from(original.image, "base64");
-    let at = 8,
-      packed;
+    let at = 8, firstData, lastDataEnd;
+    const packedParts = [];
     while (at < png.length) {
       const size = png.readUInt32BE(at);
       if (png.toString("ascii", at + 4, at + 8) === "IDAT") {
-        packed = png.subarray(at + 8, at + 8 + size);
-        break;
+        firstData ??= at;
+        lastDataEnd = at + size + 12;
+        packedParts.push(png.subarray(at + 8, at + 8 + size));
       }
       at += size + 12;
     }
+    const packed = Buffer.concat(packedParts);
     const compressed = deflateSync(
         Buffer.concat([inflateSync(packed), Buffer.from([0])]),
       ),
@@ -269,9 +271,9 @@ test("extra decompressed PNG bytes are rejected by both checkers", () =>
     }
     chunk.writeUInt32BE((crc ^ 0xffffffff) >>> 0, chunk.length - 4);
     const image = Buffer.concat([
-        png.subarray(0, at),
+        png.subarray(0, firstData),
         chunk,
-        png.subarray(at + 12 + packed.length),
+        png.subarray(lastDataEnd),
       ]),
       doc = structuredClone(original);
     doc.image = base64(image);

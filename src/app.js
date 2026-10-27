@@ -95,8 +95,10 @@ function showFile(file) {
 }
 function renderResult(report) {
   currentReport = report;
-  $("download-plain").hidden = !(report.version === 2 && report.viewable && report.regionVerified);
+  $("download-plain").hidden = !(report.version >= 2 && report.viewable && report.regionVerified);
   $("plain-note").hidden = $("download-plain").hidden;
+  $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
+  $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -127,7 +129,7 @@ function renderResult(report) {
     "LIMIT EXCEEDED": [
       "LIMIT EXCEEDED",
       "FILE TOO LARGE.",
-      "Choose a .GRD up to 64 MiB. The file was not read into memory.",
+      "GRD1 allows 64 MiB, GRD2 32 MiB, and GRD3 256 MiB. The format-specific size limit was exceeded.",
     ],
     UNREADABLE: [
       "IMAGE UNREADABLE",
@@ -143,17 +145,17 @@ function renderResult(report) {
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
     "RETAINED PIXELS VERIFIED.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+    report.subTile ? `${report.subTilesVisible} of ${report.subTilesTotal} cells at ${report.subTile}px match the trusted signer’s proof. Hidden cells are black. Redactor approval is not attested.` : `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
   ];
   messages.DEMO = [
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
-    `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} example regions retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
   ];
   messages["UNVERIFIED: SELF-SIGNED"] = [
     "UNVERIFIED: SELF-SIGNED",
     "IDENTITY NOT VERIFIED.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
+    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} regions match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -171,7 +173,7 @@ function renderResult(report) {
     "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
   ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
-  if (report.version === 2 && report.genuine) {
+  if (report.version >= 2 && report.genuine) {
     words[1] = "SIGNED TILE GRID VERIFIED.";
     words[2] =
       "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
@@ -289,9 +291,9 @@ function metadata(report) {
     ["Time claimed by the signer", m.created_utc ?? m.created_melbourne],
     [report.demo ? "Demo signer" : "Signer", report.signer],
     [
-      "Retained tiles",
-      report.version === 2
-        ? `${report.tilesVisible} / ${report.tilesTotal}`
+      report.subTile ? "Retained cells" : "Retained tiles",
+      report.version >= 2
+        ? `${report.subTilesVisible ?? report.tilesVisible} / ${report.subTilesTotal ?? report.tilesTotal}`
         : undefined,
     ],
     ["Redacted tiles", report.redactedTiles?.length],
@@ -454,7 +456,11 @@ function point(event) {
 }
 
 async function decode(report) {
-  if (report.version === 2) {
+  if (report.version === 3) {
+    const blob = new Blob([containerImage(report.container)], {type:"image/png"});
+    return await createImageBitmap(blob, {imageOrientation:"none"});
+  }
+  if (report.version >= 2) {
     const surface = document.createElement("canvas");
     surface.width = report.meta.width;
     surface.height = report.meta.height;
@@ -517,12 +523,12 @@ async function openFile(file) {
   setStatus("Checking " + file.name + ".");
   let report;
   try {
-    if (file.size > LIMITS.fileBytes)
+    if (file.size > GRD3_LIMITS.bytes)
       report = {
         verdict: "LIMIT EXCEEDED",
         genuine: false,
         checks: [],
-        problems: ["File exceeds the 64 MiB viewer limit."],
+        problems: ["File exceeds the 256 MiB viewer limit."],
         failed: ["file size"],
         changed: ["file size"],
         byteLength: file.size,
@@ -542,13 +548,13 @@ async function openFile(file) {
         bitmap = decoded;
         report.checks.push({
           name:
-            report.version === 2 ? "Rendered tile grid" : "Image dimensions",
+            report.version >= 2 ? "Rendered tile grid" : "Image dimensions",
           status: "pass",
           detail:
             report.meta.width +
             " × " +
             report.meta.height +
-            (report.version === 2
+            (report.version >= 2
               ? " · exact visible tiles; hidden tiles are placeholders"
               : " · encoded and decoded dimensions match"),
         });
@@ -570,6 +576,10 @@ async function openFile(file) {
     report.checkedAt = new Date().toISOString();
     report.viewerSession = SESSION;
     currentContainer = report.container ?? null;
+    if (currentContainer) {
+      const sealed = currentContainer.manifest.subTile || 64;
+      for (const size of [8,16,32,64]) { $("grid-"+size).disabled = size < sealed; $("grid-"+size).checked = size === (sealed <= 16 ? 16 : sealed); }
+    }
     delete report.container;
     delete report.imageRgba;
     renderResult(report);
@@ -658,6 +668,11 @@ $("download-report").onclick = () => {
       ".json",
     "application/json",
   );
+};
+$("download-proof").onclick = async () => {
+  if (!currentContainer) return;
+  try { download(await exportProof(currentContainer), "image.grdp", "application/octet-stream"); setStatus("Visual proof downloaded. Keep it with copies you want to compare."); }
+  catch (error) { setStatus("Visual proof export failed: " + error.message); }
 };
 $("download-plain").onclick = async () => {
   if (!currentContainer) return;
@@ -769,75 +784,56 @@ window.addEventListener("pagehide", () => {
 window.verifyGRD = (input) =>
   isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
 
+function redactionGrid() {
+  if (!currentContainer?.manifest.subTile) return 64;
+  return [8,16,32,64].find(size => $("grid-"+size).checked) || 16;
+}
+function gridBounds(index) {
+  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),x=(index%cols)*g,y=Math.floor(index/cols)*g;
+  return {x,y,width:Math.min(g,m.width-x),height:Math.min(g,m.height-y)};
+}
+function gridHidden(index) {
+  const b=gridBounds(index);
+  return (currentReport?.redactionMap || []).some(r=>r.x<=b.x&&r.y<=b.y&&r.x+r.width>=b.x+b.width&&r.y+r.height>=b.y+b.height);
+}
+function gridForRect(m,rect) {
+  const g=redactionGrid(),cols=Math.ceil(m.width/g),rows=Math.ceil(m.height/g),out=[];
+  if (![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.width<=0||rect.height<=0) throw new Error("Enter a rectangle with positive width and height.");
+  for(let row=Math.max(0,Math.floor(rect.y/g));row<Math.min(rows,Math.ceil((rect.y+rect.height)/g));row++)
+    for(let col=Math.max(0,Math.floor(rect.x/g));col<Math.min(cols,Math.ceil((rect.x+rect.width)/g));col++)out.push(row*cols+col);
+  return out;
+}
 function positionTileOverlay() {
   if (!currentContainer || !redactionEditing) return;
-  const overlay = $("tile-overlay"),
-    m = currentContainer.manifest;
-  const box = canvas.getBoundingClientRect();
-  overlay.style.width = box.width + "px";
-  overlay.style.height = box.height + "px";
-  overlay.style.gridTemplateColumns = Array.from(
-    { length: Math.ceil(m.width / m.tileSize) },
-    (_, col) => Math.min(m.tileSize, m.width - col * m.tileSize) + "fr",
-  ).join(" ");
-  overlay.style.gridTemplateRows = Array.from(
-    { length: Math.ceil(m.height / m.tileSize) },
-    (_, row) => Math.min(m.tileSize, m.height - row * m.tileSize) + "fr",
-  ).join(" ");
+  const overlay=$("tile-overlay"),m=currentContainer.manifest,g=redactionGrid(),box=canvas.getBoundingClientRect();
+  overlay.style.width=box.width+"px";overlay.style.height=box.height+"px";
+  overlay.style.gridTemplateColumns=Array.from({length:Math.ceil(m.width/g)},(_,i)=>Math.min(g,m.width-i*g)+"fr").join(" ");
+  overlay.style.gridTemplateRows=Array.from({length:Math.ceil(m.height/g)},(_,i)=>Math.min(g,m.height-i*g)+"fr").join(" ");
 }
 function renderTileOverlay() {
-  const overlay = $("tile-overlay");
-  const activeTile = overlay.contains(document.activeElement)
-    ? document.activeElement.dataset.tileIndex
-    : null;
-  overlay.hidden =
-    !redactionEditing ||
-    !currentContainer ||
-    stage.classList.contains("shielded");
-  overlay.replaceChildren();
-  if (overlay.hidden) return;
-  const m = currentContainer.manifest,
-    cols = Math.ceil(m.width / m.tileSize);
-  for (const tile of currentContainer.tiles) {
-    const hidden = Object.hasOwn(tile, "commitment"),
-      chosen = selectedTiles.has(tile.index),
-      button = el(
-        "button",
-        hidden ? "HIDDEN" : chosen ? "HIDE" : "+",
-        hidden ? "tile-hidden" : chosen ? "tile-selected" : "tile-visible",
-      );
-    button.type = "button";
-    button.dataset.tileIndex = String(tile.index);
-    button.disabled = hidden;
-    button.tabIndex =
-      String(tile.index) ===
-      (activeTile ??
-        String(
-          currentContainer.tiles.find((t) => Object.hasOwn(t, "salt"))?.index,
-        ))
-        ? 0
-        : -1;
-    button.setAttribute(
-      "aria-label",
-      `Tile ${tile.index + 1}, row ${Math.floor(tile.index / cols) + 1}, column ${(tile.index % cols) + 1}${hidden ? ", already redacted" : ""}`,
-    );
-    button.setAttribute("aria-pressed", String(chosen));
-    button.onclick = () => {
-      if (selectedTiles.has(tile.index)) selectedTiles.delete(tile.index);
-      else selectedTiles.add(tile.index);
-      renderTileOverlay();
-      $("export-redacted").disabled = !selectedTiles.size;
-      $("redaction-status").textContent =
-        `${selectedTiles.size} selected. Redactions are applied only when you export. Hidden tiles contain no original pixels in the exported file.`;
-    };
-    overlay.append(button);
+  const overlay=$("tile-overlay"),active=overlay.contains(document.activeElement)?document.activeElement.dataset.tileIndex:null;
+  overlay.hidden=!redactionEditing||!currentContainer||stage.classList.contains("shielded");overlay.replaceChildren();if(overlay.hidden)return;
+  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),count=cols*Math.ceil(m.height/g);
+  if(count>4096){
+    // Dense grids stay bounded in the DOM. Keyboard users select through the rectangle fields.
+    const mask=el("canvas");mask.width=canvas.width;mask.height=canvas.height;mask.setAttribute("aria-hidden","true");
+    mask.style.cssText="position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
+    const ctx=mask.getContext("2d");ctx.fillStyle="rgba(55,80,220,.45)";
+    for(const index of selectedTiles){const b=gridBounds(index);ctx.fillRect(b.x/m.width*mask.width,b.y/m.height*mask.height,b.width/m.width*mask.width,b.height/m.height*mask.height);}
+    overlay.append(mask);
+    $("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. This dense grid uses the rectangle fields or drag selection instead of individual buttons.`;
+  } else {
+    let first=true;
+    for(let index=0;index<count;index++){
+      const hidden=gridHidden(index),chosen=selectedTiles.has(index),button=el("button",hidden?"HIDDEN":chosen?"HIDE":"+",hidden?"tile-hidden":chosen?"tile-selected":"tile-visible");
+      button.type="button";button.dataset.tileIndex=String(index);button.disabled=hidden;button.tabIndex=!hidden&&(active!==null?String(index)===active:first)?0:-1;if(!hidden)first=false;
+      button.setAttribute("aria-label",`Cell ${index+1}, row ${Math.floor(index/cols)+1}, column ${index%cols+1}, ${g}px${hidden?", already hidden":""}`);button.setAttribute("aria-pressed",String(chosen));
+      button.onclick=()=>{if(selectedTiles.has(index))selectedTiles.delete(index);else selectedTiles.add(index);renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;$("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. Apply them by exporting a redacted copy.`;};overlay.append(button);
+    }
   }
-  positionTileOverlay();
-  if (activeTile !== null)
-    overlay
-      .querySelector(`[data-tile-index="${activeTile}"]`)
-      ?.focus({ preventScroll: true });
+  positionTileOverlay();if(active!==null)overlay.querySelector(`[data-tile-index="${active}"]`)?.focus({preventScroll:true});
 }
+for(const size of [8,16,32,64])$("grid-"+size).onchange=()=>{selectedTiles.clear();$("export-redacted").disabled=true;renderTileOverlay();};
 $("redact-mode").onclick = () => {
   redactionEditing = !redactionEditing;
   $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
@@ -855,7 +851,7 @@ $("export-redacted").onclick = async () => {
     token = operation;
   $("export-redacted").disabled = true;
   try {
-    const bytes = await redactGRD2(source, selection, "black");
+    const bytes = source.manifest.subTile ? await redactRects(source,selection.map(gridBounds),{granularity:redactionGrid()}) : await redactGRD2(source, selection, "black");
     if (operation !== token || currentContainer !== source) return;
     const name =
       (currentReport.fileName ?? "image.GRD").replace(
@@ -920,6 +916,7 @@ $("try-redaction").onclick = async () => {
       tileSize: 64,
       publicKey,
       purpose: "demo",
+      subTile: 16,
       label: "Demonstration only",
       sign: (bytes) =>
         crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
@@ -942,16 +939,9 @@ $("try-redaction").onclick = async () => {
 };
 
 function setTileSelection(indices) {
-  for (const i of indices)
-    if (
-      currentContainer.tiles[i] &&
-      Object.hasOwn(currentContainer.tiles[i], "salt")
-    )
-      selectedTiles.add(i);
-  renderTileOverlay();
-  $("export-redacted").disabled = !selectedTiles.size;
-  $("redaction-status").textContent =
-    `${selectedTiles.size} tiles selected. The exported redaction mask will show the exact 64px boundaries.`;
+  for (const index of indices) if (!gridHidden(index)) selectedTiles.add(index);
+  renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;
+  $("redaction-status").textContent=`${selectedTiles.size} cells selected. Export rounds to ${redactionGrid()}px boundaries.`;
 }
 $("select-rectangle").onclick = () => {
   if (!currentContainer) return;
@@ -961,7 +951,7 @@ $("select-rectangle").onclick = () => {
     $("redact-mode").textContent = "Finish marking";
     setMode(false);
     setTileSelection(
-      tilesForRect(currentContainer.manifest, {
+      gridForRect(currentContainer.manifest, {
         x: Number($("rect-x").value),
         y: Number($("rect-y").value),
         width: Number($("rect-width").value),
@@ -1012,7 +1002,7 @@ overlayElement.addEventListener("pointerup", (event) => {
   skipTileClick = true;
   event.preventDefault();
   setTileSelection(
-    tilesForRect(currentContainer.manifest, {
+    gridForRect(currentContainer.manifest, {
       x: Math.min(start.x, p.x),
       y: Math.min(start.y, p.y),
       width: Math.max(1, Math.abs(start.x - p.x)),
@@ -1038,7 +1028,7 @@ overlayElement.addEventListener(
 overlayElement.addEventListener("keydown", (event) => {
   if (!currentContainer || !event.key.startsWith("Arrow")) return;
   const i = Number(event.target.dataset.tileIndex),
-    cols = Math.ceil(currentContainer.manifest.width / 64);
+    cols = Math.ceil(currentContainer.manifest.width / redactionGrid());
   if (!Number.isInteger(i)) return;
   const step =
     event.key === "ArrowLeft"
@@ -1085,12 +1075,12 @@ $("convert-input").onchange = async () => {
   conversionStatus("Reading image locally…");
   let decoded;
   try {
-    if (file.size > TILE_LIMITS.bytes)
-      throw new Error("Choose an image up to 32 MiB.");
+    if (file.size > GRD3_LIMITS.bytes)
+      throw new Error("Choose an image up to 256 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
     const allowResize = $("convert-resize").checked;
-    const info = inspectConversionImage(bytes, { allowResize });
+    const info = inspectConversionImage(bytes, { allowResize, large: true });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
     if (token !== conversionVersion) return;
     if (
@@ -1106,7 +1096,7 @@ $("convert-input").onchange = async () => {
       );
     const originalWidth = decoded.width,
       originalHeight = decoded.height;
-    const fitted = fitConversionDimensions(originalWidth, originalHeight);
+    const fitted = fitConversionDimensions(originalWidth, originalHeight, { large: true });
     const resized =
       fitted.width !== originalWidth || fitted.height !== originalHeight;
     if (resized && !allowResize)
@@ -1140,7 +1130,7 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 4 MP / 1,024 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
       (resized
@@ -1193,6 +1183,7 @@ $("convert-form").onsubmit = async (event) => {
       height: source.height,
       publicKey,
       purpose: "personal",
+      subTile: 16,
       label: "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
@@ -1210,7 +1201,7 @@ $("convert-form").onsubmit = async (event) => {
     const W = source.width,
       H = source.height,
       ratio = (bytes.length / source.sourceBytes).toFixed(1);
-    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). GRD2 stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
     if (bytes.length > 20 * 1024 * 1024)
       statusMsg += " Large file: some phones may be slow to open it.";
     conversionStatus(statusMsg);
@@ -1226,4 +1217,24 @@ $("convert-form").onsubmit = async (event) => {
     $("convert-resize").disabled = false;
     $("convert-form").removeAttribute("aria-busy");
   }
+};
+
+$("copy-form").onsubmit = async event => {
+  event.preventDefault();
+  if ($("copy-submit").disabled) return;
+  const proofFile = $("copy-proof").files[0], imageFile = $("copy-image").files[0];
+  if (!proofFile || !imageFile) { $("copy-status").textContent = "Choose both the visual proof and image copy."; return; }
+  $("copy-submit").disabled = true; $("copy-proof").disabled = true; $("copy-image").disabled = true; $("copy-form").setAttribute("aria-busy", "true");
+  $("copy-status").classList.remove("borderline");
+  $("copy-status").textContent = "Checking signature, disclosures and visual block averages locally…";
+  try {
+    if (proofFile.size > 16*1024*1024 || imageFile.size > GRD3_LIMITS.bytes) throw new Error("Proof must be at most 16 MiB and the image at most 256 MiB.");
+    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()));
+    const label = r.visualVerdict ?? r.verdict;
+    $("copy-status").classList.toggle("borderline", label === "BORDERLINE (decoder-dependent)");
+    $("copy-status").textContent = label + ". " + (r.trustVerdict && !r.trusted ? r.trustVerdict + ": signer identity is not verified. " : "") +
+      (r.worstError !== undefined ? "Largest block difference: " + r.worstError + " / 255. " : "") + r.guarantee +
+      (r.problems.length ? " " + r.problems.join(" ") : "");
+  } catch (error) { $("copy-status").textContent = "Copy check could not finish: " + error.message; }
+  finally { $("copy-submit").disabled = false; $("copy-proof").disabled = false; $("copy-image").disabled = false; $("copy-form").removeAttribute("aria-busy"); $("copy-status").focus(); }
 };

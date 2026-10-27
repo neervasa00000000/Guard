@@ -11,7 +11,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <title>Guard / GRD Inspector</title>
     <style>
@@ -1657,6 +1657,8 @@ footer > a:last-child {
   color: #fff;
 }
 
+#copy-status.borderline { color: #775000; background: #fff3cd; border-left: 4px solid #a66a00; padding: 1rem; }
+
     </style>
   </head>
   <body>
@@ -1665,7 +1667,7 @@ footer > a:last-child {
       <div class="header-inner">
         <a class="brand" href="#" aria-label="Guard home"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 + GRD2 / OFFLINE INSPECTOR</span
+        ><span class="header-label">GRD1 + GRD2 + GRD3 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -1694,12 +1696,12 @@ footer > a:last-child {
         aria-labelledby="convert-heading"
       >
         <div class="convert-intro">
-          <p class="eyebrow">IMAGE → GRD2 / ON YOUR DEVICE</p>
+          <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
           <h2 id="convert-heading">MAKE A .GRD</h2>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
-            PNG, JPG, WebP, GIF or BMP · up to 32 MiB and 50 megapixels. Large
-            photos are fitted to GRD’s 4-megapixel output limit. Animated images
+            PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
+            photos are fitted to GRD3’s 36-megapixel output limit. Animated images
             use the first frame. Other files, including HEIC and PDF, need
             exporting to PNG or JPG first.
           </p>
@@ -1770,7 +1772,7 @@ footer > a:last-child {
             ><span class="drop-local">Drag & drop / .GRD</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            GRD1: up to 64 MiB. GRD2: up to 32 MiB / 4 megapixels. Files stay on
+            GRD1: up to 64 MiB. GRD2: 32 MiB / 4 MP. GRD3: 256 MiB / 36 MP. Files stay on
             your device.
           </p>
           <button id="try-redaction" class="secondary demo-button">
@@ -1810,7 +1812,7 @@ footer > a:last-child {
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1 / GRD2</span>
+            <span>02 / VERIFICATION</span><span>GRD1 / GRD2 / GRD3</span>
           </div>
           <div
             id="live-status"
@@ -1860,13 +1862,24 @@ footer > a:last-child {
               <button id="download-report" class="secondary">
                 Save verification report
                 <span aria-hidden="true">↓</span></button
-              ><button id="download-plain" class="secondary" hidden>Download plain image</button><button id="choose-another" class="text-button">
+              ><button id="download-plain" class="secondary" hidden>Download plain image</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
                 Choose another file <span aria-hidden="true">↗</span>
               </button>
             </div>
+            <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
             <p id="plain-note" hidden>Sealing never restricts use: 'Download plain image' saves an ordinary PNG with no Guard data and no overlay. Redacted areas stay black. The plain copy can no longer be verified as genuine; keep the .GRD if you need proof.</p>
           </section>
         </div>
+      </section>
+      <section class="convert-section" aria-labelledby="copy-heading" style="padding: 24px; border: 1px solid currentColor; margin: 24px 0;">
+        <h2 id="copy-heading">Check a recompressed or resized copy</h2>
+        <p id="copy-help">Choose a visual proof downloaded from Guard and the PNG, JPEG or WebP copy. This checks block averages; it never verifies exact pixels as genuine. Fine edits, mean-preserving changes and some blurs can pass.</p>
+        <form id="copy-form" aria-describedby="copy-help">
+          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
+          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
+          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
+          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
+        </form>
       </section>
       <section
         id="image-panel"
@@ -1899,10 +1912,9 @@ footer > a:last-child {
             </div>
             <div id="redaction-tools" class="redaction-tools" hidden>
               <div>
-                <strong>REDACT REGIONS / GRD2 EXPERIMENTAL</strong>
+                <strong>REDACT REGIONS / EXACT PROOF</strong>
                 <p>
-                  Drag a rectangle or select tiles. Areas round up to 64px
-                  blocks. Exports replace hidden pixels with solid black and
+                  Drag a rectangle or select tiles. Areas round up to the selected grid. Exports replace hidden pixels with solid black and
                   remove their original salts.
                 </p>
               </div>
@@ -1927,9 +1939,14 @@ footer > a:last-child {
                   Select rectangle
                 </button>
               </div>
+              <fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
+                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
+              </fieldset><p id="grid-help">The smallest available grid is fixed when the image is sealed. Whole 64px redactions also support visual copy proofs.</p>
               <p class="file-help">
-                Blackout only. Method labels are unsigned claims; hidden pixels
-                and redactor identity are not authenticated.
+                Blackout only. Method labels are unsigned claims; blackout pixels must be zero; redactor identity is not authenticated.
               </p>
               <button id="redact-mode" class="secondary" aria-pressed="false">
                 Mark tiles</button
@@ -2074,7 +2091,7 @@ footer > a:last-child {
       </section>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
-        ><span>GRD1 + GRD2 / LOCAL VERIFICATION</span
+        ><span>GRD1 + GRD2 + GRD3 / LOCAL VERIFICATION</span
         ><a
           href="https://github.com/neervasa00000000/Guard"
           target="_blank"
@@ -2368,7 +2385,7 @@ function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY) {
         d[3] !== 49
       ) {
         r.verdict = "NOT A GRD";
-        issue("The file has no readable GRD1 header.", "file header");
+        issue("Not a GRD file: no GRD1 or GRD2 header.", "file header");
         return finish();
       }
       const dv = new DataView(d.buffer, d.byteOffset, d.byteLength),
@@ -2774,13 +2791,13 @@ function encodedDimensions(bytes, mime) {
 // Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
 class PngFormatError extends Error {}
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+const PNG_CRC_TABLE = Uint32Array.from({length:256}, (_, value) => {
+  let c=value;for(let bit=0;bit<8;bit++)c=(c>>>1)^((c&1)?0xedb88320:0);return c>>>0;
+});
 function pngCrc(bytes) {
-  let c = 0xffffffff;
-  for (const b of bytes) {
-    c ^= b;
-    for (let i = 0; i < 8; i++) c = (c >>> 1) ^ (c & 1 ? 0xedb88320 : 0);
-  }
-  return (c ^ 0xffffffff) >>> 0;
+  let c=0xffffffff;
+  for(let i=0;i<bytes.length;i++)c=(c>>>8)^PNG_CRC_TABLE[(c^bytes[i])&255];
+  return (c^0xffffffff)>>>0;
 }
 function pngJoin(arrays) {
   const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
@@ -2822,7 +2839,7 @@ async function pngStream(bytes, compress, limit) {
     }
   } catch (error) {
     if (error instanceof PngFormatError) throw error;
-    if (!compress && (error instanceof TypeError || error?.code === "Z_DATA_ERROR" || error?.name === "DataError"))
+    if (!compress && (error instanceof TypeError || ["Z_DATA_ERROR","Z_BUF_ERROR"].includes(error?.code) || error?.name === "DataError"))
       throw new PngFormatError("Invalid PNG deflate stream: " + error.message);
     throw error;
   } finally {
@@ -2831,28 +2848,29 @@ async function pngStream(bytes, compress, limit) {
   return pngJoin(parts);
 }
 async function encodeRgbPng(rgb, width, height) {
-  if (rgb.length !== width * height * 3)
-    throw new PngFormatError("Invalid RGB image length.");
-  const rows = new Uint8Array(height * (width * 3 + 1));
-  for (let y = 0; y < height; y++)
-    rows.set(
-      rgb.subarray(y * width * 3, (y + 1) * width * 3),
-      y * (width * 3 + 1) + 1,
-    );
-  const hdr = new Uint8Array(13),
-    view = new DataView(hdr.buffer);
-  view.setUint32(0, width);
-  view.setUint32(4, height);
-  hdr[8] = 8;
-  hdr[9] = 2;
-  return pngJoin([
-    PNG_SIGNATURE,
-    pngChunk("IHDR", hdr),
-    pngChunk("IDAT", await pngStream(rows, true, 32 * 1024 * 1024)),
-    pngChunk("IEND", new Uint8Array()),
-  ]);
+  if (rgb.length !== width * height * 3 || width < 1 || height < 1 || width > 8192 || height > 8192 || width * height > 36_000_000)
+    throw new PngFormatError("Invalid RGB image dimensions or length.");
+  let y = 0;
+  const rows = new ReadableStream({ pull(controller) {
+    if (y === height) { controller.close(); return; }
+    const count = Math.min(64, height-y), bytes = new Uint8Array(count * (width*3+1));
+    for (let row=0;row<count;row++) bytes.set(rgb.subarray((y+row)*width*3,(y+row+1)*width*3),row*(width*3+1)+1);
+    y+=count;controller.enqueue(bytes);
+  }});
+  const hdr = new Uint8Array(13), view = new DataView(hdr.buffer);
+  view.setUint32(0,width);view.setUint32(4,height);hdr[8]=8;hdr[9]=2;
+  const parts=[PNG_SIGNATURE,pngChunk("IHDR",hdr)];
+  const reader=rows.pipeThrough(new CompressionStream("deflate")).getReader();
+  try { for (;;) { const {value,done}=await reader.read(); if(done)break; parts.push(pngChunk("IDAT",value)); } }
+  finally { await reader.cancel().catch(()=>{}); }
+  parts.push(pngChunk("IEND",new Uint8Array()));return pngJoin(parts);
 }
-async function decodeRgbPng(bytes) {
+async function decodeRgbPng(bytes, limits) {
+  if (limits) {
+    const {width,height}=rgbPngParts(bytes,limits), rgb=new Uint8Array(width*height*3);
+    for await (const band of decodeRgbPngBands(bytes,limits)) rgb.set(band.rgb,band.y*width*3);
+    return {rgb,width,height};
+  }
   if (
     !(bytes instanceof Uint8Array) ||
     bytes.length < 45 ||
@@ -2945,11 +2963,525 @@ async function decodeRgbPng(bytes) {
   return { rgb, width, height };
 }
 
+// Strict PNG framing is shared by the streaming verifier and full-image decoder.
+function rgbPngParts(bytes, { dimension = 4096, pixels = 4_194_304 } = {}) {
+  if (!(bytes instanceof Uint8Array) || bytes.length < 45 || PNG_SIGNATURE.some((b, i) => bytes[i] !== b))
+    throw new PngFormatError('Invalid RGB PNG signature.');
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), idats = [];
+  let offset = 8, width, height, ended = false, dataSeen = false;
+  while (offset + 12 <= bytes.length) {
+    const length = view.getUint32(offset), end = offset + length + 12;
+    if (end > bytes.length) throw new PngFormatError('Truncated PNG chunk.');
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    const data = bytes.subarray(offset + 8, end - 4);
+    if (pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4)) throw new PngFormatError('PNG checksum failed.');
+    if (type === 'IHDR') {
+      if (offset !== 8 || length !== 13) throw new PngFormatError('Invalid PNG header order.');
+      width = view.getUint32(offset + 8); height = view.getUint32(offset + 12);
+      if (!width || !height || width > dimension || height > dimension || width * height > pixels || data[8] !== 8 || data[9] !== 2 || data[10] || data[11] || data[12])
+        throw new PngFormatError('Unsupported PNG dimensions or pixel format.');
+    } else if (type === 'IDAT') {
+      if (!width || ended) throw new PngFormatError('PNG data before header.');
+      idats.push(data); dataSeen = true;
+    } else if (type === 'IEND') {
+      if (length || !dataSeen || end !== bytes.length) throw new PngFormatError('Invalid PNG end.');
+      ended = true; break;
+    } else throw new PngFormatError('Unexpected PNG chunk: ' + type);
+    offset = end;
+  }
+  if (!ended) throw new PngFormatError('Incomplete PNG.');
+  return { width, height, idats };
+}
+async function* decodeRgbPngBands(bytes, limits = { dimension: 8192, pixels: 36_000_000 }) {
+  const { width, height, idats } = rgbPngParts(bytes, limits), stride = width * 3;
+  let part = 0, offset = 0;
+  const packed = new ReadableStream({ pull(controller) {
+    while (part < idats.length && offset === idats[part].length) { part++; offset = 0; }
+    if (part === idats.length) { controller.close(); return; }
+    const end = Math.min(offset + 16_384, idats[part].length);
+    controller.enqueue(idats[part].subarray(offset, end)); offset = end;
+  }});
+  const reader = packed.pipeThrough(new DecompressionStream('deflate')).getReader();
+  let pending = new Uint8Array(), previous = new Uint8Array(stride), row = 0;
+  let band = new Uint8Array(Math.min(64, height) * stride), inBand = 0;
+  const paeth = (a, b, c) => { const p = a + b - c, x = Math.abs(p-a), y = Math.abs(p-b), z = Math.abs(p-c); return x <= y && x <= z ? a : y <= z ? b : c; };
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const raw = pngJoin([pending, value]); let at = 0;
+      while (raw.length - at >= stride + 1) {
+        if (row >= height) throw new PngFormatError('Extra decompressed PNG bytes.');
+        const filter = raw[at++]; if (filter > 4) throw new PngFormatError('Unknown PNG filter.');
+        const current = band.subarray(inBand * stride, (inBand + 1) * stride);
+        if (filter === 0) { current.set(raw.subarray(at,at+stride)); at += stride; }
+        else for (let x = 0; x < stride; x++) {
+          const a = x >= 3 ? current[x-3] : 0, b = previous[x], c = x >= 3 ? previous[x-3] : 0;
+          const prediction = filter === 0 ? 0 : filter === 1 ? a : filter === 2 ? b : filter === 3 ? Math.floor((a+b)/2) : paeth(a,b,c);
+          current[x] = (raw[at++] + prediction) & 255;
+        }
+        previous.set(current); row++; inBand++;
+        if (inBand === 64 || row === height) {
+          yield { y: row-inBand, width, height, rows: inBand, rgb: band };
+          inBand = 0; band = new Uint8Array(Math.min(64, height-row) * stride);
+        }
+      }
+      pending = raw.slice(at);
+    }
+    if (row !== height || pending.length) throw new PngFormatError('Wrong PNG pixel length.');
+  } catch (error) {
+    if (error instanceof PngFormatError) throw error;
+    if (error instanceof TypeError || ['Z_DATA_ERROR','Z_BUF_ERROR'].includes(error?.code) || error?.name === 'DataError') throw new PngFormatError('Invalid PNG deflate stream.');
+    throw error;
+  } finally { await reader.cancel().catch(() => {}); }
+}
+
+// SPDX-License-Identifier: MIT
+// Blob workers keep the downloadable viewer self-contained and network-free.
+function guardHashWorker() {
+  self.onmessage = async ({ data }) => {
+    try {
+      const hashes = [];
+      for (const bytes of data) {
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+        hashes.push(Array.from(digest, b => b.toString(16).padStart(2, '0')).join(''));
+      }
+      self.postMessage({ hashes });
+    } catch (error) { self.postMessage({ error: error.message }); }
+  };
+}
+function createTileHasher(count) {
+  const workers = [];
+  let url;
+  if (count > 1024 && typeof Worker === 'function') {
+    try {
+      url = URL.createObjectURL(new Blob(['(' + guardHashWorker.toString() + ')()'], { type: 'text/javascript' }));
+      for (let i = 0; i < Math.min(8, globalThis.navigator?.hardwareConcurrency || 2); i++) workers.push(new Worker(url));
+    } catch { for (const worker of workers) worker.terminate(); workers.length = 0; }
+  }
+  return {
+    workerCount: workers.length,
+    async hash(buffers) {
+      if (!workers.length) return Promise.all(buffers.map(async bytes => {
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+        return Array.from(digest, b => b.toString(16).padStart(2, '0')).join('');
+      }));
+      const groups = workers.map(() => []);
+      buffers.forEach((buffer, i) => groups[i % workers.length].push(buffer));
+      const results = await Promise.all(workers.map((worker, i) => new Promise((resolve, reject) => {
+        worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.hashes);
+        worker.onerror = event => reject(new Error(event.message || 'Tile hash worker failed.'));
+        worker.postMessage(groups[i], groups[i].map(buffer => buffer.buffer));
+      })));
+      return buffers.map((_, i) => results[i % workers.length][Math.floor(i / workers.length)]);
+    },
+    close() { for (const worker of workers) worker.terminate(); if (url) URL.revokeObjectURL(url); },
+  };
+}
+
+// SPDX-License-Identifier: MIT
+const GRD3_LIMITS = Object.freeze({ bytes: 256*1024*1024, dimension: 8192, pixels: 36_000_000, tiles: 9000 });
+function isGRD3(input) {
+  const b = input instanceof Uint8Array ? input : new Uint8Array(input);
+  return b[0] === 71 && b[1] === 82 && b[2] === 68 && b[3] === 51 && b[4] === 10;
+}
+function encodeGRD3(doc) {
+  validateManifest(doc.manifest);
+  if (doc.manifest.version !== 3) throw new IntegrityError('GRD3 requires a version 3 manifest.');
+  const manifest = new TextEncoder().encode(canon(doc.manifest)), signature = decodeBase64(doc.signature,64);
+  const png = doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image);
+  if (!Array.isArray(doc.tiles) || doc.tiles.length !== doc.manifest.commitments.length) throw new IntegrityError('Invalid GRD3 tile count.');
+  let recordBytes = 0;
+  for (const t of doc.tiles) {
+    if (doc.manifest.subTile) validateSubRecord(doc.manifest,t,t.index);
+    recordBytes += t.sub ? 3+t.sub.reduce((n,s)=>n+(s.salt?17:33),0) : (Object.hasOwn(t,'salt')||t.seed) ? 17 : 33;
+  }
+  const total = 5+4+manifest.length+64+4+recordBytes+8+png.length;
+  if (total > GRD3_LIMITS.bytes) throw new IntegrityError('GRD3 exceeds 256 MiB.');
+  const out = new Uint8Array(total), view = new DataView(out.buffer); let at=0;
+  out.set([71,82,68,51,10],at); at+=5; view.setUint32(at,manifest.length);at+=4;out.set(manifest,at);at+=manifest.length;out.set(signature,at);at+=64;
+  view.setUint32(at,doc.tiles.length);at+=4;
+  const putHex = value => { for(let j=0;j<value.length;j+=2)out[at++]=parseInt(value.slice(j,j+2),16); };
+  for (let i=0;i<doc.tiles.length;i++) {
+    const t=doc.tiles[i], retained=Object.hasOwn(t,'salt') || Object.hasOwn(t,'seed');
+    if (doc.manifest.subTile) validateSubRecord(doc.manifest,t,i);
+    if (t.sub) {
+      out[at++]=3;view.setUint16(at,t.sub.length);at+=2;
+      for(const s of t.sub){out[at++]=s.salt?0:1;putHex(s.salt??s.commitment);}
+      continue;
+    }
+    if (t.index!==i || Object.keys(t).length!==2) throw new IntegrityError('Invalid tile record.');
+    const value=retained?(t.salt??t.seed):t.commitment;
+    if (typeof value!=='string' || !(retained?/^[0-9a-f]{32}$/:/^[0-9a-f]{64}$/).test(value)) throw new IntegrityError('Invalid GRD3 record bytes.');
+    const method=doc.redactions.find(r=>r.index===i)?.method;
+    if (!retained && !['black','blur'].includes(method)) throw new IntegrityError('Missing GRD3 redaction method.');
+    out[at++]=retained?0:method==='black'?1:2;putHex(value);
+  }
+
+  view.setBigUint64(at,BigInt(png.length));at+=8;out.set(png,at);return out;
+}
+function decodeGRD3(input) {
+  const b=input instanceof Uint8Array?input:new Uint8Array(input);
+  if(b.length>GRD3_LIMITS.bytes)throw new IntegrityError('GRD3 exceeds 256 MiB.');
+  if(!isGRD3(b))throw new IntegrityError('Missing GRD3 header.');
+  const view=new DataView(b.buffer,b.byteOffset,b.byteLength);let at=5;
+  const need=n=>{if(!Number.isSafeInteger(n)||n<0||at+n>b.length)throw new IntegrityError('Truncated GRD3 section.');};
+  need(4);const length=view.getUint32(at);at+=4;if(length>2*1024*1024)throw new IntegrityError('Manifest length exceeds bound.');need(length);
+  let raw,m;
+  try{raw=new TextDecoder('utf-8',{fatal:true}).decode(b.subarray(at,at+length));m=JSON.parse(raw);}catch(error){if(error instanceof TypeError||error instanceof SyntaxError)throw new IntegrityError('Invalid GRD3 manifest encoding.');throw error;}
+  at+=length;const count=validateManifest(m);
+  if(m.version!==3||canon(m)!==raw)throw new IntegrityError('Noncanonical GRD3 manifest.');
+  need(68);const signature=base64(b.subarray(at,at+64));at+=64;const n=view.getUint32(at);at+=4;
+  if(n!==count)throw new IntegrityError('GRD3 tile count mismatch.');
+  const tiles=[],redactions=[];
+  const toHex=a=>Array.from(a,x=>x.toString(16).padStart(2,'0')).join('');
+  for(let index=0;index<n;index++){
+    need(1);const kind=b[at++];
+    if(kind===3 && m.subTile){
+      need(2);const count=view.getUint16(at);at+=2;if(count!==subTileCount(m,index))throw new IntegrityError('Wrong sub-record count.');
+      const sub=[];
+      for(let j=0;j<count;j++){
+        need(1);const k=b[at++];if(k>1)throw new IntegrityError('Invalid sub-record kind.');
+        const size=k?32:16;need(size);const value=toHex(b.subarray(at,at+size));at+=size;sub.push(k?{j,commitment:value}:{j,salt:value});
+      }
+      const t={index,sub};validateSubRecord(m,t,index);tiles.push(t);redactions.push({index,method:'black'});continue;
+    }
+    if(kind>2 || (m.subTile&&kind===2))throw new IntegrityError('Unknown GRD3 tile kind.');
+    const size=kind?32:16;need(size);const value=toHex(b.subarray(at,at+size));at+=size;
+    const t=kind?{index,commitment:value}:m.subTile?{index,seed:value}:{index,salt:value};
+    if(m.subTile)validateSubRecord(m,t,index);tiles.push(t);if(kind)redactions.push({index,method:kind===1?'black':'blur'});
+  }
+
+  need(8);const pngLength=view.getBigUint64(at);at+=8;
+  if(pngLength>BigInt(GRD3_LIMITS.bytes)||pngLength!==BigInt(b.length-at))throw new IntegrityError('Invalid GRD3 PNG length or trailing bytes.');
+  return {manifest:m,signature,tiles,redactions,image:b.subarray(at)};
+}
+async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
+  const bytes=input instanceof Uint8Array?input:new Uint8Array(input);
+  const r={version:3,verdict:'TAMPERED',genuine:false,viewable:false,checks:[],sections:[],problems:[],failed:[],changed:[],hiddenPixelsCleared:true,signature_valid:false};
+  const ok=(name,detail)=>r.checks.push({name,status:'pass',detail});let hasher;
+  try {
+    if(bytes.length>GRD3_LIMITS.bytes){r.verdict='LIMIT EXCEEDED';throw new IntegrityError('GRD3 exceeds 256 MiB.');}
+    if(anchors?._invalid||TRUSTED?._invalid||!Array.isArray(anchors))throw new Error('Invalid local trust anchors.');
+    const doc=decodeGRD3(bytes),m=doc.manifest;
+    ok("Container structure",doc.tiles.length+" ordered parent records · binary lengths agree");
+    r.assetId=m.assetId;r.created=m.created;r.root=m.root;r.keyId=m.keyId;
+    const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
+    if(await sha(pk)!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
+    r.revocation=await checkRevocation(pk,policy);
+    if(r.revocation.revoked){r.verdict='REVOKED KEY';throw new IntegrityError('Signing key is revoked.');}
+    ok('Offline revocation','Not listed in bundled snapshot · '+r.revocation.asOf);
+    const key=await crypto.subtle.importKey('raw',pk,'Ed25519',false,['verify']);
+    r.signature_valid=await crypto.subtle.verify('Ed25519',key,decodeBase64(doc.signature,64),await manifestDigest(m));
+    if(!r.signature_valid)throw new IntegrityError('Manifest signature is invalid.');
+    if(await merkleRoot(m.commitments)!==m.root)throw new IntegrityError('Signed root mismatch.');
+    ok('Signed manifest','Ed25519 · GRD3 domain · complete commitment vector');
+    const parts=rgbPngParts(doc.image,GRD3_LIMITS);
+    if(parts.width!==m.width||parts.height!==m.height)throw new IntegrityError('PNG dimensions differ from signed manifest.');
+    hasher=createTileHasher(m.subTile?0:doc.tiles.length);r.hashWorkers=hasher.workerCount;r.maxDecodedRows=64;
+    const prefix=new TextEncoder().encode('GRD-TILE');
+    for await(const band of decodeRgbPngBands(doc.image,GRD3_LIMITS)) {
+      const buffers=[],indices=[];
+      const first=Math.floor(band.y/64)*Math.ceil(m.width/64),end=first+Math.ceil(m.width/64);
+      for(let i=first;i<end;i++){
+        const t=doc.tiles[i],bounds=tileBounds(m,i),rgb=new Uint8Array(bounds.width*bounds.height*3);
+        for(let y=0;y<bounds.height;y++)rgb.set(band.rgb.subarray((y*m.width+bounds.x)*3,(y*m.width+bounds.x+bounds.width)*3),y*bounds.width*3);
+        if(m.subTile){await verifySubTile(m,t,i,rgb);continue;}
+        if(Object.hasOwn(t,'commitment')){
+          if(t.commitment!==m.commitments[i])throw new IntegrityError('Wrong commitment at tile '+i);
+          if(doc.redactions.find(e=>e.index===i).method==='black'){
+            if(rgb.some(x=>x!==0)){r.hiddenPixelsCleared=false;throw new IntegrityError('blackout incomplete (tile '+i+')');}
+          }else{r.hiddenPixelsCleared=false;r.problems.push('Legacy blur redaction (tile '+i+'): pixels not verified.');}
+        }else{
+          const message=new Uint8Array(prefix.length+4+16+rgb.length);message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,i);
+          message.set(Uint8Array.from(t.salt.match(/../g),x=>parseInt(x,16)),prefix.length+4);message.set(rgb,prefix.length+20);buffers.push(message);indices.push(i);
+        }
+      }
+      const hashes=await hasher.hash(buffers);
+      hashes.forEach((hash,j)=>{if(hash!==m.commitments[indices[j]])throw new IntegrityError('Non-redacted tile '+indices[j]+' was changed.');});
+    }
+    ok('Streaming tile commitments',doc.tiles.length+' tiles checked in 64-row bands');
+    r.fileHash=await sha(bytes);r.tilesTotal=doc.tiles.length;r.redactedTiles=doc.redactions.map(e=>e.index);r.tilesVisible=r.tilesTotal-r.redactedTiles.length;r.tileSize=64;
+    r.redactionMap=m.subTile?subRedactionMap(doc):doc.redactions.map(e=>({index:e.index,...tileBounds(m,e.index),claimedMethod:e.method,methodAttested:false}));
+    if(m.subTile){r.subTile=m.subTile;r.subTilesTotal=doc.tiles.reduce((n,t)=>n+subTileCount(m,t.index),0);r.subTilesVisible=doc.tiles.reduce((n,t)=>n+(t.seed?subTileCount(m,t.index):t.sub?t.sub.filter(s=>s.salt).length:0),0);}
+    r.regionVerified=true;r.redactionApproval='not_attested';r.container=doc;
+    r.meta={asset_id:m.assetId,created_utc:m.created,width:m.width,height:m.height,mime:'image/png',original_filename:m.label||undefined};
+    const anchor=anchors.find(k=>k.public_key_hex===m.publicKey);
+    r.demo=m.purpose==='demo';r.personal=m.purpose==='personal';r.trusted=!!anchor&&!r.demo&&!r.personal;r.signer=anchor?.name??anchor?.owner??'Untrusted signer';r.signerName=anchor?.name??anchor?.owner;r.fingerprint=m.keyId;
+    r.checks.push({name:'Signer trust',status:r.trusted?'pass':r.demo||r.personal?'info':'fail',detail:r.demo?'DEMO ONLY':r.personal?'SELF-SIGNED':r.signer});
+    if(!r.trusted&&!r.demo&&!r.personal)r.verdict='UNTRUSTED SIGNER';
+    else if(!doc.tiles.some(t=>t.salt||t.seed||t.sub?.some(s=>s.salt)))r.verdict='FULLY REDACTED';
+    else {r.verdict=r.demo?'DEMO':r.personal?'UNVERIFIED: SELF-SIGNED':r.redactedTiles.length?'VERIFIED WITH REDACTIONS':'GENUINE';r.genuine=r.verdict==='GENUINE';r.viewable=true;}
+    return r;
+  }catch(error){
+    if(error.message?.startsWith("blackout incomplete"))r.hiddenPixelsCleared=false;
+    if(error.name==='ResourceLimitError')r.verdict='LIMIT EXCEEDED';
+    else if(!['LIMIT EXCEEDED','REVOKED KEY'].includes(r.verdict)){
+      if(error instanceof IntegrityError||error instanceof PngFormatError)r.verdict='TAMPERED';
+      else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';
+      else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}
+    }
+    r.problems.push(error.message);r.failed.push('GRD3 proof');r.changed=[...r.failed];return r;
+  }finally{hasher?.close();}
+}
+
+// SPDX-License-Identifier: MIT
+const VISUAL_GUARANTEE = 'A VISUALLY CONSISTENT result means every disclosed 8×8 brightness block and 16×16 colour block is within 9 levels of the signed reference. Finer detail is NOT verified. Mean-preserving edits and some smooth blurs can pass.';
+function visualFeatures(rgb,width,height) {
+  if (!(rgb instanceof Uint8Array)||!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>64||height>64||rgb.length!==width*height*3)throw new IntegrityError('Invalid visual tile dimensions.');
+  const sums=new Uint32Array(96),counts=new Uint16Array(96);
+  const clamp=x=>Math.max(0,Math.min(255,x));
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    const at=(y*width+x)*3,r=rgb[at],g=rgb[at+1],b=rgb[at+2];
+    const l=(y>>>3)*8+(x>>>3),c=(y>>>4)*4+(x>>>4);
+    sums[l]+=Math.floor((299*r+587*g+114*b+500)/1000);counts[l]++;
+    sums[64+c]+=clamp(Math.floor((128000000-168736*r-331264*g+500000*b+500000)/1000000));counts[64+c]++;
+    sums[80+c]+=clamp(Math.floor((128000000+500000*r-418688*g-81312*b+500000)/1000000));counts[80+c]++;
+  }
+  return Uint8Array.from(sums,(sum,i)=>counts[i]?Math.floor((sum+Math.floor(counts[i]/2))/counts[i]):i<64?0:128);
+}
+// Exact rational overlap in integer coordinate units. Cell sums are <=255*256*cw*ch,
+// hence <=2,350,080,000,000 under the 36M-pixel limit: exact in Number (<2^42).
+function mappedVisualTile(rgb,cw,ch,m,index) {
+  if (!(rgb instanceof Uint8Array)||!Number.isInteger(cw)||!Number.isInteger(ch)||cw<1||ch<1||cw>8192||ch>8192||cw*ch>36_000_000||rgb.length!==cw*ch*3)throw new IntegrityError('Invalid native visual pixels.');
+  if(!m||m.tileSize!==64||!Number.isInteger(m.width)||!Number.isInteger(m.height)||m.width<1||m.height<1||m.width>8192||m.height>8192||m.width*m.height>36_000_000||!Number.isInteger(index)||index<0||index>=Math.ceil(m.width/64)*Math.ceil(m.height/64))throw new IntegrityError('Invalid signed visual grid.');
+  const b=tileBounds(m,index),out=new Uint8Array(96);out.fill(128,64);
+  for(const size of [8,16])for(let yy=0;yy<64;yy+=size)for(let xx=0;xx<64;xx+=size){
+    if(xx>=b.width||yy>=b.height)continue;
+    const left=(b.x+xx)*cw,right=(b.x+Math.min(xx+size,b.width))*cw,top=(b.y+yy)*ch,bottom=(b.y+Math.min(yy+size,b.height))*ch;
+    let sy=0,scb=0,scr=0;const area=(right-left)*(bottom-top);
+    for(let y=Math.floor(top/m.height);y<Math.ceil(bottom/m.height);y++){
+      const wy=Math.min(bottom,(y+1)*m.height)-Math.max(top,y*m.height);
+      for(let x=Math.floor(left/m.width);x<Math.ceil(right/m.width);x++){
+        const weight=wy*(Math.min(right,(x+1)*m.width)-Math.max(left,x*m.width)),at=(y*cw+x)*3,r=rgb[at],g=rgb[at+1],v=rgb[at+2];
+        if(size===8)sy+=weight*Math.floor((299*r+587*g+114*v+500)/1000);
+        else {scb+=weight*Math.max(0,Math.min(255,Math.floor((128000000-168736*r-331264*g+500000*v+500000)/1000000)));scr+=weight*Math.max(0,Math.min(255,Math.floor((128000000+500000*r-418688*g-81312*v+500000)/1000000)));}
+      }
+    }
+    const cell=(yy/size)*(64/size)+xx/size,round=n=>Math.floor((n+Math.floor(area/2))/area);
+    if(size===8)out[cell]=round(sy);else {out[64+cell]=round(scb);out[80+cell]=round(scr);}
+  }
+  return out;
+}
+function visualDecision(error,tau=9) {return error>=tau-2&&error<=tau+2?'BORDERLINE (decoder-dependent)':error<tau-2?'VISUALLY CONSISTENT':'VISUALLY INCONSISTENT';}
+async function visualSalt(salt) {
+  const bytes=Uint8Array.from(salt.match(/../g),x=>parseInt(x,16));
+  const key=await crypto.subtle.importKey('raw',bytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('GRD-VIS'))).subarray(0,16);
+}
+async function visualCommitment(index,salt,feature) {
+  const prefix=new TextEncoder().encode('GRD-VIS'),message=new Uint8Array(prefix.length+4+16+96);
+  message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,index);message.set(salt,prefix.length+4);message.set(feature,prefix.length+20);return sha(message);
+}
+function visualTile(rgb,m,index) {
+  const b=tileBounds(m,index),out=new Uint8Array(b.width*b.height*3);
+  for(let y=0;y<b.height;y++)out.set(rgb.subarray(((b.y+y)*m.width+b.x)*3,((b.y+y)*m.width+b.x+b.width)*3),y*b.width*3);
+  return visualFeatures(out,b.width,b.height);
+}
+async function exportProof(container) {
+  const bytes=container instanceof Uint8Array?container:encodeGRD2(container),report=await verifyGRD2(bytes,[]);
+  if(!report.regionVerified||report.verdict==='REVOKED KEY')throw new IntegrityError('Cannot export proof from invalid source.');
+  const doc=report.container??JSON.parse(new TextDecoder().decode(bytes.subarray(5))),m=doc.manifest;
+  if(doc.tiles.some(t=>t.sub))throw new Error("Visual proof export requires whole 64px tile redactions; partially hidden tiles cannot disclose their original block means safely.");
+  if(!m.visual)throw new Error('No visual layer in this legacy file.');
+  const decoded=await decodeRgbPng(containerImage(doc),m.version===3?GRD3_LIMITS:undefined),vis=[];
+  for(let i=0;i<doc.tiles.length;i++){
+    const t=doc.tiles[i];
+    if(Object.hasOwn(t,'commitment'))vis.push({index:i,commitment:m.visual.commitments[i]});
+    else{
+      const salt=await visualSalt(t.salt??t.seed),feature=mappedVisualTile(decoded.rgb,decoded.width,decoded.height,m,i);
+      if(await visualCommitment(i,salt,feature)!==m.visual.commitments[i])throw new IntegrityError('Visual reference no longer opens (tile '+i+').');
+      vis.push({index:i,salt:base64(salt),feature:base64(feature)});
+    }
+  }
+  return new TextEncoder().encode('GRDP\n'+canon({manifest:m,signature:doc.signature,vis}));
+}
+async function visualDecodeImage(bytes,m) {
+  if(bytes.length>GRD3_LIMITS.bytes)throw new IntegrityError('Candidate image exceeds size limit.');
+  if(typeof createImageBitmap==='function'){
+    const ascii=(start,length)=>String.fromCharCode(...bytes.subarray(start,start+length));
+    const mime=bytes[0]===137&&ascii(1,3)==='PNG'?'image/png':bytes[0]===255&&bytes[1]===216?'image/jpeg':ascii(0,4)==='RIFF'&&ascii(8,4)==='WEBP'?'image/webp':null;
+    if(!mime)throw new IntegrityError('Use a PNG, JPEG or WebP copy.');
+    const [encodedWidth,encodedHeight]=encodedDimensions(bytes,mime);
+    if(!encodedWidth||!encodedHeight||encodedWidth>8192||encodedHeight>8192||encodedWidth*encodedHeight>36_000_000)throw new IntegrityError('Candidate image dimensions exceed limits.');
+    if(Math.abs((encodedWidth/encodedHeight)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
+    let bitmap;
+    try {
+      bitmap=await createImageBitmap(new Blob([bytes]),{imageOrientation:'none'});
+      const w=bitmap.width,h=bitmap.height;
+      if(!w||!h||w>8192||h>8192||w*h>36_000_000)throw new IntegrityError('Candidate image dimensions exceed limits.');
+      if(Math.abs((w/h)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
+      const canvas=typeof OffscreenCanvas==='function'?new OffscreenCanvas(w,h):document.createElement('canvas');canvas.width=w;canvas.height=h;
+      const context=canvas.getContext('2d',{willReadFrequently:true});context.fillStyle='#fff';context.fillRect(0,0,w,h);context.drawImage(bitmap,0,0);
+      const rgba=context.getImageData(0,0,w,h).data,rgb=new Uint8Array(w*h*3);
+      for(let i=0;i<w*h;i++)rgb.set(rgba.subarray(i*4,i*4+3),i*3);return {rgb,width:w,height:h};
+    }finally{bitmap?.close();}
+  }
+  // Node uses a local image codec. The browser never loads this dependency.
+  if(!globalThis.process?.versions?.node)throw new DOMException('Image-copy decoding is unavailable in this browser.','NotSupportedError');
+  const {default:sharp}=await import('sharp');
+  const image=sharp(bytes,{limitInputPixels:36_000_000,failOn:'warning'}),info=await image.metadata();
+  if(!['png','jpeg','webp'].includes(info.format)||!info.width||!info.height||info.width>8192||info.height>8192)throw new IntegrityError('Unsupported candidate image.');
+  if(Math.abs((info.width/info.height)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
+  const rgb=await image.flatten({background:'#fff'}).removeAlpha().toColourspace('srgb').raw().toBuffer();return {rgb,width:info.width,height:info.height};
+}
+async function verifyVisual(proof,imageBytes,anchors=TRUSTED,policy=TRUST_POLICY) {
+  const r={verdict:'TAMPERED',genuine:false,viewable:false,problems:[],visualConsistent:false,guarantee:VISUAL_GUARANTEE};
+  try{
+    const bytes=proof instanceof Uint8Array?proof:new Uint8Array(proof);
+    if(bytes.length>16*1024*1024)throw new IntegrityError('Visual proof exceeds 16 MiB.');
+    let raw,p;
+    try{raw=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(5));p=JSON.parse(raw);}catch(error){throw new IntegrityError('Invalid visual proof encoding.');}
+    if(new TextDecoder().decode(bytes.subarray(0,5))!=='GRDP\n'||!p||Object.keys(p).sort().join(',')!=='manifest,signature,vis'||canon(p)!==raw)throw new IntegrityError('Noncanonical visual proof.');
+    const m=p.manifest,count=validateManifest(m);
+    if(!m.visual){r.verdict='UNSUPPORTED';r.problems.push('No visual layer.');return r;}
+    const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
+    if(await sha(pk)!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
+    r.revocation=await checkRevocation(pk,policy);if(r.revocation.revoked){r.verdict='REVOKED KEY';r.problems.push('Signing key is revoked.');return r;}
+    const key=await crypto.subtle.importKey('raw',pk,'Ed25519',false,['verify']);
+    if(!await crypto.subtle.verify('Ed25519',key,decodeBase64(p.signature,64),await manifestDigest(m)))throw new IntegrityError('Invalid visual manifest signature.');
+    if(await merkleRoot(m.commitments)!==m.root)throw new IntegrityError('Invalid exact commitment root.');
+    if(!Array.isArray(p.vis)||p.vis.length!==count)throw new IntegrityError('Invalid visual disclosures.');
+    const features=[];
+    for(let i=0;i<count;i++){
+      const t=p.vis[i];if(!t||t.index!==i)throw new IntegrityError('Unordered visual tile.');
+      if(Object.keys(t).sort().join(',')==='commitment,index'){
+        if(t.commitment!==m.visual.commitments[i])throw new IntegrityError('Wrong hidden visual commitment.');features.push(null);
+      }else{
+        if(Object.keys(t).sort().join(',')!=='feature,index,salt')throw new IntegrityError('Invalid visual disclosure fields.');
+        const salt=decodeBase64(t.salt,16),feature=decodeBase64(t.feature,96);
+        if(await visualCommitment(i,salt,feature)!==m.visual.commitments[i])throw new IntegrityError('Visual feature proof mismatch (tile '+i+').');features.push(feature);
+      }
+    }
+    const anchor=Array.isArray(anchors)?anchors.find(k=>k.public_key_hex===m.publicKey):null;
+    if(!Array.isArray(anchors)||anchors._invalid)throw new Error('Invalid local trust anchors.');
+    r.trusted=!!anchor&&m.purpose==='asset';r.signer=anchor?.name??anchor?.owner??'Identity not verified';r.trustVerdict=m.purpose==='demo'?'DEMO':m.purpose==='personal'?'UNVERIFIED: SELF-SIGNED':anchor?'TRUSTED':'UNTRUSTED SIGNER';
+    const decoded=await visualDecodeImage(imageBytes instanceof Uint8Array?imageBytes:new Uint8Array(imageBytes),m);
+    r.worstError=0;r.worstTile=null;r.worstCell=null;
+    if(decoded.aspectMismatch){r.verdict='VISUALLY INCONSISTENT';r.visualVerdict=r.verdict;r.problems.push('Aspect ratio differs by more than 1%.');return r;}
+    for(let i=0;i<count;i++){
+      const actual=mappedVisualTile(decoded.rgb,decoded.width,decoded.height,m,i),expected=features[i];
+      for(let cell=0;cell<(expected?96:64);cell++){
+        const b=tileBounds(m,i),cx=(cell%8)*8,cy=Math.floor(cell/8)*8;
+        if(!expected&&(cx>=b.width||cy>=b.height))continue;
+        const error=expected?Math.abs(actual[cell]-expected[cell]):actual[cell];
+        if(error>r.worstError){r.worstError=error;r.worstTile=i;r.worstCell=cell;}
+      }
+    }
+    r.visualVerdict=visualDecision(r.worstError,m.visual.tau);
+    r.visualConsistent=r.visualVerdict==='VISUALLY CONSISTENT';
+    if(!features.some(feature=>feature!==null)&&r.visualVerdict!=='VISUALLY INCONSISTENT'){r.verdict='FULLY REDACTED';r.visualVerdict='FULLY REDACTED';r.visualConsistent=false;r.problems.push('No visible original block means are disclosed.');return r;}
+    r.verdict=r.visualVerdict==='BORDERLINE (decoder-dependent)'?r.visualVerdict:!r.visualConsistent?'VISUALLY INCONSISTENT':r.trusted?'VISUALLY CONSISTENT':r.trustVerdict;
+    if(r.visualVerdict==='BORDERLINE (decoder-dependent)'){r.warning='Close to the threshold; result may differ between apps';r.problems.push(r.warning);}
+    r.assetId=m.assetId;r.width=m.width;r.height=m.height;r.tau=m.visual.tau;
+    if(!r.trusted)r.problems.push('Visual matching does not establish signer identity. '+r.trustVerdict+'.');
+    return r;
+  }catch(error){if(error instanceof IntegrityError)r.verdict='TAMPERED';else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}r.problems.push(error.message);return r;}
+}
+
+// SPDX-License-Identifier: MIT
+function subTileBounds(m,index,j) {
+  const b=tileBounds(m,index),g=m.subTile,cols=Math.ceil(b.width/g),x=(j%cols)*g,y=Math.floor(j/cols)*g;
+  return {x:b.x+x,y:b.y+y,width:Math.min(g,b.width-x),height:Math.min(g,b.height-y)};
+}
+function subTileCount(m,index){const b=tileBounds(m,index);return Math.ceil(b.width/m.subTile)*Math.ceil(b.height/m.subTile);}
+async function subSalts(seed,count){
+ const key=await crypto.subtle.importKey('raw',Uint8Array.from(seed.match(/../g),x=>parseInt(x,16)),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ return Promise.all(Array.from({length:count},async(_,j)=>{const message=new Uint8Array([71,82,68,45,83,85,66,0,0]);new DataView(message.buffer).setUint16(7,j);return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',key,message)).subarray(0,16),b=>b.toString(16).padStart(2,'0')).join('');}));
+}
+async function subCommitment(index,j,salt,rgb){
+ const prefix=new TextEncoder().encode('GRD-SUBTILE'),message=new Uint8Array(prefix.length+4+2+16+rgb.length);message.set(prefix);const view=new DataView(message.buffer);view.setUint32(prefix.length,index);view.setUint16(prefix.length+4,j);message.set(Uint8Array.from(salt.match(/../g),x=>parseInt(x,16)),prefix.length+6);message.set(rgb,prefix.length+22);return sha(message);
+}
+async function subParentCommitment(index,commitments){
+ const prefix=new TextEncoder().encode('GRD-TILE2'),message=new Uint8Array(prefix.length+4+32*commitments.length);message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,index);
+ commitments.forEach((c,j)=>message.set(Uint8Array.from(c.match(/../g),x=>parseInt(x,16)),prefix.length+4+j*32));return sha(message);
+}
+function subPixels(tile,m,index,j){
+ const b=tileBounds(m,index),s=subTileBounds(m,index,j),x=s.x-b.x,y=s.y-b.y,out=new Uint8Array(s.width*s.height*3);
+ for(let r=0;r<s.height;r++)out.set(tile.subarray(((y+r)*b.width+x)*3,((y+r)*b.width+x+s.width)*3),r*s.width*3);return out;
+}
+async function sealSubTile(m,index,seed,tile){
+ const salts=await subSalts(seed,subTileCount(m,index)),commitments=await Promise.all(salts.map((salt,j)=>subCommitment(index,j,salt,subPixels(tile,m,index,j))));
+ return {commitment:await subParentCommitment(index,commitments),salts,commitments};
+}
+function validateSubRecord(m,t,index){
+ const keys=Object.keys(t).sort().join(',');
+ if(t.index!==index)throw new IntegrityError('Wrong tile index.');
+ if(keys==='index,seed'){
+  if(typeof t.seed!=='string'||!/^[0-9a-f]{32}$/.test(t.seed))throw new IntegrityError('Invalid tile seed.');
+ }else if(keys==='commitment,index'){
+  if(typeof t.commitment!=='string'||!/^[0-9a-f]{64}$/.test(t.commitment))throw new IntegrityError('Invalid hidden tile commitment.');
+ }else if(keys==='index,sub'){
+  if(!Array.isArray(t.sub)||t.sub.length!==subTileCount(m,index))throw new IntegrityError('Wrong sub-record count.');
+  let hidden=0;
+  t.sub.forEach((s,j)=>{
+   if(!s||s.j!==j)throw new IntegrityError('Unordered sub-record.');
+   const k=Object.keys(s).sort().join(',');
+   if(k==='j,salt'){if(typeof s.salt!=='string'||!/^[0-9a-f]{32}$/.test(s.salt))throw new IntegrityError('Invalid sub-tile salt.');}
+   else if(k==='commitment,j'){if(typeof s.commitment!=='string'||!/^[0-9a-f]{64}$/.test(s.commitment))throw new IntegrityError('Invalid sub-tile commitment.');hidden++;}
+   else throw new IntegrityError('Invalid sub-record fields.');
+  });
+  if(!hidden||hidden===t.sub.length)throw new IntegrityError('Partial tile must contain both retained and hidden sub-tiles.');
+ }else throw new IntegrityError('Seed must be absent on a partially hidden tile.');
+}
+async function verifySubTile(m,t,index,tile){
+ validateSubRecord(m,t,index);
+ if(Object.hasOwn(t,'commitment')){
+  if(t.commitment!==m.commitments[index]||tile.some(x=>x!==0))throw new IntegrityError('blackout incomplete or wrong commitment (tile '+index+')');return;
+ }
+ if(t.seed){if((await sealSubTile(m,index,t.seed,tile)).commitment!==m.commitments[index])throw new IntegrityError('Non-redacted tile '+index+' changed.');return;}
+ const commitments=[];
+ for(const s of t.sub){
+  const pixels=subPixels(tile,m,index,s.j);
+  if(s.commitment){if(pixels.some(x=>x!==0))throw new IntegrityError('blackout incomplete (tile '+index+' sub '+s.j+')');commitments.push(s.commitment);}
+  else commitments.push(await subCommitment(index,s.j,s.salt,pixels));
+ }
+ if(await subParentCommitment(index,commitments)!==m.commitments[index])throw new IntegrityError('Retained disclosure changed (tile '+index+' sub proof).');
+}
+function subRedactionMap(doc){
+ const m=doc.manifest,out=[];
+ for(const t of doc.tiles){
+  if(t.commitment)out.push({index:t.index,...tileBounds(m,t.index),claimedMethod:'black',methodAttested:false});
+  else if(t.sub)for(const s of t.sub)if(s.commitment)out.push({index:t.index,subIndex:s.j,...subTileBounds(m,t.index,s.j),claimedMethod:'black',methodAttested:false});
+ }
+ return out;
+}
+async function redactRects(document,rects,{granularity=64}={}){
+ const m=document.manifest;
+ if(!m.subTile){if(granularity<64)throw new Error('granularity finer than sealed sub-tile');throw new Error('Use whole-tile redaction for this legacy file.');}
+ if(![8,16,32,64].includes(granularity)||granularity<m.subTile)throw new Error('granularity finer than sealed sub-tile');
+ if(!Array.isArray(rects)||!rects.length)throw new Error('Select at least one rectangle.');
+ const rounded=rects.map(rect=>{
+  const {x,y,width,height}=Array.isArray(rect)?{x:rect[0],y:rect[1],width:rect[2],height:rect[3]}:rect;
+  if(![x,y,width,height].every(Number.isFinite)||width<=0||height<=0)throw new Error('Invalid rectangle.');
+  return {x:Math.floor(x/granularity)*granularity,y:Math.floor(y/granularity)*granularity,right:Math.ceil((x+width)/granularity)*granularity,bottom:Math.ceil((y+height)/granularity)*granularity};
+ });
+ const r=await verifyGRD2(encodeGRD2(document),[]);if(!r.regionVerified)throw new Error('Cannot redact invalid source proof.');
+ const decoded=await decodeRgbPng(containerImage(document),m.version===3?GRD3_LIMITS:undefined),rgb=decoded.rgb,tiles=[];
+ let selected=false;
+ for(let i=0;i<document.tiles.length;i++){
+  const t=document.tiles[i];if(t.commitment){const b=tileBounds(m,i);if(rounded.some(rect=>b.x<rect.right&&b.x+b.width>rect.x&&b.y<rect.bottom&&b.y+b.height>rect.y))selected=true;tiles.push({...t});continue;}
+  const b=tileBounds(m,i),tile=new Uint8Array(b.width*b.height*3);
+  for(let row=0;row<b.height;row++)tile.set(rgb.subarray(((b.y+row)*m.width+b.x)*3,((b.y+row)*m.width+b.x+b.width)*3),row*b.width*3);
+  const material=t.seed?await sealSubTile(m,i,t.seed,tile):null;
+  const sub=material?material.salts.map((salt,j)=>({j,salt})):t.sub.map(s=>({...s}));
+  for(let j=0;j<sub.length;j++){
+   const cell=subTileBounds(m,i,j),hit=rounded.some(rect=>cell.x<rect.right&&cell.x+cell.width>rect.x&&cell.y<rect.bottom&&cell.y+cell.height>rect.y);
+   if(hit){selected=true;if(!sub[j].commitment)sub[j]={j,commitment:material?material.commitments[j]:await subCommitment(i,j,sub[j].salt,subPixels(tile,m,i,j))};}
+   if(sub[j].commitment)for(let row=0;row<cell.height;row++){const at=((cell.y+row)*m.width+cell.x)*3;rgb.fill(0,at,at+cell.width*3);}
+  }
+  const hidden=sub.filter(s=>s.commitment).length;
+  tiles.push(hidden===sub.length?{index:i,commitment:m.commitments[i]}:hidden?{index:i,sub}:t);
+ }
+ if(!selected)throw new Error('No image sub-tiles intersect the rectangles.');
+ const png=await encodeRgbPng(rgb,m.width,m.height),redactions=tiles.filter(t=>t.commitment||t.sub).map(t=>({index:t.index,method:'black'}));
+ return encodeGRD2({manifest:m,signature:document.signature,tiles,redactions,image:m.version===3?png:base64(png)});
+}
+
 // SPDX-License-Identifier: MIT
 
-{ IntegrityError };
 class ProofError extends IntegrityError {}
-class ResourceLimitError extends IntegrityError {}
+class ResourceLimitError extends IntegrityError { constructor(message) { super(message); this.name = "ResourceLimitError"; } }
 
 const TILE_LIMITS = Object.freeze({
   bytes: 32 * 1024 * 1024,
@@ -3035,7 +3567,7 @@ const hashHex = (value) =>
   typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 function isGRD2(input) {
   const d = input instanceof Uint8Array ? input : new Uint8Array(input);
-  return (
+  return isGRD3(d) || (
     d[0] === 71 && d[1] === 82 && d[2] === 68 && d[3] === 50 && d[4] === 10
   );
 }
@@ -3051,17 +3583,19 @@ function tileBounds(m, index) {
   };
 }
 function validateManifest(m) {
+  const v3 = m?.version === 3, limits = v3 ? GRD3_LIMITS : TILE_LIMITS;
   if (
-    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created"] : MANIFEST_FIELDS) ||
-    m.format !== "GRD2" ||
-    m.version !== 2 ||
+    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created", ...(m.visual ? ["visual"] : []), ...(m.subTile ? ["subTile"] : [])] : MANIFEST_FIELDS) ||
+    m.format !== (v3 ? "GRD3" : "GRD2") ||
+    ![2, 3].includes(m.version) ||
     m.pixelFormat !== "RGB8" ||
     m.policy !== "tile-redaction-v1" ||
     !["asset", "demo", "personal"].includes(m.purpose)
   )
     throw new ProofError("Unsupported GRD2 manifest or policy.");
+  if (m.subTile !== undefined && ![8,16,32].includes(m.subTile)) throw new ProofError("Invalid sealed sub-tile size.");
   if (Object.hasOwn(m, "profile")) {
-    if (m.profile !== "2.1") throw new ProofError("Unsupported manifest profile.");
+    if (m.profile !== (v3 ? (m.subTile ? (m.visual ? "3.3" : "3.1") : (m.visual ? "3.2" : "3.0")) : (m.subTile ? (m.visual ? "2.4" : "2.2") : (m.visual ? "2.3" : "2.1")))) throw new ProofError("Unsupported manifest profile.");
     decodeBase64(m.assetId, 16);
     if (typeof m.created !== "string" ||
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(m.created) ||
@@ -3070,18 +3604,18 @@ function validateManifest(m) {
       throw new ProofError("Invalid signer-claimed creation time.");
   }
   if (Number.isInteger(m.width) && Number.isInteger(m.height) &&
-      (m.width > TILE_LIMITS.dimension || m.height > TILE_LIMITS.dimension ||
-       m.width * m.height > TILE_LIMITS.pixels ||
-       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > TILE_LIMITS.tiles))
+      (m.width > limits.dimension || m.height > limits.dimension ||
+       m.width * m.height > limits.pixels ||
+       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > limits.tiles))
     throw new ResourceLimitError("GRD2 image or tile limit exceeded.");
   if (
     !Number.isInteger(m.width) ||
     !Number.isInteger(m.height) ||
     m.width < 1 ||
     m.height < 1 ||
-    m.width > TILE_LIMITS.dimension ||
-    m.height > TILE_LIMITS.dimension ||
-    m.width * m.height > TILE_LIMITS.pixels ||
+    m.width > limits.dimension ||
+    m.height > limits.dimension ||
+    m.width * m.height > limits.pixels ||
     m.tileSize !== 64
   )
     throw new ProofError("GRD2 needs a bounded RGB image and 64px tiles.");
@@ -3095,8 +3629,12 @@ function validateManifest(m) {
   )
     throw new ProofError("Invalid GRD2 root, key or label.");
   const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
+  if (m.visual && (!exactKeys(m.visual, ["version","tau","commitments"]) ||
+      m.visual.version !== "y8c16-v1" || m.visual.tau !== 9 || !Array.isArray(m.visual.commitments) ||
+      m.visual.commitments.length !== count || !m.visual.commitments.every(hashHex)))
+    throw new ProofError("Invalid signed visual layer.");
   if (
-    count > TILE_LIMITS.tiles ||
+    count > limits.tiles ||
     !Array.isArray(m.commitments) ||
     m.commitments.length !== count ||
     !m.commitments.every(hashHex)
@@ -3137,12 +3675,13 @@ async function manifestDigest(manifest) {
   return crypto.subtle.digest(
     "SHA-256",
     joinBytes(
-      textEncoder.encode("GUARD-GRD2-MANIFEST-V1\0"),
+      textEncoder.encode(manifest.version === 3 ? "GUARD-GRD3-MANIFEST-V1\0" : "GUARD-GRD2-MANIFEST-V1\0"),
       textEncoder.encode(canon(manifest)),
     ),
   );
 }
 function encodeGRD2(document) {
+  if (document.manifest?.version === 3) return encodeGRD3(document);
   const encoded = textEncoder.encode("GRD2\n" + canon(document));
   if (encoded.length > TILE_LIMITS.bytes)
     throw new Error("GRD2 exceeds 32 MiB.");
@@ -3170,6 +3709,9 @@ async function sealRgba({
   sign,
   purpose = "asset",
   label = "",
+  subTile = 64,
+  visual = true,
+  version = width * height > TILE_LIMITS.pixels || Math.max(width, height) > TILE_LIMITS.dimension || Math.ceil(width/64)*Math.ceil(height/64) > TILE_LIMITS.tiles ? 3 : 2,
 }) {
   if (
     !(rgba instanceof Uint8Array) ||
@@ -3179,9 +3721,9 @@ async function sealRgba({
     throw new Error("Expected exact RGBA8 bytes and 64px tiles.");
   const count = Math.ceil(width / 64) * Math.ceil(height / 64),
     manifest = {
-      format: "GRD2",
-      version: 2,
-      profile: "2.1",
+      format: version === 3 ? "GRD3" : "GRD2",
+      version,
+      profile: version === 3 ? (subTile !== 64 ? (visual ? "3.3" : "3.1") : (visual ? "3.2" : "3.0")) : (subTile !== 64 ? (visual ? "2.4" : "2.2") : (visual ? "2.3" : "2.1")),
       assetId: base64(crypto.getRandomValues(new Uint8Array(16))),
       created: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
       width,
@@ -3196,6 +3738,8 @@ async function sealRgba({
       purpose,
       label,
     };
+  if (subTile !== 64) manifest.subTile = subTile;
+  if (visual) manifest.visual = {version:"y8c16-v1",tau:9,commitments:Array(count).fill("0".repeat(64))};
   validateManifest(manifest);
   const rgb = new Uint8Array(width * height * 3);
   for (let i = 0; i < width * height; i++)
@@ -3209,13 +3753,17 @@ async function sealRgba({
   const tiles = [];
   for (let index = 0; index < count; index++) {
     const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
-    manifest.commitments[index] = await tileCommitment(
+    manifest.commitments[index] = manifest.subTile ? (await sealSubTile(manifest,index,salt,tilePixels(rgb,manifest,index))).commitment : await tileCommitment(
       manifest,
       index,
       salt,
       tilePixels(rgb, manifest, index),
     );
-    tiles.push({ index, salt });
+    if (visual) {
+      const bounds = tileBounds(manifest,index);
+      manifest.visual.commitments[index] = await visualCommitment(index,await visualSalt(salt),visualFeatures(tilePixels(rgb,manifest,index),bounds.width,bounds.height));
+    }
+    tiles.push(manifest.subTile ? {index,seed:salt} : { index, salt });
   }
   manifest.root = await merkleRoot(manifest.commitments);
   const signature = new Uint8Array(await sign(await manifestDigest(manifest)));
@@ -3224,7 +3772,7 @@ async function sealRgba({
   return {
     manifest,
     signature: base64(signature),
-    image: base64(await encodeRgbPng(rgb, width, height)),
+    image: version === 3 ? await encodeRgbPng(rgb, width, height) : base64(await encodeRgbPng(rgb, width, height)),
     tiles,
     redactions: [],
   };
@@ -3234,6 +3782,7 @@ async function verifyGRD2(
   anchors = TRUSTED,
   revocationPolicy = TRUST_POLICY,
 ) {
+  if (isGRD3(input)) return verifyGRD3(input, anchors, revocationPolicy);
   const r = {
     version: 2,
     verdict: "TAMPERED",
@@ -3298,6 +3847,11 @@ async function verifyGRD2(
     const redacted = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
+      if (m.subTile) {
+        if (!t || typeof t !== "object" || Array.isArray(t)) throw new ProofError("Invalid tile record.");
+        validateSubRecord(m,t,index);
+        if (Object.hasOwn(t,"commitment") || t.sub) redacted.push(index);
+      } else {
       if (
         !t ||
         t.index !== index ||
@@ -3310,6 +3864,7 @@ async function verifyGRD2(
           "Tiles must be ordered, unique and have only permitted disclosure fields.",
         );
       if (Object.hasOwn(t, "commitment")) redacted.push(index);
+      }
     }
     for (let i = 0; i < doc.redactions.length; i++) {
       const item = doc.redactions[i];
@@ -3402,6 +3957,8 @@ async function verifyGRD2(
       throw new ProofError("PNG dimensions differ from the signed tile grid.");
 
     for (const entry of doc.redactions) {
+      if (m.subTile && entry.method !== "black") throw new ProofError("Sub-tile files support blackout only.");
+      if (m.subTile && doc.tiles[entry.index].sub) continue;
       if (entry.method === "blur") {
         r.hiddenPixelsCleared = false;
         r.problems.push("Legacy blur redaction (tile " + entry.index + "): replacement pixels are not verified.");
@@ -3418,6 +3975,11 @@ async function verifyGRD2(
     const leaves = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
+      if (m.subTile) {
+        await verifySubTile(m,t,index,tilePixels(decoded.rgb,m,index));
+        leaves.push(m.commitments[index]);
+        continue;
+      }
       if (Object.hasOwn(t, "commitment")) {
         if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
           throw new ProofError(
@@ -3452,7 +4014,7 @@ async function verifyGRD2(
     r.tilesTotal = count;
     r.tilesVisible = count - redacted.length;
     r.redactedTiles = redacted;
-    r.redactionMap = redacted.map((index) => ({
+    r.redactionMap = m.subTile ? subRedactionMap(doc) : redacted.map((index) => ({
       index,
       ...tileBounds(m, index),
       claimedMethod: doc.redactions.find((x) => x.index === index).method,
@@ -3460,6 +4022,7 @@ async function verifyGRD2(
     }));
     r.redactionApproval = "not_attested";
     r.tileSize = 64;
+    if (m.subTile) { r.subTile=m.subTile; r.subTilesTotal=doc.tiles.reduce((n,t)=>n+subTileCount(m,t.index),0); r.subTilesVisible=doc.tiles.reduce((n,t)=>n+(t.seed?subTileCount(m,t.index):t.sub?t.sub.filter(s=>s.salt).length:0),0); }
     r.regionVerified = true;
     r.meta = {
       asset_id: m.assetId ?? m.root,
@@ -3477,7 +4040,7 @@ async function verifyGRD2(
       );
       return r;
     }
-    if (!r.tilesVisible) {
+    if (!doc.tiles.some(t => t.salt || t.seed || t.sub?.some(s => s.salt))) {
       r.verdict = "FULLY REDACTED";
       r.problems.push(
         "No original pixels remain to inspect. No visible content is being called genuine.",
@@ -3503,8 +4066,7 @@ async function verifyGRD2(
       rgba[dst + 2] = rgb[src + 2];
       rgba[dst + 3] = 255;
     }
-    for (const index of redacted) {
-      const b = tileBounds(m, index);
+    for (const b of r.redactionMap) {
       for (let row = 0; row < b.height; row++)
         for (let col = 0; col < b.width; col++)
           rgba.set(
@@ -3516,6 +4078,7 @@ async function verifyGRD2(
     r.container = doc;
     return r;
   } catch (error) {
+    if (error.message?.startsWith("blackout incomplete")) r.hiddenPixelsCleared = false;
     if (error instanceof ResourceLimitError) {
       r.verdict = "LIMIT EXCEEDED";
     } else if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
@@ -3540,6 +4103,11 @@ async function verifyGRD2(
   }
 }
 async function redactGRD2(document, indices, method = "black") {
+  if (document.manifest.subTile) {
+    if (!Array.isArray(indices) || !indices.length || indices.some(index => !Number.isInteger(index) || index < 0 || index >= document.tiles.length)) throw new Error("Invalid redaction index.");
+    if (method !== "black") throw new Error("Only blackout exports are supported.");
+    return redactRects(document,indices.map(index => tileBounds(document.manifest,index)),{granularity:64});
+  }
   const m = document.manifest,
     count = validateManifest(m),
     selected = new Set(indices);
@@ -3551,7 +4119,7 @@ async function redactGRD2(document, indices, method = "black") {
   const result = await verifyGRD2(encodeGRD2(document), []);
   if (!result.regionVerified)
     throw new Error("Cannot redact an invalid source proof.");
-  const decoded = await decodeRgbPng(decodeBase64(document.image)),
+  const decoded = await decodeRgbPng(containerImage(document), document.manifest.version === 3 ? GRD3_LIMITS : undefined),
     rgb = decoded.rgb,
     tiles = [];
   const hidden = new Set([
@@ -3578,7 +4146,7 @@ async function redactGRD2(document, indices, method = "black") {
   return encodeGRD2({
     manifest: m,
     signature: document.signature,
-    image: base64(await encodeRgbPng(rgb, m.width, m.height)),
+    image: m.version === 3 ? await encodeRgbPng(rgb, m.width, m.height) : base64(await encodeRgbPng(rgb, m.width, m.height)),
     tiles,
     redactions,
   });
@@ -3614,9 +4182,9 @@ async function exportPlainImage(container) {
   if (!report.regionVerified || report.verdict === "REVOKED KEY")
     throw new Error("Cannot export an invalid source proof: " + report.verdict);
   const doc = report.container ?? JSON.parse(new TextDecoder().decode(new Uint8Array(bytes).subarray(5)));
-  const { rgb, width, height } = await decodeRgbPng(decodeBase64(doc.image));
-  for (const entry of doc.redactions) {
-    const b = tileBounds(doc.manifest, entry.index);
+  const { rgb, width, height } = await decodeRgbPng(containerImage(doc), doc.manifest.version === 3 ? GRD3_LIMITS : undefined);
+  const regions = doc.manifest.subTile ? subRedactionMap(doc) : doc.redactions.map(entry => tileBounds(doc.manifest,entry.index));
+  for (const b of regions) {
     for (let row = 0; row < b.height; row++) {
       const start = ((b.y + row) * width + b.x) * 3;
       rgb.fill(0, start, start + b.width * 3);
@@ -3625,14 +4193,16 @@ async function exportPlainImage(container) {
   return encodeRgbPng(rgb, width, height);
 }
 
+function containerImage(doc) { return doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image); }
+
 // SPDX-License-Identifier: MIT
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
-function inspectConversionImage(bytes, { allowResize = false } = {}) {
+function inspectConversionImage(bytes, { allowResize = false, large = false } = {}) {
   if (
     !(bytes instanceof Uint8Array) ||
     !bytes.length ||
-    bytes.length > TILE_LIMITS.bytes
+    bytes.length > (large ? GRD3_LIMITS.bytes : TILE_LIMITS.bytes)
   )
     throw new Error("Choose an image up to 32 MiB.");
   const ascii = (at, count) =>
@@ -3678,7 +4248,7 @@ function inspectConversionImage(bytes, { allowResize = false } = {}) {
     throw new Error(
       "Choose a photo up to 50 megapixels and 16,384 pixels per edge. This image needs resizing before it can be safely opened here.",
     );
-  const fitted = fitConversionDimensions(width, height);
+  const fitted = fitConversionDimensions(width, height, { large });
   if (!allowResize && (fitted.width !== width || fitted.height !== height))
     throw new Error(
       "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
@@ -3686,7 +4256,8 @@ function inspectConversionImage(bytes, { allowResize = false } = {}) {
   return { mime, width, height };
 }
 
-function fitConversionDimensions(width, height) {
+function fitConversionDimensions(width, height, { large = false } = {}) {
+  const limits = large ? GRD3_LIMITS : TILE_LIMITS;
   if (
     !Number.isSafeInteger(width) ||
     !Number.isSafeInteger(height) ||
@@ -3695,10 +4266,10 @@ function fitConversionDimensions(width, height) {
   )
     throw new Error("Invalid image dimensions.");
   const fits = (w, h) =>
-    w <= TILE_LIMITS.dimension &&
-    h <= TILE_LIMITS.dimension &&
-    w * h <= TILE_LIMITS.pixels &&
-    Math.ceil(w / 64) * Math.ceil(h / 64) <= TILE_LIMITS.tiles;
+    w <= limits.dimension &&
+    h <= limits.dimension &&
+    w * h <= limits.pixels &&
+    Math.ceil(w / 64) * Math.ceil(h / 64) <= limits.tiles;
   if (fits(width, height)) return { width, height };
   let low = 0,
     high = 1;
@@ -3811,8 +4382,10 @@ function showFile(file) {
 }
 function renderResult(report) {
   currentReport = report;
-  $("download-plain").hidden = !(report.version === 2 && report.viewable && report.regionVerified);
+  $("download-plain").hidden = !(report.version >= 2 && report.viewable && report.regionVerified);
   $("plain-note").hidden = $("download-plain").hidden;
+  $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
+  $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -3843,7 +4416,7 @@ function renderResult(report) {
     "LIMIT EXCEEDED": [
       "LIMIT EXCEEDED",
       "FILE TOO LARGE.",
-      "Choose a .GRD up to 64 MiB. The file was not read into memory.",
+      "GRD1 allows 64 MiB, GRD2 32 MiB, and GRD3 256 MiB. The format-specific size limit was exceeded.",
     ],
     UNREADABLE: [
       "IMAGE UNREADABLE",
@@ -3859,17 +4432,17 @@ function renderResult(report) {
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
     "RETAINED PIXELS VERIFIED.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+    report.subTile ? `${report.subTilesVisible} of ${report.subTilesTotal} cells at ${report.subTile}px match the trusted signer’s proof. Hidden cells are black. Redactor approval is not attested.` : `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
   ];
   messages.DEMO = [
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
-    `${report.tilesVisible} of ${report.tilesTotal} example tiles retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} example regions retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
   ];
   messages["UNVERIFIED: SELF-SIGNED"] = [
     "UNVERIFIED: SELF-SIGNED",
     "IDENTITY NOT VERIFIED.",
-    `${report.tilesVisible} of ${report.tilesTotal} tiles match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
+    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} regions match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -3887,7 +4460,7 @@ function renderResult(report) {
     "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
   ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
-  if (report.version === 2 && report.genuine) {
+  if (report.version >= 2 && report.genuine) {
     words[1] = "SIGNED TILE GRID VERIFIED.";
     words[2] =
       "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
@@ -4005,9 +4578,9 @@ function metadata(report) {
     ["Time claimed by the signer", m.created_utc ?? m.created_melbourne],
     [report.demo ? "Demo signer" : "Signer", report.signer],
     [
-      "Retained tiles",
-      report.version === 2
-        ? `${report.tilesVisible} / ${report.tilesTotal}`
+      report.subTile ? "Retained cells" : "Retained tiles",
+      report.version >= 2
+        ? `${report.subTilesVisible ?? report.tilesVisible} / ${report.subTilesTotal ?? report.tilesTotal}`
         : undefined,
     ],
     ["Redacted tiles", report.redactedTiles?.length],
@@ -4170,7 +4743,11 @@ function point(event) {
 }
 
 async function decode(report) {
-  if (report.version === 2) {
+  if (report.version === 3) {
+    const blob = new Blob([containerImage(report.container)], {type:"image/png"});
+    return await createImageBitmap(blob, {imageOrientation:"none"});
+  }
+  if (report.version >= 2) {
     const surface = document.createElement("canvas");
     surface.width = report.meta.width;
     surface.height = report.meta.height;
@@ -4233,12 +4810,12 @@ async function openFile(file) {
   setStatus("Checking " + file.name + ".");
   let report;
   try {
-    if (file.size > LIMITS.fileBytes)
+    if (file.size > GRD3_LIMITS.bytes)
       report = {
         verdict: "LIMIT EXCEEDED",
         genuine: false,
         checks: [],
-        problems: ["File exceeds the 64 MiB viewer limit."],
+        problems: ["File exceeds the 256 MiB viewer limit."],
         failed: ["file size"],
         changed: ["file size"],
         byteLength: file.size,
@@ -4258,13 +4835,13 @@ async function openFile(file) {
         bitmap = decoded;
         report.checks.push({
           name:
-            report.version === 2 ? "Rendered tile grid" : "Image dimensions",
+            report.version >= 2 ? "Rendered tile grid" : "Image dimensions",
           status: "pass",
           detail:
             report.meta.width +
             " × " +
             report.meta.height +
-            (report.version === 2
+            (report.version >= 2
               ? " · exact visible tiles; hidden tiles are placeholders"
               : " · encoded and decoded dimensions match"),
         });
@@ -4286,6 +4863,10 @@ async function openFile(file) {
     report.checkedAt = new Date().toISOString();
     report.viewerSession = SESSION;
     currentContainer = report.container ?? null;
+    if (currentContainer) {
+      const sealed = currentContainer.manifest.subTile || 64;
+      for (const size of [8,16,32,64]) { $("grid-"+size).disabled = size < sealed; $("grid-"+size).checked = size === (sealed <= 16 ? 16 : sealed); }
+    }
     delete report.container;
     delete report.imageRgba;
     renderResult(report);
@@ -4374,6 +4955,11 @@ $("download-report").onclick = () => {
       ".json",
     "application/json",
   );
+};
+$("download-proof").onclick = async () => {
+  if (!currentContainer) return;
+  try { download(await exportProof(currentContainer), "image.grdp", "application/octet-stream"); setStatus("Visual proof downloaded. Keep it with copies you want to compare."); }
+  catch (error) { setStatus("Visual proof export failed: " + error.message); }
 };
 $("download-plain").onclick = async () => {
   if (!currentContainer) return;
@@ -4485,75 +5071,56 @@ window.addEventListener("pagehide", () => {
 window.verifyGRD = (input) =>
   isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
 
+function redactionGrid() {
+  if (!currentContainer?.manifest.subTile) return 64;
+  return [8,16,32,64].find(size => $("grid-"+size).checked) || 16;
+}
+function gridBounds(index) {
+  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),x=(index%cols)*g,y=Math.floor(index/cols)*g;
+  return {x,y,width:Math.min(g,m.width-x),height:Math.min(g,m.height-y)};
+}
+function gridHidden(index) {
+  const b=gridBounds(index);
+  return (currentReport?.redactionMap || []).some(r=>r.x<=b.x&&r.y<=b.y&&r.x+r.width>=b.x+b.width&&r.y+r.height>=b.y+b.height);
+}
+function gridForRect(m,rect) {
+  const g=redactionGrid(),cols=Math.ceil(m.width/g),rows=Math.ceil(m.height/g),out=[];
+  if (![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.width<=0||rect.height<=0) throw new Error("Enter a rectangle with positive width and height.");
+  for(let row=Math.max(0,Math.floor(rect.y/g));row<Math.min(rows,Math.ceil((rect.y+rect.height)/g));row++)
+    for(let col=Math.max(0,Math.floor(rect.x/g));col<Math.min(cols,Math.ceil((rect.x+rect.width)/g));col++)out.push(row*cols+col);
+  return out;
+}
 function positionTileOverlay() {
   if (!currentContainer || !redactionEditing) return;
-  const overlay = $("tile-overlay"),
-    m = currentContainer.manifest;
-  const box = canvas.getBoundingClientRect();
-  overlay.style.width = box.width + "px";
-  overlay.style.height = box.height + "px";
-  overlay.style.gridTemplateColumns = Array.from(
-    { length: Math.ceil(m.width / m.tileSize) },
-    (_, col) => Math.min(m.tileSize, m.width - col * m.tileSize) + "fr",
-  ).join(" ");
-  overlay.style.gridTemplateRows = Array.from(
-    { length: Math.ceil(m.height / m.tileSize) },
-    (_, row) => Math.min(m.tileSize, m.height - row * m.tileSize) + "fr",
-  ).join(" ");
+  const overlay=$("tile-overlay"),m=currentContainer.manifest,g=redactionGrid(),box=canvas.getBoundingClientRect();
+  overlay.style.width=box.width+"px";overlay.style.height=box.height+"px";
+  overlay.style.gridTemplateColumns=Array.from({length:Math.ceil(m.width/g)},(_,i)=>Math.min(g,m.width-i*g)+"fr").join(" ");
+  overlay.style.gridTemplateRows=Array.from({length:Math.ceil(m.height/g)},(_,i)=>Math.min(g,m.height-i*g)+"fr").join(" ");
 }
 function renderTileOverlay() {
-  const overlay = $("tile-overlay");
-  const activeTile = overlay.contains(document.activeElement)
-    ? document.activeElement.dataset.tileIndex
-    : null;
-  overlay.hidden =
-    !redactionEditing ||
-    !currentContainer ||
-    stage.classList.contains("shielded");
-  overlay.replaceChildren();
-  if (overlay.hidden) return;
-  const m = currentContainer.manifest,
-    cols = Math.ceil(m.width / m.tileSize);
-  for (const tile of currentContainer.tiles) {
-    const hidden = Object.hasOwn(tile, "commitment"),
-      chosen = selectedTiles.has(tile.index),
-      button = el(
-        "button",
-        hidden ? "HIDDEN" : chosen ? "HIDE" : "+",
-        hidden ? "tile-hidden" : chosen ? "tile-selected" : "tile-visible",
-      );
-    button.type = "button";
-    button.dataset.tileIndex = String(tile.index);
-    button.disabled = hidden;
-    button.tabIndex =
-      String(tile.index) ===
-      (activeTile ??
-        String(
-          currentContainer.tiles.find((t) => Object.hasOwn(t, "salt"))?.index,
-        ))
-        ? 0
-        : -1;
-    button.setAttribute(
-      "aria-label",
-      `Tile ${tile.index + 1}, row ${Math.floor(tile.index / cols) + 1}, column ${(tile.index % cols) + 1}${hidden ? ", already redacted" : ""}`,
-    );
-    button.setAttribute("aria-pressed", String(chosen));
-    button.onclick = () => {
-      if (selectedTiles.has(tile.index)) selectedTiles.delete(tile.index);
-      else selectedTiles.add(tile.index);
-      renderTileOverlay();
-      $("export-redacted").disabled = !selectedTiles.size;
-      $("redaction-status").textContent =
-        `${selectedTiles.size} selected. Redactions are applied only when you export. Hidden tiles contain no original pixels in the exported file.`;
-    };
-    overlay.append(button);
+  const overlay=$("tile-overlay"),active=overlay.contains(document.activeElement)?document.activeElement.dataset.tileIndex:null;
+  overlay.hidden=!redactionEditing||!currentContainer||stage.classList.contains("shielded");overlay.replaceChildren();if(overlay.hidden)return;
+  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),count=cols*Math.ceil(m.height/g);
+  if(count>4096){
+    // Dense grids stay bounded in the DOM. Keyboard users select through the rectangle fields.
+    const mask=el("canvas");mask.width=canvas.width;mask.height=canvas.height;mask.setAttribute("aria-hidden","true");
+    mask.style.cssText="position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
+    const ctx=mask.getContext("2d");ctx.fillStyle="rgba(55,80,220,.45)";
+    for(const index of selectedTiles){const b=gridBounds(index);ctx.fillRect(b.x/m.width*mask.width,b.y/m.height*mask.height,b.width/m.width*mask.width,b.height/m.height*mask.height);}
+    overlay.append(mask);
+    $("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. This dense grid uses the rectangle fields or drag selection instead of individual buttons.`;
+  } else {
+    let first=true;
+    for(let index=0;index<count;index++){
+      const hidden=gridHidden(index),chosen=selectedTiles.has(index),button=el("button",hidden?"HIDDEN":chosen?"HIDE":"+",hidden?"tile-hidden":chosen?"tile-selected":"tile-visible");
+      button.type="button";button.dataset.tileIndex=String(index);button.disabled=hidden;button.tabIndex=!hidden&&(active!==null?String(index)===active:first)?0:-1;if(!hidden)first=false;
+      button.setAttribute("aria-label",`Cell ${index+1}, row ${Math.floor(index/cols)+1}, column ${index%cols+1}, ${g}px${hidden?", already hidden":""}`);button.setAttribute("aria-pressed",String(chosen));
+      button.onclick=()=>{if(selectedTiles.has(index))selectedTiles.delete(index);else selectedTiles.add(index);renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;$("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. Apply them by exporting a redacted copy.`;};overlay.append(button);
+    }
   }
-  positionTileOverlay();
-  if (activeTile !== null)
-    overlay
-      .querySelector(`[data-tile-index="${activeTile}"]`)
-      ?.focus({ preventScroll: true });
+  positionTileOverlay();if(active!==null)overlay.querySelector(`[data-tile-index="${active}"]`)?.focus({preventScroll:true});
 }
+for(const size of [8,16,32,64])$("grid-"+size).onchange=()=>{selectedTiles.clear();$("export-redacted").disabled=true;renderTileOverlay();};
 $("redact-mode").onclick = () => {
   redactionEditing = !redactionEditing;
   $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
@@ -4571,7 +5138,7 @@ $("export-redacted").onclick = async () => {
     token = operation;
   $("export-redacted").disabled = true;
   try {
-    const bytes = await redactGRD2(source, selection, "black");
+    const bytes = source.manifest.subTile ? await redactRects(source,selection.map(gridBounds),{granularity:redactionGrid()}) : await redactGRD2(source, selection, "black");
     if (operation !== token || currentContainer !== source) return;
     const name =
       (currentReport.fileName ?? "image.GRD").replace(
@@ -4636,6 +5203,7 @@ $("try-redaction").onclick = async () => {
       tileSize: 64,
       publicKey,
       purpose: "demo",
+      subTile: 16,
       label: "Demonstration only",
       sign: (bytes) =>
         crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
@@ -4658,16 +5226,9 @@ $("try-redaction").onclick = async () => {
 };
 
 function setTileSelection(indices) {
-  for (const i of indices)
-    if (
-      currentContainer.tiles[i] &&
-      Object.hasOwn(currentContainer.tiles[i], "salt")
-    )
-      selectedTiles.add(i);
-  renderTileOverlay();
-  $("export-redacted").disabled = !selectedTiles.size;
-  $("redaction-status").textContent =
-    `${selectedTiles.size} tiles selected. The exported redaction mask will show the exact 64px boundaries.`;
+  for (const index of indices) if (!gridHidden(index)) selectedTiles.add(index);
+  renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;
+  $("redaction-status").textContent=`${selectedTiles.size} cells selected. Export rounds to ${redactionGrid()}px boundaries.`;
 }
 $("select-rectangle").onclick = () => {
   if (!currentContainer) return;
@@ -4677,7 +5238,7 @@ $("select-rectangle").onclick = () => {
     $("redact-mode").textContent = "Finish marking";
     setMode(false);
     setTileSelection(
-      tilesForRect(currentContainer.manifest, {
+      gridForRect(currentContainer.manifest, {
         x: Number($("rect-x").value),
         y: Number($("rect-y").value),
         width: Number($("rect-width").value),
@@ -4728,7 +5289,7 @@ overlayElement.addEventListener("pointerup", (event) => {
   skipTileClick = true;
   event.preventDefault();
   setTileSelection(
-    tilesForRect(currentContainer.manifest, {
+    gridForRect(currentContainer.manifest, {
       x: Math.min(start.x, p.x),
       y: Math.min(start.y, p.y),
       width: Math.max(1, Math.abs(start.x - p.x)),
@@ -4754,7 +5315,7 @@ overlayElement.addEventListener(
 overlayElement.addEventListener("keydown", (event) => {
   if (!currentContainer || !event.key.startsWith("Arrow")) return;
   const i = Number(event.target.dataset.tileIndex),
-    cols = Math.ceil(currentContainer.manifest.width / 64);
+    cols = Math.ceil(currentContainer.manifest.width / redactionGrid());
   if (!Number.isInteger(i)) return;
   const step =
     event.key === "ArrowLeft"
@@ -4801,12 +5362,12 @@ $("convert-input").onchange = async () => {
   conversionStatus("Reading image locally…");
   let decoded;
   try {
-    if (file.size > TILE_LIMITS.bytes)
-      throw new Error("Choose an image up to 32 MiB.");
+    if (file.size > GRD3_LIMITS.bytes)
+      throw new Error("Choose an image up to 256 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
     const allowResize = $("convert-resize").checked;
-    const info = inspectConversionImage(bytes, { allowResize });
+    const info = inspectConversionImage(bytes, { allowResize, large: true });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
     if (token !== conversionVersion) return;
     if (
@@ -4822,7 +5383,7 @@ $("convert-input").onchange = async () => {
       );
     const originalWidth = decoded.width,
       originalHeight = decoded.height;
-    const fitted = fitConversionDimensions(originalWidth, originalHeight);
+    const fitted = fitConversionDimensions(originalWidth, originalHeight, { large: true });
     const resized =
       fitted.width !== originalWidth || fitted.height !== originalHeight;
     if (resized && !allowResize)
@@ -4856,7 +5417,7 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 4 MP / 1,024 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
       (resized
@@ -4909,6 +5470,7 @@ $("convert-form").onsubmit = async (event) => {
       height: source.height,
       publicKey,
       purpose: "personal",
+      subTile: 16,
       label: "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
@@ -4926,7 +5488,7 @@ $("convert-form").onsubmit = async (event) => {
     const W = source.width,
       H = source.height,
       ratio = (bytes.length / source.sourceBytes).toFixed(1);
-    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). GRD2 stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
     if (bytes.length > 20 * 1024 * 1024)
       statusMsg += " Large file: some phones may be slow to open it.";
     conversionStatus(statusMsg);
@@ -4942,6 +5504,26 @@ $("convert-form").onsubmit = async (event) => {
     $("convert-resize").disabled = false;
     $("convert-form").removeAttribute("aria-busy");
   }
+};
+
+$("copy-form").onsubmit = async event => {
+  event.preventDefault();
+  if ($("copy-submit").disabled) return;
+  const proofFile = $("copy-proof").files[0], imageFile = $("copy-image").files[0];
+  if (!proofFile || !imageFile) { $("copy-status").textContent = "Choose both the visual proof and image copy."; return; }
+  $("copy-submit").disabled = true; $("copy-proof").disabled = true; $("copy-image").disabled = true; $("copy-form").setAttribute("aria-busy", "true");
+  $("copy-status").classList.remove("borderline");
+  $("copy-status").textContent = "Checking signature, disclosures and visual block averages locally…";
+  try {
+    if (proofFile.size > 16*1024*1024 || imageFile.size > GRD3_LIMITS.bytes) throw new Error("Proof must be at most 16 MiB and the image at most 256 MiB.");
+    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()));
+    const label = r.visualVerdict ?? r.verdict;
+    $("copy-status").classList.toggle("borderline", label === "BORDERLINE (decoder-dependent)");
+    $("copy-status").textContent = label + ". " + (r.trustVerdict && !r.trusted ? r.trustVerdict + ": signer identity is not verified. " : "") +
+      (r.worstError !== undefined ? "Largest block difference: " + r.worstError + " / 255. " : "") + r.guarantee +
+      (r.problems.length ? " " + r.problems.join(" ") : "");
+  } catch (error) { $("copy-status").textContent = "Copy check could not finish: " + error.message; }
+  finally { $("copy-submit").disabled = false; $("copy-proof").disabled = false; $("copy-image").disabled = false; $("copy-form").removeAttribute("aria-busy"); $("copy-status").focus(); }
 };
 
 })();

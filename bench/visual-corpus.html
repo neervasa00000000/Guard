@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Guard visual corpus checks</title>
+<style>body{font:16px system-ui;max-width:70rem;margin:2rem auto;padding:1rem}button{font:inherit;padding:.7rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<h1>Visual corpus: browser / Python</h1><p>24 Kodak images × 7 transforms. Public TEST ONLY signing key. Compares the exact same encoded candidates; no uploads.</p>
+<button id="run">Run 168 visual cases</button><pre id="status" role="status">Generate the corpus with python3 bench/visual-corpus.py.</pre><details><summary>Per-case report</summary><pre id="report"></pre></details>
+<script type="module">
+import {verifyVisual} from '../src/visual.js';
+const button=document.querySelector('#run'),status=document.querySelector('#status'),output=document.querySelector('#report');
+button.onclick=async()=>{button.disabled=true;try{
+ const base='../results/visual-corpus/',response=await fetch(base+'manifest.json');if(!response.ok)throw Error('Generate visual corpus first');const manifest=await response.json(),rows=[],mismatches=[],start=performance.now();
+ for(const c of manifest.cases){const proof=new Uint8Array(await(await fetch(base+c.proof)).arrayBuffer()),image=new Uint8Array(await(await fetch(base+c.image)).arrayBuffer()),r=await verifyVisual(proof,image,[{public_key_hex:manifest.key}]),actual={visualVerdict:r.visualVerdict,genuine:r.genuine,visualConsistent:r.visualConsistent};rows.push({id:c.id,actual,worstError:r.worstError,problems:r.problems});if(Object.keys(c.expected).some(k=>c.expected[k]!==actual[k]))mismatches.push({id:c.id,python:c.expected,browser:actual,pythonWorstError:c.pythonWorstError,browserWorstError:r.worstError});status.textContent=`Checked ${rows.length}/${manifest.cases.length}; disagreements ${mismatches.length}`;}
+ const report={runtime:navigator.userAgent,elapsedMs:performance.now()-start,rows};output.textContent=JSON.stringify(report,null,2);status.textContent=JSON.stringify({result:mismatches.length?'FAIL':'ALL PASS',cases:rows.length,disagreements:mismatches.length,elapsedMs:report.elapsedMs,runtime:report.runtime,mismatches},null,2);
+}catch(error){status.textContent='FAILED: '+error.message;}finally{button.disabled=false;}};
+</script></html>

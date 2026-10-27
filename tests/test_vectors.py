@@ -57,3 +57,29 @@ for v in vectors['vectors']:
   except ValueError:pass
   else:raise AssertionError('Export accepted tampered source '+v['id'])
 print('Python dimension/tile limits and rejection of all tampered plain exports: passed')
+
+# U0: paths supplied through the public Python API accept both str and Path.
+keys=root/'conformance/trusted-keys.test.json'
+for v in json.loads((root/'conformance/vectors.json').read_text()):
+ raw=(root/v['file']).read_bytes()
+ assert grd.verify(raw,keys_path=str(keys))['verdict']==grd.verify(raw,keys_path=keys)['verdict'],v['id']
+print('String/Path trust paths: all conformance cases agree')
+
+v3=json.loads((root/'tests/vectors/grd3-vectors.json').read_text())
+for v in v3['vectors']:
+ raw=grd.un64(v['container']);r=grd.verify(raw,[v3['public_key_hex']]);assert r['verdict']==v['expected_verdict'],(v['id'],r)
+ if r.get('regionVerified'):assert r['root']==v['expected_root'];assert grd.encode3(grd.decode3(raw))==raw
+print('GRD3 shared vectors: 3 passed')
+
+up=json.loads((root/'tests/vectors/upgrade-vectors.json').read_text())
+for v in up['vectors']:
+ r=grd.verify(grd.un64(v['container']),[up['public_key_hex']]);assert r['verdict']==v['expected_verdict'],(v['id'],r)
+for v in up['visual']:
+ r=grd.verify_visual(grd.un64(v['proof']),grd.un64(v['image']),[up['public_key_hex']]);assert r['verdict']==v['expected_verdict'],(v['id'],r)
+print('Upgrade shared vectors:',len(up['vectors']),'exact and',len(up['visual']),'visual passed')
+
+area=json.loads((root/'tests/vectors/area-vectors.json').read_text())
+import grd_visual
+for case in area['cases']:
+ for i,feature in enumerate(case['features']):assert grd_visual.mapped_tile_features(grd.un64(case['rgb']),case['width'],case['height'],area['sealed'],i,grd).hex()==feature
+print('Native-area raw RGB vectors: five scales passed')

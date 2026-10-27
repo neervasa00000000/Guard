@@ -10,3 +10,6 @@ __pycache__/
 keys-test-only/
 data/
 results/
+
+# Local, unsubmitted manuscript review copy.
+paper-v2-review/

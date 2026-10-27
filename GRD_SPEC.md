@@ -107,3 +107,103 @@ Legacy manifests with none of these fields remain valid and produce `legacy mani
 The signature covers the full commitment vector, which supplies the security binding. Security arguments MUST NOT depend on the Merkle root as an additional guarantee. The root remains a compact identifier and a consistency check (`root == MT(commitments)`), reserved for a possible future root-only inclusion-proof profile. There is no root-only wire change in profile 2.1.
 
 The CLI verdict groups are 0 (GENUINE), 2 (TAMPERED), 3 (NOT A GRD), 4 (CANNOT VERIFY / UNSUPPORTED / LIMIT EXCEEDED / UNREADABLE), 5 (valid but not whole-image genuine) and 6 (REVOKED KEY). A verifier fault includes `verifierFault: true`; damaged proof encodings are TAMPERED. Legacy GRD1 verification remains supported with its existing 64 MiB limit; GRD2 uses 32 MiB, 4096 pixels per side, 4,194,304 pixels and 1024 tiles.
+
+## New profile registry (upgrade checkout)
+
+Legacy manifests and GRD1 remain readable. New explicit profile/field combinations are strict; partial sets and unknown fields are rejected. Every field below is signed using the existing canonical JSON rules.
+
+| Container | Profile | Additional signed fields |
+|---|---|---|
+| GRD2 | 2.1 | assetId, created (existing) |
+| GRD2 | 2.2 | assetId, created, subTile |
+| GRD2 | 2.3 | assetId, created, visual |
+| GRD2 | 2.4 | assetId, created, subTile, visual |
+| GRD3 | 3.0 | assetId, created |
+| GRD3 | 3.1 | assetId, created, subTile |
+| GRD3 | 3.2 | assetId, created, visual |
+| GRD3 | 3.3 | assetId, created, subTile, visual |
+
+GRD2 retains `format:"GRD2", version:2` and its 32 MiB / 4,194,304-pixel / 4096-edge / 1024-parent bounds. GRD3 has `format:"GRD3", version:3`, a 256 MiB container bound, 36,000,000 pixels, 8192-edge and 9000-parent bounds. Parent tileSize remains 64. A missing `subTile` means the original single-level commitment construction; a present value is exactly 8, 16 or 32.
+
+## GRD3 binary envelope
+
+All integers are unsigned, big-endian. The container ends exactly after its PNG; no padding or trailing bytes are permitted.
+
+```
+"GRD3\n"                            5 bytes
+manifest_length                     u32, at most 2 MiB
+manifest                            canonical UTF-8 JSON, manifest_length bytes
+signature                           64 bytes
+parent_record_count                 u32; equals signed grid size
+parent_records                      as below
+png_length                          u64; bounded by container limit
+png                                 raw canonical RGB8 PNG, png_length bytes
+```
+
+Signature message: `SHA256("GUARD-GRD3-MANIFEST-V1\0" || canonical_manifest_bytes)`, signed with Ed25519. This domain is distinct from GRD2. Base64 is not used for the binary PNG or records. The internal authoring document still has `manifest/signature/image/tiles/redactions`; `decodeGRD3` / `decode3` derive its ordered redactions from record kinds.
+
+For profiles 3.0/3.2, each parent record is kind 0 plus a 16-byte pixel salt, kind 1 plus the original 32-byte parent commitment (black), or kind 2 plus that commitment (legacy blur, warning/read-only). Parent indices are implicit and ordered.
+
+For profiles 3.1/3.3:
+
+- kind 0: 16-byte parent seed;
+- kind 1: original 32-byte parent commitment, entire parent black;
+- kind 3: u16 sub-record count, then that many ordered child records: kind 0 plus a 16-byte child salt, or kind 1 plus its 32-byte child commitment. Child j is implicit and row-major. Count must equal the signed grid's truncated child count. Both hidden and retained children must exist; fully hidden parents use kind 1 and intact parents kind 0.
+
+Kind 2 is not permitted for fine-grid profiles. Kind 3 is not permitted without a signed subTile. This is the explicit binary extension for U2, whose source plan did not specify a partial-parent binary layout.
+
+The PNG contains only IHDR, consecutive IDAT chunks, and IEND with correct CRCs, RGB8, no interlace and signed dimensions. All five PNG filters are supported. Exact GRD3 verification reconstructs 64-row bands and PNG filter state. Python uses its native Pillow decoder on two-row windows for nonzero filters, preserving bounded memory. Container/compressed-image storage and display/seal/redaction/export buffers are additional to this bound. The browser's large parent-only verifier hashes per-band tile messages through at most eight local blob workers (bounded by hardware concurrency); no external worker URL is fetched.
+
+## Fine commitments and records
+
+For each 64 px parent i, let g=subTile and j enumerate truncated g×g children within that parent. Generate a fresh 16-byte seed k_i:
+
+```
+s_ij = HMAC-SHA256(k_i, "GRD-SUB" || u16be(j))[0:16]
+c_ij = SHA256("GRD-SUBTILE" || u32be(i) || u16be(j) || s_ij || RGB_ij)
+c_i  = SHA256("GRD-TILE2" || u32be(i) || c_i0 || ... || c_i(n_i-1))
+```
+
+The signed commitment vector keeps one c_i per parent. The new subTile field/profile adds a small amount of signed metadata; adding the visual layer adds its own vector. No claim of exactly unchanged signed byte size is made.
+
+GRD2 JSON records are exactly one of `{index,seed}`, `{index,commitment}`, or `{index,sub:[{j,salt}|{j,commitment},...]}`. Seeds/salts use 32 lowercase hex characters; commitments use 64. An intact parent discloses its seed. A partial parent MUST NOT contain its seed, must include every ordered child exactly once and must contain both retained and hidden children. Every hidden child/parent must be black. Aggregated child commitments must match the signed c_i. A retained mismatch identifies the parent/sub-proof; without expected retained child hashes in the wire format, an exact changed-child index cannot always be inferred.
+
+Rectangle export rounds outward to granularity 8/16/32/64, never finer than the signed subTile (or 64 for legacy files). It drops newly hidden salts, preserves previous hidden openings, coalesces wholly hidden parents, and preserves the original manifest and signature. Repeating a redaction, including a wholly hidden parent, is semantically idempotent. Pixel-equivalent encodings need not have identical compressed chunk boundaries.
+
+Reports include precise hidden child rectangles, subTile, subTilesTotal and subTilesVisible. Whole-parent retained counts remain separate. A partly hidden one-parent image is VERIFIED WITH REDACTIONS, not FULLY REDACTED, when any original child remains.
+
+## Signed visual layer and GRDP sidecar
+
+`manifest.visual` is exactly `{version:"y8c16-v1", tau:9, commitments:[e_0,...]}`. For each parent, compute 96 unsigned bytes: 64 Y means on an 8×8 cell grid followed by 16 Cb means and 16 Cr means on 16×16 cells. For RGB bytes:
+
+```
+Y  = floor((299R + 587G + 114B + 500)/1000)
+Cb = clamp(floor((128000000 - 168736R - 331264G + 500000B + 500000)/1000000))
+Cr = clamp(floor((128000000 + 500000R - 418688G - 81312B + 500000)/1000000))
+```
+
+Clamp to 0..255. Cell mean is `floor((sum + floor(count/2))/count)`. Edge cells average existing pixels only. Empty cells outside a truncated parent are encoded as Y=0, Cb=Cr=128. A visual nonce is `HMAC-SHA256(parent_salt_or_seed,"GRD-VIS")[0:16]`; this domain is distinct from child salt derivation.
+
+`e_i = SHA256("GRD-VIS" || u32be(i) || visual_nonce_i || feature_i)`.
+
+Sidecar: `"GRDP\n" + canon({manifest, signature, vis})`, at most 16 MiB. Each ordered vis record is either `{index,salt,feature}` (salt=canonical base64 of 16 bytes, feature=canonical base64 of 96 bytes), or `{index,commitment}` for a wholly hidden parent. No pixels or exact-layer pixel salts are included. Export reverifies the source first. Partial parents are explicitly refused: disclosing their original whole-parent averages could leak hidden content. Exact fine redaction and plain export are unaffected.
+
+Visual verification checks canonical framing, the original manifest signature/domain, root, visual openings and local trust/revocation. Candidate PNG/JPEG/WebP dimensions are checked before full decode, bounded to 8192-edge/36M pixels and 256 MiB. Aspect-ratio changes above 1% give VISUALLY INCONSISTENT; otherwise native-size RGB is mapped directly to signed cells by the integer area-average method below. No library resize is used in candidate verification. Decoder/colour-management differences require empirical cross-checking and are not assumed bit-identical.
+
+For disclosed parents, compare all 96 absolute differences. For hidden parents, compare all nonempty Y values against zero. The worst error determines VISUALLY CONSISTENT (<7), BORDERLINE (decoder-dependent) (7..11), or VISUALLY INCONSISTENT (>11), with signed tau still 9. `genuine` is always false. `verdict` preserves untrusted/demo/self-signed status on a matching copy; only a trusted asset key receives VISUALLY CONSISTENT as its primary verdict. Visual inconsistency exits 2; borderline, consistency and valid-but-untrusted statuses exit 5. A wholly hidden sidecar makes no visible-content claim.
+
+A matching result authenticates only the disclosed block averages under the stated signer key. It does not authenticate fine detail, source capture or an untrusted identity. Mean-preserving edits can pass exactly, and some blurs pass. JPEG quality ranges and detection percentages are measured outcomes, not wire-format guarantees. See SECURITY_MODEL.md and UPGRADE_RESULTS.md.
+
+### Native candidate area mapping and BORDERLINE (28 October 2026)
+
+Copy checking decodes the candidate to native-size RGB, compositing transparency on white, without resizing. For a signed W×H image and native cw×ch candidate, a signed cell `[x0,x1) × [y0,y1)` (8×8 luma or 16×16 chroma, clipped to the signed image edge) maps to `[x0*cw/W,x1*cw/W) × [y0*ch/H,y1*ch/H)`. Use integer units: L=x0*cw, R=x1*cw, T=y0*ch, B=y1*ch. Candidate pixel (u,v) has weight
+
+`wx=max(0,min(R,(u+1)*W)-max(L,u*W))`, `wy=max(0,min(B,(v+1)*H)-max(T,v*H))`, `weight=wx*wy`.
+
+First convert each candidate pixel to integer Y/Cb/Cr with the existing y8c16-v1 formulas. Then sum `weight*component` and return `floor((sum+floor(A/2))/A)`, where A=(R-L)*(B-T). Empty outside-image cells remain Y=0, Cb/Cr=128. Python uses arbitrary-precision integers; JS Number integer sums are exact: A≤256*cw*ch≤9,216,000,000 and sum≤255*A≤2,350,080,000,000 (<2^42). All products and rounded divisions therefore stay within exact integer bounds; no floating-point geometric overlap is used.
+
+At identical dimensions this is exactly the original feature function. The signed commitment format and `y8c16-v1` version remain unchanged; candidate normalization semantics change for differently sized copies. Same-size vectors and hand-calculated overlap/rounding vectors check compatibility. The aspect-ratio and native decoding limits still apply.
+
+Tau stays 9. For worstError e, e<7 gives VISUALLY CONSISTENT, 7≤e≤11 gives **BORDERLINE (decoder-dependent)**, and e>11 gives VISUALLY INCONSISTENT. BORDERLINE has `genuine=false`, `visualConsistent=false`, CLI exit 5 and warning “Close to the threshold; result may differ between apps”. Signer trust remains a separate field; borderline grants no identity or consistency acceptance. The browser shows the warning in amber with explicit text. A fully hidden proof makes no positive visible-content claim. Exact GRD verification is unchanged.
+
+All implementations now share the integer area mapping; remaining cross-runtime visual differences can arise in native image decoders/colour or alpha conversion. The borderline band reduces unstable near-threshold decisions but does not mathematically guarantee identical verdicts for every encoded image.
