@@ -1,0 +1,145 @@
+<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
+<title>.GRD Viewer · Image Guard</title>
+<!--PWA-->
+<meta name=theme-color content="#0f2a1f">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#f4f6f8;color:#16202a;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+header{background:#0f2a1f;color:#fff}.wrap{max-width:920px;margin:0 auto;padding:0 18px}
+.bar{display:flex;align-items:center;justify-content:space-between;height:60px;gap:10px}.brand{font-weight:800;font-size:19px;color:#fff;text-decoration:none}
+nav a{color:#cfe8da;text-decoration:none;padding:8px 12px;border-radius:999px;font-weight:600;font-size:14px}nav a.on{background:#2fae6c;color:#fff}
+h1{font-size:28px;margin:26px 0 6px}.lead{color:#4a5a68;margin:0 0 18px;line-height:1.5}
+.drop{background:#fff;border:2.5px dashed #a9b8c4;border-radius:18px;padding:36px 18px;text-align:center;cursor:pointer}.drop.over{border-color:#2fae6c;background:#f0faf4}
+.banner{border-radius:18px;padding:20px;margin-top:18px;color:#fff}.banner .t{font-size:26px;font-weight:800}.banner p{margin:6px 0 0}
+.ok{background:#1f9d57}.bad{background:#c0392b}.card{background:#fff;border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stage{position:relative;border-radius:12px;overflow:hidden;background:#111;touch-action:none}
+canvas{display:block;width:100%;height:auto;-webkit-user-drag:none;pointer-events:auto}
+.shield{position:absolute;inset:0;background:#000;color:#fff;display:none;align-items:center;justify-content:center;text-align:center;padding:20px;font-weight:700;cursor:pointer}
+.shielded .shield{display:flex}.shielded canvas{visibility:hidden}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.btn{background:#e8eef2;border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:14px}.btn.on{background:#2fae6c;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}td{padding:6px 8px;border-bottom:1px solid #edf0f2;vertical-align:top;word-break:break-word}td:first-child{color:#6b7a87;width:38%}
+ul{line-height:1.7}.small{font-size:12.5px;color:#6b7a87}
+@media print{body *{display:none!important}body:after{content:"Printing .GRD images is disabled.";display:block!important}}
+</style></head><body oncontextmenu="return false" ondragstart="return false">
+<header id=hdr><div class="wrap bar"><a class=brand href="/">Image Guard</a><nav id=nav><a href="/">🛡️ Guard</a><a href="/check">🔍 Check</a><a href="/grd">📦 Convert .GRD</a><a href="/grd/open" class=on>🔓 Open .GRD</a></nav></div></header>
+<main class=wrap>
+<h1>Open a .GRD image</h1>
+<p class=lead>A .GRD file only opens if every byte is exactly as Thuy's key signed it. Change the picture, the date, the author or any other info and it refuses to show the image. Everything is checked <b>in this browser</b>, with nothing uploaded.</p>
+<div class=drop id=drop><div style="font-size:42px">🔓</div><b>Drop a .GRD file here or tap to choose</b><br><span class=small>works offline · nothing leaves your device</span></div>
+<input type=file id=fi accept=".GRD,.grd" hidden>
+<div id=out></div>
+<p class=small style="margin-top:22px">Viewer protections: the image is blurred until you press on it (only a small spot is revealed), hidden when you switch apps or windows or print, and stamped with the view time and a session ID. A browser <b>can't</b> block phone or computer screenshots or a camera pointed at the screen. These protections only make copying harder and traceable, and any copy still carries the invisible watermark.</p>
+</main>
+<script>
+const TRUSTED = [{"key_id": "008c06e446c0e983", "public_key_hex": "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691", "owner": "Thuy Tran (Image Guard GRD signer)", "alg": "Ed25519"}];
+const SESSION = Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+const hex = b => Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+const sha = async b => hex(await crypto.subtle.digest('SHA-256', b));
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+function canon(v){ if(Array.isArray(v)) return '['+v.map(canon).join(',')+']';
+  if(v && typeof v==='object') return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}';
+  return JSON.stringify(v); }
+const NAMES={1:'META',2:'IMAGE',3:'THUMB',4:'RECOVERY',5:'TIMESTAMP',6:'PUBKEY',7:'SIGNATURE'};
+const PLAIN={1:'metadata changed',2:'pixels changed',3:'thumbnail changed',4:'recovery data changed',5:'timestamp changed',6:'signer key changed',7:'signature changed'};
+// Mirrors grd.py verify_bytes(): same rules, same verdicts (GENUINE / TAMPERED / NOT A GRD).
+async function verifyGRD(buf){
+  const d=new Uint8Array(buf), dv=new DataView(buf), r={verdict:'TAMPERED',failed:[],problems:[],meta:null};
+  const bad=(m,w)=>{r.problems.push(m); if(w&&!r.failed.includes(w)) r.failed.push(w); return r;};
+  const td=new TextDecoder('latin1');
+  if(d.length<10||td.decode(d.slice(0,4))!=='GRD1'){ r.verdict='NOT A GRD'; return bad('not a .GRD file (bad magic header)'); }
+  const ver=dv.getUint16(4,true), flags=dv.getUint16(6,true), n=dv.getUint16(8,true);
+  if(ver!==1){ r.verdict='NOT A GRD'; return bad('unreadable: unsupported .GRD version '+ver); }
+  if(n<3||n>16) return bad('impossible section count '+n,'file structure');
+  const tend=10+50*n; if(tend>d.length) return bad('file truncated inside the section table','file truncated/extended');
+  const ents=[]; for(let i=0;i<n;i++){ const o=10+50*i; ents.push({t:dv.getUint16(o,true), off:Number(dv.getBigUint64(o+2,true)), len:Number(dv.getBigUint64(o+10,true)), h:hex(d.slice(o+18,o+50))}); }
+  const types=ents.map(e=>e.t);
+  if(types.some(t=>!NAMES[t])) return bad('unknown section type in table','file structure');
+  if(new Set(types).size!==types.length) return bad('duplicate sections','file structure');
+  for(const q of [1,2,6,7]) if(!types.includes(q)) return bad('missing '+NAMES[q]+' section','file structure');
+  if(types[types.length-1]!==7) return bad('SIGNATURE is not the last section','file structure');
+  if(!!(flags&1)!==types.includes(5)||!!(flags&2)!==types.includes(4)||(flags&~3)) return bad("flags don't match the sections present",'file structure');
+  let o=tend; for(const e of ents){ if(e.off!==o) return bad(`${NAMES[e.t]} offset ${e.off} expected ${o} (overlap/gap)`,'file structure'); o+=e.len; }
+  if(o>d.length) return bad(`file truncated: ${o-d.length} byte(s) missing`,'file truncated/extended');
+  if(o<d.length) return bad(`file extended: ${d.length-o} extra byte(s) after SIGNATURE`,'file truncated/extended');
+  const sigE=ents[ents.length-1]; if(sigE.len!==64||sigE.h!=='0'.repeat(64)) return bad('bad SIGNATURE table entry','file structure');
+  const S={}; for(const e of ents) S[e.t]=d.slice(e.off,e.off+e.len);
+  for(const e of ents.slice(0,-1)) if(await sha(S[e.t])!==e.h) bad(`${NAMES[e.t]} section doesn't match its hash in the signed table`,PLAIN[e.t]);
+  const pks=S[6]; if(pks.length!==40) return bad('bad PUBKEY section','signer key changed');
+  const kid=hex(pks.slice(0,8)), pk=pks.slice(8);
+  if((await sha(pk)).slice(0,16)!==kid) bad("key_id doesn't match the embedded public key",'signer key changed');
+  const tk=TRUSTED.find(k=>k.key_id===kid); if(!tk||tk.public_key_hex!==hex(pk)) bad(`signed by unknown key ${kid} (not in the trusted list)`,'signed by unknown key');
+  let ok=false;
+  try{ const key=await crypto.subtle.importKey('raw',pk,{name:'Ed25519'},false,['verify']);
+       ok=await crypto.subtle.verify({name:'Ed25519'},key,S[7],await crypto.subtle.digest('SHA-256',d.slice(0,sigE.off))); }
+  catch(e){ r.problems.push('this browser cannot check Ed25519 signatures ('+e.message+'); use a current Chrome, Edge, Firefox or Safari'); }
+  r.signature_valid=ok; if(!ok) bad('Ed25519 signature is not valid for this file', r.failed.length?null:'signature invalid');
+  try{ const raw=new TextDecoder('utf-8',{fatal:true}).decode(S[1]); const m=JSON.parse(raw); r.meta=m;
+    if(canon(m)!==raw) bad('metadata is not canonical JSON','metadata changed');
+    if(m.asset_id!==(await sha(S[2])).slice(0,15)) bad("asset_id doesn't match the image",'pixels changed');
+    if(m.key_id!==kid) bad('metadata names a different key','metadata changed');
+  }catch(e){ bad('metadata unreadable','metadata changed'); }
+  if(S[5]){ const g=td.decode(S[5]).match(/\x18[\x0f-\x17](\d{14}(?:\.\d+)?Z)/); if(g) r.tsa_time=g[1]; }
+  if(!r.problems.length){ r.verdict='GENUINE'; r.payload=S[2]; }
+  r.genuine=r.verdict==='GENUINE'; r.changed=r.failed; return r;
+}
+// ---------------- protected rendering
+let bmp=null, reveal=true, held=null, cv=null, stage=null, timer=null;
+function shield(why){ if(stage){ stage.classList.add('shielded'); stage.querySelector('.shield').textContent=(why||'Hidden')+'. Tap to show again.'; } }
+function unshield(){ if(stage) stage.classList.remove('shielded'); draw(); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) shield('Hidden while you were away'); });
+window.addEventListener('blur',()=>shield('Hidden because the window lost focus'));
+window.addEventListener('beforeprint',()=>shield('Printing is disabled'));
+window.addEventListener('keyup',e=>{ if(e.key==='PrintScreen'){ shield('Screenshot key detected'); try{navigator.clipboard.writeText('Screenshots of .GRD images are not allowed.')}catch(_){} } });
+window.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&['s','p','c'].includes(e.key.toLowerCase())){ e.preventDefault(); shield('Saving, printing and copying are disabled'); } if(e.key==='PrintScreen') shield('Screenshot key detected'); });
+function overlay(ctx,W,H){
+  const txt=`Image Guard · viewed ${new Date().toLocaleString()} · session ${SESSION}`;
+  ctx.save(); ctx.globalAlpha=.22; ctx.fillStyle='#fff'; ctx.strokeStyle='#000'; ctx.lineWidth=Math.max(1,W/900);
+  ctx.font=`700 ${Math.max(14,Math.round(W/40))}px system-ui,sans-serif`; const drift=(Date.now()/25)%400; ctx.translate(W/2+drift-200,H/2+(drift/3)-66); ctx.rotate(-Math.PI/7);
+  const step=Math.max(70,Math.round(W/9)); for(let y=-H;y<H;y+=step){ for(let x=-W*1.2;x<W*1.2;x+=ctx.measureText(txt).width+80){ ctx.strokeText(txt,x,y); ctx.fillText(txt,x,y);} }
+  ctx.restore();
+}
+function draw(){
+  if(!bmp||!cv) return; const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(reveal){ ctx.filter=`blur(${Math.round(W/45)}px)`; ctx.drawImage(bmp,0,0,W,H); ctx.filter='none';
+    if(held){ const R=Math.round(Math.min(W,H)*0.14); ctx.save(); ctx.beginPath(); ctx.arc(held.x,held.y,R,0,Math.PI*2); ctx.clip(); ctx.drawImage(bmp,0,0,W,H); ctx.restore();
+      ctx.beginPath(); ctx.arc(held.x,held.y,R,0,Math.PI*2); ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=3; ctx.stroke(); }
+  } else ctx.drawImage(bmp,0,0,W,H);
+  overlay(ctx,W,H);
+}
+function pt(e){ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*cv.width/r.width, y:(e.clientY-r.top)*cv.height/r.height}; }
+async function show(r){
+  const out=document.getElementById('out'), m=r.meta||{};
+  if(r.verdict==='NOT A GRD'){ bmp=null; out.innerHTML=`<div class="banner" style="background:#7b8794"><div class=t>? NOT A GRD / UNREADABLE</div><p>${esc(r.problems[0]||'')}</p></div>`; return; }
+  if(!r.genuine){
+    bmp=null; out.innerHTML=`<div class="banner bad"><div class=t>✖ TAMPERED: image not shown</div><p>This .GRD file is not exactly what was signed, so the image is withheld.</p></div>
+    <div class=card><b>What changed:</b> ${esc(r.changed.join(', ')||'unknown')}<ul>${r.problems.map(p=>'<li>'+esc(p)+'</li>').join('')}</ul>
+    <p class=small>Any edit to the picture, the date, the author or any other byte breaks the signature. Re-signing with another key is rejected because only trusted Image Guard keys are accepted.</p></div>`; return; }
+  const mime=m.mime||'image/jpeg'; bmp=await createImageBitmap(new Blob([r.payload],{type:mime}));
+  const dimOK = bmp.width===m.width && bmp.height===m.height;
+  if(!dimOK){ r.genuine=false; r.verdict='TAMPERED'; r.problems.push('image size differs from metadata'); r.changed.push('pixels changed'); return show(r); }
+  const rows=[['Asset ID',m.asset_id],['Watermark ID (hidden in pixels)',m.watermark_id],['Author',m.author],['Issued by',m.issued_by],['Source',m.source],['Original file',m.original_filename],['Created (Melbourne)',m.created_melbourne],['Created (UTC)',m.created_utc],['Trusted timestamp (FreeTSA)',r.tsa_time?r.tsa_time.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d).*$/,'$1-$2-$3 $4:$5:$6 UTC')+' (full check: grd verify)':'none (made offline)'],['Size',m.width+' × '+m.height],['Watermarks',m.watermarks],['Signer key',m.key_id+' (Ed25519, trusted)']];
+  out.innerHTML=`<div class="banner ok"><div class=t>✔ GENUINE</div><p>Signature valid, signed by a trusted key. Every byte of the image and its info is unchanged.</p></div>
+  <div class=card><div class=tools><button class="btn on" id=bR>👆 Reveal under finger</button><button class=btn id=bF>Full view</button><span class=small style="align-self:center">session ${SESSION}</span></div>
+  <div class=stage id=stage><canvas id=cv></canvas><div class=shield></div></div>
+  <table>${rows.map(x=>`<tr><td>${esc(x[0])}</td><td>${esc(x[1])}</td></tr>`).join('')}</table></div>`;
+  stage=document.getElementById('stage'); cv=document.getElementById('cv');
+  const maxW=1600, s=Math.min(1,maxW/bmp.width); cv.width=Math.round(bmp.width*s); cv.height=Math.round(bmp.height*s);
+  stage.querySelector('.shield').onclick=unshield;
+  cv.addEventListener('pointerdown',e=>{ held=pt(e); cv.setPointerCapture(e.pointerId); draw(); });
+  cv.addEventListener('pointermove',e=>{ if(held){ held=pt(e); draw(); } });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>cv.addEventListener(ev,()=>{ held=null; draw(); }));
+  document.getElementById('bR').onclick=()=>{reveal=true;document.getElementById('bR').classList.add('on');document.getElementById('bF').classList.remove('on');draw();};
+  document.getElementById('bF').onclick=()=>{reveal=false;document.getElementById('bF').classList.add('on');document.getElementById('bR').classList.remove('on');draw();};
+  clearInterval(timer); timer=setInterval(draw,250); draw();
+}
+async function openFile(f){ document.getElementById('out').innerHTML='<div class=card>Checking '+esc(f.name)+'…</div>'; show(await verifyGRD(await f.arrayBuffer())); }
+const dz=document.getElementById('drop'), fi=document.getElementById('fi');
+dz.onclick=()=>fi.click(); fi.onchange=()=>{ if(fi.files[0]) openFile(fi.files[0]); fi.value=''; };
+dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')}; dz.ondragleave=()=>dz.classList.remove('over');
+dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over'); if(e.dataTransfer.files[0]) openFile(e.dataTransfer.files[0]);};
+if(location.protocol==='file:'){ document.getElementById('nav').style.display='none'; document.querySelector('.brand').removeAttribute('href'); }
+else if('serviceWorker' in navigator && location.pathname.startsWith('/grd')){ navigator.serviceWorker.register('/grd/sw.js',{scope:'/grd/'}).catch(()=>{}); }
+window.verifyGRD=verifyGRD;
+</script></body></html>

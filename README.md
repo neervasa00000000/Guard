@@ -1,0 +1,75 @@
+# Guard — offline GRD1 image verification
+
+A single-file, dependency-free viewer for the `.GRD` format in the supplied `grd_viewer.html`. It verifies signed bytes against a pinned Ed25519 public key, then provides intentional image viewing and a downloadable verification report.
+
+**The original repository was empty.** This implementation starts from the supplied offline viewer, preserved in `reference/grd_viewer.original.html`. The original server, Convert, Check/copy-tracing service, Android app, private signing keys and Goose Bumps sample were not supplied. Their behaviour and the previously reported 9,118 mutation tests cannot be independently confirmed here.
+
+**Live viewer:** https://neervasa00000000.github.io/Guard/
+
+## Use
+
+Open `grd_viewer.html` in a current browser and choose or drop a `.GRD` file. It works offline with browser WebCrypto support for Ed25519. No file is uploaded. A browser without the required crypto support reports **UNSUPPORTED**, rather than asserting tampering.
+
+Or run locally:
+
+```sh
+npm run dev
+```
+
+Open http://127.0.0.1:4195/. No npm install is required. Node.js 22+ is used for builds/tests; Python 3 serves the local preview.
+
+## What changed
+
+- A responsive verification workspace: file intake, verdict, named checks and signed details.
+- Clear states for genuine, failed integrity/trust, invalid format, unsupported capabilities, oversized input and unreadable images.
+- Bounds-checked BigInt section offsets, exact contiguity, no duplicates, required sections, no trailing data, fixed signature entry and bounded metadata parsing.
+- Pinned signer identity remains mandatory. An embedded public key and a mathematically valid signature alone are insufficient.
+- File size is checked **before** reading (64 MiB). Images are limited to PNG/JPEG/WebP, 40 megapixels and 16,384 pixels per edge. Encoded dimensions are checked before decoding, then compared with decoded dimensions and signed metadata.
+- Replacing/cancelling a file invalidates stale async results. Old bitmaps and redraw timers are disposed.
+- Keyboard file selection, focus feedback, reduced motion, browser zoom and 44px controls. Reveal can be operated with Space/Enter and arrow keys.
+- Hide on window blur, tab switching and printing. Resuming restores hold-to-reveal, not full view.
+- Local JSON reports contain checks, metadata, hashes and the verification scope; no image/recovery bytes. Reports include signed metadata, so treat them as potentially personal documents.
+- The offline download is captured from the initial clean page, so it does not contain a previously opened file's metadata or image.
+- No clipboard overwrites, global copy shortcuts, zoom blocking, analytics, external fonts, runtime dependencies or service-worker cache.
+- The page CSP disallows network connections. Only explicit outbound navigation (such as opening the source link) leaves the viewer.
+
+## Verification scope
+
+**GENUINE** means that this viewer's cryptographic and image checks passed against its pinned signer list. It is not independent proof of authorship, ownership, legal rights, historical creation time or the safety of the depicted content. The viewer itself must come from a trusted source: changing the HTML can change its trust policy.
+
+Signed metadata is a signer claim. A timestamp section is integrity-checked as file bytes, but this viewer does **not** validate the timestamp authority signature, certificate chain or claimed time. The original viewer extracted a date-like string and labelled it trusted; that misleading claim was removed.
+
+Browser blur, session stamps, print styles and focus hiding are deterrents, not DRM. They cannot reliably block screenshots, extraction with developer tools or camera capture. This viewer does not assert that a watermark survives screenshots or edits. Copy tracing and edit localisation require the separate Check implementation, which is not included. No Hugging Face token is needed to host this offline viewer; that does not implement Convert or Check.
+
+The added size/schema/image limits are stricter than the supplied viewer. Files outside those limits may be refused even if a different implementation accepts them. Exact server parity needs the original server and real compatibility fixtures.
+
+## Build and test
+
+```sh
+npm run build
+npm test
+```
+
+Build produces identical `index.html` and `grd_viewer.html` files with inline CSS and JavaScript. Both are directly usable; GitHub Pages can serve the repository root.
+
+The automated suite includes **7,504 single-bit mutations** across a generated 938-byte GRD1 fixture, all rejected; unknown keys with valid signatures; truncated and extended files; unsafe offsets; duplicate sections; invalid metadata; size limits; typed-array offsets; optional sections; and acceptance comparison with the supplied reference verifier. It does not reproduce the absent Goose Bumps/server test suite.
+
+For UI testing only:
+
+```sh
+node scripts/browser-fixtures.mjs
+python3 -m http.server 4196 --bind 127.0.0.1 --directory /tmp/guard-qa
+```
+
+This creates a temporary QA viewer with an **ephemeral test trust anchor**, plus valid/tampered/unknown-key fixtures. Never publish that generated QA viewer. Production output retains only the original supplied public trust anchor. No private signing key is stored or shipped.
+
+## Source map
+
+- `src/verifier.js`: GRD1 parser, pinned trust and WebCrypto verification.
+- `src/app.js`: local file lifecycle, reports, safe image decoding and viewer controls.
+- `src/style.css` and `src/index.template.html`: visual system and accessible interface.
+- `scripts/build.mjs`: dependency-free standalone build.
+- `tests/`: generated fixtures and regression suite.
+- `reference/`: unchanged supplied viewer for compatibility investigation.
+
+Updating the trusted signer list requires a reviewed source change and rebuild. The UI cannot import keys or make an untrusted file genuine. Keep private signing keys outside this repository.

@@ -1,0 +1,11 @@
+{
+  "name": "guard-grd-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "dev": "python3 -m http.server 4195 --bind 127.0.0.1"
+  }
+}
