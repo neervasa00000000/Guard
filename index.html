@@ -15,7 +15,10 @@
     />
     <title>Guard / GRD Inspector</title>
     <style>
-      :root {
+      html.framed body > *:not(.frame-warning) {
+  display: none;
+}
+:root {
   --bg: #e9ebee;
   --surface: #fff;
   --ink: #17181b;
@@ -1845,6 +1848,7 @@ footer > a:last-child {
                 <p class="eyebrow" id="verdict-kicker"></p>
                 <h3 id="verdict-title" tabindex="-1"></h3>
                 <p id="verdict-description"></p>
+                <p id="verdict-signer" class="verdict-signer" hidden></p>
               </div>
             </div>
             <div id="checks" class="checks"></div>
@@ -2033,36 +2037,38 @@ footer > a:last-child {
         id="privacy-details"
         aria-labelledby="privacy-heading"
       >
-        <h2 id="privacy-heading">Privacy, plainly.</h2>
+        <h2 id="privacy-heading">Privacy, plainly. Effective 27 October 2026.</h2>
         <p>
-          Images and .GRD files are checked and converted on your device. Guard
-          does not upload their contents, add analytics or store them in browser
-          storage. Downloaded files remain on your device.
+          <strong>Who runs this.</strong> Guard is an open-source project published at
+          <a href="https://github.com/neervasa00000000/Guard" rel="noopener noreferrer">github.com/neervasa00000000/Guard</a>.
+          Questions or privacy requests:
+          <a href="https://github.com/neervasa00000000/Guard/issues" rel="noopener noreferrer">https://github.com/neervasa00000000/Guard/issues</a>.
         </p>
         <p>
-          This website is hosted on GitHub Pages. GitHub logs and stores
-          visitors’ IP addresses for security, even when they are not signed in.
-          See
+          <strong>What Guard does with your files.</strong> Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
+        </p>
+        <p>
+          <strong>What the website host collects.</strong> This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See
           <a
             href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             >GitHub Pages data collection</a
           >
-          and
+          and the
           <a
             href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
-            rel="noreferrer"
-            >GitHub’s Privacy Statement</a
-          >. Download the viewer and disconnect to use it without contacting the
-          host.
+            rel="noopener noreferrer"
+            >GitHub General Privacy Statement</a
+          >. To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
         </p>
         <p>
-          New browser conversions omit the original filename from the signed
-          public label. Existing files may contain public labels and other
-          metadata, also included in reports. Review them before sharing.
-          Exported files include retained pixels, signer fingerprints and
-          redaction information; blackout cannot remove copies someone already
-          has.
+          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". New browser conversions leave the label blank and download as image.GRD. Verification reports you save include these details. Check files and reports before sharing them.
+        </p>
+        <p>
+          <strong>Redaction limits.</strong> Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.
+        </p>
+        <p>
+          <strong>Links.</strong> Opening the source or privacy links contacts those sites. This page sends no referrer.
         </p>
       </section>
       <footer>
@@ -2074,6 +2080,7 @@ footer > a:last-child {
           rel="noopener noreferrer"
           >Source &amp; format notes ↗</a
         >
+        <a href="#privacy-details">Privacy</a>
       </footer>
     </main>
     <noscript
@@ -2085,17 +2092,46 @@ footer > a:last-child {
     <script>
       (()=>{
 'use strict';
+if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='Guard does not run inside embedded pages. Open the inspector directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open Guard';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}
 const policy={
   "version": 1,
   "asOf": "2026-10-27T00:00:00Z",
   "revoked": []
 }
 ;
+const trustedData={
+  "version": 1,
+  "asOf": "2026-10-27T00:00:00Z",
+  "signers": [
+    {
+      "key_id": "008c06e446c0e983",
+      "public_key_hex": "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691",
+      "fingerprint_sha256": "008c06e446c0e9836fa6987fa8c21c87f546cb9ae14ffc83f91b5ce8541fa233",
+      "name": "Thuy Tran (Image Guard GRD signer)",
+      "alg": "Ed25519",
+      "revoked": false,
+      "revokedAt": null,
+      "reason": null
+    }
+  ]
+}
+;
+// SPDX-License-Identifier: MIT
+
+const revokedFromKeys = (trustedData.signers || [])
+  .filter((s) => s.revoked)
+  .map((s) => ({
+    fingerprint: s.fingerprint_sha256,
+    reason: s.reason || "Revoked key",
+    revokedAt: s.revokedAt,
+  }));
+
 const TRUST_POLICY = Object.freeze({
   ...policy,
-  revoked: Object.freeze(
-    policy.revoked.map((entry) => Object.freeze({ ...entry })),
-  ),
+  revoked: Object.freeze([
+    ...policy.revoked.map((entry) => Object.freeze({ ...entry })),
+    ...revokedFromKeys.map((entry) => Object.freeze({ ...entry })),
+  ]),
 });
 function policyDate(value) {
   return (
@@ -2141,6 +2177,89 @@ async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
   };
 }
 
+// SPDX-License-Identifier: MIT
+
+class IntegrityError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "IntegrityError";
+  }
+}
+
+function validateTrustedKeys(data) {
+  if (
+    !data ||
+    typeof data !== "object" ||
+    data.version !== 1 ||
+    typeof data.asOf !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(data.asOf) ||
+    !Number.isFinite(Date.parse(data.asOf)) ||
+    !Array.isArray(data.signers)
+  ) {
+    throw new Error("Trusted-keys file is invalid.");
+  }
+  for (const s of data.signers) {
+    if (
+      !s ||
+      typeof s !== "object" ||
+      typeof s.name !== "string" ||
+      s.name.length < 1 ||
+      s.name.length > 120 ||
+      s.alg !== "Ed25519" ||
+      typeof s.public_key_hex !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.public_key_hex) ||
+      typeof s.fingerprint_sha256 !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.fingerprint_sha256) ||
+      typeof s.key_id !== "string" ||
+      s.key_id !== s.fingerprint_sha256.slice(0, 16) ||
+      typeof s.revoked !== "boolean"
+    ) {
+      throw new Error("Trusted-keys file is invalid.");
+    }
+    if (s.revoked) {
+      if (
+        typeof s.revokedAt !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s.revokedAt) ||
+        !Number.isFinite(Date.parse(s.revokedAt)) ||
+        new Date(s.revokedAt).toISOString() !== s.revokedAt.replace("Z", ".000Z")
+      ) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    } else {
+      if (s.revokedAt !== null) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    }
+  }
+  return true;
+}
+
+let defaultTrusted = [];
+let trustedKeysValid = true;
+try {
+  validateTrustedKeys(trustedData);
+  defaultTrusted = Object.freeze(
+    trustedData.signers
+      .filter((s) => !s.revoked)
+      .map((s) =>
+        Object.freeze({
+          key_id: s.key_id,
+          public_key_hex: s.public_key_hex,
+          fingerprint_sha256: s.fingerprint_sha256,
+          name: s.name,
+          owner: s.name,
+          alg: s.alg,
+        }),
+      ),
+  );
+} catch {
+  trustedKeysValid = false;
+  defaultTrusted = Object.freeze([]);
+  defaultTrusted._invalid = true;
+}
+
+const TRUSTED = defaultTrusted;
+
 // GRD1 compatibility: Ed25519 signs SHA-256(header + table + non-signature sections).
 // The embedded public key is never sufficient: it must match a pinned trust anchor.
 const LIMITS = Object.freeze({
@@ -2149,15 +2268,7 @@ const LIMITS = Object.freeze({
   imagePixels: 40_000_000,
   dimension: 16384,
 });
-const TRUSTED = Object.freeze([
-  Object.freeze({
-    key_id: "008c06e446c0e983",
-    public_key_hex:
-      "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691",
-    owner: "Thuy Tran (Image Guard GRD signer)",
-    alg: "Ed25519",
-  }),
-]);
+
 const NAMES = Object.freeze({
   1: "Metadata",
   2: "Image",
@@ -2181,8 +2292,7 @@ function canon(value) {
       Object.keys(value)
         .sort()
         .map((k) => JSON.stringify(k) + ":" + canon(value[k]))
-        .join(",") +
-      "}"
+      + "}"
     );
   return JSON.stringify(value);
 }
@@ -2197,7 +2307,22 @@ function validTree(value, depth = 0) {
     );
   return true;
 }
-function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
+function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY) {
+  if (anchors?._invalid || (!anchors && !trustedKeysValid)) {
+    return async function verifyGRD() {
+      return {
+        verdict: "CANNOT VERIFY",
+        genuine: false,
+        failed: [],
+        changed: [],
+        problems: ["Trusted-keys file is invalid."],
+        checks: [],
+        sections: [],
+        meta: null,
+        signature_valid: false,
+      };
+    };
+  }
   const trusted = anchors.map((k) => ({ ...k }));
   return async function verifyGRD(input) {
     const r = {
@@ -2222,6 +2347,11 @@ function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       return r;
     };
     try {
+      if (anchors?._invalid) {
+        r.verdict = "CANNOT VERIFY";
+        issue("Trusted-keys file is invalid.");
+        return finish();
+      }
       const d = input instanceof Uint8Array ? input : new Uint8Array(input);
       r.byteLength = d.byteLength;
       if (d.byteLength > LIMITS.fileBytes) {
@@ -2415,18 +2545,27 @@ function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       const anchor = trusted.find(
         (k) => k.key_id === keyId && k.public_key_hex === hex(publicKey),
       );
+      if (anchor) {
+        r.signer = anchor.name ?? anchor.owner;
+        r.signerName = anchor.name ?? anchor.owner;
+        r.fingerprint = anchor.fingerprint_sha256 || hex(await crypto.subtle.digest("SHA-256", publicKey));
+      } else {
+        r.signer = "Untrusted signing key";
+        r.fingerprint = hex(await crypto.subtle.digest("SHA-256", publicKey));
+      }
       if (!keyIdentity)
         issue("Signing key ID does not match its public key.", "signing key");
-      if (!anchor)
+      if (!anchor) {
+        r.verdict = "UNTRUSTED SIGNER";
         issue(
           "This signing key is not in the viewer’s pinned trusted list.",
           "untrusted signer",
         );
-      r.signer = anchor?.owner ?? "Untrusted signing key";
+      }
       check(
         "Trusted signer",
         anchor && keyIdentity ? "pass" : "fail",
-        anchor?.owner ?? "Unknown key · " + keyId,
+        anchor ? (anchor.name ?? anchor.owner) : ("Unknown key · " + keyId),
       );
       try {
         const key = await crypto.subtle.importKey(
@@ -2480,19 +2619,25 @@ function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
         r.meta = meta;
         if (canon(meta) !== raw)
           issue(
-            "Metadata is not in the expected canonical JSON form.",
+            "Metadata JSON must be canonical, without whitespace or duplicate keys.",
             "metadata",
           );
         if (meta.asset_id !== (await sha(byType[2])).slice(0, 15))
-          issue("The asset ID does not match the image bytes.", "image");
+          issue(
+            "The signed metadata asset ID does not match the image section hash.",
+            "metadata",
+          );
         if (meta.key_id !== keyId)
-          issue("Metadata names a different signer key.", "metadata");
+          issue(
+            "The signed metadata key ID does not match the signing key section.",
+            "metadata",
+          );
         const imageType = ["image/png", "image/jpeg", "image/webp"].includes(
           meta.mime,
         );
         const dimensions =
-          Number.isInteger(meta.width) &&
-          Number.isInteger(meta.height) &&
+          Number.isSafeInteger(meta.width) &&
+          Number.isSafeInteger(meta.height) &&
           meta.width > 0 &&
           meta.height > 0 &&
           meta.width <= LIMITS.dimension &&
@@ -2548,6 +2693,21 @@ function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       }
       return finish();
     } catch (error) {
+      if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
+        r.verdict = "UNSUPPORTED";
+      } else if (
+        r.verdict === "LIMIT EXCEEDED" ||
+        r.verdict === "NOT A GRD" ||
+        r.verdict === "UNSUPPORTED" ||
+        r.verdict === "REVOKED KEY" ||
+        r.verdict === "UNREADABLE"
+      ) {
+        // keep verdict
+      } else if (error instanceof IntegrityError) {
+        r.verdict = "TAMPERED";
+      } else {
+        r.verdict = "CANNOT VERIFY";
+      }
       issue("Verification stopped safely: " + error.message, "file structure");
       return finish();
     }
@@ -2608,6 +2768,7 @@ function encodedDimensions(bytes, mime) {
   throw new Error("Unsupported or invalid encoded image header.");
 }
 
+// SPDX-License-Identifier: MIT
 // GRD2 canonical image codec: 8-bit RGB, non-interlaced PNG with no ancillary chunks.
 // Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -2777,6 +2938,10 @@ async function decodeRgbPng(bytes) {
   return { rgb, width, height };
 }
 
+// SPDX-License-Identifier: MIT
+
+{ IntegrityError };
+
 const TILE_LIMITS = Object.freeze({
   bytes: 32 * 1024 * 1024,
   pixels: 4_194_304,
@@ -2816,22 +2981,39 @@ function base64(bytes) {
     raw += String.fromCharCode(...bytes.subarray(i, i + 32768));
   return btoa(raw);
 }
+
+function isCanonicalBase64Shape(s) {
+  if (s.length % 4) return false;
+  const pad = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
+  for (let i = 0; i < s.length - pad; i++) {
+    const c = s.charCodeAt(i);
+    const ok =
+      (c >= 65 && c <= 90) ||
+      (c >= 97 && c <= 122) ||
+      (c >= 48 && c <= 57) ||
+      c === 43 ||
+      c === 47;
+    if (!ok) return false;
+  }
+  return true;
+}
+
 function decodeBase64(value, length) {
   if (
     typeof value !== "string" ||
     value.length > Math.ceil(TILE_LIMITS.bytes / 3) * 4 ||
     value.length % 4 ||
-    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(
-      value,
-    )
+    !isCanonicalBase64Shape(value)
   )
-    throw new Error("Invalid base64 payload length or encoding.");
-  const bytes = Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
+    throw new IntegrityError("Invalid base64 payload length or encoding.");
+  const raw = atob(value);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
   if (
     (length !== undefined && bytes.length !== length) ||
     base64(bytes) !== value
   )
-    throw new Error("Noncanonical base64 payload.");
+    throw new IntegrityError("Noncanonical base64 payload.");
   return bytes;
 }
 const exactKeys = (value, keys) =>
@@ -2868,7 +3050,7 @@ function validateManifest(m) {
     m.policy !== "tile-redaction-v1" ||
     !["asset", "demo", "personal"].includes(m.purpose)
   )
-    throw new Error("Unsupported GRD2 manifest or policy.");
+    throw new IntegrityError("Unsupported GRD2 manifest or policy.");
   if (
     !Number.isInteger(m.width) ||
     !Number.isInteger(m.height) ||
@@ -2879,7 +3061,7 @@ function validateManifest(m) {
     m.width * m.height > TILE_LIMITS.pixels ||
     m.tileSize !== 64
   )
-    throw new Error("GRD2 needs a bounded RGB image and 64px tiles.");
+    throw new IntegrityError("GRD2 needs a bounded RGB image and 64px tiles.");
   if (
     !hashHex(m.root) ||
     !hashHex(m.publicKey) ||
@@ -2888,7 +3070,7 @@ function validateManifest(m) {
     m.label.length > 120 ||
     !m.label.isWellFormed()
   )
-    throw new Error("Invalid GRD2 root, key or label.");
+    throw new IntegrityError("Invalid GRD2 root, key or label.");
   const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
   if (
     count > TILE_LIMITS.tiles ||
@@ -2896,7 +3078,7 @@ function validateManifest(m) {
     m.commitments.length !== count ||
     !m.commitments.every(hashHex)
   )
-    throw new Error("Invalid signed tile commitments.");
+    throw new IntegrityError("Invalid signed tile commitments.");
   return count;
 }
 async function tileCommitment(m, index, salt, rgb) {
@@ -2906,7 +3088,7 @@ async function tileCommitment(m, index, salt, rgb) {
   return sha(joinBytes(textEncoder.encode("GRD-TILE"), idx, unhex(salt), rgb));
 }
 async function merkleRoot(commitments) {
-  if (!commitments.length) throw new Error("Empty Merkle tree.");
+  if (!commitments.length) throw new IntegrityError("Empty Merkle tree.");
   let layer = await Promise.all(
     commitments.map((c) => sha(joinBytes(new Uint8Array([0]), unhex(c)))),
   );
@@ -3036,28 +3218,43 @@ async function verifyGRD2(
     changed: [],
     meta: null,
     signature_valid: false,
+    hiddenPixelsCleared: true,
   };
   const check = (name, status, detail) =>
     r.checks.push({ name, status: status ? "pass" : "fail", detail });
   try {
+    if (anchors?._invalid || TRUSTED?._invalid) {
+      r.verdict = "CANNOT VERIFY";
+      r.problems.push("Trusted-keys file is invalid.");
+      check("GRD2 verification", false, "Trusted-keys file is invalid.");
+      return r;
+    }
     const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
     r.byteLength = bytes.length;
     if (bytes.length > TILE_LIMITS.bytes) {
       r.verdict = "LIMIT EXCEEDED";
-      throw new Error("GRD2 is limited to 32 MiB.");
+      throw new IntegrityError("GRD2 is limited to 32 MiB.");
     }
     if (!isGRD2(bytes)) {
       r.verdict = "NOT A GRD";
-      throw new Error("Missing GRD2 header.");
+      throw new IntegrityError("Missing GRD2 header.");
     }
-    const raw = new TextDecoder("utf-8", { fatal: true }).decode(
-        bytes.subarray(5),
-      ),
+    let raw;
+    try {
+      raw = new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(5));
+    } catch (e) {
+      throw new IntegrityError("Invalid UTF-8 in GRD2 container: " + e.message);
+    }
+    let doc;
+    try {
       doc = JSON.parse(raw);
+    } catch (e) {
+      throw new IntegrityError("Invalid JSON in GRD2 container: " + e.message);
+    }
     if (
       !exactKeys(doc, ["manifest", "signature", "image", "tiles", "redactions"])
     )
-      throw new Error("Unexpected container fields.");
+      throw new IntegrityError("Unexpected container fields.");
     const m = doc.manifest,
       count = validateManifest(m);
     if (
@@ -3066,7 +3263,7 @@ async function verifyGRD2(
       !Array.isArray(doc.redactions) ||
       doc.redactions.length > count
     )
-      throw new Error("Tile grid or redaction list is incomplete.");
+      throw new IntegrityError("Tile grid or redaction list is incomplete.");
     const redacted = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
@@ -3078,7 +3275,7 @@ async function verifyGRD2(
           exactKeys(t, ["index", "commitment"])
         )
       )
-        throw new Error(
+        throw new IntegrityError(
           "Tiles must be ordered, unique and have only permitted disclosure fields.",
         );
       if (Object.hasOwn(t, "commitment")) redacted.push(index);
@@ -3090,12 +3287,12 @@ async function verifyGRD2(
         item.index !== redacted[i] ||
         !["black", "blur"].includes(item.method)
       )
-        throw new Error("REDACTIONS does not match the hidden tile set.");
+        throw new IntegrityError("REDACTIONS does not match the hidden tile set.");
     }
     if (doc.redactions.length !== redacted.length)
-      throw new Error("REDACTIONS does not match TILES.");
+      throw new IntegrityError("REDACTIONS does not match TILES.");
     if (canon(doc) !== raw)
-      throw new Error(
+      throw new IntegrityError(
         "GRD2 must use canonical JSON without duplicate keys or extra bytes.",
       );
     check(
@@ -3107,11 +3304,11 @@ async function verifyGRD2(
     r.keyId = m.keyId;
     r.root = m.root;
     if ((await sha(unhex(m.publicKey))) !== m.keyId)
-      throw new Error("Signer fingerprint does not match public key.");
+      throw new IntegrityError("Signer fingerprint does not match public key.");
     r.revocation = await checkRevocation(unhex(m.publicKey), revocationPolicy);
     if (r.revocation.revoked) {
       r.verdict = "REVOKED KEY";
-      throw new Error("Signing key is revoked: " + r.revocation.reason);
+      throw new IntegrityError("Signing key is revoked: " + r.revocation.reason);
     }
     check(
       "Offline revocation",
@@ -3136,9 +3333,9 @@ async function verifyGRD2(
       r.signature_valid,
       "Ed25519 · immutable manifest and tile commitments",
     );
-    if (!r.signature_valid) throw new Error("Manifest signature is invalid.");
+    if (!r.signature_valid) throw new IntegrityError("Manifest signature is invalid.");
     if ((await merkleRoot(m.commitments)) !== m.root)
-      throw new Error("Signed commitment vector and Merkle root disagree.");
+      throw new IntegrityError("Signed commitment vector and Merkle root disagree.");
     const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
     r.demo = m.purpose === "demo";
     r.personal = m.purpose === "personal";
@@ -3147,28 +3344,75 @@ async function verifyGRD2(
       ? "Demonstration signer (not an identity claim)"
       : r.personal
         ? "Self-signed personal file (identity not verified)"
-        : (anchor?.owner ?? "Untrusted signer");
+        : (anchor?.name ?? anchor?.owner ?? "Untrusted signer");
+    if (anchor) {
+      r.signerName = anchor.name ?? anchor.owner;
+      r.fingerprint = anchor.fingerprint_sha256 || m.keyId;
+    } else {
+      r.fingerprint = m.keyId;
+    }
     check(
       "Signer trust",
       r.trusted,
       r.demo ? "DEMO ONLY · identity not verified" : r.signer,
     );
     if (r.demo || r.personal) r.checks.at(-1).status = "info";
-    const decoded = await decodeRgbPng(decodeBase64(doc.image));
+    let decoded;
+    try {
+      decoded = await decodeRgbPng(decodeBase64(doc.image));
+    } catch (e) {
+      if (e instanceof IntegrityError) throw e;
+      throw new IntegrityError("Invalid PNG image data: " + e.message);
+    }
     if (decoded.width !== m.width || decoded.height !== m.height)
-      throw new Error("PNG dimensions differ from the signed tile grid.");
+      throw new IntegrityError("PNG dimensions differ from the signed tile grid.");
+
+    // Task 4: verify hidden tiles are solid black
+    let hiddenCleared = true;
+    for (const index of redacted) {
+      const b = tileBounds(m, index);
+      for (let row = 0; row < b.height; row++) {
+        const start = ((b.y + row) * m.width + b.x) * 3;
+        for (let col = 0; col < b.width * 3; col++) {
+          if (decoded.rgb[start + col] !== 0) {
+            hiddenCleared = false;
+            break;
+          }
+        }
+        if (!hiddenCleared) break;
+      }
+      if (!hiddenCleared) break;
+    }
+    r.hiddenPixelsCleared = hiddenCleared;
+    if (!hiddenCleared) {
+      r.problems.push(
+        "Hidden tiles still contain pixel data in this file. The viewer covers them, but anyone who extracts the image can see it. Re-export with Guard to clear them before sharing.",
+      );
+      check(
+        "Hidden pixels cleared",
+        false,
+        "Hidden tiles still contain pixel data in this file.",
+      );
+    } else if (redacted.length > 0) {
+      check(
+        "Hidden pixels cleared",
+        true,
+        "Solid black pixels in hidden regions",
+      );
+    }
+
     const leaves = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
       if (Object.hasOwn(t, "commitment")) {
         if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
-          throw new Error(
+          throw new IntegrityError(
             "Redacted tile " + index + " has the wrong commitment.",
           );
         leaves.push(t.commitment);
       } else {
         if (typeof t.salt !== "string" || !/^[0-9a-f]{32}$/.test(t.salt))
-          throw new Error("Invalid salt at tile " + index + ".");
+          throw new IntegrityError("Invalid salt at tile " + index + ".");
         const actual = await tileCommitment(
           m,
           index,
@@ -3176,12 +3420,12 @@ async function verifyGRD2(
           tilePixels(decoded.rgb, m, index),
         );
         if (actual !== m.commitments[index])
-          throw new Error("Non-redacted tile " + index + " was changed.");
+          throw new IntegrityError("Non-redacted tile " + index + " was changed.");
         leaves.push(actual);
       }
     }
     if ((await merkleRoot(leaves)) !== m.root)
-      throw new Error("Current tile disclosures do not match the signed root.");
+      throw new IntegrityError("Current tile disclosures do not match the signed root.");
     check(
       "Tile commitments",
       true,
@@ -3235,8 +3479,15 @@ async function verifyGRD2(
     r.genuine = r.trusted && !redacted.length;
     r.viewable = true;
     const rgba = new Uint8Array(m.width * m.height * 4);
-    for (let i = 0; i < m.width * m.height; i++)
-      rgba.set([...decoded.rgb.subarray(i * 3, i * 3 + 3), 255], i * 4);
+    const rgb = decoded.rgb;
+    for (let i = 0; i < m.width * m.height; i++) {
+      const src = i * 3;
+      const dst = i * 4;
+      rgba[dst] = rgb[src];
+      rgba[dst + 1] = rgb[src + 1];
+      rgba[dst + 2] = rgb[src + 2];
+      rgba[dst + 3] = 255;
+    }
     for (const index of redacted) {
       const b = tileBounds(m, index);
       for (let row = 0; row < b.height; row++)
@@ -3250,8 +3501,19 @@ async function verifyGRD2(
     r.container = doc;
     return r;
   } catch (error) {
-    if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle)
+    if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
       r.verdict = "UNSUPPORTED";
+    } else if (
+      r.verdict === "LIMIT EXCEEDED" ||
+      r.verdict === "NOT A GRD" ||
+      r.verdict === "REVOKED KEY"
+    ) {
+      // Keep verdict
+    } else if (error instanceof IntegrityError) {
+      r.verdict = "TAMPERED";
+    } else {
+      r.verdict = "CANNOT VERIFY";
+    }
     r.problems.push(error.message);
     r.failed.push("GRD2 proof");
     r.changed = [...r.failed];
@@ -3275,47 +3537,50 @@ async function redactGRD2(document, indices, method = "black") {
     rgb = decoded.rgb,
     tiles = [],
     methods = new Map();
-  for (let index = 0; index < count; index++) {
-    const t = document.tiles[index];
-    if (selected.has(index) || Object.hasOwn(t, "commitment")) {
+  for (const item of document.redactions) methods.set(item.index, item.method);
+  const hidden = new Set([
+    ...document.redactions.map((item) => item.index),
+    ...selected,
+  ]);
+  for (let index = 0; index < count; index++)
+    if (hidden.has(index)) {
       const b = tileBounds(m, index);
+      for (let row = 0; row < b.height; row++)
+        rgb.fill(
+          0,
+          ((b.y + row) * m.width + b.x) * 3,
+          ((b.y + row) * m.width + b.x + b.width) * 3,
+        );
       tiles.push({ index, commitment: m.commitments[index] });
-      methods.set(index, "black");
-      for (let row = 0; row < b.height; row++) {
-        const start = ((b.y + row) * m.width + b.x) * 3;
-        rgb.fill(0, start, start + b.width * 3);
-      }
-    } else tiles.push({ ...t });
-  }
+    } else tiles.push(document.tiles[index]);
+  const redactions = Array.from(hidden)
+    .sort((a, b) => a - b)
+    .map((index) => ({
+      index,
+      method: methods.get(index) ?? "black",
+    }));
   return encodeGRD2({
-    manifest: { ...m },
+    manifest: m,
     signature: document.signature,
     image: base64(await encodeRgbPng(rgb, m.width, m.height)),
     tiles,
-    redactions: [...methods]
-      .sort((a, b) => a[0] - b[0])
-      .map(([index, method]) => ({ index, method })),
+    redactions,
   });
 }
-function tilesForRect(m, { x, y, width, height }) {
-  if (
-    ![x, y, width, height].every(Number.isFinite) ||
-    width <= 0 ||
-    height <= 0
-  )
-    throw new Error("Invalid rectangle.");
-  const indices = [];
-  for (let i = 0; i < Math.ceil(m.width / 64) * Math.ceil(m.height / 64); i++) {
-    const b = tileBounds(m, i);
+function tilesForRect(manifest, rect) {
+  const count = validateManifest(manifest),
+    out = [];
+  for (let index = 0; index < count; index++) {
+    const b = tileBounds(manifest, index);
     if (
-      b.x < x + width &&
-      b.x + b.width > x &&
-      b.y < y + height &&
-      b.y + b.height > y
+      b.x < rect.x + rect.width &&
+      b.x + b.width > rect.x &&
+      b.y < rect.y + rect.height &&
+      b.y + b.height > rect.y
     )
-      indices.push(i);
+      out.push(index);
   }
-  return indices;
+  return out;
 }
 function verificationReport(result) {
   const { payload, imageRgba, container, ...evidence } = result;
@@ -3325,6 +3590,7 @@ function verificationReport(result) {
   return evidence;
 }
 
+// SPDX-License-Identifier: MIT
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
 function inspectConversionImage(bytes, { allowResize = false } = {}) {
@@ -3414,12 +3680,14 @@ function fitConversionDimensions(width, height) {
   };
 }
 
-const $ = (id) => document.getElementById(id);
-if (window.self !== window.top) {
+if (self !== top) {
+  document.documentElement.classList.add("framed");
   const warning = document.createElement("p");
+  warning.className = "frame-warning";
   warning.textContent =
     "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
   const link = document.createElement("a");
+  link.className = "frame-warning";
   link.textContent = "Open Guard";
   link.href = location.href;
   link.target = "_blank";
@@ -3427,6 +3695,7 @@ if (window.self !== window.top) {
   document.body.replaceChildren(warning, link);
   return;
 }
+const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
 let currentContainer = null,
@@ -3544,6 +3813,11 @@ function renderResult(report) {
       "IMAGE UNREADABLE.",
       "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
     ],
+    "CANNOT VERIFY": [
+      "CANNOT VERIFY",
+      "CHECK DID NOT FINISH.",
+      "This viewer hit an internal limit or error before it could finish checking. This is not evidence of tampering. Try a current desktop browser or the Python checker (grd.py verify).",
+    ],
   };
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
@@ -3595,6 +3869,25 @@ function renderResult(report) {
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
+  const signerElem = $("verdict-signer");
+  if (signerElem) {
+    if (report.verdict === "GENUINE" || report.verdict === "VERIFIED WITH REDACTIONS") {
+      const name = report.signerName || report.signer;
+      const fp = report.fingerprint || report.keyId || "";
+      if (name && fp) {
+        signerElem.textContent = `Signed by ${name} and Fingerprint ${fp.slice(0, 16)}…`;
+        signerElem.hidden = false;
+      } else {
+        signerElem.hidden = true;
+      }
+    } else if (report.verdict === "UNTRUSTED SIGNER") {
+      const fp = report.fingerprint || report.keyId || "";
+      signerElem.textContent = `${fp ? `Fingerprint ${fp}. ` : ""}Not in this viewer's trusted list. Compare this fingerprint with one the issuer gave you through a separate channel.`;
+      signerElem.hidden = false;
+    } else {
+      signerElem.hidden = true;
+    }
+  }
   $("verdict-icon").textContent = genuine
     ? "✓"
     : report.verdict === "TAMPERED"
@@ -4517,7 +4810,7 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height}` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 4 MP / 1,024 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
       (resized
@@ -4584,11 +4877,15 @@ $("convert-form").onsubmit = async (event) => {
         "Another file was opened. Convert again when you are ready.",
       );
     const name = "image.GRD";
+    const W = source.width,
+      H = source.height,
+      ratio = (bytes.length / file.size).toFixed(1);
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). GRD2 stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    if (bytes.length > 20 * 1024 * 1024)
+      statusMsg += " Large file: some phones may be slow to open it.";
+    conversionStatus(statusMsg);
     download(bytes, name, "application/octet-stream");
     await openFile(new File([bytes], name));
-    conversionStatus(
-      `Downloaded ${name}. Opened below for verification and redaction. Unverified: self-signed.`,
-    );
     $("convert-status").tabIndex = -1;
     $("convert-status").focus();
   } catch (error) {

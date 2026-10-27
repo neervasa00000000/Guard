@@ -1,0 +1,181 @@
+[
+  {
+    "id": "grd1-genuine",
+    "file": "conformance/files/grd1-genuine.GRD",
+    "description": "Valid GRD1 signed by trusted key",
+    "format": 1,
+    "expected_verdict": "GENUINE",
+    "expected_exit": 0
+  },
+  {
+    "id": "grd1-metadata-edit",
+    "file": "conformance/files/grd1-metadata-edit.GRD",
+    "description": "GRD1 with flipped bit in metadata section",
+    "format": 1,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd1-one-bit-image-flip",
+    "file": "conformance/files/grd1-one-bit-image-flip.GRD",
+    "description": "GRD1 with flipped bit in image section",
+    "format": 1,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd1-trailing-byte",
+    "file": "conformance/files/grd1-trailing-byte.GRD",
+    "description": "GRD1 with extra trailing byte appended",
+    "format": 1,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd1-duplicate-section",
+    "file": "conformance/files/grd1-duplicate-section.GRD",
+    "description": "GRD1 section table containing duplicate section types",
+    "format": 1,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd1-unknown-key",
+    "file": "conformance/files/grd1-unknown-key.GRD",
+    "description": "GRD1 signed by key absent from trusted-keys.test.json",
+    "format": 1,
+    "expected_verdict": "UNTRUSTED SIGNER",
+    "expected_exit": 20
+  },
+  {
+    "id": "grd1-revoked-key",
+    "file": "conformance/files/grd1-revoked-key.GRD",
+    "description": "GRD1 signed by key marked revoked in trusted-keys.test.json",
+    "format": 1,
+    "expected_verdict": "REVOKED KEY",
+    "expected_exit": 21
+  },
+  {
+    "id": "grd2-personal",
+    "file": "conformance/files/grd2-personal.GRD",
+    "description": "GRD2 self-signed personal file",
+    "format": 2,
+    "expected_verdict": "UNVERIFIED: SELF-SIGNED",
+    "expected_exit": 11
+  },
+  {
+    "id": "grd2-demo",
+    "file": "conformance/files/grd2-demo.GRD",
+    "description": "GRD2 demonstration file with purpose: demo",
+    "format": 2,
+    "expected_verdict": "DEMO",
+    "expected_exit": 12
+  },
+  {
+    "id": "grd2-trusted-asset",
+    "file": "conformance/files/grd2-trusted-asset.GRD",
+    "description": "GRD2 genuine asset signed by trusted key",
+    "format": 2,
+    "expected_verdict": "GENUINE",
+    "expected_exit": 0
+  },
+  {
+    "id": "grd2-partial-redaction",
+    "file": "conformance/files/grd2-partial-redaction.GRD",
+    "description": "GRD2 with partial blackout redaction of tile 0",
+    "format": 2,
+    "expected_verdict": "VERIFIED WITH REDACTIONS",
+    "expected_exit": 10,
+    "expected_hidden_pixels_cleared": true
+  },
+  {
+    "id": "grd2-full-redaction",
+    "file": "conformance/files/grd2-full-redaction.GRD",
+    "description": "GRD2 with all tiles blackout redacted",
+    "format": 2,
+    "expected_verdict": "FULLY REDACTED",
+    "expected_exit": 13,
+    "expected_hidden_pixels_cleared": true
+  },
+  {
+    "id": "grd2-dirty-hidden-tile",
+    "file": "conformance/files/grd2-dirty-hidden-tile.GRD",
+    "description": "GRD2 where blacked-out tile still carries underlying non-zero pixels",
+    "format": 2,
+    "expected_verdict": "VERIFIED WITH REDACTIONS",
+    "expected_exit": 10,
+    "expected_hidden_pixels_cleared": false
+  },
+  {
+    "id": "grd2-retained-bit-flip",
+    "file": "conformance/files/grd2-retained-bit-flip.GRD",
+    "description": "GRD2 with single-bit flip inside retained tile",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd2-label-change",
+    "file": "conformance/files/grd2-label-change.GRD",
+    "description": "GRD2 with signed label changed in manifest",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd2-noncanonical-json",
+    "file": "conformance/files/grd2-noncanonical-json.GRD",
+    "description": "GRD2 container formatted with non-canonical whitespace",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd2-noncanonical-base64",
+    "file": "conformance/files/grd2-noncanonical-base64.GRD",
+    "description": "GRD2 container with invalid base64 character (_) in image payload",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd2-oversized",
+    "file": "conformance/files/grd2-oversized.GRD",
+    "description": "GRD2 file exceeding 32 MiB size limit",
+    "format": 2,
+    "expected_verdict": "LIMIT EXCEEDED",
+    "expected_exit": 41
+  },
+  {
+    "id": "grd2-large-4mp-noise",
+    "file": "conformance/files/grd2-large-4mp-noise.GRD",
+    "description": "GRD2 4-megapixel photo (1014 tiles) with high-entropy noise",
+    "format": 2,
+    "expected_verdict": "UNVERIFIED: SELF-SIGNED",
+    "expected_exit": 11
+  },
+  {
+    "id": "grd2-canonical-astral-plane",
+    "file": "conformance/files/grd2-canonical-astral-plane.GRD",
+    "description": "GRD2 manifest label with astral-plane UTF-16 character (😀)",
+    "format": 2,
+    "expected_verdict": "GENUINE",
+    "expected_exit": 0
+  },
+  {
+    "id": "grd2-integer-valued-float-raw",
+    "file": "conformance/files/grd2-integer-valued-float-raw.GRD",
+    "description": "GRD2 JSON formatted with float 2.0 where integer is required",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  },
+  {
+    "id": "grd2-lone-surrogate",
+    "file": "conformance/files/grd2-lone-surrogate.GRD",
+    "description": "GRD2 with lone surrogate code unit in JSON string",
+    "format": 2,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 30
+  }
+]

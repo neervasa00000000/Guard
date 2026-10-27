@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "asOf": "2026-10-27T00:00:00Z",
+  "signers": [
+    {
+      "key_id": "008c06e446c0e983",
+      "public_key_hex": "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691",
+      "fingerprint_sha256": "008c06e446c0e9836fa6987fa8c21c87f546cb9ae14ffc83f91b5ce8541fa233",
+      "name": "Thuy Tran (Image Guard GRD signer)",
+      "alg": "Ed25519",
+      "revoked": false,
+      "revokedAt": null,
+      "reason": null
+    }
+  ]
+}

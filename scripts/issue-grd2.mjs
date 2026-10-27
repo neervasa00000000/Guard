@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { readFile, writeFile, stat } from "node:fs/promises";
 import { createPrivateKey, createPublicKey, sign } from "node:crypto";
 import { PNG } from "pngjs";

@@ -87,3 +87,66 @@ test("conversion bounds GIF and BMP dimensions before decode", () => {
   b.setInt32(18, -240, true);
   assert.throws(() => inspectConversionImage(bmp), /50 megapixels/);
 });
+
+test("fitConversionDimensions handles standard photo aspect ratios and extremes", () => {
+  const p3840 = fitConversionDimensions(3840, 2556);
+  assert.ok(p3840.width * p3840.height <= 4_194_304);
+  assert.ok(Math.ceil(p3840.width / 64) * Math.ceil(p3840.height / 64) <= 1024);
+  const ratioOrig = 3840 / 2556;
+  const ratioFitted = p3840.width / p3840.height;
+  assert.ok(Math.abs(ratioFitted - ratioOrig) / ratioOrig < 0.01);
+
+  const p8000 = fitConversionDimensions(8000, 6000);
+  assert.ok(p8000.width * p8000.height <= 4_194_304);
+  assert.ok(Math.ceil(p8000.width / 64) * Math.ceil(p8000.height / 64) <= 1024);
+
+  const pNarrow = fitConversionDimensions(16384, 1);
+  assert.ok(pNarrow.width <= 4096);
+  assert.ok(pNarrow.height >= 1);
+  assert.ok(pNarrow.width * pNarrow.height <= 4_194_304);
+  assert.ok(Math.ceil(pNarrow.width / 64) * Math.ceil(pNarrow.height / 64) <= 1024);
+
+  assert.deepEqual(fitConversionDimensions(1500, 1500), {
+    width: 1500,
+    height: 1500,
+  });
+});
+
+test("end-to-end 12 MP photo downscale, seal and verify passes", async () => {
+  const { generateKeyPairSync, sign: nodeSign } = await import("node:crypto");
+  const { sealRgba, encodeGRD2, verifyGRD2 } = await import(
+    "../src/redactable.js"
+  );
+  const origW = 4000,
+    origH = 3000;
+  const fitted = fitConversionDimensions(origW, origH);
+  assert.ok(fitted.width * fitted.height <= 4_194_304);
+  assert.ok(
+    Math.ceil(fitted.width / 64) * Math.ceil(fitted.height / 64) <= 1024,
+  );
+
+  const fittedRgba = new Uint8Array(fitted.width * fitted.height * 4);
+  let seed = 42;
+  for (let i = 0; i < fittedRgba.length; i += 4) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    fittedRgba[i] = seed & 0xff;
+    fittedRgba[i + 1] = (seed >>> 8) & 0xff;
+    fittedRgba[i + 2] = (seed >>> 16) & 0xff;
+    fittedRgba[i + 3] = 255;
+  }
+  const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+  const rawPub = publicKey
+    .export({ type: "spki", format: "der" })
+    .subarray(-32);
+  const sealed = await sealRgba({
+    rgba: fittedRgba,
+    width: fitted.width,
+    height: fitted.height,
+    publicKey: rawPub,
+    purpose: "personal",
+    sign: (b) => nodeSign(null, Buffer.from(b), privateKey),
+  });
+  const res = await verifyGRD2(encodeGRD2(sealed), []);
+  assert.equal(res.verdict, "UNVERIFIED: SELF-SIGNED");
+  assert.equal(res.viewable, true);
+});

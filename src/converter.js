@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { encodedDimensions } from "./verifier.js";
 import { TILE_LIMITS } from "./redactable.js";
 

@@ -54,10 +54,12 @@ The policy is a bundled snapshot, not an independently signed update feed or liv
 
 `GENUINE` means all original pixels match a pinned signer's proof. `VERIFIED WITH REDACTIONS` means retained pixels match; `genuine:false` remains explicit. Hidden pixels render as fixed labelled placeholders, and a fully hidden file receives no positive image claim. Neither signature attests approval by the redactor, scene truth, authorship, ownership, historical time or legal admissibility.
 
-Blackout removes selected original pixels and salts from the exported container. Blur can leak private details. Labels, dimensions, fingerprints and commitments remain public. Someone retaining the original can still see it: this is not DRM. Reports omit image data and salts, but include public metadata.
+Blackout removes selected original pixels and salts from the exported container. Conforming exporters MUST write 0,0,0 into hidden tiles, and verifiers MUST report non-zero hidden pixels. Blur can leak private details. Labels, dimensions, fingerprints and commitments remain public. Someone retaining the original can still see it: this is not DRM. Reports omit image data and salts, but include public metadata.
+
+Hiding parts of an image can change what the rest appears to show. VERIFIED WITH REDACTIONS proves only that the visible tiles are unchanged, not that the redacted image is a fair representation.
 
 The supplied original server and Goose Bumps fixture are absent. Python/JavaScript conformance tests cover the new GRD2 profile and generated legacy fixtures; both checkers now reject fractional/unsafe legacy metadata numbers and sort Unicode keys using UTF-16 order. This stricter interoperability profile can reject legacy files accepted before; conformance tests are not a guarantee of universal decoder parity. The [format specification](GRD_SPEC.md) documents the deliberate JSON wire-format difference from the requested binary proposal. No novelty or production-security claim replaces an independent review.
 
 ## Strict command-line acceptance
 
-`grd.py verify` returns exit 0 only for GENUINE. Every other verdict returns 2, including VERIFIED WITH REDACTIONS, DEMO and UNVERIFIED: SELF-SIGNED. Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).
+`grd.py verify` returns exit 0 only for GENUINE. Every other verdict has its own non-zero exit code (table in README), including VERIFIED WITH REDACTIONS (10), DEMO (12) and UNVERIFIED: SELF-SIGNED (11). Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).

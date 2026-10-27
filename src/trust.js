@@ -1,9 +1,21 @@
+// SPDX-License-Identifier: MIT
 import policy from "./trust-policy.json" with { type: "json" };
+import trustedData from "./trusted-keys.json" with { type: "json" };
+
+const revokedFromKeys = (trustedData.signers || [])
+  .filter((s) => s.revoked)
+  .map((s) => ({
+    fingerprint: s.fingerprint_sha256,
+    reason: s.reason || "Revoked key",
+    revokedAt: s.revokedAt,
+  }));
+
 export const TRUST_POLICY = Object.freeze({
   ...policy,
-  revoked: Object.freeze(
-    policy.revoked.map((entry) => Object.freeze({ ...entry })),
-  ),
+  revoked: Object.freeze([
+    ...policy.revoked.map((entry) => Object.freeze({ ...entry })),
+    ...revokedFromKeys.map((entry) => Object.freeze({ ...entry })),
+  ]),
 });
 function policyDate(value) {
   return (

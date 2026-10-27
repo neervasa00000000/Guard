@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "asOf": "2026-10-27T00:00:00Z",
+  "signers": [
+    {
+      "key_id": "b600306cfa76723f",
+      "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+      "fingerprint_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+      "name": "Conformance Trusted Signer",
+      "alg": "Ed25519",
+      "revoked": false,
+      "revokedAt": null,
+      "reason": null
+    },
+    {
+      "key_id": "2b61f0ec7a2b2352",
+      "public_key_hex": "a7f6dfaf8f38b89ba8ce649b594f91e4d01fdc57f9c9493df43b5e50a9987367",
+      "fingerprint_sha256": "2b61f0ec7a2b23523274ba3f5b0a4a9e66f75a1165e11ced25862d8a1692761d",
+      "name": "Conformance Revoked Signer",
+      "alg": "Ed25519",
+      "revoked": true,
+      "revokedAt": "2026-10-26T00:00:00Z",
+      "reason": "Revoked for conformance testing"
+    }
+  ]
+}

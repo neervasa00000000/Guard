@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { sign as nodeSign } from "node:crypto";
+import { sign as nodeSign, generateKeyPairSync } from "node:crypto";
+import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync, execFileSync } from "node:child_process";
 import { signer, png } from "./fixtures.mjs";
 import {
   sealRgba,
@@ -11,6 +15,8 @@ import {
   tilesForRect,
   verificationReport,
   base64,
+  decodeBase64,
+  IntegrityError,
 } from "../src/redactable.js";
 import { decodeRgbPng, encodeRgbPng } from "../src/png.js";
 import { checkRevocation } from "../src/trust.js";
@@ -280,7 +286,7 @@ test("Python and JS verify and redact each other’s output", async () => {
       try {
         return JSON.parse(run(args));
       } catch (e) {
-        if (e.status === 2) return JSON.parse(e.stdout);
+        if (e.stdout) return JSON.parse(e.stdout);
         throw e;
       }
     };
@@ -322,7 +328,7 @@ test("Python and JS verify and redact each other’s output", async () => {
     );
     assert.throws(
       () => run(["verify", input, "--trusted-key", pem]),
-      (e) => e.status === 2,
+      (e) => e.status === 11,
     );
     const hiddenPersonal = await redactGRD2(personal, [0]);
     assert.equal(
@@ -365,6 +371,121 @@ test("Python and JS verify and redact each other’s output", async () => {
       () => run(["verify", input, "--trusted-key", pem]),
       (e) => JSON.parse(e.stdout).verdict === "TAMPERED",
     );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("GRD2 at the 4-megapixel / 1024-tile limit with photo-like noise verifies", async () => {
+  const w = 2496,
+    h = 1662;
+  const bigRgba = new Uint8Array(w * h * 4);
+  let seed = 123456789;
+  for (let i = 0; i < bigRgba.length; i += 4) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    bigRgba[i] = seed & 0xff;
+    bigRgba[i + 1] = (seed >>> 8) & 0xff;
+    bigRgba[i + 2] = (seed >>> 16) & 0xff;
+    bigRgba[i + 3] = 255;
+  }
+  const { publicKey: pubKeyObj, privateKey: privKeyObj } = generateKeyPairSync("ed25519");
+  const rawPub = pubKeyObj.export({ type: "spki", format: "der" }).subarray(-32);
+  const bigDoc = await sealRgba({
+    rgba: bigRgba,
+    width: w,
+    height: h,
+    publicKey: rawPub,
+    purpose: "personal",
+    sign: (b) => nodeSign(null, Buffer.from(b), privKeyObj),
+  });
+  const encoded = encodeGRD2(bigDoc);
+  const rep = await verifyGRD2(encoded, []);
+  assert.equal(rep.verdict, "UNVERIFIED: SELF-SIGNED");
+  assert.equal(rep.viewable, true);
+
+  const dir = await mkdtemp(join(tmpdir(), "grd-big-"));
+  try {
+    const file = join(dir, "big.GRD");
+    await writeFile(file, encoded);
+    const proc = spawnSync("python3", ["grd.py", "verify", file], {
+      cwd: new URL("../", import.meta.url),
+      encoding: "utf8",
+    });
+    assert.equal(proc.status, 11);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.verdict, "UNVERIFIED: SELF-SIGNED");
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("decodeBase64 rejects bad shapes without throwing RangeError", () => {
+  assert.throws(() => decodeBase64("abc"), IntegrityError);
+  assert.throws(() => decodeBase64("A==="), IntegrityError);
+  assert.throws(() => decodeBase64("AB=C"), IntegrityError);
+
+  const valid12M = "QUJD".repeat(3_000_000);
+  const decoded = decodeBase64(valid12M);
+  assert.equal(decoded.length, 9_000_000);
+
+  const withStar = "QUJD".repeat(1_500_000) + "*" + "QUJD".repeat(1_500_000).slice(1);
+  assert.throws(() => decodeBase64(withStar), IntegrityError);
+});
+
+test("internal error maps to CANNOT VERIFY, while pixel edit maps to TAMPERED", async () => {
+  const origDigest = crypto.subtle.digest;
+  try {
+    crypto.subtle.digest = async () => {
+      throw new RangeError("Simulated internal recursion limit");
+    };
+    const rep = await verifyGRD2(encodeGRD2(doc), [key.anchor]);
+    assert.equal(rep.verdict, "CANNOT VERIFY");
+    assert.equal(rep.viewable, false);
+    assert.equal(rep.genuine, false);
+  } finally {
+    crypto.subtle.digest = origDigest;
+  }
+
+  const tamperedBytes = await editPixel(doc, 10, 10);
+  const tamperedRep = await verify(tamperedBytes);
+  assert.equal(tamperedRep.verdict, "TAMPERED");
+});
+
+test("hidden tiles non-zero pixel check flags hiddenPixelsCleared: false", async () => {
+  const redactedBytes = await redactGRD2(doc, [0]);
+  const repClean = await verify(redactedBytes);
+  assert.equal(repClean.hiddenPixelsCleared, true);
+
+  const dirtyDoc = parse(redactedBytes);
+  const decoded = await decodeRgbPng(decodeBase64(dirtyDoc.image));
+  const b = tileBounds(dirtyDoc.manifest, 0);
+  const offset = (b.y * dirtyDoc.manifest.width + b.x) * 3;
+  decoded.rgb[offset] = 1;
+  decoded.rgb[offset + 1] = 2;
+  decoded.rgb[offset + 2] = 3;
+  dirtyDoc.image = base64(
+    await encodeRgbPng(decoded.rgb, dirtyDoc.manifest.width, dirtyDoc.manifest.height),
+  );
+
+  const encodedDirty = encodeGRD2(dirtyDoc);
+  const repDirty = await verify(encodedDirty);
+  assert.equal(repDirty.hiddenPixelsCleared, false);
+  assert.ok(
+    repDirty.problems.some((p) =>
+      p.includes("Hidden tiles still contain pixel data in this file."),
+    ),
+  );
+
+  const dir = await mkdtemp(join(tmpdir(), "grd-dirty-"));
+  try {
+    const file = join(dir, "dirty.GRD");
+    await writeFile(file, encodedDirty);
+    const proc = spawnSync("python3", ["grd.py", "verify", file], {
+      cwd: new URL("../", import.meta.url),
+      encoding: "utf8",
+    });
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.hiddenPixelsCleared, false);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

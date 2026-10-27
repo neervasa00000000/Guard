@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // GRD2 canonical image codec: 8-bit RGB, non-interlaced PNG with no ancillary chunks.
 // Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);

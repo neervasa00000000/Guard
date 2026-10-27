@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { generateKeyPairSync, createHash } from "node:crypto";
 import { writeFile, stat } from "node:fs/promises";
 const options = Object.fromEntries(
@@ -37,13 +38,17 @@ await writeFile(
 const raw = key.publicKey.export({ type: "spki", format: "der" }).subarray(-32),
   fingerprint = createHash("sha256").update(raw).digest("hex");
 console.log(
-  "Private key written with owner-only permissions. Keep it outside the repository.\nReview this PUBLIC anchor before configuring your viewer:\n" +
+  "Private key written with owner-only permissions. Keep it outside the repository.\nReview this signers[] entry before configuring your viewer:\n" +
     JSON.stringify(
       {
         key_id: fingerprint.slice(0, 16),
         public_key_hex: raw.toString("hex"),
-        owner: options["--owner"],
+        fingerprint_sha256: fingerprint,
+        name: options["--owner"],
         alg: "Ed25519",
+        revoked: false,
+        revokedAt: null,
+        reason: null,
       },
       null,
       2,

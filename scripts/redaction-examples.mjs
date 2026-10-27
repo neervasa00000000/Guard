@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // Public, fictional demonstration data. The ephemeral signing key is never saved.
 import { generateKeyPairSync, sign } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";

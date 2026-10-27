@@ -93,3 +93,7 @@ The official [C2PA specification](https://spec.c2pa.org/specifications/specifica
 ## Cross-language acceptance profile
 
 GRD1 metadata now permits finite safe integers only (no fractional numbers), valid Unicode strings/keys, and depth at most 32. Canonical object keys use UTF-16 code-unit order in both languages. Python validates bounded PNG inflated scanline lengths and rejects unused/trailing compressed data, matching the JS profile. UTC policy dates use exact second-resolution ISO syntax with valid calendar dates. These restrictions intentionally reject some previously accepted legacy inputs rather than claiming universal number/decoder equivalence. Regression vectors include Unicode key ordering, fractional/unsafe numbers, boolean dimensions, lone surrogates, invalid dates and extra PNG scanlines.
+
+## Conformance vectors
+
+A conforming implementation MUST produce expected_verdict for every vector in conformance/vectors.json.

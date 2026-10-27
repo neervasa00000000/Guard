@@ -1,3 +1,6 @@
+html.framed body > *:not(.frame-warning) {
+  display: none;
+}
 :root {
   --bg: #e9ebee;
   --surface: #fff;

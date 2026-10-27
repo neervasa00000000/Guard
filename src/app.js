@@ -1,9 +1,12 @@
-const $ = (id) => document.getElementById(id);
-if (window.self !== window.top) {
+// SPDX-License-Identifier: MIT
+if (self !== top) {
+  document.documentElement.classList.add("framed");
   const warning = document.createElement("p");
+  warning.className = "frame-warning";
   warning.textContent =
     "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
   const link = document.createElement("a");
+  link.className = "frame-warning";
   link.textContent = "Open Guard";
   link.href = location.href;
   link.target = "_blank";
@@ -11,6 +14,7 @@ if (window.self !== window.top) {
   document.body.replaceChildren(warning, link);
   return;
 }
+const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
 let currentContainer = null,
@@ -128,6 +132,11 @@ function renderResult(report) {
       "IMAGE UNREADABLE.",
       "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
     ],
+    "CANNOT VERIFY": [
+      "CANNOT VERIFY",
+      "CHECK DID NOT FINISH.",
+      "This viewer hit an internal limit or error before it could finish checking. This is not evidence of tampering. Try a current desktop browser or the Python checker (grd.py verify).",
+    ],
   };
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
@@ -179,6 +188,25 @@ function renderResult(report) {
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
+  const signerElem = $("verdict-signer");
+  if (signerElem) {
+    if (report.verdict === "GENUINE" || report.verdict === "VERIFIED WITH REDACTIONS") {
+      const name = report.signerName || report.signer;
+      const fp = report.fingerprint || report.keyId || "";
+      if (name && fp) {
+        signerElem.textContent = `Signed by ${name} and Fingerprint ${fp.slice(0, 16)}…`;
+        signerElem.hidden = false;
+      } else {
+        signerElem.hidden = true;
+      }
+    } else if (report.verdict === "UNTRUSTED SIGNER") {
+      const fp = report.fingerprint || report.keyId || "";
+      signerElem.textContent = `${fp ? `Fingerprint ${fp}. ` : ""}Not in this viewer's trusted list. Compare this fingerprint with one the issuer gave you through a separate channel.`;
+      signerElem.hidden = false;
+    } else {
+      signerElem.hidden = true;
+    }
+  }
   $("verdict-icon").textContent = genuine
     ? "✓"
     : report.verdict === "TAMPERED"
@@ -1101,7 +1129,7 @@ $("convert-input").onchange = async () => {
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height}` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
+      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 4 MP / 1,024 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     conversionStatus(
       (resized
@@ -1168,11 +1196,15 @@ $("convert-form").onsubmit = async (event) => {
         "Another file was opened. Convert again when you are ready.",
       );
     const name = "image.GRD";
+    const W = source.width,
+      H = source.height,
+      ratio = (bytes.length / file.size).toFixed(1);
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). GRD2 stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    if (bytes.length > 20 * 1024 * 1024)
+      statusMsg += " Large file: some phones may be slow to open it.";
+    conversionStatus(statusMsg);
     download(bytes, name, "application/octet-stream");
     await openFile(new File([bytes], name));
-    conversionStatus(
-      `Downloaded ${name}. Opened below for verification and redaction. Unverified: self-signed.`,
-    );
     $("convert-status").tabIndex = -1;
     $("convert-status").focus();
   } catch (error) {

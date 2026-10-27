@@ -38,7 +38,7 @@ test("every single-bit mutation fails closed", async (t) => {
 });
 test("unknown signer cannot become genuine even with a mathematically valid signature", async () => {
   const r = await verifyGRD(valid);
-  assert.equal(r.verdict, "TAMPERED");
+  assert.equal(r.verdict, "UNTRUSTED SIGNER");
   assert.equal(r.signature_valid, true);
   assert.ok(r.failed.includes("untrusted signer"));
   assert.equal(r.payload, undefined);

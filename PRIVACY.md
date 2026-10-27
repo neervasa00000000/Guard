@@ -1,14 +1,16 @@
-# Privacy and hosting
+# Privacy, plainly. Effective 27 October 2026.
 
-Guard processes selected images and GRD files locally. The application sends no file contents to an API, adds no analytics, and does not save selected files in localStorage, IndexedDB or a service worker. Browser memory is used while a file is open; explicitly downloaded files remain on your device. The offline HTML is captured before any file is selected.
+**Who runs this.** Guard is an open-source project published at [github.com/neervasa00000000/Guard](https://github.com/neervasa00000000/Guard). Questions or privacy requests: [https://github.com/neervasa00000000/Guard/issues](https://github.com/neervasa00000000/Guard/issues).
 
-The hosted site is served by GitHub Pages. GitHub states that it logs and stores visitors' IP addresses for security regardless of login. This hosting request is separate from processing a selected file. See [GitHub Pages data collection](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) and [GitHub's Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). External source/privacy links also contact their destination when opened. The page sets a no-referrer policy.
+**What Guard does with your files.** Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
 
-For use without contacting the host, download the standalone viewer from a trusted source and open that local file after disconnecting. An offline viewer still needs your browser's crypto/stream APIs. Browser extensions, the operating system, screenshots and copies held by other people are outside Guard's control.
+**What the website host collects.** This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See [GitHub Pages data collection](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) and the [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
 
-New browser conversions use an empty signed label and the generic download name `image.GRD`; the source filename is shown only in the local selection preview. The source EXIF metadata is not copied. Existing containers can include public labels, names and other signed metadata; reports can contain these too. Review files and reports before sharing. Signer fingerprints, dimensions, retained pixels, tile commitments and redaction information are public container data.
+**Personal information inside files.** A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". New browser conversions leave the label blank and download as image.GRD. Verification reports you save include these details. Check files and reports before sharing them.
 
-Exports replace every hidden tile with solid black, omit its original salt, and do not embed source/recovery files. They also sanitize previously hidden regions when re-exporting an older blur file. Earlier blur exports may already disclose details and should not be treated as anonymised. A method field is an unsigned claim, not proof of the operation performed. Anyone with the original still has its pixels; this is not DRM or a guarantee that a person cannot be identified from retained context.
+**Redaction limits.** Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.
+
+**Links.** Opening the source or privacy links contacts those sites. This page sends no referrer.
 
 ## Embedding
 

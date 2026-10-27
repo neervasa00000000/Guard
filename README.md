@@ -2,7 +2,7 @@
 
 ## Convert, redact and verify
 
-Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. Inputs up to 32 MiB / 50 megapixels; “Fit large photos” previews a smaller copy within GRD’s 4-megapixel output limit. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
+Use **Make a .GRD** on the live site to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. Inputs up to 32 MiB / 50 megapixels; “Fit large photos” previews a smaller copy within GRD’s 4-megapixel output limit. GRD2 files are lossless and typically 3–8× larger than the source JPEG. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
 
 [Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
 
@@ -59,7 +59,31 @@ The added size/schema/image limits are stricter than the supplied viewer. Files 
 
 This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Browser conversions use an empty public label and generic download name. Redaction exports are blackout-only; method labels are unsigned claims.
 
-`grd.py verify` exits 0 only for GENUINE. All other verdicts, including cryptographically valid partial redactions and demos, exit 2. See SIGNERS.md before automating acceptance.
+Exit 0 means GENUINE only. Every other verdict has its own non-zero code. Treat any non-zero code as 'not proven genuine'.
+
+### CLI exit codes
+
+| Exit | Verdict |
+|------|---------|
+| 0 | GENUINE |
+| 1 | Operational error (I/O, bad key file, write refused) |
+| 2 | Usage error (argparse) |
+| 10 | VERIFIED WITH REDACTIONS |
+| 11 | UNVERIFIED: SELF-SIGNED |
+| 12 | DEMO |
+| 13 | FULLY REDACTED |
+| 20 | UNTRUSTED SIGNER |
+| 21 | REVOKED KEY |
+| 30 | TAMPERED |
+| 31 | NOT A GRD |
+| 40 | UNSUPPORTED |
+| 41 | LIMIT EXCEEDED |
+| 42 | UNREADABLE |
+| 43 | CANNOT VERIFY |
+
+## Hosting
+
+For browser-enforced anti-framing, host on a platform that sends Content-Security-Policy: frame-ancestors 'none' (for example Cloudflare Pages using _headers, or Netlify). GitHub Pages cannot send it.
 
 ## Build and test
 

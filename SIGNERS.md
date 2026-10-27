@@ -19,16 +19,15 @@ python3 grd.py seal original.png --key /secure/signer.pem -o original.GRD
 python3 grd.py verify original.GRD --trusted-key /secure/signer-public.pem
 ```
 
-Install `requirements.txt` first, preferably inside a virtual environment. Supplying `--trusted-key` is a deliberate trust decision for that command. Exit **0** means **GENUINE** only. Partial redactions, demos, personal self-signed files, full redactions, unknown/revoked keys and integrity failures all return **2**, with their precise verdict in JSON. Operational/argument errors may return **1** or **2**. Do not treat a nonempty JSON report or a valid signature alone as a pass.
+Install `requirements.txt` first, preferably inside a virtual environment. Supplying `--trusted-key` is a deliberate trust decision for that command. Exit 0 means GENUINE only. Every other verdict has its own non-zero code (table in README). Treat any non-zero code as 'not proven genuine'. Operational/argument errors may return **1** or **2**. Do not treat a nonempty JSON report or a valid signature alone as a pass.
 
 ## Configure a viewer you distribute
 
 After checking issuer identity and the printed fingerprint:
 
-1. Add the printed public entry to `TRUSTED` in `src/verifier.js`. Remove default entries your readers should not trust. GRD1 uses the short `key_id` while GRD2 compares the complete raw public key.
-2. For equivalent Python defaults, add the same `public_key_hex` to `PINNED` in `grd.py`, or pass its PEM with `--trusted-key` each time.
-3. Review `src/trust-policy.json`; retain any applicable revoked fingerprints. A listed key is rejected even if pinned.
-4. Run `npm ci`, `npm test` and `npm run build`, then distribute the rebuilt HTML through a trusted channel. Confirm a fixture from your issuer becomes GENUINE and an unknown issuer does not.
+1. Add the printed entry to `src/trusted-keys.json`, remove entries your readers should not trust, run `npm ci && npm test && npm run build`, and publish the rebuilt HTML. To revoke, set `revoked:true`, `revokedAt` and `reason`, then bump `version`/`asOf`.
+2. Review `src/trust-policy.json`; retain any applicable revoked fingerprints. A listed key is rejected even if pinned.
+3. Distribute the rebuilt HTML through a trusted channel. Confirm a fixture from your issuer becomes GENUINE and an unknown issuer does not.
 
 This creates trust in **your configured viewer**, not a globally approved signer or C2PA trust-list membership. The repository's default anchor is the legacy key supplied in the original viewer (`97bb1a09…fce691`, full key in source); its identity has not been independently established here. Tests use temporary anchors and must never replace production output.
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // Ephemeral QA trust anchor only. Never copy the generated QA viewer to production.
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { signer, makeGRD, png } from "../tests/fixtures.mjs";

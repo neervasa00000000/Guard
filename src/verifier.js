@@ -1,4 +1,88 @@
+// SPDX-License-Identifier: MIT
 import { checkRevocation, TRUST_POLICY } from "./trust.js";
+import trustedData from "./trusted-keys.json" with { type: "json" };
+
+export class IntegrityError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "IntegrityError";
+  }
+}
+
+export function validateTrustedKeys(data) {
+  if (
+    !data ||
+    typeof data !== "object" ||
+    data.version !== 1 ||
+    typeof data.asOf !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(data.asOf) ||
+    !Number.isFinite(Date.parse(data.asOf)) ||
+    !Array.isArray(data.signers)
+  ) {
+    throw new Error("Trusted-keys file is invalid.");
+  }
+  for (const s of data.signers) {
+    if (
+      !s ||
+      typeof s !== "object" ||
+      typeof s.name !== "string" ||
+      s.name.length < 1 ||
+      s.name.length > 120 ||
+      s.alg !== "Ed25519" ||
+      typeof s.public_key_hex !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.public_key_hex) ||
+      typeof s.fingerprint_sha256 !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.fingerprint_sha256) ||
+      typeof s.key_id !== "string" ||
+      s.key_id !== s.fingerprint_sha256.slice(0, 16) ||
+      typeof s.revoked !== "boolean"
+    ) {
+      throw new Error("Trusted-keys file is invalid.");
+    }
+    if (s.revoked) {
+      if (
+        typeof s.revokedAt !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s.revokedAt) ||
+        !Number.isFinite(Date.parse(s.revokedAt)) ||
+        new Date(s.revokedAt).toISOString() !== s.revokedAt.replace("Z", ".000Z")
+      ) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    } else {
+      if (s.revokedAt !== null) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    }
+  }
+  return true;
+}
+
+let defaultTrusted = [];
+let trustedKeysValid = true;
+try {
+  validateTrustedKeys(trustedData);
+  defaultTrusted = Object.freeze(
+    trustedData.signers
+      .filter((s) => !s.revoked)
+      .map((s) =>
+        Object.freeze({
+          key_id: s.key_id,
+          public_key_hex: s.public_key_hex,
+          fingerprint_sha256: s.fingerprint_sha256,
+          name: s.name,
+          owner: s.name,
+          alg: s.alg,
+        }),
+      ),
+  );
+} catch {
+  trustedKeysValid = false;
+  defaultTrusted = Object.freeze([]);
+  defaultTrusted._invalid = true;
+}
+
+export const TRUSTED = defaultTrusted;
+
 // GRD1 compatibility: Ed25519 signs SHA-256(header + table + non-signature sections).
 // The embedded public key is never sufficient: it must match a pinned trust anchor.
 export const LIMITS = Object.freeze({
@@ -7,15 +91,7 @@ export const LIMITS = Object.freeze({
   imagePixels: 40_000_000,
   dimension: 16384,
 });
-export const TRUSTED = Object.freeze([
-  Object.freeze({
-    key_id: "008c06e446c0e983",
-    public_key_hex:
-      "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691",
-    owner: "Thuy Tran (Image Guard GRD signer)",
-    alg: "Ed25519",
-  }),
-]);
+
 export const NAMES = Object.freeze({
   1: "Metadata",
   2: "Image",
@@ -39,8 +115,7 @@ export function canon(value) {
       Object.keys(value)
         .sort()
         .map((k) => JSON.stringify(k) + ":" + canon(value[k]))
-        .join(",") +
-      "}"
+      + "}"
     );
   return JSON.stringify(value);
 }
@@ -55,7 +130,22 @@ function validTree(value, depth = 0) {
     );
   return true;
 }
-export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
+export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY) {
+  if (anchors?._invalid || (!anchors && !trustedKeysValid)) {
+    return async function verifyGRD() {
+      return {
+        verdict: "CANNOT VERIFY",
+        genuine: false,
+        failed: [],
+        changed: [],
+        problems: ["Trusted-keys file is invalid."],
+        checks: [],
+        sections: [],
+        meta: null,
+        signature_valid: false,
+      };
+    };
+  }
   const trusted = anchors.map((k) => ({ ...k }));
   return async function verifyGRD(input) {
     const r = {
@@ -80,6 +170,11 @@ export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       return r;
     };
     try {
+      if (anchors?._invalid) {
+        r.verdict = "CANNOT VERIFY";
+        issue("Trusted-keys file is invalid.");
+        return finish();
+      }
       const d = input instanceof Uint8Array ? input : new Uint8Array(input);
       r.byteLength = d.byteLength;
       if (d.byteLength > LIMITS.fileBytes) {
@@ -273,18 +368,27 @@ export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       const anchor = trusted.find(
         (k) => k.key_id === keyId && k.public_key_hex === hex(publicKey),
       );
+      if (anchor) {
+        r.signer = anchor.name ?? anchor.owner;
+        r.signerName = anchor.name ?? anchor.owner;
+        r.fingerprint = anchor.fingerprint_sha256 || hex(await crypto.subtle.digest("SHA-256", publicKey));
+      } else {
+        r.signer = "Untrusted signing key";
+        r.fingerprint = hex(await crypto.subtle.digest("SHA-256", publicKey));
+      }
       if (!keyIdentity)
         issue("Signing key ID does not match its public key.", "signing key");
-      if (!anchor)
+      if (!anchor) {
+        r.verdict = "UNTRUSTED SIGNER";
         issue(
           "This signing key is not in the viewer’s pinned trusted list.",
           "untrusted signer",
         );
-      r.signer = anchor?.owner ?? "Untrusted signing key";
+      }
       check(
         "Trusted signer",
         anchor && keyIdentity ? "pass" : "fail",
-        anchor?.owner ?? "Unknown key · " + keyId,
+        anchor ? (anchor.name ?? anchor.owner) : ("Unknown key · " + keyId),
       );
       try {
         const key = await crypto.subtle.importKey(
@@ -338,19 +442,25 @@ export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
         r.meta = meta;
         if (canon(meta) !== raw)
           issue(
-            "Metadata is not in the expected canonical JSON form.",
+            "Metadata JSON must be canonical, without whitespace or duplicate keys.",
             "metadata",
           );
         if (meta.asset_id !== (await sha(byType[2])).slice(0, 15))
-          issue("The asset ID does not match the image bytes.", "image");
+          issue(
+            "The signed metadata asset ID does not match the image section hash.",
+            "metadata",
+          );
         if (meta.key_id !== keyId)
-          issue("Metadata names a different signer key.", "metadata");
+          issue(
+            "The signed metadata key ID does not match the signing key section.",
+            "metadata",
+          );
         const imageType = ["image/png", "image/jpeg", "image/webp"].includes(
           meta.mime,
         );
         const dimensions =
-          Number.isInteger(meta.width) &&
-          Number.isInteger(meta.height) &&
+          Number.isSafeInteger(meta.width) &&
+          Number.isSafeInteger(meta.height) &&
           meta.width > 0 &&
           meta.height > 0 &&
           meta.width <= LIMITS.dimension &&
@@ -406,6 +516,21 @@ export function createVerifier(anchors, revocationPolicy = TRUST_POLICY) {
       }
       return finish();
     } catch (error) {
+      if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
+        r.verdict = "UNSUPPORTED";
+      } else if (
+        r.verdict === "LIMIT EXCEEDED" ||
+        r.verdict === "NOT A GRD" ||
+        r.verdict === "UNSUPPORTED" ||
+        r.verdict === "REVOKED KEY" ||
+        r.verdict === "UNREADABLE"
+      ) {
+        // keep verdict
+      } else if (error instanceof IntegrityError) {
+        r.verdict = "TAMPERED";
+      } else {
+        r.verdict = "CANNOT VERIFY";
+      }
       issue("Verification stopped safely: " + error.message, "file structure");
       return finish();
     }
