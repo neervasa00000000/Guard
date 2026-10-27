@@ -19,7 +19,7 @@ python3 grd.py seal original.png --key /secure/signer.pem -o original.GRD
 python3 grd.py verify original.GRD --trusted-key /secure/signer-public.pem
 ```
 
-Install `requirements.txt` first, preferably inside a virtual environment. Supplying `--trusted-key` is a deliberate trust decision for that command. Exit 0 means GENUINE only. Every other verdict has its own non-zero code (table in README). Treat any non-zero code as 'not proven genuine'. Operational/argument errors may return **1** or **2**. Do not treat a nonempty JSON report or a valid signature alone as a pass.
+Install `requirements.txt` first, preferably inside a virtual environment. Supplying `--trusted-key` is a deliberate trust decision for that command. Exit 0 means GENUINE only. Other verdicts use grouped non-zero exit codes (table in README). Treat any non-zero code as 'not proven genuine'. Operational/argument errors may return **1** or **2**. Do not treat a nonempty JSON report or a valid signature alone as a pass.
 
 ## Configure a viewer you distribute
 

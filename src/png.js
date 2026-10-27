@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // GRD2 canonical image codec: 8-bit RGB, non-interlaced PNG with no ancillary chunks.
 // Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
+export class PngFormatError extends Error {}
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
 function pngCrc(bytes) {
   let c = 0xffffffff;
@@ -45,9 +46,14 @@ async function pngStream(bytes, compress, limit) {
       const { value, done } = await reader.read();
       if (done) break;
       length += value.length;
-      if (length > limit) throw new Error("PNG decompression limit exceeded.");
+      if (length > limit) throw new PngFormatError("PNG decompression limit exceeded.");
       parts.push(value);
     }
+  } catch (error) {
+    if (error instanceof PngFormatError) throw error;
+    if (!compress && (error instanceof TypeError || error?.code === "Z_DATA_ERROR" || error?.name === "DataError"))
+      throw new PngFormatError("Invalid PNG deflate stream: " + error.message);
+    throw error;
   } finally {
     await reader.cancel().catch(() => {});
   }
@@ -55,7 +61,7 @@ async function pngStream(bytes, compress, limit) {
 }
 export async function encodeRgbPng(rgb, width, height) {
   if (rgb.length !== width * height * 3)
-    throw new Error("Invalid RGB image length.");
+    throw new PngFormatError("Invalid RGB image length.");
   const rows = new Uint8Array(height * (width * 3 + 1));
   for (let y = 0; y < height; y++)
     rows.set(
@@ -81,7 +87,7 @@ export async function decodeRgbPng(bytes) {
     bytes.length < 45 ||
     PNG_SIGNATURE.some((b, i) => bytes[i] !== b)
   )
-    throw new Error("Not a GRD2 RGB PNG.");
+    throw new PngFormatError("Not a GRD2 RGB PNG.");
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
     idats = [];
   let offset = 8,
@@ -92,14 +98,14 @@ export async function decodeRgbPng(bytes) {
   while (offset + 12 <= bytes.length) {
     const size = view.getUint32(offset),
       end = offset + 12 + size;
-    if (end > bytes.length) throw new Error("Truncated PNG chunk.");
+    if (end > bytes.length) throw new PngFormatError("Truncated PNG chunk.");
     const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8)),
       data = bytes.subarray(offset + 8, end - 4);
     if (pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4))
-      throw new Error("PNG checksum failed.");
+      throw new PngFormatError("PNG checksum failed.");
     if (type === "IHDR") {
       if (offset !== 8 || size !== 13)
-        throw new Error("Invalid PNG header order.");
+        throw new PngFormatError("Invalid PNG header order.");
       width = view.getUint32(offset + 8);
       height = view.getUint32(offset + 12);
       if (
@@ -114,28 +120,28 @@ export async function decodeRgbPng(bytes) {
         data[11] ||
         data[12]
       )
-        throw new Error("GRD2 needs bounded 8-bit RGB, non-interlaced PNG.");
+        throw new PngFormatError("GRD2 needs bounded 8-bit RGB, non-interlaced PNG.");
     } else if (type === "IDAT") {
-      if (!width || ended) throw new Error("Invalid PNG data order.");
+      if (!width || ended) throw new PngFormatError("Invalid PNG data order.");
       idats.push(data);
       seenData = true;
     } else if (type === "IEND") {
       if (size || !seenData || end !== bytes.length)
-        throw new Error("Invalid PNG end.");
+        throw new PngFormatError("Invalid PNG end.");
       ended = true;
       offset = end;
       break;
     } else
-      throw new Error(
+      throw new PngFormatError(
         "GRD2 PNG contains unsupported ancillary or critical chunks: " + type,
       );
     offset = end;
   }
-  if (!ended || !idats.length) throw new Error("Incomplete PNG.");
+  if (!ended || !idats.length) throw new PngFormatError("Incomplete PNG.");
   const stride = width * 3,
     raw = await pngStream(pngJoin(idats), false, height * (stride + 1));
   if (raw.length !== height * (stride + 1))
-    throw new Error("Wrong PNG pixel length.");
+    throw new PngFormatError("Wrong PNG pixel length.");
   const rgb = new Uint8Array(width * height * 3);
   const paeth = (a, b, c) => {
     const p = a + b - c,
@@ -146,7 +152,7 @@ export async function decodeRgbPng(bytes) {
   };
   for (let y = 0; y < height; y++) {
     const filter = raw[y * (stride + 1)];
-    if (filter > 4) throw new Error("Unknown PNG filter.");
+    if (filter > 4) throw new PngFormatError("Unknown PNG filter.");
     for (let x = 0; x < stride; x++) {
       const at = y * stride + x,
         a = x >= 3 ? rgb[at - 3] : 0,

@@ -13,7 +13,7 @@
     "description": "GRD1 with flipped bit in metadata section",
     "format": 1,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd1-one-bit-image-flip",
@@ -21,7 +21,7 @@
     "description": "GRD1 with flipped bit in image section",
     "format": 1,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd1-trailing-byte",
@@ -29,7 +29,7 @@
     "description": "GRD1 with extra trailing byte appended",
     "format": 1,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd1-duplicate-section",
@@ -37,7 +37,7 @@
     "description": "GRD1 section table containing duplicate section types",
     "format": 1,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd1-unknown-key",
@@ -45,7 +45,7 @@
     "description": "GRD1 signed by key absent from trusted-keys.test.json",
     "format": 1,
     "expected_verdict": "UNTRUSTED SIGNER",
-    "expected_exit": 20
+    "expected_exit": 5
   },
   {
     "id": "grd1-revoked-key",
@@ -53,7 +53,7 @@
     "description": "GRD1 signed by key marked revoked in trusted-keys.test.json",
     "format": 1,
     "expected_verdict": "REVOKED KEY",
-    "expected_exit": 21
+    "expected_exit": 6
   },
   {
     "id": "grd2-personal",
@@ -61,7 +61,7 @@
     "description": "GRD2 self-signed personal file",
     "format": 2,
     "expected_verdict": "UNVERIFIED: SELF-SIGNED",
-    "expected_exit": 11
+    "expected_exit": 5
   },
   {
     "id": "grd2-demo",
@@ -69,7 +69,7 @@
     "description": "GRD2 demonstration file with purpose: demo",
     "format": 2,
     "expected_verdict": "DEMO",
-    "expected_exit": 12
+    "expected_exit": 5
   },
   {
     "id": "grd2-trusted-asset",
@@ -85,7 +85,7 @@
     "description": "GRD2 with partial blackout redaction of tile 0",
     "format": 2,
     "expected_verdict": "VERIFIED WITH REDACTIONS",
-    "expected_exit": 10,
+    "expected_exit": 5,
     "expected_hidden_pixels_cleared": true
   },
   {
@@ -94,7 +94,7 @@
     "description": "GRD2 with all tiles blackout redacted",
     "format": 2,
     "expected_verdict": "FULLY REDACTED",
-    "expected_exit": 13,
+    "expected_exit": 5,
     "expected_hidden_pixels_cleared": true
   },
   {
@@ -102,8 +102,8 @@
     "file": "conformance/files/grd2-dirty-hidden-tile.GRD",
     "description": "GRD2 where blacked-out tile still carries underlying non-zero pixels",
     "format": 2,
-    "expected_verdict": "VERIFIED WITH REDACTIONS",
-    "expected_exit": 10,
+    "expected_verdict": "TAMPERED",
+    "expected_exit": 2,
     "expected_hidden_pixels_cleared": false
   },
   {
@@ -112,7 +112,7 @@
     "description": "GRD2 with single-bit flip inside retained tile",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd2-label-change",
@@ -120,7 +120,7 @@
     "description": "GRD2 with signed label changed in manifest",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd2-noncanonical-json",
@@ -128,7 +128,7 @@
     "description": "GRD2 container formatted with non-canonical whitespace",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd2-noncanonical-base64",
@@ -136,7 +136,7 @@
     "description": "GRD2 container with invalid base64 character (_) in image payload",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd2-oversized",
@@ -144,7 +144,7 @@
     "description": "GRD2 file exceeding 32 MiB size limit",
     "format": 2,
     "expected_verdict": "LIMIT EXCEEDED",
-    "expected_exit": 41
+    "expected_exit": 4
   },
   {
     "id": "grd2-large-4mp-noise",
@@ -152,12 +152,12 @@
     "description": "GRD2 4-megapixel photo (1014 tiles) with high-entropy noise",
     "format": 2,
     "expected_verdict": "UNVERIFIED: SELF-SIGNED",
-    "expected_exit": 11
+    "expected_exit": 5
   },
   {
     "id": "grd2-canonical-astral-plane",
     "file": "conformance/files/grd2-canonical-astral-plane.GRD",
-    "description": "GRD2 manifest label with astral-plane UTF-16 character (😀)",
+    "description": "GRD2 manifest label with astral-plane UTF-16 character (\ud83d\ude00)",
     "format": 2,
     "expected_verdict": "GENUINE",
     "expected_exit": 0
@@ -168,7 +168,7 @@
     "description": "GRD2 JSON formatted with float 2.0 where integer is required",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   },
   {
     "id": "grd2-lone-surrogate",
@@ -176,6 +176,6 @@
     "description": "GRD2 with lone surrogate code unit in JSON string",
     "format": 2,
     "expected_verdict": "TAMPERED",
-    "expected_exit": 30
+    "expected_exit": 2
   }
 ]

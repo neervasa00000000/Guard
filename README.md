@@ -59,7 +59,7 @@ The added size/schema/image limits are stricter than the supplied viewer. Files 
 
 This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Browser conversions use an empty public label and generic download name. Redaction exports are blackout-only; method labels are unsigned claims.
 
-Exit 0 means GENUINE only. Every other verdict has its own non-zero code. Treat any non-zero code as 'not proven genuine'.
+Exit 0 means GENUINE only. Other verdicts use the non-zero groups below; inspect the JSON verdict for the precise result. Treat any non-zero code as 'not proven genuine'.
 
 ### CLI exit codes
 
@@ -67,19 +67,13 @@ Exit 0 means GENUINE only. Every other verdict has its own non-zero code. Treat 
 |------|---------|
 | 0 | GENUINE |
 | 1 | Operational error (I/O, bad key file, write refused) |
-| 2 | Usage error (argparse) |
-| 10 | VERIFIED WITH REDACTIONS |
-| 11 | UNVERIFIED: SELF-SIGNED |
-| 12 | DEMO |
-| 13 | FULLY REDACTED |
-| 20 | UNTRUSTED SIGNER |
-| 21 | REVOKED KEY |
-| 30 | TAMPERED |
-| 31 | NOT A GRD |
-| 40 | UNSUPPORTED |
-| 41 | LIMIT EXCEEDED |
-| 42 | UNREADABLE |
-| 43 | CANNOT VERIFY |
+| 2 | TAMPERED (also argparse usage errors; inspect JSON) |
+| 3 | NOT A GRD |
+| 4 | CANNOT VERIFY, UNSUPPORTED, LIMIT EXCEEDED, UNREADABLE |
+| 5 | VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
+| 6 | REVOKED KEY |
+
+These groups replace the earlier 10–43 codes. Scripts must read the JSON verdict or migrate their exit-code handling.
 
 ## Hosting
 
@@ -117,3 +111,22 @@ This creates a temporary QA viewer with an **ephemeral test trust anchor**, plus
 - `reference/`: unchanged supplied viewer for compatibility investigation.
 
 Updating the trusted signer list requires a reviewed source change and rebuild. The UI cannot import keys or make an untrusted file genuine. Keep private signing keys outside this repository.
+
+## Plain image export and reproducibility
+
+The viewer offers **Download plain image** for verified, displayed GRD2 files, including demos and personal files. Untrusted signer images remain withheld in the viewer. The CLI can export intact GRD2 files from untrusted signers:
+
+```sh
+python3 grd.py export image.GRD --plain -o image.png
+python3 grd.py export image.GRD --plain --format jpeg --quality 95 -o image.jpg
+```
+
+Plain images have no Guard proof or overlay; hidden tiles remain black. Invalid sources are refused. Keep the `.GRD` to retain verification. New seals use the backward-compatible GRD2 profile 2.1, with a signed random asset ID and a creation time claimed by the signer. Older manifests still verify.
+
+See [REPRODUCE.md](REPRODUCE.md) for local tests and the distinction between local evidence and the external publication protocol. The [C2PA demo](examples/c2pa/run_demo.py) exercises the real SDK with ephemeral test certificates:
+
+```sh
+.venv-c2pa/bin/python examples/c2pa/run_demo.py
+```
+
+The bridge's `export` and `verify` commands are described in [REDACTION.md](REDACTION.md). A supplied test anchor establishes trust only under that test policy; mainstream C2PA trust requires an appropriately trusted certificate authority.

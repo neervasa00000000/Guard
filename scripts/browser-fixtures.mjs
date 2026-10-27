@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Ephemeral QA trust anchor only. Never copy the generated QA viewer to production.
 import { mkdir, writeFile, readFile } from "node:fs/promises";
-import { signer, makeGRD, png } from "../tests/fixtures.mjs";
-import { TRUSTED } from "../src/verifier.js";
+import { signer, makeGRD, png, hash } from "../tests/fixtures.mjs";
 import { sign } from "node:crypto";
 import { sealRgba, encodeGRD2, redactGRD2 } from "../src/redactable.js";
 const dir = "/tmp/guard-qa";
@@ -21,8 +20,15 @@ let html = await readFile(
   new URL("../grd_viewer.html", import.meta.url),
   "utf8",
 );
-for (const field of ["key_id", "public_key_hex", "owner"])
-  html = html.replace(TRUSTED[0][field], key.anchor[field]);
+const productionTrust = await readFile(new URL("../src/trusted-keys.json", import.meta.url), "utf8");
+const qaTrust = {version: 1, asOf: "2026-10-27T00:00:00Z", signers: [{
+  key_id: key.anchor.key_id, public_key_hex: key.anchor.public_key_hex,
+  fingerprint_sha256: hash(key.raw).toString("hex"), name: key.anchor.owner,
+  alg: "Ed25519", revoked: false, revokedAt: null, reason: null,
+}]};
+const trustDeclaration = "const trustedData=" + productionTrust + ";";
+if (!html.includes(trustDeclaration)) throw new Error("Built viewer trust declaration not found; rebuild first.");
+html = html.replace(trustDeclaration, "const trustedData=" + JSON.stringify(qaTrust) + ";");
 html = html.replace("<title>Guard /", "<title>QA FIXTURE ONLY — Guard /");
 const bad = Buffer.from(valid);
 const rgba = new Uint8Array(192 * 128 * 4).fill(255);

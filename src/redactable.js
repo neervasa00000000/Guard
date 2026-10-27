@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { checkRevocation, TRUST_POLICY } from "./trust.js";
 import { canon, sha, hex, TRUSTED, validateTrustedKeys, IntegrityError } from "./verifier.js";
-import { encodeRgbPng, decodeRgbPng } from "./png.js";
+import { encodeRgbPng, decodeRgbPng, PngFormatError } from "./png.js";
 
 export { IntegrityError };
+export class ProofError extends IntegrityError {}
+class ResourceLimitError extends IntegrityError {}
 
 export const TILE_LIMITS = Object.freeze({
   bytes: 32 * 1024 * 1024,
@@ -68,7 +70,7 @@ export function decodeBase64(value, length) {
     value.length % 4 ||
     !isCanonicalBase64Shape(value)
   )
-    throw new IntegrityError("Invalid base64 payload length or encoding.");
+    throw new ProofError("Invalid base64 payload length or encoding.");
   const raw = atob(value);
   const bytes = new Uint8Array(raw.length);
   for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
@@ -76,7 +78,7 @@ export function decodeBase64(value, length) {
     (length !== undefined && bytes.length !== length) ||
     base64(bytes) !== value
   )
-    throw new IntegrityError("Noncanonical base64 payload.");
+    throw new ProofError("Noncanonical base64 payload.");
   return bytes;
 }
 const exactKeys = (value, keys) =>
@@ -106,14 +108,28 @@ export function tileBounds(m, index) {
 }
 function validateManifest(m) {
   if (
-    !exactKeys(m, MANIFEST_FIELDS) ||
+    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created"] : MANIFEST_FIELDS) ||
     m.format !== "GRD2" ||
     m.version !== 2 ||
     m.pixelFormat !== "RGB8" ||
     m.policy !== "tile-redaction-v1" ||
     !["asset", "demo", "personal"].includes(m.purpose)
   )
-    throw new IntegrityError("Unsupported GRD2 manifest or policy.");
+    throw new ProofError("Unsupported GRD2 manifest or policy.");
+  if (Object.hasOwn(m, "profile")) {
+    if (m.profile !== "2.1") throw new ProofError("Unsupported manifest profile.");
+    decodeBase64(m.assetId, 16);
+    if (typeof m.created !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(m.created) ||
+        !Number.isFinite(Date.parse(m.created)) || m.created.startsWith("0000") ||
+        new Date(m.created).toISOString() !== m.created.replace("Z", ".000Z"))
+      throw new ProofError("Invalid signer-claimed creation time.");
+  }
+  if (Number.isInteger(m.width) && Number.isInteger(m.height) &&
+      (m.width > TILE_LIMITS.dimension || m.height > TILE_LIMITS.dimension ||
+       m.width * m.height > TILE_LIMITS.pixels ||
+       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > TILE_LIMITS.tiles))
+    throw new ResourceLimitError("GRD2 image or tile limit exceeded.");
   if (
     !Number.isInteger(m.width) ||
     !Number.isInteger(m.height) ||
@@ -124,7 +140,7 @@ function validateManifest(m) {
     m.width * m.height > TILE_LIMITS.pixels ||
     m.tileSize !== 64
   )
-    throw new IntegrityError("GRD2 needs a bounded RGB image and 64px tiles.");
+    throw new ProofError("GRD2 needs a bounded RGB image and 64px tiles.");
   if (
     !hashHex(m.root) ||
     !hashHex(m.publicKey) ||
@@ -133,7 +149,7 @@ function validateManifest(m) {
     m.label.length > 120 ||
     !m.label.isWellFormed()
   )
-    throw new IntegrityError("Invalid GRD2 root, key or label.");
+    throw new ProofError("Invalid GRD2 root, key or label.");
   const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
   if (
     count > TILE_LIMITS.tiles ||
@@ -141,7 +157,7 @@ function validateManifest(m) {
     m.commitments.length !== count ||
     !m.commitments.every(hashHex)
   )
-    throw new IntegrityError("Invalid signed tile commitments.");
+    throw new ProofError("Invalid signed tile commitments.");
   return count;
 }
 export async function tileCommitment(m, index, salt, rgb) {
@@ -150,8 +166,10 @@ export async function tileCommitment(m, index, salt, rgb) {
   new DataView(idx.buffer).setUint32(0, index);
   return sha(joinBytes(textEncoder.encode("GRD-TILE"), idx, unhex(salt), rgb));
 }
+// The signed full commitment vector provides security; the root is a compact
+// identifier and consistency check, reserved for future inclusion-proof profiles.
 export async function merkleRoot(commitments) {
-  if (!commitments.length) throw new IntegrityError("Empty Merkle tree.");
+  if (!commitments.length) throw new ProofError("Empty Merkle tree.");
   let layer = await Promise.all(
     commitments.map((c) => sha(joinBytes(new Uint8Array([0]), unhex(c)))),
   );
@@ -219,6 +237,9 @@ export async function sealRgba({
     manifest = {
       format: "GRD2",
       version: 2,
+      profile: "2.1",
+      assetId: base64(crypto.getRandomValues(new Uint8Array(16))),
+      created: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
       width,
       height,
       tileSize,
@@ -288,6 +309,7 @@ export async function verifyGRD2(
   try {
     if (anchors?._invalid || TRUSTED?._invalid) {
       r.verdict = "CANNOT VERIFY";
+      r.verifierFault = true;
       r.problems.push("Trusted-keys file is invalid.");
       check("GRD2 verification", false, "Trusted-keys file is invalid.");
       return r;
@@ -296,28 +318,30 @@ export async function verifyGRD2(
     r.byteLength = bytes.length;
     if (bytes.length > TILE_LIMITS.bytes) {
       r.verdict = "LIMIT EXCEEDED";
-      throw new IntegrityError("GRD2 is limited to 32 MiB.");
+      throw new ProofError("GRD2 is limited to 32 MiB.");
     }
     if (!isGRD2(bytes)) {
       r.verdict = "NOT A GRD";
-      throw new IntegrityError("Missing GRD2 header.");
+      throw new ProofError("Missing GRD2 header.");
     }
     let raw;
     try {
       raw = new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(5));
     } catch (e) {
-      throw new IntegrityError("Invalid UTF-8 in GRD2 container: " + e.message);
+      if (!(e instanceof TypeError)) throw e;
+      throw new ProofError("Invalid UTF-8 in GRD2 container: " + e.message);
     }
     let doc;
     try {
       doc = JSON.parse(raw);
     } catch (e) {
-      throw new IntegrityError("Invalid JSON in GRD2 container: " + e.message);
+      if (!(e instanceof SyntaxError)) throw e;
+      throw new ProofError("Invalid JSON in GRD2 container: " + e.message);
     }
     if (
       !exactKeys(doc, ["manifest", "signature", "image", "tiles", "redactions"])
     )
-      throw new IntegrityError("Unexpected container fields.");
+      throw new ProofError("Unexpected container fields.");
     const m = doc.manifest,
       count = validateManifest(m);
     if (
@@ -326,7 +350,7 @@ export async function verifyGRD2(
       !Array.isArray(doc.redactions) ||
       doc.redactions.length > count
     )
-      throw new IntegrityError("Tile grid or redaction list is incomplete.");
+      throw new ProofError("Tile grid or redaction list is incomplete.");
     const redacted = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
@@ -338,7 +362,7 @@ export async function verifyGRD2(
           exactKeys(t, ["index", "commitment"])
         )
       )
-        throw new IntegrityError(
+        throw new ProofError(
           "Tiles must be ordered, unique and have only permitted disclosure fields.",
         );
       if (Object.hasOwn(t, "commitment")) redacted.push(index);
@@ -350,12 +374,12 @@ export async function verifyGRD2(
         item.index !== redacted[i] ||
         !["black", "blur"].includes(item.method)
       )
-        throw new IntegrityError("REDACTIONS does not match the hidden tile set.");
+        throw new ProofError("REDACTIONS does not match the hidden tile set.");
     }
     if (doc.redactions.length !== redacted.length)
-      throw new IntegrityError("REDACTIONS does not match TILES.");
+      throw new ProofError("REDACTIONS does not match TILES.");
     if (canon(doc) !== raw)
-      throw new IntegrityError(
+      throw new ProofError(
         "GRD2 must use canonical JSON without duplicate keys or extra bytes.",
       );
     check(
@@ -366,12 +390,15 @@ export async function verifyGRD2(
     r.fileHash = await sha(bytes);
     r.keyId = m.keyId;
     r.root = m.root;
+    r.assetId = m.assetId;
+    r.created = m.created;
+    if (!m.assetId) r.problems.push("legacy manifest: no asset ID");
     if ((await sha(unhex(m.publicKey))) !== m.keyId)
-      throw new IntegrityError("Signer fingerprint does not match public key.");
+      throw new ProofError("Signer fingerprint does not match public key.");
     r.revocation = await checkRevocation(unhex(m.publicKey), revocationPolicy);
     if (r.revocation.revoked) {
       r.verdict = "REVOKED KEY";
-      throw new IntegrityError("Signing key is revoked: " + r.revocation.reason);
+      throw new ProofError("Signing key is revoked: " + r.revocation.reason);
     }
     check(
       "Offline revocation",
@@ -396,9 +423,9 @@ export async function verifyGRD2(
       r.signature_valid,
       "Ed25519 · immutable manifest and tile commitments",
     );
-    if (!r.signature_valid) throw new IntegrityError("Manifest signature is invalid.");
+    if (!r.signature_valid) throw new ProofError("Manifest signature is invalid.");
     if ((await merkleRoot(m.commitments)) !== m.root)
-      throw new IntegrityError("Signed commitment vector and Merkle root disagree.");
+      throw new ProofError("Signed commitment vector and Merkle root disagree.");
     const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
     r.demo = m.purpose === "demo";
     r.personal = m.purpose === "personal";
@@ -424,58 +451,38 @@ export async function verifyGRD2(
     try {
       decoded = await decodeRgbPng(decodeBase64(doc.image));
     } catch (e) {
-      if (e instanceof IntegrityError) throw e;
-      throw new IntegrityError("Invalid PNG image data: " + e.message);
+      if (e instanceof PngFormatError) throw new ProofError(e.message);
+      throw e;
     }
     if (decoded.width !== m.width || decoded.height !== m.height)
-      throw new IntegrityError("PNG dimensions differ from the signed tile grid.");
+      throw new ProofError("PNG dimensions differ from the signed tile grid.");
 
-    // Task 4: verify hidden tiles are solid black
-    let hiddenCleared = true;
-    for (const index of redacted) {
-      const b = tileBounds(m, index);
-      for (let row = 0; row < b.height; row++) {
-        const start = ((b.y + row) * m.width + b.x) * 3;
-        for (let col = 0; col < b.width * 3; col++) {
-          if (decoded.rgb[start + col] !== 0) {
-            hiddenCleared = false;
-            break;
-          }
-        }
-        if (!hiddenCleared) break;
+    for (const entry of doc.redactions) {
+      if (entry.method === "blur") {
+        r.hiddenPixelsCleared = false;
+        r.problems.push("Legacy blur redaction (tile " + entry.index + "): replacement pixels are not verified.");
+        continue;
       }
-      if (!hiddenCleared) break;
+      if (tilePixels(decoded.rgb, m, entry.index).some((byte) => byte !== 0)) {
+        r.hiddenPixelsCleared = false;
+        throw new ProofError("blackout incomplete (tile " + entry.index + ")");
+      }
     }
-    r.hiddenPixelsCleared = hiddenCleared;
-    if (!hiddenCleared) {
-      r.problems.push(
-        "Hidden tiles still contain pixel data in this file. The viewer covers them, but anyone who extracts the image can see it. Re-export with Guard to clear them before sharing.",
-      );
-      check(
-        "Hidden pixels cleared",
-        false,
-        "Hidden tiles still contain pixel data in this file.",
-      );
-    } else if (redacted.length > 0) {
-      check(
-        "Hidden pixels cleared",
-        true,
-        "Solid black pixels in hidden regions",
-      );
-    }
+    if (redacted.length) check("Hidden pixels cleared", r.hiddenPixelsCleared,
+      r.hiddenPixelsCleared ? "Solid black pixels in hidden regions" : "Legacy blur may expose content");
 
     const leaves = [];
     for (let index = 0; index < count; index++) {
       const t = doc.tiles[index];
       if (Object.hasOwn(t, "commitment")) {
         if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
-          throw new IntegrityError(
+          throw new ProofError(
             "Redacted tile " + index + " has the wrong commitment.",
           );
         leaves.push(t.commitment);
       } else {
         if (typeof t.salt !== "string" || !/^[0-9a-f]{32}$/.test(t.salt))
-          throw new IntegrityError("Invalid salt at tile " + index + ".");
+          throw new ProofError("Invalid salt at tile " + index + ".");
         const actual = await tileCommitment(
           m,
           index,
@@ -483,12 +490,12 @@ export async function verifyGRD2(
           tilePixels(decoded.rgb, m, index),
         );
         if (actual !== m.commitments[index])
-          throw new IntegrityError("Non-redacted tile " + index + " was changed.");
+          throw new ProofError("Non-redacted tile " + index + " was changed.");
         leaves.push(actual);
       }
     }
     if ((await merkleRoot(leaves)) !== m.root)
-      throw new IntegrityError("Current tile disclosures do not match the signed root.");
+      throw new ProofError("Current tile disclosures do not match the signed root.");
     check(
       "Tile commitments",
       true,
@@ -511,7 +518,8 @@ export async function verifyGRD2(
     r.tileSize = 64;
     r.regionVerified = true;
     r.meta = {
-      asset_id: m.root,
+      asset_id: m.assetId ?? m.root,
+      created_utc: m.created,
       key_id: m.keyId,
       width: m.width,
       height: m.height,
@@ -564,7 +572,9 @@ export async function verifyGRD2(
     r.container = doc;
     return r;
   } catch (error) {
-    if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
+    if (error instanceof ResourceLimitError) {
+      r.verdict = "LIMIT EXCEEDED";
+    } else if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
       r.verdict = "UNSUPPORTED";
     } else if (
       r.verdict === "LIMIT EXCEEDED" ||
@@ -576,6 +586,7 @@ export async function verifyGRD2(
       r.verdict = "TAMPERED";
     } else {
       r.verdict = "CANNOT VERIFY";
+      r.verifierFault = true;
     }
     r.problems.push(error.message);
     r.failed.push("GRD2 proof");
@@ -598,9 +609,7 @@ export async function redactGRD2(document, indices, method = "black") {
     throw new Error("Cannot redact an invalid source proof.");
   const decoded = await decodeRgbPng(decodeBase64(document.image)),
     rgb = decoded.rgb,
-    tiles = [],
-    methods = new Map();
-  for (const item of document.redactions) methods.set(item.index, item.method);
+    tiles = [];
   const hidden = new Set([
     ...document.redactions.map((item) => item.index),
     ...selected,
@@ -620,7 +629,7 @@ export async function redactGRD2(document, indices, method = "black") {
     .sort((a, b) => a - b)
     .map((index) => ({
       index,
-      method: methods.get(index) ?? "black",
+      method: "black",
     }));
   return encodeGRD2({
     manifest: m,
@@ -651,4 +660,23 @@ export function verificationReport(result) {
   void imageRgba;
   void container;
   return evidence;
+}
+
+// Reverify the source; export decoded pixels, never the viewer overlay.
+export async function exportPlainImage(container) {
+  const bytes = container instanceof Uint8Array || container instanceof ArrayBuffer
+    ? container : encodeGRD2(container);
+  const report = await verifyGRD2(bytes, []);
+  if (!report.regionVerified || report.verdict === "REVOKED KEY")
+    throw new Error("Cannot export an invalid source proof: " + report.verdict);
+  const doc = report.container ?? JSON.parse(new TextDecoder().decode(new Uint8Array(bytes).subarray(5)));
+  const { rgb, width, height } = await decodeRgbPng(decodeBase64(doc.image));
+  for (const entry of doc.redactions) {
+    const b = tileBounds(doc.manifest, entry.index);
+    for (let row = 0; row < b.height; row++) {
+      const start = ((b.y + row) * width + b.x) * 3;
+      rgb.fill(0, start, start + b.width * 3);
+    }
+  }
+  return encodeRgbPng(rgb, width, height);
 }

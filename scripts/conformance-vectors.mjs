@@ -121,7 +121,7 @@ await addVector({
   format: 1,
   bytes: metadataEditGrd1,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 const imageFlipGrd1 = Buffer.from(baseGrd1);
@@ -133,7 +133,7 @@ await addVector({
   format: 1,
   bytes: imageFlipGrd1,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 const trailingGrd1 = Buffer.concat([baseGrd1, Buffer.from([0xaa])]);
@@ -143,7 +143,7 @@ await addVector({
   format: 1,
   bytes: trailingGrd1,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Duplicate section in table
@@ -155,7 +155,7 @@ await addVector({
   format: 1,
   bytes: dupSectionGrd1,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 const unknownKeyGrd1 = makeGRD(unknownKey);
@@ -165,7 +165,7 @@ await addVector({
   format: 1,
   bytes: unknownKeyGrd1,
   expectedVerdict: "UNTRUSTED SIGNER",
-  expectedExit: 20,
+  expectedExit: 5,
 });
 
 const revokedKeyGrd1 = makeGRD(revokedKey);
@@ -175,7 +175,7 @@ await addVector({
   format: 1,
   bytes: revokedKeyGrd1,
   expectedVerdict: "REVOKED KEY",
-  expectedExit: 21,
+  expectedExit: 6,
 });
 
 // -------------------------------------------------------------
@@ -209,7 +209,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(personalDoc),
   expectedVerdict: "UNVERIFIED: SELF-SIGNED",
-  expectedExit: 11,
+  expectedExit: 5,
 });
 
 const demoDoc = await sealRgba({
@@ -227,7 +227,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(demoDoc),
   expectedVerdict: "DEMO",
-  expectedExit: 12,
+  expectedExit: 5,
 });
 
 const trustedDoc = await sealRgba({
@@ -256,7 +256,7 @@ await addVector({
   format: 2,
   bytes: partialRedacted,
   expectedVerdict: "VERIFIED WITH REDACTIONS",
-  expectedExit: 10,
+  expectedExit: 5,
   hiddenPixelsCleared: true,
 });
 
@@ -267,7 +267,7 @@ await addVector({
   format: 2,
   bytes: fullRedacted,
   expectedVerdict: "FULLY REDACTED",
-  expectedExit: 13,
+  expectedExit: 5,
   hiddenPixelsCleared: true,
 });
 
@@ -282,8 +282,8 @@ await addVector({
   description: "GRD2 where blacked-out tile still carries underlying non-zero pixels",
   format: 2,
   bytes: encodeGRD2(dirtyRedactedDoc),
-  expectedVerdict: "VERIFIED WITH REDACTIONS",
-  expectedExit: 10,
+  expectedVerdict: "TAMPERED",
+  expectedExit: 2,
   hiddenPixelsCleared: false,
 });
 
@@ -298,7 +298,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(tamperedTileDoc),
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Label change
@@ -310,7 +310,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(labelChangedDoc),
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Non-canonical JSON (extra space)
@@ -324,7 +324,7 @@ await addVector({
   format: 2,
   bytes: nonCanonicalJson,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Noncanonical base64
@@ -336,7 +336,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(badBase64Doc),
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Oversized
@@ -350,7 +350,7 @@ await addVector({
   format: 2,
   bytes: oversizedBytes,
   expectedVerdict: "LIMIT EXCEEDED",
-  expectedExit: 41,
+  expectedExit: 4,
 });
 
 // 4 MP noise personal photo
@@ -380,7 +380,7 @@ await addVector({
   format: 2,
   bytes: encodeGRD2(bigDoc),
   expectedVerdict: "UNVERIFIED: SELF-SIGNED",
-  expectedExit: 11,
+  expectedExit: 5,
 });
 
 // -------------------------------------------------------------
@@ -412,7 +412,7 @@ await addVector({
   format: 2,
   bytes: Buffer.from(floatDocRaw),
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 // Lone surrogate in JSON
@@ -423,7 +423,7 @@ await addVector({
   format: 2,
   bytes: loneSurrogateRaw,
   expectedVerdict: "TAMPERED",
-  expectedExit: 30,
+  expectedExit: 2,
 });
 
 await writeFile(

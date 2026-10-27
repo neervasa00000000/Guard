@@ -58,7 +58,7 @@ A `personal` purpose marks browser-converted self-signed files. Their identity i
 
 A holder may replace tiles without the signing key. Keep the original manifest and signature byte-equivalent, discard selected salts, retain their original commitments, replace selected RGB pixels, and append the matching mask entries. Further redactions take the union of hidden tiles. Blackout is the only export mode. Legacy blur records remain readable for compatibility, but their replacement pixels and method claims are never verified. A re-export blackens all hidden tiles and removes their original salts. Labels and signer fingerprints remain public.
 
-The verifier checks the signature, pinned identity, offline revocation policy, full commitment vector/root, exact hidden-mask agreement, and every retained pixel commitment. It reports the index of a mismatching retained tile. Hidden pixel contents are **not verified**; the viewer reconstructs them as fixed labelled placeholders, rather than presenting attacker-chosen hidden pixels as genuine. Restoring a hidden tile requires the original pixels and salt. Someone with the original can reconstruct it; this is not DRM or revocable access control.
+The verifier checks the signature, pinned identity, offline revocation policy, full commitment vector/root, exact hidden-mask agreement, and every retained pixel commitment. It reports the index of a mismatching retained tile. For a hidden tile claimed as `black`, every RGB byte MUST be zero; otherwise the verdict is TAMPERED with `blackout incomplete (tile i)`. Legacy `blur` replacements remain readable with a per-tile warning; their contents are **not verified**; the viewer reconstructs them as fixed labelled placeholders, rather than presenting attacker-chosen hidden pixels as genuine. Restoring a hidden tile requires the original pixels and salt. Someone with the original can reconstruct it; this is not DRM or revocable access control.
 
 ## Verdict semantics
 
@@ -97,3 +97,13 @@ GRD1 metadata now permits finite safe integers only (no fractional numbers), val
 ## Conformance vectors
 
 A conforming implementation MUST produce expected_verdict for every vector in conformance/vectors.json.
+
+## GRD2 profile 2.1
+
+New seals keep `version: 2` and add exactly three signed manifest fields: `profile: "2.1"`, `assetId` (canonical base64 of 16 independently random bytes), and `created` (UTC `YYYY-MM-DDTHH:MM:SSZ`). All fields participate in the existing sorted-key canonical JSON and signature digest. `created` is a time claimed by the signer, not a trusted timestamp. Verification reports and the C2PA custom assertion preserve this asset identity. Tile commitments and their index binding are unchanged.
+
+Legacy manifests with none of these fields remain valid and produce `legacy manifest: no asset ID`. Partial sets and malformed IDs/timestamps are rejected. The viewer falls back to the root as a legacy identifier.
+
+The signature covers the full commitment vector, which supplies the security binding. Security arguments MUST NOT depend on the Merkle root as an additional guarantee. The root remains a compact identifier and a consistency check (`root == MT(commitments)`), reserved for a possible future root-only inclusion-proof profile. There is no root-only wire change in profile 2.1.
+
+The CLI verdict groups are 0 (GENUINE), 2 (TAMPERED), 3 (NOT A GRD), 4 (CANNOT VERIFY / UNSUPPORTED / LIMIT EXCEEDED / UNREADABLE), 5 (valid but not whole-image genuine) and 6 (REVOKED KEY). A verifier fault includes `verifierFault: true`; damaged proof encodings are TAMPERED. Legacy GRD1 verification remains supported with its existing 64 MiB limit; GRD2 uses 32 MiB, 4096 pixels per side, 4,194,304 pixels and 1024 tiles.

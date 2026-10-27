@@ -18,6 +18,8 @@ jobs:
       - run: python -m pip install -r requirements.txt
       - run: npm ci
       - run: npm test
+      - run: python tests/test_vectors.py
+      - run: node bench/attacks-local.mjs
       - run: npm run build
       - name: Standalone output matches source
         run: git diff --exit-code -- index.html grd_viewer.html

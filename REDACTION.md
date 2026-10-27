@@ -54,7 +54,7 @@ The policy is a bundled snapshot, not an independently signed update feed or liv
 
 `GENUINE` means all original pixels match a pinned signer's proof. `VERIFIED WITH REDACTIONS` means retained pixels match; `genuine:false` remains explicit. Hidden pixels render as fixed labelled placeholders, and a fully hidden file receives no positive image claim. Neither signature attests approval by the redactor, scene truth, authorship, ownership, historical time or legal admissibility.
 
-Blackout removes selected original pixels and salts from the exported container. Conforming exporters MUST write 0,0,0 into hidden tiles, and verifiers MUST report non-zero hidden pixels. Blur can leak private details. Labels, dimensions, fingerprints and commitments remain public. Someone retaining the original can still see it: this is not DRM. Reports omit image data and salts, but include public metadata.
+Blackout removes selected original pixels and salts from the exported container. Conforming exporters MUST write 0,0,0 into hidden tiles, and verifiers MUST reject non-zero pixels in tiles claimed as black with TAMPERED. Blur can leak private details. Labels, dimensions, fingerprints and commitments remain public. Someone retaining the original can still see it: this is not DRM. Reports omit image data and salts, but include public metadata.
 
 Hiding parts of an image can change what the rest appears to show. VERIFIED WITH REDACTIONS proves only that the visible tiles are unchanged, not that the redacted image is a fair representation.
 
@@ -62,4 +62,15 @@ The supplied original server and Goose Bumps fixture are absent. Python/JavaScri
 
 ## Strict command-line acceptance
 
-`grd.py verify` returns exit 0 only for GENUINE. Every other verdict has its own non-zero exit code (table in README), including VERIFIED WITH REDACTIONS (10), DEMO (12) and UNVERIFIED: SELF-SIGNED (11). Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).
+`grd.py verify` returns exit 0 only for GENUINE. Other verdicts use grouped non-zero exit codes (table in README), including exit 5 for VERIFIED WITH REDACTIONS, DEMO and UNVERIFIED: SELF-SIGNED. Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).
+
+## Plain download
+
+Sealing never restricts use. **Download plain image** saves an ordinary PNG containing only IHDR, IDAT and IEND chunks, with no Guard metadata or viewing overlay. It preserves retained pixels and blackens every hidden tile defensively. It cannot restore removed content. The plain copy can no longer be verified as genuine; keep the `.GRD` if you need proof.
+
+The viewer withholds images and this button for UNTRUSTED SIGNER. The CLI permits export of intact self-signed and untrusted GRD2 files, but refuses broken proofs, revoked keys and verifier faults. `--plain` is mandatory:
+
+```sh
+python3 grd.py export source.GRD --plain -o copy.png
+python3 grd.py export source.GRD --plain --format jpeg --quality 95 -o copy.jpg
+```

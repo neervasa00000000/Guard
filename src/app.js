@@ -95,6 +95,8 @@ function showFile(file) {
 }
 function renderResult(report) {
   currentReport = report;
+  $("download-plain").hidden = !(report.version === 2 && report.viewable && report.regionVerified);
+  $("plain-note").hidden = $("download-plain").hidden;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -284,7 +286,7 @@ function metadata(report) {
     ["Issued by · signed claim", m.issued_by],
     ["Public label · signed claim", m.original_filename],
     ["Dimensions", m.width + " × " + m.height + " px"],
-    ["Created · signed claim", m.created_utc ?? m.created_melbourne],
+    ["Time claimed by the signer", m.created_utc ?? m.created_melbourne],
     [report.demo ? "Demo signer" : "Signer", report.signer],
     [
       "Retained tiles",
@@ -656,6 +658,14 @@ $("download-report").onclick = () => {
       ".json",
     "application/json",
   );
+};
+$("download-plain").onclick = async () => {
+  if (!currentContainer) return;
+  try {
+    const png = await exportPlainImage(currentContainer);
+    download(png, "image.png", "image/png");
+    setStatus("Plain image downloaded. This copy can no longer be verified as genuine.");
+  } catch (error) { setStatus("Plain export failed: " + error.message); }
 };
 $("download-viewer").onclick = () =>
   download(ORIGINAL_HTML, "grd_viewer.html", "text/html");
@@ -1125,6 +1135,7 @@ $("convert-input").onchange = async () => {
       width: surface.width,
       height: surface.height,
       name: file.name,
+      sourceBytes: file.size,
     };
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
@@ -1198,7 +1209,7 @@ $("convert-form").onsubmit = async (event) => {
     const name = "image.GRD";
     const W = source.width,
       H = source.height,
-      ratio = (bytes.length / file.size).toFixed(1);
+      ratio = (bytes.length / source.sourceBytes).toFixed(1);
     let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). GRD2 stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
     if (bytes.length > 20 * 1024 * 1024)
       statusMsg += " Large file: some phones may be slow to open it.";

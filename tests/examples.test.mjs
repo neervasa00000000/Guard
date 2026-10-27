@@ -26,7 +26,7 @@ test("every shipped example is a valid demo in both checkers, with a failing aut
       ["grd.py", "verify", decodeURIComponent(path.pathname)],
       { cwd: new URL("../", import.meta.url), encoding: "utf8" },
     );
-    assert.equal(python.status, 12, name);
+    assert.equal(python.status, 5, name);
     const other = JSON.parse(python.stdout);
     assert.equal(other.verdict, report.verdict, name);
     assert.deepEqual(other.redactionMap, report.redactionMap, name);

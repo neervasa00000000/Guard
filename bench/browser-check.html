@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>Guard local browser checks</title>
+<h1>Guard browser verification</h1><button id="run">Run real browser checks</button><pre id="results">Ready</pre>
+<script type="module">
+import {verifyGRD2,sealRgba,encodeGRD2,redactGRD2,exportPlainImage} from '../src/redactable.js';
+import {decodeRgbPng} from '../src/png.js';
+const output=document.querySelector('#results');
+document.querySelector('#run').onclick=async()=>{
+ const rows=[];const log=x=>{rows.push(x);output.textContent=JSON.stringify(rows,null,2)};
+ const assert=(ok,message)=>{if(!ok)throw Error(message)};
+ try{
+  log({runtime:navigator.userAgent});
+  const shared=await(await fetch('../tests/vectors/grd2-vectors.json')).json();
+  for(const v of shared.vectors){const data=Uint8Array.from(atob(v.container),c=>c.charCodeAt(0));const r=await verifyGRD2(data,[{public_key_hex:shared.public_key_hex}]);assert(r.verdict===v.expected_verdict,v.id+': '+r.verdict);}
+  log({sharedVectors:shared.vectors.length,status:'PASS'});
+  const key=await crypto.subtle.generateKey('Ed25519',true,['sign','verify']);
+  const publicKey=new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
+  const anchor={public_key_hex:Array.from(publicKey,b=>b.toString(16).padStart(2,'0')).join('')};
+  const rgba=new Uint8Array(2048*2048*4);let seed=42;
+  for(let i=0;i<rgba.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;rgba[i]=seed&255;rgba[i+1]=seed>>>8&255;rgba[i+2]=seed>>>16&255;rgba[i+3]=255;}
+  const start=performance.now();
+  const doc=await sealRgba({rgba,width:2048,height:2048,publicKey,sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
+  const bytes=encodeGRD2(doc);const r=await verifyGRD2(bytes,[anchor]);assert(r.verdict==='GENUINE',JSON.stringify(r.problems));
+  const selected=Array.from({length:Math.ceil(doc.tiles.length*.1)},(_,i)=>i);
+  const redacted=await redactGRD2(doc,selected);const redReport=await verifyGRD2(redacted,[anchor]);assert(redReport.verdict==='VERIFIED WITH REDACTIONS',JSON.stringify(redReport.problems));
+  const plain=await exportPlainImage(redacted);const decoded=await decodeRgbPng(plain);assert(decoded.width===2048&&decoded.height===2048,'plain size');
+  log({largeImage:'2048x2048',containerBytes:bytes.length,verdict:r.verdict,redactedVerdict:redReport.verdict,hiddenTiles:selected.length,totalTiles:doc.tiles.length,elapsedMs:performance.now()-start,status:'PASS'});
+  log({result:'ALL PASS'});
+ }catch(error){log({result:'FAIL',message:error.stack})}
+};
+</script>

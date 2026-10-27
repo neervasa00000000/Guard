@@ -6,3 +6,7 @@ __pycache__/
 *.pyc
 *.pem
 *.key
+
+keys-test-only/
+data/
+results/

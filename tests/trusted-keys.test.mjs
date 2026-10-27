@@ -202,7 +202,7 @@ test("setting signer B to revoked: true gives REVOKED KEY for B while A stays GE
       ["grd.py", "verify", pathB, "--trusted-keys", keysPath],
       { cwd: new URL("../", import.meta.url), encoding: "utf8" },
     );
-    assert.equal(procB.status, 21);
+    assert.equal(procB.status, 6);
     assert.equal(JSON.parse(procB.stdout).verdict, "REVOKED KEY");
   } finally {
     await rm(dir, { recursive: true, force: true });
@@ -252,7 +252,7 @@ test("malformed entry (wrong key_id, bad date) gives CANNOT VERIFY in both check
       ["grd.py", "verify", pathA, "--trusted-keys", keysPath],
       { cwd: new URL("../", import.meta.url), encoding: "utf8" },
     );
-    assert.equal(proc.status, 43);
+    assert.equal(proc.status, 4);
     const res = JSON.parse(proc.stdout);
     assert.equal(res.verdict, "CANNOT VERIFY");
   } finally {

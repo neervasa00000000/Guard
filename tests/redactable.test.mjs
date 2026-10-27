@@ -97,8 +97,8 @@ test("non-redacted pixel edits name the failing tile", async () => {
 test("redacted pixels are explicitly unverified and cannot become genuine content", async () => {
   const redacted = parse(await redactGRD2(doc, [1]));
   const r = await verify(await editPixel(redacted, 65, 1));
-  assert.equal(r.verdict, "VERIFIED WITH REDACTIONS");
-  assert.deepEqual(r.redactedTiles, [1]);
+  assert.equal(r.verdict, "TAMPERED");
+  assert.equal(r.viewable, false);
   assert.equal(r.genuine, false);
 });
 test("guessed original pixels and salt cannot un-redact a tile", async () => {
@@ -328,7 +328,7 @@ test("Python and JS verify and redact each other’s output", async () => {
     );
     assert.throws(
       () => run(["verify", input, "--trusted-key", pem]),
-      (e) => e.status === 11,
+      (e) => e.status === 5,
     );
     const hiddenPersonal = await redactGRD2(personal, [0]);
     assert.equal(
@@ -411,7 +411,7 @@ test("GRD2 at the 4-megapixel / 1024-tile limit with photo-like noise verifies",
       cwd: new URL("../", import.meta.url),
       encoding: "utf8",
     });
-    assert.equal(proc.status, 11);
+    assert.equal(proc.status, 5);
     const out = JSON.parse(proc.stdout);
     assert.equal(out.verdict, "UNVERIFIED: SELF-SIGNED");
   } finally {
@@ -470,9 +470,10 @@ test("hidden tiles non-zero pixel check flags hiddenPixelsCleared: false", async
   const encodedDirty = encodeGRD2(dirtyDoc);
   const repDirty = await verify(encodedDirty);
   assert.equal(repDirty.hiddenPixelsCleared, false);
+  assert.equal(repDirty.verdict, "TAMPERED");
   assert.ok(
     repDirty.problems.some((p) =>
-      p.includes("Hidden tiles still contain pixel data in this file."),
+      p.includes("blackout incomplete (tile 0)"),
     ),
   );
 
@@ -486,6 +487,7 @@ test("hidden tiles non-zero pixel check flags hiddenPixelsCleared: false", async
     });
     const out = JSON.parse(proc.stdout);
     assert.equal(out.hiddenPixelsCleared, false);
+    assert.equal(out.verdict, "TAMPERED");
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.asymmetric import ec,ed25519
 from PIL import Image
 import grd
 ASSERTION='io.github.neervasa00000000.guard.grd2'
-def trusted_keys(paths):return grd.PINNED+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in paths]
+def trusted_keys(paths):return grd.get_pinned_signers()+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in paths]
 def context(anchor=None):
  settings={'builder':{'thumbnail':{'enabled':False}},'verify':{'remote_manifest_fetch':False,'verify_cert_anchors':True}}
  if anchor:settings['trust']={'trust_anchors':Path(anchor).read_text()}

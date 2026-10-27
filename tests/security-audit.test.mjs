@@ -90,15 +90,15 @@ test("CLI passes only GENUINE; edited and re-signed personal files stay unverifi
     changed[0] = 0;
     const cases = [
       [encodeGRD2(original), "GENUINE", 0],
-      [await redactGRD2(original, [0]), "VERIFIED WITH REDACTIONS", 10],
-      [await redactGRD2(original, [0, 1]), "FULLY REDACTED", 13],
-      [encodeGRD2(await seal("personal")), "UNVERIFIED: SELF-SIGNED", 11],
+      [await redactGRD2(original, [0]), "VERIFIED WITH REDACTIONS", 5],
+      [await redactGRD2(original, [0, 1]), "FULLY REDACTED", 5],
+      [encodeGRD2(await seal("personal")), "UNVERIFIED: SELF-SIGNED", 5],
       [
         encodeGRD2(await seal("personal", changed)),
         "UNVERIFIED: SELF-SIGNED",
-        11,
+        5,
       ],
-      [encodeGRD2(await seal("demo")), "DEMO", 12],
+      [encodeGRD2(await seal("demo")), "DEMO", 5],
     ];
     for (const [bytes, verdict, status] of cases) {
       const js = await verifyGRD2(bytes, [key.anchor]),
@@ -117,8 +117,8 @@ test("CLI passes only GENUINE; edited and re-signed personal files stay unverifi
       cwd: new URL("../", import.meta.url),
       encoding: "utf8",
     });
-    assert.equal(pyUnknown.status, 20);
-    assert.equal(JSON.parse(pyUnknown.stdout).exit_code, 20);
+    assert.equal(pyUnknown.status, 5);
+    assert.equal(JSON.parse(pyUnknown.stdout).exit_code, 5);
 
     // Revoked key via --policy -> 21
     const revokedPolicy = {
@@ -133,21 +133,21 @@ test("CLI passes only GENUINE; edited and re-signed personal files stay unverifi
       ],
     };
     const pyRevoked = await run(encodeGRD2(original), revokedPolicy);
-    assert.equal(pyRevoked.status, 21);
-    assert.equal(pyRevoked.report.exit_code, 21);
+    assert.equal(pyRevoked.status, 6);
+    assert.equal(pyRevoked.report.exit_code, 6);
 
     // One flipped byte -> 30
     const flipped = Buffer.from(encodeGRD2(original));
     flipped[flipped.length - 10] ^= 1;
     const pyFlipped = await run(flipped);
-    assert.equal(pyFlipped.status, 30);
-    assert.equal(pyFlipped.report.exit_code, 30);
+    assert.equal(pyFlipped.status, 2);
+    assert.equal(pyFlipped.report.exit_code, 2);
 
     // A PNG renamed to .GRD -> 31
     const rawPng = await encodeRgbPng(new Uint8Array(64 * 64 * 3), 64, 64);
     const pyNotGRD = await run(rawPng);
-    assert.equal(pyNotGRD.status, 31);
-    assert.equal(pyNotGRD.report.exit_code, 31);
+    assert.equal(pyNotGRD.status, 3);
+    assert.equal(pyNotGRD.report.exit_code, 3);
 
     // Nonexistent input path -> 1
     const pyNonexistent = spawnSync("python3", ["grd.py", "verify", join(dir, "does-not-exist.GRD")], {
@@ -192,6 +192,7 @@ test("blackout clears all hidden pixels, rejects blur exports and treats method 
       assert.ok(
         rgb.subarray(y * 128 * 3, y * 128 * 3 + 64 * 3).every((n) => n === 0),
       );
+    assert.deepEqual(sanitized.redactions, [{ index: 0, method: "black" }]);
     assert.deepEqual(sanitized.manifest, original.manifest);
     assert.equal(sanitized.signature, original.signature);
     const output = join(dir, "black.GRD");
@@ -203,6 +204,7 @@ test("blackout clears all hidden pixels, rejects blur exports and treats method 
     assert.equal(cli.status, 0, cli.stderr);
     const { readFile } = await import("node:fs/promises");
     const pyDoc = JSON.parse((await readFile(output, "utf8")).slice(5));
+    assert.deepEqual(pyDoc.redactions, sanitized.redactions);
     const pyRgb = (await decodeRgbPng(Buffer.from(pyDoc.image, "base64"))).rgb;
     assert.deepEqual(pyRgb, rgb);
   }));
@@ -220,7 +222,7 @@ test("legacy canonical JSON agrees for Unicode keys and rejects fractional or un
         js = await verify(bytes),
         py = await run(bytes);
       assert.equal(py.report.genuine, js.genuine, JSON.stringify(meta));
-      assert.equal(py.status, js.genuine ? 0 : 30);
+      assert.equal(py.status, js.genuine ? 0 : 2);
     }
   }));
 test("invalid or impossible offline-policy dates fail closed in both checkers", () =>
@@ -236,7 +238,7 @@ test("invalid or impossible offline-policy dates fail closed in both checkers", 
         (await verifyGRD2(bytes, [key.anchor], policy)).genuine,
         false,
       );
-      assert.equal((await run(bytes, policy)).status, 43);
+      assert.equal((await run(bytes, policy)).status, 4);
     }
   }));
 test("extra decompressed PNG bytes are rejected by both checkers", () =>
@@ -275,5 +277,5 @@ test("extra decompressed PNG bytes are rejected by both checkers", () =>
     doc.image = base64(image);
     const bytes = encodeGRD2(doc);
     assert.equal((await verifyGRD2(bytes, [key.anchor])).viewable, false);
-    assert.equal((await run(bytes)).status, 30);
+    assert.equal((await run(bytes)).status, 2);
   }));

@@ -7,28 +7,22 @@ ROOT=Path(__file__).resolve().parent
 for _p in ROOT.glob('.venv/lib/python*/site-packages'):
  if str(_p) not in sys.path:
   sys.path.insert(0, str(_p))
-from datetime import datetime
+from datetime import datetime, timezone
 from PIL import Image
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey, Ed25519PrivateKey
 from cryptography.exceptions import InvalidSignature
 
 class IntegrityError(Exception): pass
+class PolicyError(Exception): pass
+class ResourceLimitError(IntegrityError): pass
+PROOF_ERRORS=(IntegrityError, UnicodeError, json.JSONDecodeError, zlib.error, InvalidSignature)
 
 EXIT = {
-  'GENUINE': 0,
-  'VERIFIED WITH REDACTIONS': 10,
-  'UNVERIFIED: SELF-SIGNED': 11,
-  'DEMO': 12,
-  'FULLY REDACTED': 13,
-  'UNTRUSTED SIGNER': 20,
-  'REVOKED KEY': 21,
-  'TAMPERED': 30,
-  'NOT A GRD': 31,
-  'UNSUPPORTED': 40,
-  'LIMIT EXCEEDED': 41,
-  'UNREADABLE': 42,
-  'CANNOT VERIFY': 43,
+ 'GENUINE':0, 'TAMPERED':2, 'NOT A GRD':3,
+ 'CANNOT VERIFY':4, 'UNSUPPORTED':4, 'LIMIT EXCEEDED':4, 'UNREADABLE':4,
+ 'VERIFIED WITH REDACTIONS':5, 'FULLY REDACTED':5, 'DEMO':5,
+ 'UNVERIFIED: SELF-SIGNED':5, 'UNTRUSTED SIGNER':5, 'REVOKED KEY':6,
 }
 
 MF={'format','version','width','height','tileSize','pixelFormat','root','commitments','publicKey','keyId','policy','purpose','label'}
@@ -84,8 +78,9 @@ def valid_tree(v,depth=0):
  return v is None or type(v) is bool
 
 def policy_date(v):
- if not isinstance(v,str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',v):raise ValueError('Invalid policy date')
- datetime.strptime(v,'%Y-%m-%dT%H:%M:%SZ')
+ if not isinstance(v,str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',v):raise PolicyError('Invalid policy date')
+ try:datetime.strptime(v,'%Y-%m-%dT%H:%M:%SZ')
+ except ValueError as exc:raise PolicyError('Invalid policy date') from exc
 
 def sha(v):return hashlib.sha256(v).hexdigest()
 
@@ -121,11 +116,12 @@ def encode(doc):
  return data
 
 def policy_check(pk,policy=None,keys_path=ROOT/'src/trusted-keys.json'):
- p=policy if policy is not None else json.loads((ROOT/'src/trust-policy.json').read_text())
- if not isinstance(p,dict) or type(p.get('version')) is not int or not 1<=p['version']<=9007199254740991 or not isinstance(p.get('asOf'),str) or not isinstance(p.get('revoked'),list):raise ValueError('Invalid offline trust policy')
+ try:p=policy if policy is not None else json.loads((ROOT/'src/trust-policy.json').read_text())
+ except (OSError,ValueError,UnicodeError) as exc:raise PolicyError('Invalid local trust policy') from exc
+ if not isinstance(p,dict) or type(p.get('version')) is not int or not 1<=p['version']<=9007199254740991 or not isinstance(p.get('asOf'),str) or not isinstance(p.get('revoked'),list):raise PolicyError('Invalid offline trust policy')
  policy_date(p['asOf'])
  for entry in p['revoked']:
-  if not isinstance(entry,dict) or not hx(entry.get('fingerprint')) or not isinstance(entry.get('reason'),str) or not isinstance(entry.get('revokedAt'),str):raise ValueError('Invalid revocation entry')
+  if not isinstance(entry,dict) or not hx(entry.get('fingerprint')) or not isinstance(entry.get('reason'),str) or not isinstance(entry.get('revokedAt'),str):raise PolicyError('Invalid revocation entry')
   policy_date(entry['revokedAt'])
  rev_list=list(p['revoked'])
  try:
@@ -172,10 +168,16 @@ def png_write(rgb,w,h):
  im=Image.frombytes('RGB',(w,h),bytes(rgb));out=io.BytesIO();im.save(out,format='PNG');return out.getvalue()
 
 def validate_manifest(m):
- if not isinstance(m,dict) or set(m)!=MF or m['format']!='GRD2' or type(m['version']) is not int or m['version']!=2 or m['pixelFormat']!='RGB8' or type(m['tileSize']) is not int or m['tileSize']!=64 or m['policy']!='tile-redaction-v1' or m['purpose'] not in ('asset','demo','personal'):raise IntegrityError('Unsupported manifest')
- if any(type(m[k]) is not int or m[k]<1 or m[k]>4096 for k in ('width','height')) or m['width']*m['height']>4194304:raise IntegrityError('Image limit exceeded')
+ if not isinstance(m,dict) or set(m)!=(MF|{'profile','assetId','created'} if 'profile' in m else MF) or m['format']!='GRD2' or type(m['version']) is not int or m['version']!=2 or m['pixelFormat']!='RGB8' or type(m['tileSize']) is not int or m['tileSize']!=64 or m['policy']!='tile-redaction-v1' or m['purpose'] not in ('asset','demo','personal'):raise IntegrityError('Unsupported manifest')
+ if 'profile' in m:
+  if m['profile']!='2.1' or len(un64(m['assetId']))!=16:raise IntegrityError('Invalid manifest profile or asset ID')
+  try:policy_date(m['created'])
+  except PolicyError as exc:raise IntegrityError('Invalid signer-claimed creation time') from exc
+ if any(type(m[k]) is not int or m[k]<1 for k in ('width','height')):raise IntegrityError('Invalid image dimensions')
+ if max(m['width'],m['height'])>4096 or m['width']*m['height']>4194304:raise ResourceLimitError('Image limit exceeded')
  count=((m['width']+63)//64)*((m['height']+63)//64)
- if count>1024 or not isinstance(m['commitments'],list) or len(m['commitments'])!=count or not all(hx(c) for c in m['commitments']):raise IntegrityError('Invalid commitment grid')
+ if count>1024:raise ResourceLimitError('Tile limit exceeded')
+ if not isinstance(m['commitments'],list) or len(m['commitments'])!=count or not all(hx(c) for c in m['commitments']):raise IntegrityError('Invalid commitment grid')
  if not all(hx(m[k]) for k in ('root','keyId','publicKey')) or not isinstance(m['label'],str) or len(m['label'].encode('utf-16-le'))//2>120:raise IntegrityError('Invalid manifest fields')
  return count
 
@@ -185,7 +187,7 @@ def seal(image,key,purpose='asset',label=''):
  rgba=image.convert('RGBA')
  raw=rgba.tobytes();rgb=bytes((raw[i+c]*raw[i+3]+255*(255-raw[i+3])+127)//255 for i in range(0,len(raw),4) for c in range(3))
  pk=key.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
- m=dict(format='GRD2',version=2,width=w,height=h,tileSize=64,pixelFormat='RGB8',root='0'*64,commitments=['0'*64]*(((w+63)//64)*((h+63)//64)),publicKey=pk.hex(),keyId=sha(pk),policy='tile-redaction-v1',purpose=purpose,label=label);count=validate_manifest(m);tiles=[]
+ m=dict(format='GRD2',version=2,profile='2.1',assetId=b64(os.urandom(16)),created=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),width=w,height=h,tileSize=64,pixelFormat='RGB8',root='0'*64,commitments=['0'*64]*(((w+63)//64)*((h+63)//64)),publicKey=pk.hex(),keyId=sha(pk),policy='tile-redaction-v1',purpose=purpose,label=label);count=validate_manifest(m);tiles=[]
  for i in range(count):
   salt=os.urandom(16).hex();m['commitments'][i]=commit(m,i,salt,pixels(rgb,m,i));tiles.append(dict(index=i,salt=salt))
  m['root']=merkle(m['commitments'])
@@ -201,20 +203,20 @@ def verify_v2(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
    r['verdict']='NOT A GRD'
    raise IntegrityError('Missing GRD2 header')
   try:raw=data[5:].decode('utf-8')
-  except Exception as e:raise IntegrityError('Invalid UTF-8: '+str(e))
+  except UnicodeError as e:raise IntegrityError('Invalid UTF-8: '+str(e))
   try:doc=json.loads(raw)
-  except Exception as e:raise IntegrityError('Invalid JSON: '+str(e))
-  if set(doc)!={'manifest','signature','image','tiles','redactions'}:raise IntegrityError('Unexpected container fields')
+  except (json.JSONDecodeError,RecursionError) as e:raise IntegrityError('Invalid JSON: '+str(e))
+  if not isinstance(doc,dict) or set(doc)!={'manifest','signature','image','tiles','redactions'}:raise IntegrityError('Unexpected container fields')
   m=doc['manifest'];count=validate_manifest(m)
-  if len(doc['tiles'])!=count:raise IntegrityError('Incomplete tile grid')
+  if not isinstance(doc['tiles'],list) or not isinstance(doc['redactions'],list) or len(doc['tiles'])!=count:raise IntegrityError('Incomplete tile grid')
   hidden=[]
   for i,t in enumerate(doc['tiles']):
    if not isinstance(t,dict) or type(t.get('index')) is not int or t.get('index')!=i or set(t) not in ({'index','salt'},{'index','commitment'}):raise IntegrityError('Invalid tile entry')
    if 'commitment' in t:hidden.append(i)
   if len(doc['redactions'])!=len(hidden):raise IntegrityError('REDACTIONS does not match TILES')
   for i,entry in enumerate(doc['redactions']):
-   if set(entry)!={'index','method'} or type(entry['index']) is not int or entry['index']!=hidden[i] or entry['method'] not in ('black','blur'):raise IntegrityError('REDACTIONS does not match hidden tiles')
-  if canon(doc)!=raw:raise IntegrityError('Noncanonical JSON')
+   if not isinstance(entry,dict) or set(entry)!={'index','method'} or type(entry['index']) is not int or entry['index']!=hidden[i] or entry['method'] not in ('black','blur'):raise IntegrityError('REDACTIONS does not match hidden tiles')
+  if not valid_tree(doc) or canon(doc)!=raw:raise IntegrityError('Noncanonical JSON')
   pk=bytes.fromhex(m['publicKey'])
   if sha(pk)!=m['keyId']:raise IntegrityError('Wrong signer fingerprint')
   r['revocation']=policy_check(pk,policy,keys_path)
@@ -224,31 +226,28 @@ def verify_v2(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
   try:
    Ed25519PublicKey.from_public_bytes(pk).verify(un64(doc['signature']),digest(m))
    r['signature_valid']=True
-  except Exception as e:
+  except InvalidSignature as e:
    raise IntegrityError('Invalid signature: '+str(e))
   if merkle(m['commitments'])!=m['root']:raise IntegrityError('Signed root mismatch')
   rgb,w,h=png_read(un64(doc['image']))
   if (w,h)!=(m['width'],m['height']):raise IntegrityError('Wrong image dimensions')
 
-  # Check hidden tiles cleared
-  hidden_cleared=True
-  for i in hidden:
-   b=bounds(m,i)
-   for row in range(b['height']):
-    start=((b['y']+row)*m['width']+b['x'])*3
-    if any(rgb[start:start+b['width']*3]):
-     hidden_cleared=False;break
-   if not hidden_cleared:break
-  r['hiddenPixelsCleared']=hidden_cleared
-  if not hidden_cleared:
-   r['problems'].append("Hidden tiles still contain pixel data in this file. The viewer covers them, but anyone who extracts the image can see it. Re-export with Guard to clear them before sharing.")
+  for entry in doc['redactions']:
+   i=entry['index']
+   if entry['method']=='blur':
+    r['hiddenPixelsCleared']=False
+    r['problems'].append('Legacy blur redaction (tile '+str(i)+'): replacement pixels are not verified.')
+   elif any(pixels(rgb,m,i)):
+    r['hiddenPixelsCleared']=False
+    raise IntegrityError('blackout incomplete (tile '+str(i)+')')
 
   for i,t in enumerate(doc['tiles']):
    if 'commitment' in t:
     if t['commitment']!=m['commitments'][i]:raise IntegrityError('Wrong commitment at tile '+str(i))
    else:
     if not isinstance(t['salt'],str) or not re.fullmatch('[0-9a-f]{32}',t['salt']) or commit(m,i,t['salt'],pixels(rgb,m,i))!=m['commitments'][i]:raise IntegrityError('Non-redacted tile '+str(i)+' changed')
-  r.update(root=m['root'],tilesTotal=count,tilesVisible=count-len(hidden),redactedTiles=hidden,redactionMap=[dict(index=i,**bounds(m,i),claimedMethod=doc['redactions'][n]['method'],methodAttested=False) for n,i in enumerate(hidden)],regionVerified=True,redactionApproval='not_attested',_document=doc,_rgb=rgb)
+  if 'assetId' not in m:r['problems'].append('legacy manifest: no asset ID')
+  r.update(assetId=m.get('assetId'),created=m.get('created'),root=m['root'],tilesTotal=count,tilesVisible=count-len(hidden),redactedTiles=hidden,redactionMap=[dict(index=i,**bounds(m,i),claimedMethod=doc['redactions'][n]['method'],methodAttested=False) for n,i in enumerate(hidden)],regionVerified=True,redactionApproval='not_attested',_document=doc,_rgb=rgb)
   is_demo=m['purpose']=='demo';is_personal=m['purpose']=='personal';is_trusted=not is_personal and m['publicKey'] in (get_pinned_signers(keys_path) if trusted is None else trusted)
   name=None
   try:
@@ -267,8 +266,9 @@ def verify_v2(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
   else:r.update(verdict='DEMO' if is_demo else 'UNVERIFIED: SELF-SIGNED' if is_personal else 'VERIFIED WITH REDACTIONS' if hidden else 'GENUINE',genuine=is_trusted and not is_demo and not hidden,viewable=True)
  except Exception as exc:
   if r['verdict'] not in ('LIMIT EXCEEDED','NOT A GRD','REVOKED KEY','UNSUPPORTED'):
-   if not isinstance(exc,IntegrityError):
-    r['verdict']='CANNOT VERIFY'
+   if isinstance(exc,ResourceLimitError):r['verdict']='LIMIT EXCEEDED'
+   elif not isinstance(exc,PROOF_ERRORS):
+    r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
  return r
 
@@ -336,12 +336,15 @@ def verify_v1(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
   r.update(verdict='GENUINE',genuine=True)
  except Exception as exc:
   if r['verdict'] not in ('LIMIT EXCEEDED','NOT A GRD','REVOKED KEY','UNSUPPORTED','UNTRUSTED SIGNER','UNREADABLE'):
-   if not isinstance(exc,IntegrityError):
-    r['verdict']='CANNOT VERIFY'
+   if isinstance(exc,ResourceLimitError):r['verdict']='LIMIT EXCEEDED'
+   elif not isinstance(exc,PROOF_ERRORS):
+    r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
  return r
 
-def verify(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.json'):return verify_v2(data,trusted,policy,keys_path) if data.startswith(b'GRD2\n') else verify_v1(data,trusted,policy,keys_path)
+def verify(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.json'):
+ if len(data)>32*1024*1024 and not data.startswith(b'GRD1'):return dict(verdict='LIMIT EXCEEDED',genuine=False,problems=['Input exceeds GRD2 32 MiB limit'])
+ return verify_v2(data,trusted,policy,keys_path) if data.startswith(b'GRD2\n') else verify_v1(data,trusted,policy,keys_path)
 
 def redact(data,rects,mode='black'):
  if mode!='black':raise ValueError('Only blackout exports are supported')
@@ -361,34 +364,54 @@ def redact(data,rects,mode='black'):
    start=((b['y']+row)*m['width']+b['x'])*3;rgb[start:start+b['width']*3]=bytes(b['width']*3)
  doc['image']=b64(png_write(rgb,m['width'],m['height']));doc['redactions']=[dict(index=i,method='black') for i in sorted(hidden)];return encode(doc)
 
+def export_plain(data,format='png',quality=95):
+ r=verify_v2(data, trusted=[])
+ if not r.get('regionVerified'):raise ValueError('Cannot export an invalid source proof: '+r['verdict'])
+ doc=r['_document'];m=doc['manifest'];rgb=bytearray(r['_rgb'])
+ for entry in doc['redactions']:
+  b=bounds(m,entry['index'])
+  for row in range(b['height']):
+   start=((b['y']+row)*m['width']+b['x'])*3;rgb[start:start+b['width']*3]=bytes(b['width']*3)
+ if format=='png':return png_write(rgb,m['width'],m['height'])
+ if format!='jpeg' or not 1<=quality<=100:raise ValueError('Invalid export format or quality')
+ out=io.BytesIO();Image.frombytes('RGB',(m['width'],m['height']),bytes(rgb)).save(out,format='JPEG',quality=quality);return out.getvalue()
+
 def main():
  parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='command',required=True)
  s=sub.add_parser('seal');s.add_argument('input');s.add_argument('--key',required=True);s.add_argument('-o','--output',required=True);s.add_argument('--label',default='')
  v=sub.add_parser('verify');v.add_argument('input');v.add_argument('--trusted-key',action='append',default=[]);v.add_argument('--policy');v.add_argument('--trusted-keys')
  rd=sub.add_parser('redact');rd.add_argument('input');rd.add_argument('--rect',action='append',required=True);rd.add_argument('--mode',choices=['black'],default='black');rd.add_argument('-o','--output',required=True)
+ ex=sub.add_parser('export');ex.add_argument('input');ex.add_argument('--plain',action='store_true',required=True);ex.add_argument('--format',choices=['png','jpeg'],default='png');ex.add_argument('--quality',type=int,default=95);ex.add_argument('-o','--output',required=True)
  args=parser.parse_args()
  try:
   if Path(args.input).stat().st_size>64*1024*1024:
    r=dict(verdict='LIMIT EXCEEDED',genuine=False,problems=['Input size limit'])
-   r['exit_code']=EXIT.get(r['verdict'],43)
+   r['exit_code']=EXIT.get(r['verdict'],4)
    print(json.dumps(r,indent=2));return r['exit_code']
   data=Path(args.input).read_bytes()
   if args.command=='seal':
    key=serialization.load_pem_private_key(Path(args.key).read_bytes(),password=None)
    if not isinstance(key,Ed25519PrivateKey):raise ValueError('Ed25519 key required')
    with Image.open(io.BytesIO(data)) as im:output=encode(seal(im,key,label=args.label))
+  elif args.command=='export':
+   output=export_plain(data,args.format,args.quality)
+   print('Plain image is no longer verifiable; keep the .GRD if you need proof.',file=sys.stderr)
   elif args.command=='redact':output=redact(data,[tuple(map(int,r.split(','))) for r in args.rect],args.mode)
   else:
    keys_path=Path(args.trusted_keys) if args.trusted_keys else (ROOT/'src/trusted-keys.json')
    try:
     pinned=get_pinned_signers(keys_path)
    except Exception:
-    r=dict(verdict='CANNOT VERIFY',genuine=False,problems=['Trusted-keys file is invalid.'])
-    r['exit_code']=EXIT.get(r['verdict'],43)
+    r=dict(verdict='CANNOT VERIFY',genuine=False,verifierFault=True,problems=['Trusted-keys file is invalid.'])
+    r['exit_code']=EXIT.get(r['verdict'],4)
     print(json.dumps(r,indent=2));return r['exit_code']
    trusted=pinned+[serialization.load_pem_public_key(Path(p).read_bytes()).public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex() for p in args.trusted_key]
-   r=verify(data,trusted,json.loads(Path(args.policy).read_text()) if args.policy else None,keys_path=keys_path)
-   r['exit_code']=EXIT.get(r['verdict'],43)
+   try:local_policy=json.loads(Path(args.policy).read_text()) if args.policy else None
+   except (OSError,ValueError) as exc:
+    r=dict(verdict='CANNOT VERIFY',genuine=False,verifierFault=True,problems=['Invalid local policy: '+str(exc)],exit_code=4)
+    print(json.dumps(r,indent=2));return 4
+   r=verify(data,trusted,local_policy,keys_path=keys_path)
+   r['exit_code']=EXIT.get(r['verdict'],4)
    print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2))
    return r['exit_code']
   with open(args.output,'xb') as handle:handle.write(output)
