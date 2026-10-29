@@ -1183,6 +1183,195 @@ footer {
 .area-chip button {min-width: 32px; min-height: 32px; padding: 4px; border: 0; border-radius: 4px; background: transparent; color: #193f9b; font-size: 20px;}
 h1,h2,h3 {overflow-wrap: anywhere;}
 
+/* Product polish: a focused work area, quieter status and compact tool groups. */
+:root {--bg:#f4f6fa;--line:#e0e5ee;--ink:#172235;--muted:#536176;--blue:#2455cf;--focus:#2455cf}
+body {font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:-.012em}
+.header-inner {min-height:72px;gap:28px}
+.brand {font-size:22px;letter-spacing:-.8px}
+.brand-mark {border-radius:9px;width:32px;height:34px;background:#172235}
+.header nav a {font-weight:500;padding:8px 10px;border-radius:7px}
+.header nav a:hover,.header nav a[aria-current="page"] {background:#edf2fc;color:#204ab0}
+.local-pill {background:#f2f6f3;border:1px solid #e4ece6;border-radius:24px;padding:6px 10px;font-size:11px}
+main {padding-top:24px}
+.workspace-tabs {background:transparent;border-radius:0;padding:0;gap:24px;border-bottom:1px solid var(--line);width:100%;margin-bottom:24px}
+.workspace-tabs button {border-radius:0;padding:10px 3px 14px;font-size:14px;min-height:48px;border-bottom:2px solid transparent}
+.workspace-tabs [aria-selected="true"] {background:transparent;box-shadow:none;color:var(--blue);border-bottom-color:var(--blue)}
+#empty {background:#fff;border:1px solid var(--line);border-radius:16px;padding:clamp(24px,4vw,52px);box-shadow:0 5px 24px #26385405}
+.drop {min-height:260px;background:#fbfcff;border:1.5px dashed #c0ccdf;border-radius:12px;gap:14px;color:var(--muted);font-size:17px;transition:background .16s,border-color .16s}
+.drop:hover,.drop.over {background:#f0f5ff;border-color:#2455cf}
+.drop-icon {display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:#edf2ff;color:#2455cf;font-size:0;margin-bottom:4px}
+.drop-icon::before {content:none}
+.drop-icon svg {width:28px;height:28px}
+.drop strong {font-weight:600;font-size:14px;border-radius:8px;padding:12px 24px;box-shadow:0 2px 3px #2455cf18}
+.privacy-line {margin-top:18px;font-size:12px}
+.primary,.secondary,.text-button {font-weight:600;font-size:14px;border-radius:8px;transition:background .15s,border-color .15s}
+.primary {box-shadow:0 2px 3px #2455cf14}
+.secondary {border-color:#cbd4e1;color:#33435b}
+.secondary:hover {background:#f4f7fc;border-color:#9caec8}
+.text-button {font-weight:500}
+.verdict-card {border-radius:16px;box-shadow:0 5px 24px #26385405}
+.verdict-banner {border-left-width:4px;padding:24px;gap:14px}
+.verdict-banner h2 {font-size:25px;letter-spacing:-.65px;font-weight:650}
+.verdict-banner p {font-size:14px;line-height:1.55;margin-bottom:7px}
+.verdict-banner.good {background:#f4faf6}
+.verdict-banner.bad {background:#fff6f4}
+.verdict-banner.neutral {background:#fffaf0}
+.verdict-banner.fault {background:#f7f8fb}
+.verdict-icon {display:grid;place-items:center;flex:none;width:32px;height:32px;font-size:23px;border:1px solid currentColor;border-radius:50%;opacity:.9}
+.verdict-signer {font-size:12px!important;padding-top:7px;border-top:1px solid #17223516}
+#image-panel {padding:20px 24px 0}
+.stage {background:#e9edf3;border-radius:10px}
+.hidden-areas {display:flex;flex-wrap:wrap;gap:4px 20px;list-style:none;padding:0!important;font-size:12px}
+.hidden-areas li {padding:6px 0}
+.technical {margin-top:18px}
+.technical>summary {font-weight:500;color:#536176;font-size:13px;min-height:54px}
+summary::after {font-family:Arial,sans-serif;font-size:20px;color:#687890}
+.result-actions .primary {min-height:46px}
+.result-actions .text-button {color:#536176}
+.convert-form {padding:0;border:0;background:transparent}
+.seal-step {background:#fff;padding:24px;border:1px solid var(--line);border-radius:14px;min-width:0}
+.seal-step+.seal-step {margin:0;padding-top:24px;border-top:1px solid var(--line)}
+.seal-step h2 {display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:17px;font-weight:650;letter-spacing:-.3px;margin-bottom:18px}
+.step-number {display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#edf2fb;color:#455c80;font-size:12px;font-weight:600;letter-spacing:0;flex:none}
+.seal-step h2 .optional {font-size:12px}
+#convert-form {display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+#convert-form>.seal-step:first-child {display:grid;grid-template-columns:minmax(200px,.8fr) minmax(0,1.3fr);gap:4px 32px;align-items:center}
+#convert-form>.seal-step:first-child h2 {grid-column:1;grid-row:1/3;margin:0}
+#convert-input {grid-column:2;grid-row:1;max-width:none;border-color:#d2dae6;background:#fbfcfe;font-size:14px}
+#convert-form>.seal-step:first-child>.file-help {grid-column:2;grid-row:2;font-size:12px;margin-top:4px}
+#document-warning {grid-column:1/-1;margin:12px 0 0;padding:10px 14px;font-size:13px;border-radius:6px;background:#fffbef;border-left-width:3px;max-width:none}
+.seal-stage {background:#e9edf3;border-radius:9px;min-height:180px}
+.seal-stage canvas {max-height:52vh}
+#convert-details {font-size:11px;margin-top:8px;color:#607089}
+#seal-grid-note {font-size:11px;margin:10px 0;color:#607089}
+#redaction-status {font-size:12px;margin:8px 0 0;color:#536176}
+#rect-numbers {margin-top:12px;border-top:1px solid var(--line)}
+#rect-numbers>summary {font-size:13px;font-weight:500}
+.rectangle-fields {gap:12px}
+.area-chip {border:1px solid #d4dfef;background:#f4f7fc;color:#3f5778;border-radius:7px;font-size:12px}
+.area-chip button {color:#3f5778}
+#seal-step-three .primary {width:100%;margin-top:8px;min-height:48px}
+#seal-step-three .privacy-consent {font-size:13px;line-height:1.6;margin:0 0 12px}
+#seal-signer-summary {font-size:12px;color:#607089;margin:12px 0}
+.seal-extras {margin-top:16px;border-top:1px solid var(--line)}
+.seal-extras>summary {font-size:12px;font-weight:500;color:#607089}
+.seal-extras>p {margin:8px 0 12px}
+.seal-extras>a {font-size:12px;display:inline-block;padding:6px 0}
+.seal-extras.original-enabled>summary {color:#805300;font-weight:600}
+#convert-status {font-size:13px;color:#536176;margin:0 2px;line-height:1.6}
+#convert-status.error {color:#b42318}
+#check-sealed {margin:0 2px}
+.page-subtitle {color:#607089;font-size:14px;margin-top:-12px;margin-bottom:28px}
+.page-view>.back-link {color:#607089;text-decoration:none;font-size:13px}
+.page-view>h1 {font-size:30px;font-weight:650;margin:12px 0 20px}
+#advanced-tools {display:grid;gap:12px}
+#advanced-tools>.expert-section {padding:0;margin:0;border-radius:12px;overflow:hidden}
+.advanced-disclosure {border:0;margin:0;padding:0}
+.advanced-disclosure>summary {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 20px;padding:18px 22px;min-height:78px;position:relative}
+.advanced-disclosure>summary h2 {font-size:15px;font-weight:600;letter-spacing:-.2px;margin:0;grid-column:1}
+.advanced-disclosure>summary .tool-hint {font-size:12px;font-weight:400;color:#607089;grid-column:1}
+.advanced-disclosure>summary::after {grid-column:2;grid-row:1/3}
+.advanced-disclosure[open]>summary {border-bottom:1px solid var(--line);background:#fafcff}
+.advanced-disclosure>p,.advanced-disclosure>.signer-grid,.advanced-disclosure>#signer-status,.advanced-disclosure>#signer-active {margin-left:22px;margin-right:22px}
+.advanced-disclosure>.signer-grid {margin-top:16px}
+.advanced-disclosure>.tool-body {padding:20px 22px}
+.advanced-disclosure>form {padding:8px 22px 22px;max-width:950px}
+.advanced-disclosure>p {margin-top:18px;font-size:13px}
+.advanced-disclosure form label {font-size:13px}
+.advanced-disclosure form input {font-size:15px}
+.signer-grid {gap:28px}
+.signer-grid h3 {font-size:15px}
+.signer-setup p,.person-trust p {font-size:13px;line-height:1.65}
+#signer-status {font-size:12px;color:#536176}
+#signer-active {padding-bottom:16px}
+#about-verification,.privacy-details,#about>.expert-section {border-radius:12px;border-color:var(--line);padding:24px}
+#about-verification article>span {display:none}
+#about-verification h3 {font-size:16px;font-weight:600;letter-spacing:-.3px}
+#about-verification p {line-height:1.7;color:#536176}
+#about>#privacy-disclosure {border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 24px}
+#about>#privacy-disclosure>summary {min-height:64px;font-size:15px}
+#about .privacy-details {border:0;padding:12px 0}
+@media(min-width:960px){
+ #convert-form:has(#seal-step-two:not([hidden])) {grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"choose choose" "edit finish" "status status" "check check";align-items:start}
+ #convert-form:has(#seal-step-two:not([hidden]))>.seal-step:first-child {grid-area:choose}
+ #convert-form:has(#seal-step-two:not([hidden]))>#seal-step-two {grid-area:edit}
+ #convert-form:has(#seal-step-two:not([hidden]))>#seal-step-three {grid-area:finish}
+ #convert-form:has(#seal-step-two:not([hidden]))>#convert-status {grid-area:status}
+ #convert-form:has(#seal-step-two:not([hidden]))>#check-sealed {grid-area:check}
+ .verdict-card:has(#image-panel:not([hidden])) {display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);grid-template-areas:"image summary" "image actions" "areas note" "details details";grid-template-rows:auto 1fr auto auto}
+ .verdict-card:has(#image-panel:not([hidden])) #image-panel {grid-area:image;padding:24px}
+ .verdict-card:has(#image-panel:not([hidden])) .verdict-banner {grid-area:summary;border-left:0;border-top:3px solid currentColor;margin:24px 24px 0 0;border-radius:9px;padding:20px}
+ .verdict-card:has(#image-panel:not([hidden])) .result-actions {grid-area:actions;align-content:start;align-self:start;flex-wrap:wrap;padding:20px 24px 12px 0}
+ .verdict-card:has(#image-panel:not([hidden])) #plain-note {grid-area:note;margin:0 24px 18px 0}
+ .verdict-card:has(#image-panel:not([hidden])) #hidden-areas {grid-area:areas;margin:0 24px 18px}
+ .verdict-card:has(#image-panel:not([hidden])) .technical {grid-area:details}
+ .stage canvas {max-height:56vh}
+}
+@media(max-width:600px){
+ .header-inner {min-height:60px;gap:10px}
+ .brand {font-size:20px}
+ .brand-mark {width:28px;height:30px;border-radius:8px}
+ .header nav {gap:4px}
+ .header nav a {padding:8px 5px;font-size:12px}
+ .local-pill {padding:5px 7px;font-size:10px}
+ main {padding-top:12px}
+ .workspace-tabs {gap:0;margin-bottom:16px}
+ .workspace-tabs button {font-size:13px;min-height:44px;padding:8px 4px 12px}
+ #empty {padding:20px 16px;border-radius:13px}
+ .drop {min-height:218px;gap:12px;font-size:15px}
+ .drop-icon {width:50px;height:50px;border-radius:14px;margin-bottom:0}
+ .privacy-line {font-size:11px;max-width:none;margin:14px 0 0}
+ .verdict-banner {padding:16px 14px;gap:10px}
+ .verdict-banner h2 {font-size:21px;line-height:1.2;letter-spacing:-.45px}
+ .verdict-banner p {font-size:13px;line-height:1.5}
+ .verdict-icon {width:25px;height:25px;font-size:18px}
+ .verdict-signer {font-size:11px!important}
+ #image-panel {padding:14px 12px 0}
+ .stage canvas {max-height:36vh}
+ .hidden-areas {gap:0}
+ .result-actions {padding-top:10px}
+ .result-actions .primary {min-height:46px}
+ .technical {margin-top:12px}
+ #convert-form {gap:12px}
+ .seal-step,.seal-step+.seal-step {padding:16px;border-radius:12px}
+ #convert-form>.seal-step:first-child {display:block}
+ #convert-form>.seal-step:first-child h2 {margin-bottom:12px}
+ .seal-step h2 {font-size:15px;gap:8px;margin-bottom:14px}
+ .step-number {width:22px;height:22px;font-size:11px}
+ #document-warning {font-size:12px;margin-top:12px;padding:9px 11px}
+ .seal-stage {min-height:0}
+ .seal-stage canvas {max-height:36vh}
+ #convert-details {font-size:11px;margin:8px 0}
+ .area-chips {margin:8px 0}
+ #seal-step-three .privacy-consent {font-size:12px}
+ #seal-step-three .primary {font-size:13px}
+ #seal-signer-summary {margin-bottom:0;font-size:11px}
+ #convert-status {font-size:12px}
+ .page-view>h1 {font-size:27px}
+ .page-subtitle {font-size:13px}
+ .advanced-disclosure>summary {padding:16px;min-height:76px}
+ .advanced-disclosure>summary h2 {font-size:14px}
+ .advanced-disclosure>summary .tool-hint {font-size:11px}
+ .advanced-disclosure>.tool-body,.advanced-disclosure>form {padding:16px}
+ .advanced-disclosure>p,.advanced-disclosure>.signer-grid,.advanced-disclosure>#signer-status,.advanced-disclosure>#signer-active {margin-left:16px;margin-right:16px}
+ #about-verification,.privacy-details,#about>.expert-section {padding:18px}
+ #about>#privacy-disclosure {padding:0 18px}
+}
+@media(max-width:600px){#seal-step-three .privacy-consent{font-size:14px}#seal-signer-summary{font-size:12px}}
+.picture-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.picture-toolbar .secondary{color:#204ab0;background:#edf3ff;border-color:#c4d3f0}
+.picture-toolbar .text-button{color:#536176;font-size:12px}
+.seal-upload{grid-column:2;grid-row:1;padding:12px;border:1px dashed #b6c5db;background:#fafcff;border-radius:9px;min-width:0}
+.seal-upload>label{font-size:12px;font-weight:500;color:#536176;margin-bottom:8px;cursor:pointer}
+.seal-upload.over{border-color:#2455cf;background:#edf3ff}
+.editor-instruction{font-size:13px;color:#475b75;margin:-4px 0 14px}
+.editor-settings{margin-top:8px;border-top:1px solid var(--line)}
+.editor-settings>summary{font-size:12px;font-weight:500;color:#607089}
+.editor-settings fieldset{padding:12px}
+.editor-settings fieldset label{display:inline-flex;align-items:center;gap:6px;margin:6px 12px 6px 0;font-size:12px}
+.editor-settings .convert-resize{font-size:12px;margin:12px 0}
+@media(max-width:600px){.picture-toolbar{gap:8px;margin-bottom:10px}.picture-toolbar button{font-size:12px;padding:8px 10px}.editor-instruction{font-size:12px}.seal-upload{margin-top:12px}}
+
     </style>
   </head>
   <body>
@@ -1205,7 +1394,7 @@ h1,h2,h3 {overflow-wrap: anywhere;}
 <section id="workspace" aria-label="File check">
 <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
 <div id="empty">
-<button id="drop" type="button" class="drop" aria-describedby="file-help"><span aria-hidden="true" class="drop-icon"></span><span>Drop a .GRD file here</span><strong>Choose file</strong></button>
+<button id="drop" type="button" class="drop" aria-describedby="file-help"><span aria-hidden="true" class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Drop a .GRD file here</span><strong>Choose file</strong></button>
 <input id="file-input" type="file" accept=".grd,.GRD" hidden>
 <p id="file-help" class="privacy-line">The check runs on this device. Nothing is uploaded.</p>
 </div>
@@ -1213,7 +1402,7 @@ h1,h2,h3 {overflow-wrap: anywhere;}
 <section id="result" class="verdict-card" aria-labelledby="verdict-title" hidden>
 <div id="verdict-banner" class="verdict-banner"><span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span><div><span id="verdict-kicker" hidden></span><h2 id="verdict-title" tabindex="-1"></h2><p id="verdict-description"></p><p id="verdict-signer" class="verdict-signer" hidden></p></div></div>
 <section id="image-panel" aria-labelledby="image-title" hidden><h3 id="image-title" class="sr-only">Checked picture</h3>
-<div class="stage" id="stage"><canvas id="canvas" tabindex="0" aria-label="Checked picture" aria-describedby="reveal-hint"></canvas><div id="tile-overlay" class="tile-overlay" hidden role="group" aria-label="Select image tiles to redact"></div>
+<div class="picture-toolbar"><button id="redact-checked" class="secondary" type="button">Black out areas</button><button id="hide-image" class="text-button" type="button">Hide preview</button></div><p id="blackout-format-note" class="file-help" hidden>To black out this file, ask its signer for a GRD2 or GRD3 copy.</p><div class="stage" id="stage"><canvas id="canvas" tabindex="0" aria-label="Checked picture" aria-describedby="reveal-hint"></canvas><div id="tile-overlay" class="tile-overlay" hidden role="group" aria-label="Select image tiles to redact"></div>
 <div id="shield" class="shield" hidden><h3>Picture hidden</h3><p id="shield-reason">The image is hidden while this window is away.</p><button class="primary" id="show-image">Show picture again</button></div></div>
 <p id="reveal-hint" class="viewer-hint"></p></section>
 <ul id="hidden-areas" class="hidden-areas" hidden></ul>
@@ -1228,20 +1417,35 @@ h1,h2,h3 {overflow-wrap: anywhere;}
 </section></section></section>
 <section id="convert" role="tabpanel" aria-labelledby="tab-seal" hidden>
 <form id="convert-form" class="convert-form">
-<section class="seal-step"><h2>1. Choose a picture</h2><label class="sr-only" for="convert-input">Choose a picture or Guard file</label><input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="convert-status"><p class="file-help">Or a .GRD you already have.</p><p id="document-warning" class="privacy-warning" role="alert" hidden>This looks like an ID card or document. Black out numbers, faces and addresses before you seal it.</p></section>
-<section id="seal-step-two" class="seal-step" hidden><h2>2. Black out areas <span class="optional">(optional)</span></h2>
-<div id="convert-preview" hidden><img id="convert-image" alt="Picture selected for sealing" hidden><div class="seal-stage"><canvas id="seal-canvas" aria-label="Blackout preview. Drag an area, or use Add an area by numbers below."></canvas></div><p id="convert-details" class="file-help"></p></div>
+<section class="seal-step"><h2><span class="step-number" aria-hidden="true">1</span>Choose a picture</h2><div class="seal-upload"><label for="convert-input">Drop a picture here, or choose a file</label><input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="convert-status"></div><p class="file-help">Or a .GRD you already have.</p><p id="document-warning" class="privacy-warning" role="alert" hidden>Looks like an ID or document. Black out private details before sealing.</p></section>
+<section id="seal-step-two" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">2</span>Black out areas <span class="optional">(optional)</span></h2>
+<p class="editor-instruction">Drag across the picture to black out an area, or add an area by numbers.</p><div id="convert-preview" hidden><img id="convert-image" alt="Picture selected for sealing" hidden><div class="seal-stage"><canvas id="seal-canvas" aria-label="Blackout preview. Drag an area, or use Add an area by numbers below."></canvas></div><p id="convert-details" class="file-help"></p></div>
 <div id="redaction-options" hidden><div id="redaction-tools" hidden><details id="rect-numbers"><summary>Add an area by numbers</summary><div class="rectangle-fields">
-<label>X<input id="rect-x" type="number" min="0" value="0"></label><label>Y<input id="rect-y" type="number" min="0" value="0"></label><label>Width<input id="rect-width" type="number" min="1" value="64"></label><label>Height<input id="rect-height" type="number" min="1" value="64"></label><button id="select-rectangle" type="button" class="secondary">Add area</button></div></details><p id="seal-grid-note" class="file-help">Areas round up to a 16-pixel grid.</p><ul id="seal-area-list" class="area-chips"></ul><p id="redaction-status" role="status"></p></div></div>
+<label>X<input id="rect-x" type="number" min="0" value="0"></label><label>Y<input id="rect-y" type="number" min="0" value="0"></label><label>Width<input id="rect-width" type="number" min="1" value="64"></label><label>Height<input id="rect-height" type="number" min="1" value="64"></label><button id="select-rectangle" type="button" class="secondary">Add area</button></div></details><p id="seal-grid-note" class="file-help">Areas round up to a 16-pixel grid.</p><details class="editor-settings"><summary>Blackout settings</summary><fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
+                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
+              </fieldset><p id="grid-help">The smallest grid is fixed when sealed. Whole 64px areas also support visual copy proofs.</p><label class="convert-resize" for="convert-resize">
+            <input id="convert-resize" type="checkbox" checked />
+            <span
+              >Fit large photos to Guard’s limit
+              <small
+                >Preview shows the output size. Your original stays
+                unchanged.</small
+              ></span
+            >
+          </label>
+</details><ul id="seal-area-list" class="area-chips"></ul><p id="redaction-status" role="status"></p></div></div>
 <p id="legacy-redaction-note" class="privacy-warning" hidden>GRD1 signs the whole picture. It cannot be blacked out without a new file from its signer.</p></section>
-<section id="seal-step-three" class="seal-step" hidden><h2>3. Seal and download</h2><label class="privacy-consent"><input id="convert-privacy" type="checkbox" required><span>I've hidden anything private, or I'm sure I want it sealed.</span></label><button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button><p><label class="privacy-consent"><input id="save-original" type="checkbox"><span>Also save the full original .GRD (keep it private; it contains the hidden parts)</span></label></p><p id="seal-signer-summary" class="file-help">Signed with a one-time key, so people will see “Unknown signer”.</p><a href="#signer">Sign with your own key</a></section>
+<section id="seal-step-three" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">3</span>Seal and download</h2><label class="privacy-consent"><input id="convert-privacy" type="checkbox" required><span>I've hidden anything private, or I'm sure I want it sealed.</span></label><button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button><p id="seal-signer-summary" class="file-help">One-time key · identity not verified.</p><details class="seal-extras"><summary id="seal-extras-label">More options</summary><p><label class="privacy-consent"><input id="save-original" type="checkbox"><span>Also save the full original .GRD (keep it private; it contains the hidden parts)</span></label></p><a id="seal-key-link" href="#signer">Sign with your own key</a></details></section>
 <p id="convert-status" role="status" aria-live="polite"></p><a id="check-sealed" href="#check" hidden>Check this file</a>
 </form></section></section>
-<section id="advanced" class="page-view" aria-labelledby="advanced-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="advanced-heading" tabindex="-1">Advanced</h1>
+<section id="advanced" class="page-view" aria-labelledby="advanced-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="advanced-heading" tabindex="-1">Advanced tools</h1><p class="page-subtitle">Signing, trust and file tools. Open only what you need.</p>
 <section id="advanced-tools">
-<section class="expert-section" id="signer"><h2>Your signer key</h2><p>Create a password-protected signing key or unlock your saved key.</p>
-<details id="signer-setup" class="signer-setup">
-          <summary>Sign with your name (optional)</summary>
+<section class="expert-section" id="signer">
+<details id="signer-setup" class="signer-setup advanced-disclosure">
+          <summary><h2>Your signer key</h2><span class="tool-hint">Create or unlock a signing key</span></summary>
           <p id="signer-help">Create once, then unlock your saved key to sign offline. Recipients must independently trust your public key before your name shows as verified. Your name is included in signed files. This does not certify your identity.</p>
           <div class="signer-grid">
             <form id="signer-create" aria-describedby="signer-help signer-create-help">
@@ -1267,7 +1471,7 @@ h1,h2,h3 {overflow-wrap: anywhere;}
             <p>Share only the public signer file and fingerprint. The unlocked key stays in memory until you lock it or close/reload this page. Browser access or malicious scripts can still use an unlocked key. Lock it when finished.</p>
           </div>
         </details></section>
-<section class="expert-section" id="advanced-person"><h2>Trust a person</h2><details class="person-trust"><summary>Trust a person</summary>
+<section class="expert-section" id="advanced-person"><details class="person-trust advanced-disclosure"><summary><h2>Trust a person</h2><span class="tool-hint">Recognize a known sender</span></summary>
           <p id="person-help">Get their public signer file. Confirm their name and full fingerprint through a separate, trusted channel. A name in a file is only a claim. Trust lasts for this tab; reloading clears it.</p>
           <form id="person-form" aria-describedby="person-help">
             <p><label for="person-file">Public signer file (.guardsigner)</label><input id="person-file" type="file" accept=".guardsigner,.json" required></p>
@@ -1278,38 +1482,23 @@ h1,h2,h3 {overflow-wrap: anywhere;}
             <p id="person-status" role="status">No additional people trusted.</p>
           </form>
         </details></section>
-<section class="expert-section"><h2 id="trust-heading">Load a trust bundle</h2><p id="trust-help">Verify the root fingerprint independently. Signers and rollback protection last for this tab only.</p><form id="trust-form" aria-describedby="trust-help">
+<section class="expert-section"><details class="advanced-disclosure" id="tool-trust"><summary><h2 id="trust-heading">Load a trust bundle</h2><span class="tool-hint">Use an organization’s key list</span></summary><div class="tool-body"><p id="trust-help">Verify the root fingerprint independently. Signers and rollback protection last for this tab only.</p><form id="trust-form" aria-describedby="trust-help">
           <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
           <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
           <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
           <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
           <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
-        </form></section>
-<section class="expert-section"><h2 id="copy-heading">Check a recompressed copy <span class="optional">(experimental)</span></h2><p id="copy-help">Compares a JPEG or resized copy with a visual proof (.grdp). It checks block averages, not exact pixels. Fine edits and some blurs can pass.</p><button id="download-proof" class="secondary" hidden>Download visual proof</button><p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles for visual copy proofs.</p><form id="copy-form" aria-describedby="copy-help">
+        </form></div></details></section>
+<section class="expert-section"><details class="advanced-disclosure" id="tool-copy"><summary><h2 id="copy-heading">Check a recompressed copy <span class="optional">(experimental)</span></h2><span class="tool-hint">Compare a JPEG or resized copy</span></summary><div class="tool-body"><p id="copy-help">Compares a JPEG or resized copy with a visual proof (.grdp). It checks block averages, not exact pixels. Fine edits and some blurs can pass.</p><button id="download-proof" class="secondary" hidden>Download visual proof</button><p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles for visual copy proofs.</p><form id="copy-form" aria-describedby="copy-help">
           <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
           <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
           <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
           <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
-        </form></section>
-<section class="expert-section" id="advanced-report"><h2>Technical report</h2><p>Evidence for the last checked file. Reports can contain personal information.</p><button id="download-report" class="secondary">Download report</button><dl id="metadata"></dl><dl id="technical-data"></dl><button id="clear" type="button" class="secondary">Clear checked file</button></section>
-<section class="expert-section" id="viewing-options"><h2>Viewing options</h2><p>Viewing stamps do not prevent screenshots.</p><div class="mode-buttons" role="group" aria-label="Image viewing mode"><button id="reveal-mode" aria-pressed="true">Hold to reveal</button><button id="full-mode" aria-pressed="false">Full view</button></div><button id="hide-image" class="secondary">Hide picture</button>
-<fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
-                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
-              </fieldset><p id="grid-help">The smallest grid is fixed when sealed. Whole 64px areas also support visual copy proofs.</p><label class="convert-resize" for="convert-resize">
-            <input id="convert-resize" type="checkbox" checked />
-            <span
-              >Fit large photos to Guard’s limit
-              <small
-                >Preview shows the output size. Your original stays
-                unchanged.</small
-              ></span
-            >
-          </label>
-<div hidden><button id="redact-mode" aria-pressed="false">Mark tiles</button><button id="export-redacted" disabled>Export blacked-out .GRD</button></div></section>
-<section class="expert-section" id="offline-copy"><h2>Offline copy</h2><p>Download this page to use it with no internet.</p><button id="download-viewer" class="secondary">Download offline viewer</button></section>
+        </form></div></details></section>
+<section class="expert-section" id="advanced-report"><details class="advanced-disclosure" id="tool-report"><summary><h2>Technical report</h2><span class="tool-hint">Inspect the last checked file</span></summary><div class="tool-body"><p>Evidence for the last checked file. Reports can contain personal information.</p><button id="download-report" class="secondary">Download report</button><dl id="metadata"></dl><dl id="technical-data"></dl><button id="clear" type="button" class="secondary">Clear checked file</button></div></details></section>
+<section class="expert-section" id="viewing-options"><details class="advanced-disclosure" id="tool-viewing"><summary><h2>Viewing options</h2><span class="tool-hint">Display and blackout settings</span></summary><div class="tool-body"><p>Viewing stamps do not prevent screenshots.</p><div class="mode-buttons" role="group" aria-label="Image viewing mode"><button id="reveal-mode" aria-pressed="true">Hold to reveal</button><button id="full-mode" aria-pressed="false">Full view</button></div><p class="file-help">Preview controls are beside the checked picture. Blackout settings are beside the editor.</p>
+<div hidden><button id="redact-mode" aria-pressed="false">Mark tiles</button><button id="export-redacted" disabled>Export blacked-out .GRD</button></div></div></details></section>
+<section class="expert-section" id="offline-copy"><details class="advanced-disclosure" id="tool-offline"><summary><h2>Offline copy</h2><span class="tool-hint">Save Guard for later</span></summary><div class="tool-body"><p>Download this page to use it with no internet.</p><button id="download-viewer" class="secondary">Download offline viewer</button></div></details></section>
 </section></section>
 <section id="about" class="page-view" aria-labelledby="about-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="about-heading" tabindex="-1">About Guard</h1><p><a href="#privacy-details">Privacy and hosting</a></p>
 <section class="explanation" id="about-verification">
@@ -1342,8 +1531,8 @@ h1,h2,h3 {overflow-wrap: anywhere;}
           </article>
         </div>
       </section>
-<section class="expert-section"><h2>Limits</h2><p id="convert-help">PNG, JPG, WebP, GIF or BMP. Up to 256 MiB and 50 megapixels; large photos fit GRD3’s 36-megapixel output limit. Animation uses the first frame. Export HEIC or PDF to PNG or JPG first.</p><p>Viewing stamps do not prevent screenshots. Blackout only: positions and sizes of hidden areas stay visible. Redactor identity is not attested. Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here. A signature does not prove a picture is true or establish ownership.</p></section>
-<details id="privacy-disclosure" open><summary>Privacy and hosting</summary><section
+<section class="expert-section"><h2>Limits</h2><p id="convert-help">PNG, JPG, WebP, GIF or BMP. Up to 256 MiB and 50 megapixels; large photos fit GRD3’s 36-megapixel output limit. Animation uses the first frame. Transparency becomes white; source metadata is not copied. Export HEIC or PDF to PNG or JPG first.</p><p>Viewing stamps do not prevent screenshots. Blackout only: positions and sizes of hidden areas stay visible. Redactor identity is not attested. Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here. A signature does not prove a picture is true or establish ownership.</p></section>
+<details id="privacy-disclosure"><summary>Privacy and hosting</summary><section
         class="privacy-details"
         id="privacy-details"
         aria-labelledby="privacy-heading"
@@ -3869,6 +4058,7 @@ function renderResult(report) {
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
   $('empty').hidden=true;
+  $('redact-checked').disabled=!canEditChecked();$('blackout-format-note').hidden=report.version!==1;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -4348,10 +4538,10 @@ $("drop").ondrop = (event) => {
   event.preventDefault();
   $("drop").classList.remove("over");
   const files = event.dataTransfer.files;
-  if (files.length) void openFile(files[0]);
+  if (files.length) void routeDroppedFile(files[0]);
 };
 window.addEventListener("dragover", (event) => event.preventDefault());
-window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void openFile(file);});
+window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
 $("download-report").onclick = () => {
   if (!currentReport) return;
   const report = {
@@ -4760,7 +4950,7 @@ function mergedHiddenAreas(report) {
  for(const r of horizontal){const key=r.x+':'+r.width,last=ends.get(key);if(last&&last.y+last.height===r.y)last.height+=r.height;else{out.push(r);ends.set(key,r);}}
  return out;
 }
-let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null;
+let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null,sealUnknownApproved=false;
 function sealGrid(){const minimum=sealSourceDoc?.manifest.subTile|| (sealSourceDoc?64:16);return Math.max(minimum,[8,16,32,64].find(n=>$('grid-'+n).checked)||minimum);}
 function roundSealArea(rect){
  if(!conversionImage)throw Error('Choose a picture first.');
@@ -4778,7 +4968,7 @@ function drawSealEditor(draft=null){
   ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#F79009';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.strokeRect(x+1,y+1,Math.max(0,w-2),Math.max(0,h-2));ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Area '+(i+1),x+4,y+15);
  }
  // Preview stamps are not included in the downloaded pixels.
- ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText('GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
+ ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText((sealUnknownApproved?'UNKNOWN SIGNER · ':'')+'GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
 }
 function renderSealAreas(){
  const list=$('seal-area-list');list.replaceChildren();
@@ -4799,20 +4989,22 @@ async function prepareSealPreview(surface=null){
  $('seal-step-two').hidden=false;$('seal-step-three').hidden=false;$('convert-preview').hidden=false;$('redaction-options').hidden=false;$('redaction-tools').hidden=false;$('legacy-redaction-note').hidden=true;
  const minimum=sealSourceDoc?.manifest.subTile||(sealSourceDoc?64:16);
  for(const size of [8,16,32,64]){$('grid-'+size).disabled=size<minimum;$('grid-'+size).checked=size===minimum;}
- $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();
+ document.querySelector('.convert-resize').hidden=!!sealSourceDoc;
+ $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();refreshSealSummary();
 }
-async function loadSealGrd(file,bytes,token){
+async function loadSealGrd(file,bytes,token,allowUnknown=false){
  const trust=await sessionTrust();const r=await (isGRD2(bytes)?verifyGRD2(bytes,trust.anchors,trust.policy):createVerifier(trust.anchors,trust.policy)(bytes));
  if(token!==conversionVersion)return;
- if(!r.viewable){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
+ const approvedUnknown=allowUnknown&&file===currentInputFile&&unknownApproved&&currentReport?.canRevealUnknown&&r.canRevealUnknown&&r.signerStatus==='unknown'&&r.fingerprint===currentReport.fingerprint;
+ if(!r.viewable&&!approvedUnknown){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
  if(!r.container){$('seal-step-two').hidden=false;$('legacy-redaction-note').hidden=false;conversionStatus('This GRD format cannot be blacked out without its signer.',true);return;}
  const doc=r.container,decoded=await decodeRgbPng(containerImage(doc),doc.manifest.version===3?GRD3_LIMITS:undefined);
  if(token!==conversionVersion)return;
  const rgba=new Uint8Array(decoded.width*decoded.height*4);
  for(let i=0;i<decoded.width*decoded.height;i++){rgba[i*4]=decoded.rgb[i*3];rgba[i*4+1]=decoded.rgb[i*3+1];rgba[i*4+2]=decoded.rgb[i*3+2];rgba[i*4+3]=255;}
- sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
+ sealUnknownApproved=!!approvedUnknown;sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
  await prepareSealPreview();if(token!==conversionVersion)return;
- $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus('Original signer kept. Choose any additional blackouts.');
+ $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus(sealUnknownApproved?'Signer remains unknown. Blackouts keep the original key.':'Original signer kept. Choose any additional blackouts.');
 }
 $('select-rectangle').onclick=()=>{try{addSealArea({x:Number($('rect-x').value),y:Number($('rect-y').value),width:Number($('rect-width').value),height:Number($('rect-height').value)});}catch(error){$('redaction-status').textContent=error.message;}};
 const sealCanvas=$('seal-canvas');
@@ -4833,11 +5025,10 @@ function conversionStatus(message, error = false) {
   $("convert-status").classList.toggle("error", error);
   $("convert-input").setAttribute("aria-invalid", String(error));
 }
-$("convert-input").onchange = async () => {
-  const token = ++conversionVersion,
-    file = $("convert-input").files[0];
-  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealPreview=null;lastSealedFile=null;sealPointer=null;
-  $('check-sealed').hidden=true;$('save-original').checked=false;$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
+async function prepareSealInput(file,allowUnknown=false){
+  const token=++conversionVersion;
+  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealUnknownApproved=false;sealPreview=null;lastSealedFile=null;sealPointer=null;
+  $('check-sealed').hidden=true;$('save-original').checked=false;syncSealExtras();$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
   $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
   $("convert-preview").hidden = true;
   $("convert-image").removeAttribute("src");
@@ -4854,7 +5045,7 @@ $("convert-input").onchange = async () => {
       throw new Error("Choose an image up to 256 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
-    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token);return;}
+    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token,allowUnknown);return;}
     const allowResize = $("convert-resize").checked;
     const info = inspectConversionImage(bytes, { allowResize, large: true });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
@@ -4910,12 +5101,7 @@ $("convert-input").onchange = async () => {
       `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     $("document-warning").hidden=!looksLikeDocument(originalWidth,originalHeight);syncSealConsent();
-    conversionStatus(
-      (resized
-        ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
-        : "Ready at original size. ") +
-        "Transparency becomes white and animation uses the first frame. Source metadata is not copied.",
-    );
+    conversionStatus(resized?'Ready. Uses the resized preview.':'Ready to seal.');
   } catch (error) {
     if (token === conversionVersion)
       conversionStatus(
@@ -4927,6 +5113,7 @@ $("convert-input").onchange = async () => {
     decoded?.close?.();
   }
 };
+$("convert-input").onchange=()=>prepareSealInput($("convert-input").files[0]);
 function syncSealConsent(){$("convert-submit").disabled=!conversionImage||!$("convert-privacy").checked;}
 $("convert-privacy").onchange=syncSealConsent;
 syncSealConsent();
@@ -4934,7 +5121,7 @@ $("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
   if ($('convert-submit').disabled || !$('convert-privacy').checked || !conversionImage) return;
-  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
+  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,unknownSource=sealUnknownApproved,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
   $('convert-submit').disabled=true;$('convert-input').disabled=true;$('convert-resize').disabled=true;$('convert-privacy').disabled=true;$('select-rectangle').disabled=true;$('save-original').disabled=true;
   $('convert-form').setAttribute('aria-busy','true');conversionStatus('Sealing and checking on your device…');
   try{
@@ -4944,7 +5131,7 @@ $("convert-form").onsubmit = async (event) => {
     const original=encodeGRD2(doc),bytes=areas.length?await redactRects(doc,areas,{granularity}):original;
     const trust=await sessionTrust(),anchors=existing?trust.anchors:signer?[{public_key_hex:signer.contact.publicKey,name:signer.contact.name}]:TRUSTED;
     const result=await verifyGRD2(bytes,anchors,trust.policy);
-    if(!result.regionVerified||!result.signature_valid||!['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict))throw Error('The file did not pass its own check. Nothing was downloaded.');
+    if(!result.regionVerified||!result.signature_valid||!(['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict)||existing&&unknownSource&&result.verdict==='UNTRUSTED SIGNER'&&result.canRevealUnknown))throw Error('The file did not pass its own check. Nothing was downloaded.');
     if(token!==conversionVersion||viewerToken!==operation||signingVersion!==offlineSignerVersion)throw Error('Your file or signer changed. Check the selection and try again.');
     download(bytes,'image.GRD','application/octet-stream');
     if(saveOriginal&&areas.length)download(original,'private-original.GRD','application/octet-stream');
@@ -5030,9 +5217,9 @@ function showGuardView(hash=location.hash,focus=true){
  }
  for(const back of document.querySelectorAll('.back-link'))back.href=activeMainMode==='seal'?'#seal':'#check';
  document.querySelector('.skip').href=expert?'#advanced-heading':about?'#about-heading':activeMainMode==='verify'?'#workspace':'#convert';
- if(target==='signer')$('signer-setup').open=true;
- if(target==='advanced-person')document.querySelector('.person-trust').open=true;
- if(about)$('privacy-disclosure').open=true;
+ if(expert&&target!=='advanced'&&target!=='advanced-heading')revealAdvancedTool(target);
+ for(const link of document.querySelectorAll('.header nav a')){if(link.getAttribute('href')===(expert?'#advanced':about?'#about':''))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+ if(about&&['privacy-details','about-privacy'].includes(target))$('privacy-disclosure').open=true;
  if(focus){const heading=expert?$('advanced-heading'):about?$('about-heading'):$('main-heading');heading.focus();if(expert&&target!=='advanced'&&target!=='advanced-heading'||about&&['privacy-details','about-privacy'].includes(target)){const section=$(target==='about-privacy'?'privacy-details':target);if(section){const title=section.querySelector('h2')||section;title.tabIndex=-1;title.focus();section.scrollIntoView({block:'start',behavior:'instant'});}}}
 }
 function workspaceMode(mode){activeMainMode=mode;const hash=mode==='seal'?'#seal':'#check';if(location.hash!==hash)history.replaceState(null,'',hash);showGuardView(hash,false);}
@@ -5043,6 +5230,34 @@ for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
 window.addEventListener('hashchange',()=>showGuardView());
 showGuardView(location.hash,false);
 
+function revealAdvancedTool(target){
+ const node=$(target)||$("tool-"+target);const panel=node?.matches('details.advanced-disclosure')?node:node?.querySelector('details.advanced-disclosure');
+ if(!panel)return;for(const other of document.querySelectorAll('.advanced-disclosure'))other.open=other===panel;
+}
+for(const panel of document.querySelectorAll('.advanced-disclosure'))panel.querySelector('summary').addEventListener('click',()=>{if(!panel.open)for(const other of document.querySelectorAll('.advanced-disclosure'))if(other!==panel)other.open=false;});
+function syncSealExtras(){const on=$('save-original').checked;$('seal-extras-label').textContent=on?'More options · original copy enabled':'More options';document.querySelector('.seal-extras').classList.toggle('original-enabled',on);}
+$('save-original').addEventListener('change',syncSealExtras);
+function refreshSealSummary(){
+ $('seal-signer-summary').textContent=sealSourceDoc?(sealUnknownApproved?'Original signer unknown · blackouts do not verify identity.':'Original signer kept · no signing key needed.'):unlockedSigner?unlockedSigner.contact.name+'’s key · recipients must trust it independently.':'One-time key · identity not verified.';
+ $('seal-key-link').hidden=!!sealSourceDoc;syncSealExtras();
+}
+
+function canEditChecked(){return !!(currentInputFile&&currentContainer&&currentReport?.regionVerified&&currentReport.signature_valid&&(currentReport.viewable||unknownApproved&&currentReport.canRevealUnknown));}
+$('redact-checked').onclick=async()=>{
+ if(!canEditChecked())return;
+ const file=currentInputFile;workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;
+ await prepareSealInput(file,true);
+ if(conversionImage){$('seal-step-two').scrollIntoView({block:'start',behavior:'instant'});$('rect-numbers').querySelector('summary').focus({preventScroll:true});}
+};
+async function routeDroppedFile(file){
+ const picture=/^image\//.test(file.type||'')||/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name);
+ if(!$('convert').hidden||picture){workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;await prepareSealInput(file);}
+ else await openFile(file);
+}
+$('convert').addEventListener('dragover',event=>{event.preventDefault();document.querySelector('.seal-upload').classList.add('over');});
+$('convert').addEventListener('dragleave',event=>{if(!$('convert').contains(event.relatedTarget))document.querySelector('.seal-upload').classList.remove('over');});
+$('convert').addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();document.querySelector('.seal-upload').classList.remove('over');const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
+
 // SPDX-License-Identifier: MIT
 let unlockedSigner=null,offlineSignerVersion=0,signerBusy=false,personTrustEpoch=0;
 const personTrust=new Map();
@@ -5050,13 +5265,13 @@ function lockOfflineSigner(message='Signer locked. Unlock your saved key to sign
   offlineSignerVersion++;unlockedSigner=null;
   $('signer-active').hidden=true;$('signer-identity').textContent='';
   $('seal-signer-summary').textContent='Signed with a one-time key, so people will see “Unknown signer”.';
-  $('signer-status').textContent=message;
+  $('signer-status').textContent=message;refreshSealSummary();
 }
 function activateOfflineSigner(signer) {
   unlockedSigner=signer;$('signer-active').hidden=false;
   $('signer-identity').textContent=signer.contact.name+' · SHA-256 '+signer.contact.fingerprint;
   $('seal-signer-summary').textContent='Signed with '+signer.contact.name+'’s key. People must trust it before it shows as Genuine.';
-  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';
+  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';refreshSealSummary();
 }
 async function signerAction(event,kind) {
   event.preventDefault();if(signerBusy)return;

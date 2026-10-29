@@ -105,6 +105,7 @@ function renderResult(report) {
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
   $('empty').hidden=true;
+  $('redact-checked').disabled=!canEditChecked();$('blackout-format-note').hidden=report.version!==1;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -584,10 +585,10 @@ $("drop").ondrop = (event) => {
   event.preventDefault();
   $("drop").classList.remove("over");
   const files = event.dataTransfer.files;
-  if (files.length) void openFile(files[0]);
+  if (files.length) void routeDroppedFile(files[0]);
 };
 window.addEventListener("dragover", (event) => event.preventDefault());
-window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void openFile(file);});
+window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
 $("download-report").onclick = () => {
   if (!currentReport) return;
   const report = {
@@ -996,7 +997,7 @@ function mergedHiddenAreas(report) {
  for(const r of horizontal){const key=r.x+':'+r.width,last=ends.get(key);if(last&&last.y+last.height===r.y)last.height+=r.height;else{out.push(r);ends.set(key,r);}}
  return out;
 }
-let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null;
+let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null,sealUnknownApproved=false;
 function sealGrid(){const minimum=sealSourceDoc?.manifest.subTile|| (sealSourceDoc?64:16);return Math.max(minimum,[8,16,32,64].find(n=>$('grid-'+n).checked)||minimum);}
 function roundSealArea(rect){
  if(!conversionImage)throw Error('Choose a picture first.');
@@ -1014,7 +1015,7 @@ function drawSealEditor(draft=null){
   ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#F79009';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.strokeRect(x+1,y+1,Math.max(0,w-2),Math.max(0,h-2));ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Area '+(i+1),x+4,y+15);
  }
  // Preview stamps are not included in the downloaded pixels.
- ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText('GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
+ ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText((sealUnknownApproved?'UNKNOWN SIGNER · ':'')+'GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
 }
 function renderSealAreas(){
  const list=$('seal-area-list');list.replaceChildren();
@@ -1035,20 +1036,22 @@ async function prepareSealPreview(surface=null){
  $('seal-step-two').hidden=false;$('seal-step-three').hidden=false;$('convert-preview').hidden=false;$('redaction-options').hidden=false;$('redaction-tools').hidden=false;$('legacy-redaction-note').hidden=true;
  const minimum=sealSourceDoc?.manifest.subTile||(sealSourceDoc?64:16);
  for(const size of [8,16,32,64]){$('grid-'+size).disabled=size<minimum;$('grid-'+size).checked=size===minimum;}
- $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();
+ document.querySelector('.convert-resize').hidden=!!sealSourceDoc;
+ $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();refreshSealSummary();
 }
-async function loadSealGrd(file,bytes,token){
+async function loadSealGrd(file,bytes,token,allowUnknown=false){
  const trust=await sessionTrust();const r=await (isGRD2(bytes)?verifyGRD2(bytes,trust.anchors,trust.policy):createVerifier(trust.anchors,trust.policy)(bytes));
  if(token!==conversionVersion)return;
- if(!r.viewable){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
+ const approvedUnknown=allowUnknown&&file===currentInputFile&&unknownApproved&&currentReport?.canRevealUnknown&&r.canRevealUnknown&&r.signerStatus==='unknown'&&r.fingerprint===currentReport.fingerprint;
+ if(!r.viewable&&!approvedUnknown){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
  if(!r.container){$('seal-step-two').hidden=false;$('legacy-redaction-note').hidden=false;conversionStatus('This GRD format cannot be blacked out without its signer.',true);return;}
  const doc=r.container,decoded=await decodeRgbPng(containerImage(doc),doc.manifest.version===3?GRD3_LIMITS:undefined);
  if(token!==conversionVersion)return;
  const rgba=new Uint8Array(decoded.width*decoded.height*4);
  for(let i=0;i<decoded.width*decoded.height;i++){rgba[i*4]=decoded.rgb[i*3];rgba[i*4+1]=decoded.rgb[i*3+1];rgba[i*4+2]=decoded.rgb[i*3+2];rgba[i*4+3]=255;}
- sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
+ sealUnknownApproved=!!approvedUnknown;sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
  await prepareSealPreview();if(token!==conversionVersion)return;
- $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus('Original signer kept. Choose any additional blackouts.');
+ $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus(sealUnknownApproved?'Signer remains unknown. Blackouts keep the original key.':'Original signer kept. Choose any additional blackouts.');
 }
 $('select-rectangle').onclick=()=>{try{addSealArea({x:Number($('rect-x').value),y:Number($('rect-y').value),width:Number($('rect-width').value),height:Number($('rect-height').value)});}catch(error){$('redaction-status').textContent=error.message;}};
 const sealCanvas=$('seal-canvas');
@@ -1069,11 +1072,10 @@ function conversionStatus(message, error = false) {
   $("convert-status").classList.toggle("error", error);
   $("convert-input").setAttribute("aria-invalid", String(error));
 }
-$("convert-input").onchange = async () => {
-  const token = ++conversionVersion,
-    file = $("convert-input").files[0];
-  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealPreview=null;lastSealedFile=null;sealPointer=null;
-  $('check-sealed').hidden=true;$('save-original').checked=false;$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
+async function prepareSealInput(file,allowUnknown=false){
+  const token=++conversionVersion;
+  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealUnknownApproved=false;sealPreview=null;lastSealedFile=null;sealPointer=null;
+  $('check-sealed').hidden=true;$('save-original').checked=false;syncSealExtras();$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
   $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
   $("convert-preview").hidden = true;
   $("convert-image").removeAttribute("src");
@@ -1090,7 +1092,7 @@ $("convert-input").onchange = async () => {
       throw new Error("Choose an image up to 256 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
-    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token);return;}
+    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token,allowUnknown);return;}
     const allowResize = $("convert-resize").checked;
     const info = inspectConversionImage(bytes, { allowResize, large: true });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
@@ -1146,12 +1148,7 @@ $("convert-input").onchange = async () => {
       `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
     $("document-warning").hidden=!looksLikeDocument(originalWidth,originalHeight);syncSealConsent();
-    conversionStatus(
-      (resized
-        ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
-        : "Ready at original size. ") +
-        "Transparency becomes white and animation uses the first frame. Source metadata is not copied.",
-    );
+    conversionStatus(resized?'Ready. Uses the resized preview.':'Ready to seal.');
   } catch (error) {
     if (token === conversionVersion)
       conversionStatus(
@@ -1163,6 +1160,7 @@ $("convert-input").onchange = async () => {
     decoded?.close?.();
   }
 };
+$("convert-input").onchange=()=>prepareSealInput($("convert-input").files[0]);
 function syncSealConsent(){$("convert-submit").disabled=!conversionImage||!$("convert-privacy").checked;}
 $("convert-privacy").onchange=syncSealConsent;
 syncSealConsent();
@@ -1170,7 +1168,7 @@ $("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
   if ($('convert-submit').disabled || !$('convert-privacy').checked || !conversionImage) return;
-  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
+  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,unknownSource=sealUnknownApproved,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
   $('convert-submit').disabled=true;$('convert-input').disabled=true;$('convert-resize').disabled=true;$('convert-privacy').disabled=true;$('select-rectangle').disabled=true;$('save-original').disabled=true;
   $('convert-form').setAttribute('aria-busy','true');conversionStatus('Sealing and checking on your device…');
   try{
@@ -1180,7 +1178,7 @@ $("convert-form").onsubmit = async (event) => {
     const original=encodeGRD2(doc),bytes=areas.length?await redactRects(doc,areas,{granularity}):original;
     const trust=await sessionTrust(),anchors=existing?trust.anchors:signer?[{public_key_hex:signer.contact.publicKey,name:signer.contact.name}]:TRUSTED;
     const result=await verifyGRD2(bytes,anchors,trust.policy);
-    if(!result.regionVerified||!result.signature_valid||!['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict))throw Error('The file did not pass its own check. Nothing was downloaded.');
+    if(!result.regionVerified||!result.signature_valid||!(['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict)||existing&&unknownSource&&result.verdict==='UNTRUSTED SIGNER'&&result.canRevealUnknown))throw Error('The file did not pass its own check. Nothing was downloaded.');
     if(token!==conversionVersion||viewerToken!==operation||signingVersion!==offlineSignerVersion)throw Error('Your file or signer changed. Check the selection and try again.');
     download(bytes,'image.GRD','application/octet-stream');
     if(saveOriginal&&areas.length)download(original,'private-original.GRD','application/octet-stream');
@@ -1266,9 +1264,9 @@ function showGuardView(hash=location.hash,focus=true){
  }
  for(const back of document.querySelectorAll('.back-link'))back.href=activeMainMode==='seal'?'#seal':'#check';
  document.querySelector('.skip').href=expert?'#advanced-heading':about?'#about-heading':activeMainMode==='verify'?'#workspace':'#convert';
- if(target==='signer')$('signer-setup').open=true;
- if(target==='advanced-person')document.querySelector('.person-trust').open=true;
- if(about)$('privacy-disclosure').open=true;
+ if(expert&&target!=='advanced'&&target!=='advanced-heading')revealAdvancedTool(target);
+ for(const link of document.querySelectorAll('.header nav a')){if(link.getAttribute('href')===(expert?'#advanced':about?'#about':''))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+ if(about&&['privacy-details','about-privacy'].includes(target))$('privacy-disclosure').open=true;
  if(focus){const heading=expert?$('advanced-heading'):about?$('about-heading'):$('main-heading');heading.focus();if(expert&&target!=='advanced'&&target!=='advanced-heading'||about&&['privacy-details','about-privacy'].includes(target)){const section=$(target==='about-privacy'?'privacy-details':target);if(section){const title=section.querySelector('h2')||section;title.tabIndex=-1;title.focus();section.scrollIntoView({block:'start',behavior:'instant'});}}}
 }
 function workspaceMode(mode){activeMainMode=mode;const hash=mode==='seal'?'#seal':'#check';if(location.hash!==hash)history.replaceState(null,'',hash);showGuardView(hash,false);}
@@ -1278,3 +1276,31 @@ for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
 }
 window.addEventListener('hashchange',()=>showGuardView());
 showGuardView(location.hash,false);
+
+function revealAdvancedTool(target){
+ const node=$(target)||$("tool-"+target);const panel=node?.matches('details.advanced-disclosure')?node:node?.querySelector('details.advanced-disclosure');
+ if(!panel)return;for(const other of document.querySelectorAll('.advanced-disclosure'))other.open=other===panel;
+}
+for(const panel of document.querySelectorAll('.advanced-disclosure'))panel.querySelector('summary').addEventListener('click',()=>{if(!panel.open)for(const other of document.querySelectorAll('.advanced-disclosure'))if(other!==panel)other.open=false;});
+function syncSealExtras(){const on=$('save-original').checked;$('seal-extras-label').textContent=on?'More options · original copy enabled':'More options';document.querySelector('.seal-extras').classList.toggle('original-enabled',on);}
+$('save-original').addEventListener('change',syncSealExtras);
+function refreshSealSummary(){
+ $('seal-signer-summary').textContent=sealSourceDoc?(sealUnknownApproved?'Original signer unknown · blackouts do not verify identity.':'Original signer kept · no signing key needed.'):unlockedSigner?unlockedSigner.contact.name+'’s key · recipients must trust it independently.':'One-time key · identity not verified.';
+ $('seal-key-link').hidden=!!sealSourceDoc;syncSealExtras();
+}
+
+function canEditChecked(){return !!(currentInputFile&&currentContainer&&currentReport?.regionVerified&&currentReport.signature_valid&&(currentReport.viewable||unknownApproved&&currentReport.canRevealUnknown));}
+$('redact-checked').onclick=async()=>{
+ if(!canEditChecked())return;
+ const file=currentInputFile;workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;
+ await prepareSealInput(file,true);
+ if(conversionImage){$('seal-step-two').scrollIntoView({block:'start',behavior:'instant'});$('rect-numbers').querySelector('summary').focus({preventScroll:true});}
+};
+async function routeDroppedFile(file){
+ const picture=/^image\//.test(file.type||'')||/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name);
+ if(!$('convert').hidden||picture){workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;await prepareSealInput(file);}
+ else await openFile(file);
+}
+$('convert').addEventListener('dragover',event=>{event.preventDefault();document.querySelector('.seal-upload').classList.add('over');});
+$('convert').addEventListener('dragleave',event=>{if(!$('convert').contains(event.relatedTarget))document.querySelector('.seal-upload').classList.remove('over');});
+$('convert').addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();document.querySelector('.seal-upload').classList.remove('over');const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});

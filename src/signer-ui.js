@@ -5,13 +5,13 @@ function lockOfflineSigner(message='Signer locked. Unlock your saved key to sign
   offlineSignerVersion++;unlockedSigner=null;
   $('signer-active').hidden=true;$('signer-identity').textContent='';
   $('seal-signer-summary').textContent='Signed with a one-time key, so people will see “Unknown signer”.';
-  $('signer-status').textContent=message;
+  $('signer-status').textContent=message;refreshSealSummary();
 }
 function activateOfflineSigner(signer) {
   unlockedSigner=signer;$('signer-active').hidden=false;
   $('signer-identity').textContent=signer.contact.name+' · SHA-256 '+signer.contact.fingerprint;
   $('seal-signer-summary').textContent='Signed with '+signer.contact.name+'’s key. People must trust it before it shows as Genuine.';
-  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';
+  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';refreshSealSummary();
 }
 async function signerAction(event,kind) {
   event.preventDefault();if(signerBusy)return;

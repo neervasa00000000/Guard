@@ -11,12 +11,12 @@ function uxMetrics(){
  let aboveImageWords=0;for(const node of [document.querySelector('header'),document.querySelector('.workspace-tabs'),$('verdict-banner')])aboveImageWords+=visibleText(node);
  const result={width:innerWidth,height:innerHeight,words:wordCount,visibleControls:controls.length,scrollHeight:document.documentElement.scrollHeight,noVerticalScroll:document.documentElement.scrollHeight<=innerHeight+1,noHorizontalScroll:document.documentElement.scrollWidth<=innerWidth,aboveImageWords:!$('result').hidden?aboveImageWords:null,resultButtons:Array.from($('result').querySelectorAll('button')).filter(uxVisible).length,titleTop:!$('result').hidden?title.getBoundingClientRect().top:null,plainVisible:uxVisible(download)&&download.getBoundingClientRect().bottom<=innerHeight,detailsClosed:!$('verification-technical').open,overflow:document.documentElement.scrollWidth>innerWidth?Array.from(document.querySelectorAll('body *')).filter(uxVisible).map(n=>({id:n.id,tag:n.tagName,cls:n.className,width:n.getBoundingClientRect().width,right:n.getBoundingClientRect().right,font:getComputedStyle(n).fontSize})).filter(r=>r.right>innerWidth+1).slice(0,15):[],httpResources:performance.getEntriesByType('resource').filter(r=>/^https?:/.test(r.name)).length};qaPanel.hidden=saved;return result;
 }
-$('qa-layout').onclick=()=>{$('qa-results').textContent=JSON.stringify(uxMetrics(),null,2);};
+$('qa-layout').onclick=()=>{const text=JSON.stringify(uxMetrics(),null,2);$('qa-results').textContent=text;return text;};
 async function uxPrepare(state){
  qaPanel.hidden=false;workspaceMode('verify');
- if(state==='landing')reset();
+ if(state==='landing'){reset();$('drop').blur();}
  else if(state==='seal'){workspaceMode('seal');$('convert-input').files=new DataTransfer().files;await $('convert-input').onchange();}
- else if(state==='advanced'){showGuardView('#advanced',false);$('signer-setup').open=true;document.querySelector('.person-trust').open=true;}
+ else if(state==='advanced'){showGuardView('#advanced',false);}
  else if(state==='about')showGuardView('#about',false);
  else if(state==='seal-edit'){
   workspaceMode('seal');const dt=new DataTransfer();dt.items.add(new File([Uint8Array.from(atob(QA_IMAGES.id),c=>c.charCodeAt(0))],'TEST ONLY ID shape.png',{type:'image/png'}));$('convert-input').files=dt.files;await $('convert-input').onchange();
@@ -49,7 +49,7 @@ $('qa-redesign').onclick=async()=>{
   let r=await verifyGRD2(downloads[0].bytes,TRUSTED,TRUST_POLICY);check('redacted self-signed output keeps identity semantics',r.verdict==='UNVERIFIED: SELF-SIGNED'&&r.regionVerified&&r.hiddenPixelsCleared&&r.redactionMap.length>0);
   const pixels=await decodeRgbPng(containerImage(r.container));let zero=true;for(let y=240;y<416;y++)for(let x=128;x<320;x++){const i=(y*pixels.width+x)*3;if(pixels.rgb[i]||pixels.rgb[i+1]||pixels.rgb[i+2])zero=false;}
   check('all selected output pixels are black',zero);check('Check this file offered without opening unblacked input',!$('check-sealed').hidden&&lastSealedFile?.name==='image.GRD');
-  $('save-original').checked=true;await $('convert-form').onsubmit(new Event('submit',{cancelable:true}));check('full original only after explicit opt-in',downloads.length===3&&downloads[2].name==='private-original.GRD'&&(await verifyGRD2(downloads[2].bytes,TRUSTED,TRUST_POLICY)).redactionMap.length===0);
+  $('save-original').checked=true;$('save-original').dispatchEvent(new Event('change'));check('enabled full-original copy stays signposted',$('seal-extras-label').textContent.includes('original copy enabled'));await $('convert-form').onsubmit(new Event('submit',{cancelable:true}));check('full original only after explicit opt-in',downloads.length===3&&downloads[2].name==='private-original.GRD'&&(await verifyGRD2(downloads[2].bytes,TRUSTED,TRUST_POLICY)).redactionMap.length===0);
   downloads.length=0;workspaceMode('seal');
   fileInput('convert-input',new File([Uint8Array.from(atob(QA_CASES.photoRedacted),c=>c.charCodeAt(0))],'received.GRD'));await $('convert-input').onchange();
   const originalKey=sealSourceDoc.manifest.publicKey,originalSignature=sealSourceDoc.signature;
@@ -69,7 +69,7 @@ $('qa-redesign').onclick=async()=>{
  finally{download=originalDownload;lockOfflineSigner();}
 };
 const uxRevokedButton=el('button','Run revoked guard check');uxRevokedButton.id='qa-revoked';qaPanel.insertBefore(uxRevokedButton,$('qa-results'));
-$('qa-revoked').onclick=async()=>{await qaLoad('photo');await $('show-unknown').onclick();qaPanel.hidden=true;const audit=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}});qaPanel.hidden=false;const result={pass:currentReport.signerStatus==='revoked'&&$('image-panel').hidden&&$('download-plain').hidden,verdict:currentReport.verdict,violations:audit.violations.map(v=>({id:v.id,impact:v.impact}))};$('qa-results').textContent=JSON.stringify(result,null,2);return result;};
+$('qa-revoked').onclick=async()=>{await qaLoad('photo');await $('show-unknown').onclick();await $('redact-checked').onclick();const editBlocked=$('redact-checked').disabled&&!conversionImage;qaPanel.hidden=true;const audit=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}});qaPanel.hidden=false;const result={pass:currentReport.signerStatus==='revoked'&&$('image-panel').hidden&&$('download-plain').hidden&&editBlocked,editBlocked,verdict:currentReport.verdict,violations:audit.violations.map(v=>({id:v.id,impact:v.impact}))};$('qa-results').textContent=JSON.stringify(result,null,2);return result;};
 const snapshot=new URLSearchParams(location.search).get('ux-state');
 if(snapshot&&['landing','genuine','redacted','tampered','unknown','self','fully','revoked','example','fault','notgrd','seal','seal-edit','advanced','about'].includes(snapshot))void uxPrepare(snapshot);
 const uxSelect=document.createElement('select');uxSelect.id='qa-state';uxSelect.setAttribute('aria-label','QA view');for(const state of ['landing','genuine','redacted','tampered','unknown','self','fully','example','fault','notgrd','seal','seal-edit','advanced','about']){const option=el('option',state);option.value=state;uxSelect.append(option);}qaPanel.insertBefore(uxSelect,$('qa-results'));
@@ -78,3 +78,29 @@ const uxTextButton=el('button','Probe 200% text');uxTextButton.id='qa-text';qaPa
 uxTextButton.onclick=async()=>{const sizes=Array.from(document.querySelectorAll('body,body *')).filter(n=>!['SCRIPT','STYLE'].includes(n.tagName)).map(n=>[n,parseFloat(getComputedStyle(n).fontSize)]);for(const [n,size] of sizes)if(Number.isFinite(size))n.style.fontSize=(size*2)+'px';await new Promise(resolve=>requestAnimationFrame(resolve));return uxMetrics();};
 // Explicit completion markers let UI automation wait for the real async handler.
 for(const id of ['qa-signers','qa-advanced','qa-offline','qa-axe','qa-ux','qa-redesign','qa-revoked']){const run=$(id).onclick;$(id).onclick=async(...args)=>{$('qa-results').removeAttribute('data-complete');try{return await run(...args);}finally{$('qa-results').dataset.complete='1';}};}
+const blackoutFixButton=el('button','Run blackout discovery checks');blackoutFixButton.id='qa-blackout-fix';qaPanel.insertBefore(blackoutFixButton,$('qa-results'));
+blackoutFixButton.onclick=async()=>{
+ const rows=[],check=(name,ok)=>{rows.push({name,pass:!!ok});if(!ok)throw Error(name);},oldDownload=download,files=[];
+ download=(bytes,name)=>files.push({bytes:new Uint8Array(bytes),name});
+ const waitEditor=async name=>{for(let i=0;i<300;i++){if(conversionImage?.name===name&&!$('convert-preview').hidden)return;await new Promise(resolve=>requestAnimationFrame(resolve));}throw Error('Dropped image did not reach editor');};
+ try{
+  workspaceMode('seal');const picture=new File([Uint8Array.from(atob(QA_IMAGES.square),c=>c.charCodeAt(0))],'TEST ONLY drop.png',{type:'image/png'}),dt=new DataTransfer();dt.items.add(picture);const version=conversionVersion;
+  $('convert').dispatchEvent(new DragEvent('drop',{dataTransfer:dt,bubbles:true,cancelable:true}));await waitEditor(picture.name);
+  check('dropping picture in editor opens editor once',!$('convert').hidden&&conversionVersion===version+1&&files.length===0);
+  await qaLoad('photo');check('blackout button beside picture',!$('redact-checked').disabled&&$('image-panel').contains($('redact-checked')));
+  $('hide-image').onclick();check('Hide preview immediately shields picture',!$('shield').hidden);$('show-image').onclick();
+  const originalKey=currentContainer.manifest.publicKey;await $('redact-checked').onclick();check('checked file goes straight to editor',!$('convert').hidden&&sealSourceDoc?.manifest.publicKey===originalKey&&$('convert-input').files.length===1);
+  $('rect-x').value='16';$('rect-y').value='16';$('rect-width').value='32';$('rect-height').value='32';$('select-rectangle').onclick();$('convert-privacy').checked=true;syncSealConsent();await $('convert-form').onsubmit(new Event('submit',{cancelable:true}));
+  let r=await verifyGRD2(files.at(-1).bytes,TRUSTED,TRUST_POLICY);check('direct edit exports original-signer blackouts',r.verdict==='VERIFIED WITH REDACTIONS'&&r.container.manifest.publicKey===originalKey);
+  await qaLoad('unknown');check('unknown file not editable before opt-in',$('redact-checked').disabled);await $('redact-checked').onclick();check('forced edit cannot bypass unknown withholding',$('convert').hidden&&$('image-panel').hidden);
+  await $('show-unknown').onclick();check('explicit preview enables blackout action',!$('redact-checked').disabled&&reveal&&currentReport.signerStatus==='unknown');await $('redact-checked').onclick();
+  check('approved unknown edit stays clearly unknown',!$('convert').hidden&&sealUnknownApproved&&$('seal-signer-summary').textContent.includes('unknown'));
+  $('rect-x').value='0';$('rect-y').value='0';$('rect-width').value='32';$('rect-height').value='32';$('select-rectangle').onclick();$('convert-privacy').checked=true;syncSealConsent();await $('convert-form').onsubmit(new Event('submit',{cancelable:true}));
+  r=await verifyGRD2(files.at(-1).bytes,[],TRUST_POLICY);check('unknown blackout output never becomes verified',r.verdict==='UNTRUSTED SIGNER'&&!r.genuine&&!r.viewable&&r.redactionMap.length>0);
+  await qaLoad('tampered');await $('redact-checked').onclick();check('changed file cannot enter blackout editor',$('convert').hidden&&$('image-panel').hidden&&$('download-plain').hidden);
+  const next=new File([Uint8Array.from(atob(QA_IMAGES.square),c=>c.charCodeAt(0))],'TEST ONLY check drop.png',{type:'image/png'}),data=new DataTransfer();data.items.add(next);document.body.dispatchEvent(new DragEvent('drop',{dataTransfer:data,bubbles:true,cancelable:true}));await waitEditor(next.name);
+  check('dropping ordinary picture on Check routes to editor',!$('convert').hidden&&sealSourceDoc===null);
+  $('qa-results').textContent=JSON.stringify({result:'ALL PASS',rows},null,2);
+ }catch(error){$('qa-results').textContent=JSON.stringify({result:'FAIL',message:error.message,rows},null,2);}
+ finally{download=oldDownload;$('qa-results').dataset.complete='1';}
+};

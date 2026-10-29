@@ -38,7 +38,7 @@
 <section id="workspace" aria-label="File check">
 <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
 <div id="empty">
-<button id="drop" type="button" class="drop" aria-describedby="file-help"><span aria-hidden="true" class="drop-icon"></span><span>Drop a .GRD file here</span><strong>Choose file</strong></button>
+<button id="drop" type="button" class="drop" aria-describedby="file-help"><span aria-hidden="true" class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Drop a .GRD file here</span><strong>Choose file</strong></button>
 <input id="file-input" type="file" accept=".grd,.GRD" hidden>
 <p id="file-help" class="privacy-line">The check runs on this device. Nothing is uploaded.</p>
 </div>
@@ -46,7 +46,7 @@
 <section id="result" class="verdict-card" aria-labelledby="verdict-title" hidden>
 <div id="verdict-banner" class="verdict-banner"><span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span><div><span id="verdict-kicker" hidden></span><h2 id="verdict-title" tabindex="-1"></h2><p id="verdict-description"></p><p id="verdict-signer" class="verdict-signer" hidden></p></div></div>
 <section id="image-panel" aria-labelledby="image-title" hidden><h3 id="image-title" class="sr-only">Checked picture</h3>
-<div class="stage" id="stage"><canvas id="canvas" tabindex="0" aria-label="Checked picture" aria-describedby="reveal-hint"></canvas><div id="tile-overlay" class="tile-overlay" hidden role="group" aria-label="Select image tiles to redact"></div>
+<div class="picture-toolbar"><button id="redact-checked" class="secondary" type="button">Black out areas</button><button id="hide-image" class="text-button" type="button">Hide preview</button></div><p id="blackout-format-note" class="file-help" hidden>To black out this file, ask its signer for a GRD2 or GRD3 copy.</p><div class="stage" id="stage"><canvas id="canvas" tabindex="0" aria-label="Checked picture" aria-describedby="reveal-hint"></canvas><div id="tile-overlay" class="tile-overlay" hidden role="group" aria-label="Select image tiles to redact"></div>
 <div id="shield" class="shield" hidden><h3>Picture hidden</h3><p id="shield-reason">The image is hidden while this window is away.</p><button class="primary" id="show-image">Show picture again</button></div></div>
 <p id="reveal-hint" class="viewer-hint"></p></section>
 <ul id="hidden-areas" class="hidden-areas" hidden></ul>
@@ -61,20 +61,35 @@
 </section></section></section>
 <section id="convert" role="tabpanel" aria-labelledby="tab-seal" hidden>
 <form id="convert-form" class="convert-form">
-<section class="seal-step"><h2>1. Choose a picture</h2><label class="sr-only" for="convert-input">Choose a picture or Guard file</label><input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="convert-status"><p class="file-help">Or a .GRD you already have.</p><p id="document-warning" class="privacy-warning" role="alert" hidden>This looks like an ID card or document. Black out numbers, faces and addresses before you seal it.</p></section>
-<section id="seal-step-two" class="seal-step" hidden><h2>2. Black out areas <span class="optional">(optional)</span></h2>
-<div id="convert-preview" hidden><img id="convert-image" alt="Picture selected for sealing" hidden><div class="seal-stage"><canvas id="seal-canvas" aria-label="Blackout preview. Drag an area, or use Add an area by numbers below."></canvas></div><p id="convert-details" class="file-help"></p></div>
+<section class="seal-step"><h2><span class="step-number" aria-hidden="true">1</span>Choose a picture</h2><div class="seal-upload"><label for="convert-input">Drop a picture here, or choose a file</label><input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="convert-status"></div><p class="file-help">Or a .GRD you already have.</p><p id="document-warning" class="privacy-warning" role="alert" hidden>Looks like an ID or document. Black out private details before sealing.</p></section>
+<section id="seal-step-two" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">2</span>Black out areas <span class="optional">(optional)</span></h2>
+<p class="editor-instruction">Drag across the picture to black out an area, or add an area by numbers.</p><div id="convert-preview" hidden><img id="convert-image" alt="Picture selected for sealing" hidden><div class="seal-stage"><canvas id="seal-canvas" aria-label="Blackout preview. Drag an area, or use Add an area by numbers below."></canvas></div><p id="convert-details" class="file-help"></p></div>
 <div id="redaction-options" hidden><div id="redaction-tools" hidden><details id="rect-numbers"><summary>Add an area by numbers</summary><div class="rectangle-fields">
-<label>X<input id="rect-x" type="number" min="0" value="0"></label><label>Y<input id="rect-y" type="number" min="0" value="0"></label><label>Width<input id="rect-width" type="number" min="1" value="64"></label><label>Height<input id="rect-height" type="number" min="1" value="64"></label><button id="select-rectangle" type="button" class="secondary">Add area</button></div></details><p id="seal-grid-note" class="file-help">Areas round up to a 16-pixel grid.</p><ul id="seal-area-list" class="area-chips"></ul><p id="redaction-status" role="status"></p></div></div>
+<label>X<input id="rect-x" type="number" min="0" value="0"></label><label>Y<input id="rect-y" type="number" min="0" value="0"></label><label>Width<input id="rect-width" type="number" min="1" value="64"></label><label>Height<input id="rect-height" type="number" min="1" value="64"></label><button id="select-rectangle" type="button" class="secondary">Add area</button></div></details><p id="seal-grid-note" class="file-help">Areas round up to a 16-pixel grid.</p><details class="editor-settings"><summary>Blackout settings</summary><fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
+                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
+                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
+              </fieldset><p id="grid-help">The smallest grid is fixed when sealed. Whole 64px areas also support visual copy proofs.</p><label class="convert-resize" for="convert-resize">
+            <input id="convert-resize" type="checkbox" checked />
+            <span
+              >Fit large photos to Guard’s limit
+              <small
+                >Preview shows the output size. Your original stays
+                unchanged.</small
+              ></span
+            >
+          </label>
+</details><ul id="seal-area-list" class="area-chips"></ul><p id="redaction-status" role="status"></p></div></div>
 <p id="legacy-redaction-note" class="privacy-warning" hidden>GRD1 signs the whole picture. It cannot be blacked out without a new file from its signer.</p></section>
-<section id="seal-step-three" class="seal-step" hidden><h2>3. Seal and download</h2><label class="privacy-consent"><input id="convert-privacy" type="checkbox" required><span>I've hidden anything private, or I'm sure I want it sealed.</span></label><button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button><p><label class="privacy-consent"><input id="save-original" type="checkbox"><span>Also save the full original .GRD (keep it private; it contains the hidden parts)</span></label></p><p id="seal-signer-summary" class="file-help">Signed with a one-time key, so people will see “Unknown signer”.</p><a href="#signer">Sign with your own key</a></section>
+<section id="seal-step-three" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">3</span>Seal and download</h2><label class="privacy-consent"><input id="convert-privacy" type="checkbox" required><span>I've hidden anything private, or I'm sure I want it sealed.</span></label><button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button><p id="seal-signer-summary" class="file-help">One-time key · identity not verified.</p><details class="seal-extras"><summary id="seal-extras-label">More options</summary><p><label class="privacy-consent"><input id="save-original" type="checkbox"><span>Also save the full original .GRD (keep it private; it contains the hidden parts)</span></label></p><a id="seal-key-link" href="#signer">Sign with your own key</a></details></section>
 <p id="convert-status" role="status" aria-live="polite"></p><a id="check-sealed" href="#check" hidden>Check this file</a>
 </form></section></section>
-<section id="advanced" class="page-view" aria-labelledby="advanced-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="advanced-heading" tabindex="-1">Advanced</h1>
+<section id="advanced" class="page-view" aria-labelledby="advanced-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="advanced-heading" tabindex="-1">Advanced tools</h1><p class="page-subtitle">Signing, trust and file tools. Open only what you need.</p>
 <section id="advanced-tools">
-<section class="expert-section" id="signer"><h2>Your signer key</h2><p>Create a password-protected signing key or unlock your saved key.</p>
-<details id="signer-setup" class="signer-setup">
-          <summary>Sign with your name (optional)</summary>
+<section class="expert-section" id="signer">
+<details id="signer-setup" class="signer-setup advanced-disclosure">
+          <summary><h2>Your signer key</h2><span class="tool-hint">Create or unlock a signing key</span></summary>
           <p id="signer-help">Create once, then unlock your saved key to sign offline. Recipients must independently trust your public key before your name shows as verified. Your name is included in signed files. This does not certify your identity.</p>
           <div class="signer-grid">
             <form id="signer-create" aria-describedby="signer-help signer-create-help">
@@ -100,7 +115,7 @@
             <p>Share only the public signer file and fingerprint. The unlocked key stays in memory until you lock it or close/reload this page. Browser access or malicious scripts can still use an unlocked key. Lock it when finished.</p>
           </div>
         </details></section>
-<section class="expert-section" id="advanced-person"><h2>Trust a person</h2><details class="person-trust"><summary>Trust a person</summary>
+<section class="expert-section" id="advanced-person"><details class="person-trust advanced-disclosure"><summary><h2>Trust a person</h2><span class="tool-hint">Recognize a known sender</span></summary>
           <p id="person-help">Get their public signer file. Confirm their name and full fingerprint through a separate, trusted channel. A name in a file is only a claim. Trust lasts for this tab; reloading clears it.</p>
           <form id="person-form" aria-describedby="person-help">
             <p><label for="person-file">Public signer file (.guardsigner)</label><input id="person-file" type="file" accept=".guardsigner,.json" required></p>
@@ -111,38 +126,23 @@
             <p id="person-status" role="status">No additional people trusted.</p>
           </form>
         </details></section>
-<section class="expert-section"><h2 id="trust-heading">Load a trust bundle</h2><p id="trust-help">Verify the root fingerprint independently. Signers and rollback protection last for this tab only.</p><form id="trust-form" aria-describedby="trust-help">
+<section class="expert-section"><details class="advanced-disclosure" id="tool-trust"><summary><h2 id="trust-heading">Load a trust bundle</h2><span class="tool-hint">Use an organization’s key list</span></summary><div class="tool-body"><p id="trust-help">Verify the root fingerprint independently. Signers and rollback protection last for this tab only.</p><form id="trust-form" aria-describedby="trust-help">
           <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
           <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
           <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
           <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
           <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
-        </form></section>
-<section class="expert-section"><h2 id="copy-heading">Check a recompressed copy <span class="optional">(experimental)</span></h2><p id="copy-help">Compares a JPEG or resized copy with a visual proof (.grdp). It checks block averages, not exact pixels. Fine edits and some blurs can pass.</p><button id="download-proof" class="secondary" hidden>Download visual proof</button><p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles for visual copy proofs.</p><form id="copy-form" aria-describedby="copy-help">
+        </form></div></details></section>
+<section class="expert-section"><details class="advanced-disclosure" id="tool-copy"><summary><h2 id="copy-heading">Check a recompressed copy <span class="optional">(experimental)</span></h2><span class="tool-hint">Compare a JPEG or resized copy</span></summary><div class="tool-body"><p id="copy-help">Compares a JPEG or resized copy with a visual proof (.grdp). It checks block averages, not exact pixels. Fine edits and some blurs can pass.</p><button id="download-proof" class="secondary" hidden>Download visual proof</button><p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles for visual copy proofs.</p><form id="copy-form" aria-describedby="copy-help">
           <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
           <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
           <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
           <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
-        </form></section>
-<section class="expert-section" id="advanced-report"><h2>Technical report</h2><p>Evidence for the last checked file. Reports can contain personal information.</p><button id="download-report" class="secondary">Download report</button><dl id="metadata"></dl><dl id="technical-data"></dl><button id="clear" type="button" class="secondary">Clear checked file</button></section>
-<section class="expert-section" id="viewing-options"><h2>Viewing options</h2><p>Viewing stamps do not prevent screenshots.</p><div class="mode-buttons" role="group" aria-label="Image viewing mode"><button id="reveal-mode" aria-pressed="true">Hold to reveal</button><button id="full-mode" aria-pressed="false">Full view</button></div><button id="hide-image" class="secondary">Hide picture</button>
-<fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
-                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
-              </fieldset><p id="grid-help">The smallest grid is fixed when sealed. Whole 64px areas also support visual copy proofs.</p><label class="convert-resize" for="convert-resize">
-            <input id="convert-resize" type="checkbox" checked />
-            <span
-              >Fit large photos to Guard’s limit
-              <small
-                >Preview shows the output size. Your original stays
-                unchanged.</small
-              ></span
-            >
-          </label>
-<div hidden><button id="redact-mode" aria-pressed="false">Mark tiles</button><button id="export-redacted" disabled>Export blacked-out .GRD</button></div></section>
-<section class="expert-section" id="offline-copy"><h2>Offline copy</h2><p>Download this page to use it with no internet.</p><button id="download-viewer" class="secondary">Download offline viewer</button></section>
+        </form></div></details></section>
+<section class="expert-section" id="advanced-report"><details class="advanced-disclosure" id="tool-report"><summary><h2>Technical report</h2><span class="tool-hint">Inspect the last checked file</span></summary><div class="tool-body"><p>Evidence for the last checked file. Reports can contain personal information.</p><button id="download-report" class="secondary">Download report</button><dl id="metadata"></dl><dl id="technical-data"></dl><button id="clear" type="button" class="secondary">Clear checked file</button></div></details></section>
+<section class="expert-section" id="viewing-options"><details class="advanced-disclosure" id="tool-viewing"><summary><h2>Viewing options</h2><span class="tool-hint">Display and blackout settings</span></summary><div class="tool-body"><p>Viewing stamps do not prevent screenshots.</p><div class="mode-buttons" role="group" aria-label="Image viewing mode"><button id="reveal-mode" aria-pressed="true">Hold to reveal</button><button id="full-mode" aria-pressed="false">Full view</button></div><p class="file-help">Preview controls are beside the checked picture. Blackout settings are beside the editor.</p>
+<div hidden><button id="redact-mode" aria-pressed="false">Mark tiles</button><button id="export-redacted" disabled>Export blacked-out .GRD</button></div></div></details></section>
+<section class="expert-section" id="offline-copy"><details class="advanced-disclosure" id="tool-offline"><summary><h2>Offline copy</h2><span class="tool-hint">Save Guard for later</span></summary><div class="tool-body"><p>Download this page to use it with no internet.</p><button id="download-viewer" class="secondary">Download offline viewer</button></div></details></section>
 </section></section>
 <section id="about" class="page-view" aria-labelledby="about-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="about-heading" tabindex="-1">About Guard</h1><p><a href="#privacy-details">Privacy and hosting</a></p>
 <section class="explanation" id="about-verification">
@@ -175,8 +175,8 @@
           </article>
         </div>
       </section>
-<section class="expert-section"><h2>Limits</h2><p id="convert-help">PNG, JPG, WebP, GIF or BMP. Up to 256 MiB and 50 megapixels; large photos fit GRD3’s 36-megapixel output limit. Animation uses the first frame. Export HEIC or PDF to PNG or JPG first.</p><p>Viewing stamps do not prevent screenshots. Blackout only: positions and sizes of hidden areas stay visible. Redactor identity is not attested. Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here. A signature does not prove a picture is true or establish ownership.</p></section>
-<details id="privacy-disclosure" open><summary>Privacy and hosting</summary><section
+<section class="expert-section"><h2>Limits</h2><p id="convert-help">PNG, JPG, WebP, GIF or BMP. Up to 256 MiB and 50 megapixels; large photos fit GRD3’s 36-megapixel output limit. Animation uses the first frame. Transparency becomes white; source metadata is not copied. Export HEIC or PDF to PNG or JPG first.</p><p>Viewing stamps do not prevent screenshots. Blackout only: positions and sizes of hidden areas stay visible. Redactor identity is not attested. Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here. A signature does not prove a picture is true or establish ownership.</p></section>
+<details id="privacy-disclosure"><summary>Privacy and hosting</summary><section
         class="privacy-details"
         id="privacy-details"
         aria-labelledby="privacy-heading"
