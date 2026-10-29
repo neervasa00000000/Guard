@@ -3,10 +3,10 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {readFile,mkdtemp,mkdir,cp,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {spawnSync} from 'node:child_process';
 import {resultTitle,signerSummary} from '../src/result-copy.js';
 test('plain-language titles preserve signer distinctions and technical verdicts',()=>{
- const cases={GENUINE:'Verified: Test Org','VERIFIED WITH REDACTIONS':'Real, with parts hidden','UNVERIFIED: SELF-SIGNED':'Not verified: anyone could have made this',TAMPERED:'Changed after signing',DEMO:'Demonstration only','FULLY REDACTED':'Everything is hidden','NOT A GRD':'Not a Guard file','REVOKED KEY':'Signer key revoked'};
+ const cases={GENUINE:'Genuine','VERIFIED WITH REDACTIONS':'Genuine, with parts blacked out','UNVERIFIED: SELF-SIGNED':'Unknown signer',TAMPERED:'Changed',DEMO:'Example only','FULLY REDACTED':'Genuine, but everything is blacked out','NOT A GRD':'Not a Guard file','REVOKED KEY':'Revoked signer'};
  for(const [verdict,title] of Object.entries(cases)){const r={verdict,signerStatus:'trusted',signerDisplayName:'Test Org'};assert.equal(resultTitle(r),title);assert.equal(r.verdict,verdict);}
- for(const verdict of ['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'])assert.equal(resultTitle({verdict}),"Couldn't check this file (this is not evidence of tampering)");
- assert.equal(resultTitle({verdict:'UNTRUSTED SIGNER',signerStatus:'unknown'}),'Valid signature, unknown signer');
+ for(const verdict of ['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'])assert.equal(resultTitle({verdict}),"Couldn't check this file");
+ assert.equal(resultTitle({verdict:'UNTRUSTED SIGNER',signerStatus:'unknown'}),'Unknown signer');
 });
 test('revoked banner never displays its configured signer identity',()=>{
  const r={verdict:'REVOKED KEY',signerStatus:'revoked',signerDisplayName:'Neer',signerName:'Neer',revocation:{reason:'TEST ONLY revoked',revokedAt:'2026-10-28T00:00:00Z'}};

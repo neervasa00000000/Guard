@@ -4,13 +4,13 @@ const personTrust=new Map();
 function lockOfflineSigner(message='Signer locked. Unlock your saved key to sign again.') {
   offlineSignerVersion++;unlockedSigner=null;
   $('signer-active').hidden=true;$('signer-identity').textContent='';
-  $('seal-signer-summary').textContent='Signing: disposable key · identity not verified.';
+  $('seal-signer-summary').textContent='Signed with a one-time key, so people will see “Unknown signer”.';
   $('signer-status').textContent=message;
 }
 function activateOfflineSigner(signer) {
   unlockedSigner=signer;$('signer-active').hidden=false;
   $('signer-identity').textContent=signer.contact.name+' · SHA-256 '+signer.contact.fingerprint;
-  $('seal-signer-summary').textContent='Signing with '+signer.contact.name+'’s key. Recipients must trust it independently.';
+  $('seal-signer-summary').textContent='Signed with '+signer.contact.name+'’s key. People must trust it before it shows as Genuine.';
   $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';
 }
 async function signerAction(event,kind) {
@@ -75,5 +75,3 @@ $('person-form').onsubmit=async event=>{
   finally{$('person-submit').disabled=false;}
 };
 $('person-clear').onclick=()=>{personTrustEpoch++;personTrust.clear();trustImportVersion++;reset();$('person-clear').hidden=true;$('person-trust-note').hidden=true;$('person-status').textContent='People cleared. Bundled signers and any signed trust bundle still apply.';};
-
-$('download-viewer-seal').onclick=()=>download(ORIGINAL_HTML,'grd_viewer.html','text/html');

@@ -138,3 +138,7 @@ Validation:
 - Final layout: zero axe violations across 10 states, and 30/30 CSS reflow cases passed at 320, 360, 390, 1440, 1920 and 2560 pixels, including the expanded signer and person-trust forms. Results are recorded in `results/offline-signer-axe.json` and `results/offline-signer-viewports.json`.
 
 Evidence is in ignored `results/offline-signer-*.json`, `results/offline-signer-setup.png`, `/tmp/guard-offline-final-tests.log` and `/tmp/guard-offline-python.log`. No real user key was generated, pinned or committed; no hardware, timestamp or C2PA identity claim is added. Direct saved-file/offline-origin browser testing remains **PENDING**: the browser tool explicitly blocks file URLs. HTTP Chromium tests exercise the same self-contained build, which has no online runtime dependencies; they must not be described as that pending file-origin trial. No deployment is established by these local checks.
+
+## UX redesign, 29 October 2026
+
+The redesign adds pre-download blackouts and one-card results, with expert tools and privacy in separate in-page views. Detailed scope, changed tests, actual measurements and limitations are recorded in [UX_STATUS.md](UX_STATUS.md). The retained 112 tests plus six new sealing/UX checks pass; Python, real C2PA formats, 50,002 local differential mutations, 27 named attacks and 10,000 body flips pass. No protected verifier, crypto, trust-list or format code changed. This record establishes local validation, not Pages deployment.

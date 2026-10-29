@@ -4,15 +4,15 @@ A mathematically valid signature is not an identity check. Readers must decide w
 
 ## Sign inside Guard, including offline
 
-1. Open **Seal a picture → Sign with your name (optional)**.
+1. Open **Advanced → Your signer key**.
 2. Create a signer using a name and a unique password of at least 12 characters. Save `signer.guardkey` and a separate backup. There is no password recovery. The name becomes public in signed files.
 3. On a later visit, choose that saved `.guardkey` file and unlock it. The unlocked signing key is nonextractable and held in memory only. **Lock signer**, reload, or close the page when finished. Locking does not erase copies already downloaded and cannot guarantee immediate erasure from browser process memory.
 4. Save **public.guardsigner** to share with recipients. Never send the `.guardkey` file or password. Confirm the full SHA-256 fingerprint and name through a separate trusted channel.
-5. The recipient opens **Advanced tools → Trust a person**, selects the public file and enters the independently confirmed fingerprint. This deliberately trusts that key for this tab only; reload clears it. Reopen the .GRD file to check it. It remains unknown in other viewers until they explicitly trust it. Creating or unlocking a signer never automatically adds trust.
+5. The recipient opens **Advanced → Trust a person**, selects the public file and enters the independently confirmed fingerprint. This deliberately trusts that key for this tab only; reload clears it. Reopen the .GRD file to check it. It remains unknown in other viewers until they explicitly trust it. Creating or unlocking a signer never automatically adds trust.
 
 With a saved signer, conversion produces the existing `purpose:asset` format with the name in its signed label. Without one, the disposable `purpose:personal` behavior stays unchanged. Existing personal files remain self-signed even if their key is trusted later. Revoked keys cannot be imported as trusted people. Bundled identities cannot be renamed through public-file import. Offline copies only know the revocations included in their snapshot or imported bundle; this is not a hardware key, timestamp service, identity certificate or C2PA credential.
 
-Use **Download offline viewer** in Seal a picture to save the self-contained HTML, then open it in a current browser. No network service or browser storage is required for key creation, unlocking, signing or checking. Direct local-file browser validation is pending because the automated browser tool refuses file URLs; local HTTP browser tests cover the same bundled code with network connections disabled by CSP.
+Use **Advanced → Offline copy → Download offline viewer** to save the self-contained HTML, then open it in a current browser. No network service or browser storage is required for key creation, unlocking, signing or checking. Direct local-file browser validation is pending because the automated browser tool refuses file URLs; local HTTP browser tests cover the same bundled code with network connections disabled by CSP.
 
 ### Encrypted key file v1
 

@@ -55,8 +55,8 @@ function disposeImage() {
   selectedTiles.clear();
   $("tile-overlay").replaceChildren();
   $("tile-overlay").hidden = true;
-  $("redaction-tools").hidden = true;$("redaction-options").hidden=true;$("redaction-options").open=false;
-  $("legacy-redaction-note").hidden = true;
+
+
   $("redact-mode").setAttribute("aria-pressed", "false");
   $("redact-mode").textContent = "Mark tiles";
   $("export-redacted").disabled = true;
@@ -88,8 +88,9 @@ function reset() {
   $("file-size").textContent = "";
   $("checks").replaceChildren();
   $("issue-list").replaceChildren();
-  setStatus("Current file cleared. Ready for another .GRD.");
+  setStatus("Ready.");
   $("drop").focus();
+  $("hidden-areas").hidden=true;
 }
 function showFile(file) {
   $("file-card").hidden = false;
@@ -103,102 +104,22 @@ function renderResult(report) {
   $("plain-note").hidden = $("download-plain").hidden;
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
-  $("redaction-options").hidden=!currentContainer||!report.viewable;
+  $('empty').hidden=true;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
   const genuine =
     report.genuine ||
     (report.viewable && report.regionVerified && report.trusted);
-  const messages = {
-    GENUINE: [
-      "GENUINE",
-      "FILE VERIFIED.",
-      "The picture matches this signer’s original.",
-    ],
-    TAMPERED: [
-      "TAMPERED",
-      "VERIFICATION FAILED.",
-      "Some file checks failed. The picture is withheld.",
-    ],
-    "NOT A GRD": [
-      "NOT A GRD",
-      "INVALID FILE.",
-      "Choose the original .GRD file from the sender.",
-    ],
-    UNSUPPORTED: [
-      "UNSUPPORTED",
-      "UNSUPPORTED.",
-      "This file or browser is not supported. This does not mean the picture was changed.",
-    ],
-    "LIMIT EXCEEDED": [
-      "LIMIT EXCEEDED",
-      "FILE TOO LARGE.",
-      "This file exceeds its format’s size limit. See Technical details.",
-    ],
-    UNREADABLE: [
-      "IMAGE UNREADABLE",
-      "IMAGE UNREADABLE.",
-      "The image could not be read safely. Try another copy of the original file.",
-    ],
-    "CANNOT VERIFY": [
-      "CANNOT VERIFY",
-      "CHECK DID NOT FINISH.",
-      "This is not evidence of tampering. Try the original file or a current browser.",
-    ],
-  };
-  messages["VERIFIED WITH REDACTIONS"] = [
-    "VERIFIED WITH REDACTIONS",
-    "RETAINED PIXELS VERIFIED.",
-    "The visible parts match the signed original. Hidden areas can’t be checked.",
-  ];
-  messages.DEMO = [
-    "DEMONSTRATION / NOT TRUSTED EVIDENCE",
-    "REDACTION EXAMPLE.",
-    "Try hiding an area. This example does not verify a real signer.",
-  ];
-  messages["UNVERIFIED: SELF-SIGNED"] = [
-    "UNVERIFIED: SELF-SIGNED",
-    "IDENTITY NOT VERIFIED.",
-    "The file matches its own key. Anyone can edit a picture and make a new self-signed file.",
-  ];
-  messages["UNTRUSTED SIGNER"] = [
-    "UNTRUSTED SIGNER",
-    "SIGNER NOT RECOGNISED.",
-    "The tile proof matches this key, but its identity is not trusted by this viewer. Image withheld.",
-  ];
-  messages["REVOKED KEY"] = [
-    "REVOKED KEY",
-    "SIGNER REVOKED.",
-    "This signing key is rejected by the bundled offline revocation policy. No before-revocation exception is made without validated timestamp evidence.",
-  ];
-  messages["FULLY REDACTED"] = [
-    "FULLY REDACTED",
-    "NO VISIBLE PIXELS.",
-    "The proof matches, but no original picture remains visible.",
-  ];
-  const words = messages[report.verdict] ?? messages.TAMPERED;
-  if (report.version >= 2 && report.genuine) {
-    words[1] = "SIGNED TILE GRID VERIFIED.";
-    words[2] =
-      "The picture matches this signer’s original.";
-  }
-  $("verdict-banner").className =
-    "verdict-banner " +
-    (report.personal
-      ? "unverified"
-      : report.demo
-        ? "demo"
-        : genuine
-          ? "good"
-          : (report.verdict === "TAMPERED" || report.signerStatus === "revoked")
-            ? "bad"
-            : "neutral");
-  words[1]=resultTitle(report);
-  if(report.signerStatus==='unknown'){words[2]='The signature matches, but this signer is not trusted here. The picture stays hidden unless you choose to show it.';}
-  if(report.signerStatus==='revoked')words[1]='Signer key revoked';
-  if(report.verdict==='UNTRUSTED SIGNER'&&report.signerStatus!=='unknown'){words[1]='Verification did not establish a valid file';words[2]='One or more integrity checks failed. This file cannot be displayed as a valid unknown-signer image.';}
-  $("technical-verdict").textContent='Exact verdict: '+report.verdict;
+  const words=[report.verdict,resultTitle(report),resultDescription(report,mergedHiddenAreas(report).length)];
+  const failure=['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE','NOT A GRD'].includes(report.verdict)||report.signerStatus==='none'&&report.verdict==='UNTRUSTED SIGNER';
+  $('verdict-banner').className='verdict-banner '+(failure?'fault':report.signerStatus==='revoked'||report.verdict==='TAMPERED'?'bad':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'good':'neutral');
+  $('technical-verdict').textContent='Exact result: '+report.verdict;
+  $('detail-signer').textContent='Signer: '+(report.signerDisplayName||report.signer||'Not verified')+' · Fingerprint '+(report.fingerprint||'unavailable')+' · Trust: '+report.signerStatus+' · Source: '+(activeBundle?'bundled snapshot and this tab’s signed trust bundle':Array.from(personTrust.values()).some(k=>k.fingerprint_sha256===report.fingerprint)?'public signer trusted for this tab':'bundled viewer snapshot');
+  $('verification-technical').open=false;
+  $('hidden-areas').replaceChildren(...mergedHiddenAreas(report).slice(0,200).map((r,i)=>el('li',`Hidden ${i+1}: ${r.width} × ${r.height} px at (${r.x}, ${r.y})`)));
+  $('hidden-areas').hidden=!mergedHiddenAreas(report).length;
+  if(mergedHiddenAreas(report).length>200)$('hidden-areas').append(el('li','More hidden areas are listed in the Advanced technical report.'));
   const positive=['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict);
   const meaning=positive?[
     report.verdict==='GENUINE'?'Every pixel matches what the trusted key signed.':'Visible pixels match the signed original; blacked-out parts are hidden.',
@@ -213,7 +134,7 @@ function renderResult(report) {
     'The signer identity is not verified. Anyone can make an edited self-signed file.',
     'Ask a known issuer for a file signed with their verified key if identity matters.'
   ]:[
-    'The precise result and completed checks appear under Technical details.',
+    'The precise result and completed checks appear under Details.',
     report.verdict==='TAMPERED'?'This file failed its integrity checks.':'No positive claim about the image has been made.',
     'Ask for the original .GRD and compare the sender’s fingerprint independently.'
   ];
@@ -222,9 +143,9 @@ function renderResult(report) {
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
   const signerElem = $("verdict-signer"), fp=report.fingerprint||'';
-  signerElem.hidden=!['trusted','unknown','revoked'].includes(report.signerStatus);
+  signerElem.hidden=!signerSummary(report);
   signerElem.textContent=signerSummary(report);
-  $("verdict-icon").textContent=genuine?'✓':report.verdict==='TAMPERED'||report.signerStatus==='revoked'?'×':report.signerStatus==='unknown'?'!':'—';
+  $('verdict-icon').textContent=failure?'!':report.signerStatus==='revoked'?'⊘':report.verdict==='TAMPERED'?'✕':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'✓':'?';
   $("checks").replaceChildren();
   for (const item of report.checks) {
     const row = el(
@@ -274,7 +195,8 @@ function renderResult(report) {
   $("issue-list").replaceChildren(
     ...report.problems.map((text) => el("li", text)),
   );
-  setStatus(words[0] + ". " + words[1]);
+  setStatus('Result: '+words[1]);
+  if(!$('main-view').hidden)window.scrollTo(0,0);
   $("verdict-title").focus({ preventScroll: true });
 }
 function pairs(target, rows) {
@@ -347,6 +269,7 @@ function setMode(localReveal) {
   keyboardPoint = null;
   $("reveal-mode").setAttribute("aria-pressed", String(reveal));
   $("full-mode").setAttribute("aria-pressed", String(!reveal));
+  $("reveal-hint").hidden=!reveal;
   $("reveal-hint").textContent = reveal
     ? "Hold a finger or pointer to reveal a spot. Keyboard: hold Space or Enter, move with arrow keys."
     : "Full picture shown. Choose Hold to reveal for a smaller viewing area.";
@@ -423,17 +346,17 @@ function draw() {
   overlay(ctx, w, h);
   if (currentReport?.redactionMap) {
     const m = currentReport.meta;
-    for (const region of currentReport.redactionMap) {
+    for (const [index,region] of mergedHiddenAreas(currentReport).entries()) {
       const x = (region.x * w) / m.width,
         y = (region.y * h) / m.height,
         rw = (region.width * w) / m.width,
         rh = (region.height * h) / m.height;
-      ctx.strokeStyle = "#b7caff";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#F79009";
+      const outlineScale=w/(canvas.getBoundingClientRect().width||w);ctx.lineWidth=3*outlineScale;ctx.setLineDash([8*outlineScale,5*outlineScale]);
       ctx.strokeRect(x + 1, y + 1, Math.max(0, rw - 2), Math.max(0, rh - 2));
       ctx.fillStyle = "#dbe5ff";
       ctx.font = `bold ${Math.max(7, Math.min(12, rw / 8))}px Arial`;
-      ctx.fillText("REDACTED", x + 4, y + Math.min(rh - 3, 15));
+      ctx.setLineDash([]);ctx.fillText("Hidden "+(index+1), x + 4, y + Math.min(rh - 3, 15));
     }
   }
   ctx.restore();
@@ -594,7 +517,7 @@ async function openFile(file) {
     }
     delete report.container;
     delete report.imageRgba;
-    renderResult(report);
+    renderResult(report);metadata(report);
     if ((report.genuine || report.viewable) && bitmap) {
       metadata(report);
       $("image-panel").hidden = false;
@@ -603,8 +526,7 @@ async function openFile(file) {
       canvas.width = Math.max(1, Math.round(bitmap.width * scale));
       canvas.height = Math.max(1, Math.round(bitmap.height * scale));
       setMode(true);
-      $("redaction-tools").hidden = !currentContainer;
-      $("legacy-redaction-note").hidden = !!currentContainer;
+
       if (currentContainer) {
         $("redaction-status").textContent =
           `${report.tilesVisible} retained / ${report.tilesTotal} total. ${report.redactedTiles.length} already redacted. Choose Mark tiles to hide more.`;
@@ -645,7 +567,7 @@ function download(contents, name, type) {
 $("drop").onclick = () => {
   $("file-input").click();
 };
-$("choose-another").onclick = () => $("file-input").click();
+$("choose-another").onclick = () => {reset();$("file-input").click();};
 $("file-input").onchange = (event) => {
   const file = event.target.files[0];
   event.target.value = "";
@@ -936,8 +858,8 @@ $("try-redaction").onclick = async () => {
     });
     if (operation !== token) return;
     await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
-    $("redaction-options").open=true;
-    $("image-panel").scrollIntoView({
+
+    $("verdict-title").scrollIntoView({
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
         : "smooth",
@@ -1066,6 +988,79 @@ overlayElement.addEventListener("keydown", (event) => {
   event.preventDefault();
 });
 
+// UI-only geometry and editor state. Pixel commitments remain in the core modules.
+function mergedHiddenAreas(report) {
+ const rows=(report?.redactionMap||[]).map(({x,y,width,height})=>({x,y,width,height})).sort((a,b)=>a.y-b.y||a.x-b.x),horizontal=[];
+ for(const r of rows){const last=horizontal.at(-1);if(last&&last.y===r.y&&last.height===r.height&&last.x+last.width===r.x)last.width+=r.width;else horizontal.push(r);}
+ const out=[],ends=new Map();
+ for(const r of horizontal){const key=r.x+':'+r.width,last=ends.get(key);if(last&&last.y+last.height===r.y)last.height+=r.height;else{out.push(r);ends.set(key,r);}}
+ return out;
+}
+let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null;
+function sealGrid(){const minimum=sealSourceDoc?.manifest.subTile|| (sealSourceDoc?64:16);return Math.max(minimum,[8,16,32,64].find(n=>$('grid-'+n).checked)||minimum);}
+function roundSealArea(rect){
+ if(!conversionImage)throw Error('Choose a picture first.');
+ const m=conversionImage,g=sealGrid();
+ if(![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.x<0||rect.y<0||rect.width<=0||rect.height<=0||rect.x>=m.width||rect.y>=m.height)throw Error('Enter an area inside the picture with a positive width and height.');
+ const x=Math.floor(rect.x/g)*g,y=Math.floor(rect.y/g)*g,right=Math.min(m.width,Math.ceil((rect.x+rect.width)/g)*g),bottom=Math.min(m.height,Math.ceil((rect.y+rect.height)/g)*g);
+ return {x,y,width:right-x,height:bottom-y};
+}
+function drawSealEditor(draft=null){
+ if(!sealPreview||!conversionImage)return;const c=$('seal-canvas'),ctx=c.getContext('2d');
+ c.width=sealPreview.width;c.height=sealPreview.height;ctx.drawImage(sealPreview,0,0);
+ const scale=c.width/conversionImage.width;
+ for(const [i,r] of [...sealAreas,...(draft?[draft]:[])].entries()){
+  const x=r.x*scale,y=r.y*scale,w=r.width*scale,h=r.height*scale;
+  ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#F79009';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.strokeRect(x+1,y+1,Math.max(0,w-2),Math.max(0,h-2));ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Area '+(i+1),x+4,y+15);
+ }
+ // Preview stamps are not included in the downloaded pixels.
+ ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText('GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
+}
+function renderSealAreas(){
+ const list=$('seal-area-list');list.replaceChildren();
+ sealAreas.forEach((r,i)=>{const li=el('li',undefined,'area-chip'),label=el('span',`Area ${i+1} · ${r.width} × ${r.height}`),b=el('button','×');b.type='button';b.setAttribute('aria-label','Remove area '+(i+1));b.onclick=()=>{sealAreas.splice(i,1);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();};li.append(label,b);list.append(li);});
+ $('seal-grid-note').textContent=`Areas round up to a ${sealGrid()}-pixel grid.`;
+ $('redaction-status').textContent=sealAreas.length?sealAreas.length+(sealAreas.length===1?' area selected.':' areas selected.'):'';drawSealEditor();
+}
+function addSealArea(rect){
+ if(sealAreas.length>=200)throw Error('Use up to 200 areas. Combine overlapping areas when possible.');
+ sealAreas.push(roundSealArea(rect));conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();
+}
+async function prepareSealPreview(surface=null){
+ const m=conversionImage;if(!m)return;
+ const prepared=document.createElement('canvas');const previewToken=conversionVersion;const scale=Math.min(1,1200/Math.max(m.width,m.height));prepared.width=Math.max(1,Math.round(m.width*scale));prepared.height=Math.max(1,Math.round(m.height*scale));
+ let image;
+ if(!surface){image=await createImageBitmap(new ImageData(new Uint8ClampedArray(m.rgba),m.width,m.height));surface=image;}
+ if(previewToken!==conversionVersion||conversionImage!==m){image?.close();return;}prepared.getContext('2d').drawImage(surface,0,0,prepared.width,prepared.height);image?.close();sealPreview=prepared;
+ $('seal-step-two').hidden=false;$('seal-step-three').hidden=false;$('convert-preview').hidden=false;$('redaction-options').hidden=false;$('redaction-tools').hidden=false;$('legacy-redaction-note').hidden=true;
+ const minimum=sealSourceDoc?.manifest.subTile||(sealSourceDoc?64:16);
+ for(const size of [8,16,32,64]){$('grid-'+size).disabled=size<minimum;$('grid-'+size).checked=size===minimum;}
+ $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();
+}
+async function loadSealGrd(file,bytes,token){
+ const trust=await sessionTrust();const r=await (isGRD2(bytes)?verifyGRD2(bytes,trust.anchors,trust.policy):createVerifier(trust.anchors,trust.policy)(bytes));
+ if(token!==conversionVersion)return;
+ if(!r.viewable){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
+ if(!r.container){$('seal-step-two').hidden=false;$('legacy-redaction-note').hidden=false;conversionStatus('This GRD format cannot be blacked out without its signer.',true);return;}
+ const doc=r.container,decoded=await decodeRgbPng(containerImage(doc),doc.manifest.version===3?GRD3_LIMITS:undefined);
+ if(token!==conversionVersion)return;
+ const rgba=new Uint8Array(decoded.width*decoded.height*4);
+ for(let i=0;i<decoded.width*decoded.height;i++){rgba[i*4]=decoded.rgb[i*3];rgba[i*4+1]=decoded.rgb[i*3+1];rgba[i*4+2]=decoded.rgb[i*3+2];rgba[i*4+3]=255;}
+ sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
+ await prepareSealPreview();if(token!==conversionVersion)return;
+ $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus('Original signer kept. Choose any additional blackouts.');
+}
+$('select-rectangle').onclick=()=>{try{addSealArea({x:Number($('rect-x').value),y:Number($('rect-y').value),width:Number($('rect-width').value),height:Number($('rect-height').value)});}catch(error){$('redaction-status').textContent=error.message;}};
+const sealCanvas=$('seal-canvas');
+function sealPoint(event){const r=sealCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(conversionImage.width,(event.clientX-r.left)*conversionImage.width/r.width)),y:Math.max(0,Math.min(conversionImage.height,(event.clientY-r.top)*conversionImage.height/r.height))};}
+function sealDraft(event){const p=sealPoint(event);return {x:Math.min(p.x,sealPointer.x),y:Math.min(p.y,sealPointer.y),width:Math.max(1,Math.abs(p.x-sealPointer.x)),height:Math.max(1,Math.abs(p.y-sealPointer.y))};}
+sealCanvas.addEventListener('pointerdown',event=>{if(!conversionImage||$('convert-form').getAttribute('aria-busy')==='true')return;event.preventDefault();sealPointer=sealPoint(event);sealCanvas.setPointerCapture(event.pointerId);});
+sealCanvas.addEventListener('pointermove',event=>{if(!sealPointer)return;try{drawSealEditor(roundSealArea(sealDraft(event)));}catch{}});
+sealCanvas.addEventListener('pointerup',event=>{if(!sealPointer)return;try{addSealArea(sealDraft(event));}catch(error){$('redaction-status').textContent=error.message;}finally{sealPointer=null;drawSealEditor();}});
+sealCanvas.addEventListener('pointercancel',()=>{sealPointer=null;drawSealEditor();});
+for(const size of [8,16,32,64])$('grid-'+size).addEventListener('change',()=>{if(!conversionImage)return;sealAreas=sealAreas.map(roundSealArea);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();});
+$('check-sealed').onclick=event=>{event.preventDefault();if(lastSealedFile)void openFile(lastSealedFile);};
+
 let conversionImage = null,
   conversionVersion = 0,
   conversionPreviewUrl = null;
@@ -1077,7 +1072,8 @@ function conversionStatus(message, error = false) {
 $("convert-input").onchange = async () => {
   const token = ++conversionVersion,
     file = $("convert-input").files[0];
-  conversionImage = null;
+  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealPreview=null;lastSealedFile=null;sealPointer=null;
+  $('check-sealed').hidden=true;$('save-original').checked=false;$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
   $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
   $("convert-preview").hidden = true;
   $("convert-image").removeAttribute("src");
@@ -1094,6 +1090,7 @@ $("convert-input").onchange = async () => {
       throw new Error("Choose an image up to 256 MiB.");
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (token !== conversionVersion) return;
+    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token);return;}
     const allowResize = $("convert-resize").checked;
     const info = inspectConversionImage(bytes, { allowResize, large: true });
     decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
@@ -1142,6 +1139,7 @@ $("convert-input").onchange = async () => {
       name: file.name,
       sourceBytes: file.size,
     };
+    await prepareSealPreview(surface);if(token!==conversionVersion)return;
     conversionPreviewUrl = URL.createObjectURL(preview);
     $("convert-image").src = conversionPreviewUrl;
     $("convert-details").textContent =
@@ -1171,67 +1169,25 @@ syncSealConsent();
 $("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
-  if ($("convert-submit").disabled || !$("convert-privacy").checked) return;
-  if (!conversionImage) {
-    conversionStatus(
-      "Choose a supported image and wait for its preview before converting.",
-      true,
-    );
-    $("convert-input").focus();
-    return;
-  }
-  const source = conversionImage,
-    token = conversionVersion,
-    viewerToken = operation;
-  $("convert-submit").disabled = true;
-  $("convert-input").disabled = true;
-  $("convert-resize").disabled = true;$("convert-privacy").disabled=true;
-  $("convert-form").setAttribute("aria-busy", "true");
-  conversionStatus("Converting and signing on your device…");
-  try {
-    const signingVersion=offlineSignerVersion, signer=unlockedSigner;
-    const key = signer ? {privateKey:signer.privateKey} : await crypto.subtle.generateKey({name:'Ed25519'},false,['sign','verify']);
-    const publicKey = signer ? signer.publicKey : new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
-    const doc = await sealRgba({
-      rgba: source.rgba,
-      width: source.width,
-      height: source.height,
-      publicKey,
-      purpose: signer ? "asset" : "personal",
-      subTile: 16,
-      label: signer ? signer.contact.name : "",
-      sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
-    });
-    const bytes = encodeGRD2(doc),
-      result = await verifyGRD2(bytes, signer ? [{public_key_hex:signer.contact.publicKey,name:signer.contact.name}] : TRUSTED, (await sessionTrust()).policy);
-    if ((signer ? !result.genuine : result.verdict !== "UNVERIFIED: SELF-SIGNED") || !result.viewable)
-      throw new Error(
-        "The generated file did not pass its integrity check. No download was created.",
-      );
-    if (token !== conversionVersion || viewerToken !== operation || signingVersion!==offlineSignerVersion)
-      throw new Error(
-        "Your file or signer changed. Check the selection and try again.",
-      );
-    const name = "image.GRD";
-    const W = source.width,
-      H = source.height,
-      ratio = (bytes.length / source.sourceBytes).toFixed(1);
-    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. ${signer ? 'Signed with '+signer.contact.name+'’s key. Recipients must trust the public key independently.' : 'Unverified: self-signed.'}`;
-    if (bytes.length > 20 * 1024 * 1024)
-      statusMsg += " Large file: some phones may be slow to open it.";
-    conversionStatus(statusMsg);
-    download(bytes, name, "application/octet-stream");
-    await openFile(new File([bytes], name));
-    $("convert-status").tabIndex = -1;
-    $("convert-status").focus();
-  } catch (error) {
-    conversionStatus("Conversion failed: " + error.message, true);
-  } finally {
-    $("convert-submit").disabled = !$("convert-privacy").checked;
-    $("convert-input").disabled = false;
-    $("convert-resize").disabled = false;$("convert-privacy").disabled=false;
-    $("convert-form").removeAttribute("aria-busy");
-  }
+  if ($('convert-submit').disabled || !$('convert-privacy').checked || !conversionImage) return;
+  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
+  $('convert-submit').disabled=true;$('convert-input').disabled=true;$('convert-resize').disabled=true;$('convert-privacy').disabled=true;$('select-rectangle').disabled=true;$('save-original').disabled=true;
+  $('convert-form').setAttribute('aria-busy','true');conversionStatus('Sealing and checking on your device…');
+  try{
+    const key=existing?null:signer?{privateKey:signer.privateKey}:await crypto.subtle.generateKey('Ed25519',false,['sign','verify']);
+    const publicKey=existing?null:signer?signer.publicKey:new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
+    const doc=existing||await sealRgba({rgba:source.rgba,width:source.width,height:source.height,publicKey,purpose:signer?'asset':'personal',subTile:16,label:signer?signer.contact.name:'',sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
+    const original=encodeGRD2(doc),bytes=areas.length?await redactRects(doc,areas,{granularity}):original;
+    const trust=await sessionTrust(),anchors=existing?trust.anchors:signer?[{public_key_hex:signer.contact.publicKey,name:signer.contact.name}]:TRUSTED;
+    const result=await verifyGRD2(bytes,anchors,trust.policy);
+    if(!result.regionVerified||!result.signature_valid||!['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict))throw Error('The file did not pass its own check. Nothing was downloaded.');
+    if(token!==conversionVersion||viewerToken!==operation||signingVersion!==offlineSignerVersion)throw Error('Your file or signer changed. Check the selection and try again.');
+    download(bytes,'image.GRD','application/octet-stream');
+    if(saveOriginal&&areas.length)download(original,'private-original.GRD','application/octet-stream');
+    lastSealedFile=new File([bytes],'image.GRD');$('check-sealed').hidden=false;
+    conversionStatus('Saved image.GRD · '+bytesLabel(bytes.length)+'.');$('check-sealed').focus();
+  }catch(error){conversionStatus('Sealing failed: '+error.message,true);$('convert-status').tabIndex=-1;$('convert-status').focus();}
+  finally{$('convert-submit').disabled=!$('convert-privacy').checked;$('convert-input').disabled=false;$('convert-resize').disabled=false;$('convert-privacy').disabled=false;$('select-rectangle').disabled=false;$('save-original').disabled=false;$('convert-form').removeAttribute('aria-busy');}
 };
 
 $("copy-form").onsubmit = async event => {
@@ -1299,15 +1255,26 @@ $("show-unknown").onclick=async()=>{
  finally{$("show-unknown").disabled=false;}
 };
 
-function workspaceMode(mode){
- const check=mode==='verify';$("inspection-panel").hidden=!check;$("convert").hidden=check;
- for(const [id,active] of [['tab-verify',check],['tab-seal',!check]]){$(id).setAttribute('aria-selected',String(active));$(id).tabIndex=active?0:-1;}
+let activeMainMode='verify';
+function showGuardView(hash=location.hash,focus=true){
+ const target=hash.replace(/^#/,'');
+ const expert=['advanced','advanced-heading','advanced-tools','advanced-person','advanced-report','signer','viewing-options','offline-copy'].includes(target);
+ const about=['about','about-heading','about-privacy','privacy-details'].includes(target);
+ $('main-view').hidden=expert||about;$('advanced').hidden=!expert;$('about').hidden=!about;
+ if(!expert&&!about){activeMainMode=target==='seal'||target==='convert'?'seal':'verify';const check=activeMainMode==='verify';$('inspection-panel').hidden=!check;$('convert').hidden=check;
+  for(const [id,selected] of [['tab-verify',check],['tab-seal',!check]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
+ }
+ for(const back of document.querySelectorAll('.back-link'))back.href=activeMainMode==='seal'?'#seal':'#check';
+ document.querySelector('.skip').href=expert?'#advanced-heading':about?'#about-heading':activeMainMode==='verify'?'#workspace':'#convert';
+ if(target==='signer')$('signer-setup').open=true;
+ if(target==='advanced-person')document.querySelector('.person-trust').open=true;
+ if(about)$('privacy-disclosure').open=true;
+ if(focus){const heading=expert?$('advanced-heading'):about?$('about-heading'):$('main-heading');heading.focus();if(expert&&target!=='advanced'&&target!=='advanced-heading'||about&&['privacy-details','about-privacy'].includes(target)){const section=$(target==='about-privacy'?'privacy-details':target);if(section){const title=section.querySelector('h2')||section;title.tabIndex=-1;title.focus();section.scrollIntoView({block:'start',behavior:'instant'});}}}
 }
+function workspaceMode(mode){activeMainMode=mode;const hash=mode==='seal'?'#seal':'#check';if(location.hash!==hash)history.replaceState(null,'',hash);showGuardView(hash,false);}
 for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
  $(id).onclick=()=>workspaceMode(mode);
  $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
 }
-
-for(const anchor of document.querySelectorAll('a[href="#privacy-details"],a[href="#advanced-tools"]')){
- anchor.addEventListener('click',()=>{const target=anchor.getAttribute('href')==='#privacy-details'?'privacy-disclosure':'advanced-tools';$(target).open=true;});
-}
+window.addEventListener('hashchange',()=>showGuardView());
+showGuardView(location.hash,false);

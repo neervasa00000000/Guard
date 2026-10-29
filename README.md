@@ -156,7 +156,7 @@ Signed trust bundles can be loaded manually for the current tab through **Load t
 
 ### Signer identity and recipient use (v4 local work)
 
-The viewer opens on **Check a file**. Trust-bundle import and recompressed/resized-copy checking are grouped under **Advanced tools**, collapsed below the image preview. Redaction controls and technical details also expand on demand. **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
+The viewer opens on **Check a file**. A chosen file replaces the drop zone with one verdict card. **Details** keeps the exact result and checks; **Advanced** holds trust, signer keys, copy comparison, reports and viewing options. **About** holds privacy, limits and the example. **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
 
 A known signer is shown as **Verified: {name}** only after the file checks succeed. A valid unknown signer stays amber and withheld by default. **Show image anyway (signer not verified)** enables a stamped hold-to-reveal preview and plain export without changing the verdict or trusting the key. Revoked keys stay blocked. These labels identify a key; they do not prove a photograph's scene, ownership or capture time.
 
@@ -166,4 +166,6 @@ Independent-review follow-up: the ownership-unconfirmed legacy record is labelle
 
 The remaining banner titles use plain wording, while the exact verifier verdict remains visible in Technical details and JSON. A trusted redacted result still shows its configured signer in the signer line.
 
-Offline signing is available under **Seal a picture → Sign with your name (optional)**. Create and save a password-encrypted key, then unlock it on later visits. Share only its public signer file. Recipients import it under **Advanced tools → Trust a person** after independently confirming the fingerprint; that trust lasts for this tab. See [SIGNERS.md](SIGNERS.md) for the format, privacy and revocation limits. No account or online signing service is involved.
+Offline signing is available under **Advanced → Your signer key**. Create and save a password-encrypted key, then unlock it on later visits. Share only its public signer file. Recipients import it under **Advanced → Trust a person** after independently confirming the fingerprint; that trust lasts for this tab. See [SIGNERS.md](SIGNERS.md) for the format, privacy and revocation limits. No account or online signing service is involved.
+
+Sealing now has three steps: choose a picture (or a viewable GRD), black out optional areas by dragging or numbers, then consent and download. The default download is the checked, blacked-out file. Saving a full original requires the separate unchecked opt-in. Received GRDs retain their original signer without a private key; unsupported or withheld files stop and show their verification result. See [UX_STATUS.md](UX_STATUS.md) for measured targets, tests and screenshots.
