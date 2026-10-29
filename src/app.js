@@ -17,6 +17,8 @@ if (self !== top) {
 const $ = (id) => document.getElementById(id);
 const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
 const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
+let unknownApproved=false,activeBundle=null,bundleExpiryTimer=null,currentInputFile=null,trustImportVersion=0;
+const bundleStates=new Map();
 let currentContainer = null,
   redactionEditing = false,
   selectedTiles = new Set(),
@@ -47,6 +49,7 @@ function bytesLabel(n) {
       : (n / 1024 / 1024).toFixed(1) + " MiB";
 }
 function disposeImage() {
+  unknownApproved=false;
   currentContainer = null;
   redactionEditing = false;
   selectedTiles.clear();
@@ -94,8 +97,9 @@ function showFile(file) {
   $("file-size").textContent = bytesLabel(file.size);
 }
 function renderResult(report) {
-  currentReport = report;
-  $("download-plain").hidden = !(report.version >= 2 && report.viewable && report.regionVerified);
+  currentReport = signerReport(report);
+  $("download-plain").hidden = !(report.version >= 2 && (report.viewable || unknownApproved) && report.regionVerified);
+  $("show-unknown").hidden=!(report.verdict==="UNTRUSTED SIGNER"&&report.canRevealUnknown&&!unknownApproved);
   $("plain-note").hidden = $("download-plain").hidden;
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
@@ -186,36 +190,42 @@ function renderResult(report) {
         ? "demo"
         : genuine
           ? "good"
-          : report.verdict === "TAMPERED"
+          : (report.verdict === "TAMPERED" || report.signerStatus === "revoked")
             ? "bad"
             : "neutral");
+  if(report.signerStatus==='trusted'&&['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict))words[1]='Verified: '+(report.signerDisplayName||'trusted key');
+  if(report.signerStatus==='unknown'){words[1]='Valid signature, unknown signer';words[2]='The signature matches this key. Its owner is not known to this viewer. The image is withheld unless you choose to display it.';}
+  if(report.signerStatus==='revoked')words[1]='Signer key revoked';
+  if(report.verdict==='UNTRUSTED SIGNER'&&report.signerStatus!=='unknown'){words[1]='Verification did not establish a valid file';words[2]='One or more integrity checks failed. This file cannot be displayed as a valid unknown-signer image.';}
+  $("technical-verdict").textContent='Exact verdict: '+report.verdict;
+  const positive=['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict);
+  const meaning=positive?[
+    report.verdict==='GENUINE'?'Every pixel matches what the trusted key signed.':'Visible pixels match the signed original; blacked-out parts are hidden.',
+    'This does not prove who took the photo, ownership, capture time or whether the scene was staged.',
+    'Compare the signer fingerprint independently; share the .GRD to keep the proof.'
+  ]:report.signerStatus==='unknown'?[
+    'The signature and image proof match the key embedded in this file.',
+    'This viewer does not know who owns that key. Anyone can edit and re-sign a picture.',
+    'Compare the full fingerprint with one published independently by the sender before relying on it.'
+  ]:report.signerStatus==='self'||report.signerStatus==='demo'?[
+    'The file is consistent with its embedded signing key.',
+    'The signer identity is not verified. Anyone can make an edited self-signed file.',
+    'Ask a known issuer for a file signed with their verified key if identity matters.'
+  ]:[
+    'The precise result and completed checks appear under Technical details.',
+    report.verdict==='TAMPERED'?'This file failed its integrity checks.':'No positive claim about the image has been made.',
+    'Ask for the original .GRD and compare the sender’s fingerprint independently.'
+  ];
+  $("what-means-list").replaceChildren(...meaning.map(text=>el('li',text)));
   $("verdict-kicker").textContent = words[0];
   $("verdict-title").textContent = words[1];
   $("verdict-description").textContent = words[2];
-  const signerElem = $("verdict-signer");
-  if (signerElem) {
-    if (report.verdict === "GENUINE" || report.verdict === "VERIFIED WITH REDACTIONS") {
-      const name = report.signerName || report.signer;
-      const fp = report.fingerprint || report.keyId || "";
-      if (name && fp) {
-        signerElem.textContent = `Signed by ${name} and Fingerprint ${fp.slice(0, 16)}…`;
-        signerElem.hidden = false;
-      } else {
-        signerElem.hidden = true;
-      }
-    } else if (report.verdict === "UNTRUSTED SIGNER") {
-      const fp = report.fingerprint || report.keyId || "";
-      signerElem.textContent = `${fp ? `Fingerprint ${fp}. ` : ""}Not in this viewer's trusted list. Compare this fingerprint with one the issuer gave you through a separate channel.`;
-      signerElem.hidden = false;
-    } else {
-      signerElem.hidden = true;
-    }
-  }
-  $("verdict-icon").textContent = genuine
-    ? "✓"
-    : report.verdict === "TAMPERED"
-      ? "×"
-      : "—";
+  const signerElem = $("verdict-signer"), fp=report.fingerprint||'';
+  signerElem.hidden=!['trusted','unknown','revoked'].includes(report.signerStatus);
+  if(report.signerStatus==='trusted')signerElem.textContent=`Fingerprint ${fp.slice(0,16)}… · matches the key pinned in this viewer`;
+  else if(report.signerStatus==='unknown')signerElem.textContent=`Fingerprint ${fp}. This viewer does not know who owns this key. Compare it with the fingerprint the sender published (for example on their website).`;
+  else if(report.signerStatus==='revoked')signerElem.textContent=`${report.revocation?.reason||'Key revoked'} (revoked ${report.revocation?.revokedAt||'date unavailable'}). Do not rely on this file.`;
+  $("verdict-icon").textContent=genuine?'✓':report.verdict==='TAMPERED'||report.signerStatus==='revoked'?'×':report.signerStatus==='unknown'?'!':'—';
   $("checks").replaceChildren();
   for (const item of report.checks) {
     const row = el(
@@ -361,7 +371,7 @@ function overlay(ctx, w, h) {
       ? "DEMO / NOT EVIDENCE · "
       : currentReport?.personal
         ? "UNVERIFIED: SELF-SIGNED · "
-        : "GUARD · ") +
+        : currentReport?.signerStatus==="unknown" ? "UNKNOWN SIGNER · " : "GUARD · ") +
     SESSION +
     " · " +
     new Date().toISOString().slice(11, 19) +
@@ -456,7 +466,7 @@ function point(event) {
 }
 
 async function decode(report) {
-  if (report.version === 3) {
+  if (report.version === 3 || (report.version >= 2 && report.container && !report.imageRgba)) {
     const blob = new Blob([containerImage(report.container)], {type:"image/png"});
     return await createImageBitmap(blob, {imageOrientation:"none"});
   }
@@ -513,9 +523,11 @@ async function decode(report) {
   return image;
 }
 async function openFile(file) {
+  workspaceMode("verify");
   const token = ++operation;
   disposeImage();
   currentReport = null;
+  currentInputFile=file;
   showFile(file);
   $("empty").hidden = true;
   $("result").hidden = true;
@@ -535,7 +547,8 @@ async function openFile(file) {
       };
     else {
       const bytes = await file.arrayBuffer();
-      report = await (isGRD2(bytes) ? verifyGRD2(bytes) : verifyGRD(bytes));
+      const trust=await sessionTrust();
+      report = await (isGRD2(bytes) ? verifyGRD2(bytes,trust.anchors,trust.policy) : createVerifier(trust.anchors,trust.policy)(bytes));
     }
     if (token !== operation) return;
     if (report.genuine || report.viewable) {
@@ -587,6 +600,7 @@ async function openFile(file) {
       metadata(report);
       $("image-panel").hidden = false;
       const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+      canvas.setAttribute("aria-label",`${report.verdict}. ${report.meta.width} by ${report.meta.height} pixels. Hold Space or Enter to reveal; arrow keys move the area.`);
       canvas.width = Math.max(1, Math.round(bitmap.width * scale));
       canvas.height = Math.max(1, Math.round(bitmap.height * scale));
       setMode(true);
@@ -603,7 +617,7 @@ async function openFile(file) {
         shield("The check finished while this window was away.");
     }
     // Release the raw image bytes once the display bitmap exists; reports never include pixels.
-    delete report.payload;
+    if(!report.canRevealUnknown)delete report.payload;
   } catch (error) {
     if (token !== operation) return;
     renderResult({
@@ -652,7 +666,7 @@ $("drop").ondrop = (event) => {
   if (files.length) void openFile(files[0]);
 };
 window.addEventListener("dragover", (event) => event.preventDefault());
-window.addEventListener("drop", (event) => event.preventDefault());
+window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void openFile(file);});
 $("download-report").onclick = () => {
   if (!currentReport) return;
   const report = {
@@ -1064,6 +1078,7 @@ $("convert-input").onchange = async () => {
   const token = ++conversionVersion,
     file = $("convert-input").files[0];
   conversionImage = null;
+  $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
   $("convert-preview").hidden = true;
   $("convert-image").removeAttribute("src");
   if (conversionPreviewUrl) URL.revokeObjectURL(conversionPreviewUrl);
@@ -1132,6 +1147,7 @@ $("convert-input").onchange = async () => {
     $("convert-details").textContent =
       `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
     $("convert-preview").hidden = false;
+    $("document-warning").hidden=!looksLikeDocument(originalWidth,originalHeight);syncSealConsent();
     conversionStatus(
       (resized
         ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
@@ -1149,10 +1165,13 @@ $("convert-input").onchange = async () => {
     decoded?.close?.();
   }
 };
+function syncSealConsent(){$("convert-submit").disabled=!conversionImage||!$("convert-privacy").checked;}
+$("convert-privacy").onchange=syncSealConsent;
+syncSealConsent();
 $("convert-resize").onchange = () => $("convert-input").onchange();
 $("convert-form").onsubmit = async (event) => {
   event.preventDefault();
-  if ($("convert-submit").disabled) return;
+  if ($("convert-submit").disabled || !$("convert-privacy").checked) return;
   if (!conversionImage) {
     conversionStatus(
       "Choose a supported image and wait for its preview before converting.",
@@ -1166,7 +1185,7 @@ $("convert-form").onsubmit = async (event) => {
     viewerToken = operation;
   $("convert-submit").disabled = true;
   $("convert-input").disabled = true;
-  $("convert-resize").disabled = true;
+  $("convert-resize").disabled = true;$("convert-privacy").disabled=true;
   $("convert-form").setAttribute("aria-busy", "true");
   conversionStatus("Converting and signing on your device…");
   try {
@@ -1212,15 +1231,15 @@ $("convert-form").onsubmit = async (event) => {
   } catch (error) {
     conversionStatus("Conversion failed: " + error.message, true);
   } finally {
-    $("convert-submit").disabled = false;
+    $("convert-submit").disabled = !$("convert-privacy").checked;
     $("convert-input").disabled = false;
-    $("convert-resize").disabled = false;
+    $("convert-resize").disabled = false;$("convert-privacy").disabled=false;
     $("convert-form").removeAttribute("aria-busy");
   }
 };
 
 $("copy-form").onsubmit = async event => {
-  event.preventDefault();
+  event.preventDefault();const copyTrustVersion=trustImportVersion;
   if ($("copy-submit").disabled) return;
   const proofFile = $("copy-proof").files[0], imageFile = $("copy-image").files[0];
   if (!proofFile || !imageFile) { $("copy-status").textContent = "Choose both the visual proof and image copy."; return; }
@@ -1229,7 +1248,8 @@ $("copy-form").onsubmit = async event => {
   $("copy-status").textContent = "Checking signature, disclosures and visual block averages locally…";
   try {
     if (proofFile.size > 16*1024*1024 || imageFile.size > GRD3_LIMITS.bytes) throw new Error("Proof must be at most 16 MiB and the image at most 256 MiB.");
-    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()));
+    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()), ...(await sessionTrust()).args);
+    if(copyTrustVersion!==trustImportVersion || activeBundle && Date.parse(activeBundle.expires)<=Date.now()){ $("copy-status").textContent="Trust changed or expired during this check. Check the copy again.";return;}
     const label = r.visualVerdict ?? r.verdict;
     $("copy-status").classList.toggle("borderline", label === "BORDERLINE (decoder-dependent)");
     $("copy-status").textContent = label + ". " + (r.trustVerdict && !r.trusted ? r.trustVerdict + ": signer identity is not verified. " : "") +
@@ -1238,3 +1258,53 @@ $("copy-form").onsubmit = async event => {
   } catch (error) { $("copy-status").textContent = "Copy check could not finish: " + error.message; }
   finally { $("copy-submit").disabled = false; $("copy-proof").disabled = false; $("copy-image").disabled = false; $("copy-form").removeAttribute("aria-busy"); $("copy-status").focus(); }
 };
+
+async function sessionTrust(){
+ if(!activeBundle)return {anchors:TRUSTED,policy:TRUST_POLICY,args:[TRUSTED,TRUST_POLICY]};
+ const r=await verifyTrustBundle(activeBundle.bytes,activeBundle.root,{previous:bundleStates.get(activeBundle.root)??null});
+ const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...TRUSTED.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
+ const merged={version:Math.max(TRUST_POLICY.version,r.policy.version),asOf:r.policy.asOf,revoked};
+ return {anchors,policy:merged,args:[anchors,merged]};
+}
+function scheduleBundleExpiry(){
+ clearTimeout(bundleExpiryTimer);if(!activeBundle)return;
+ const remaining=Date.parse(activeBundle.expires)-Date.now();
+ if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;return;}
+ bundleExpiryTimer=setTimeout(scheduleBundleExpiry,Math.min(remaining,2147483647));
+}
+$("trust-form").onsubmit=async event=>{
+ event.preventDefault();const bundleFile=$("trust-bundle").files[0],rootFile=$("trust-root").files[0];if(!bundleFile||!rootFile)return;
+ const token=++trustImportVersion;$("trust-submit").disabled=true;$("trust-bundle").disabled=true;$("trust-root").disabled=true;
+ try{
+  if(bundleFile.size>2*1024*1024||rootFile.size>4096)throw Error('Bundle or root file exceeds its size limit');
+  const root=publicKeyHexFromPem(await rootFile.text()),bytes=new Uint8Array(await bundleFile.arrayBuffer()),r=await verifyTrustBundle(bytes,root,{previous:bundleStates.get(root)??null});
+  if(token!==trustImportVersion)return;if(Date.parse(r.expires)<=Date.now())throw Error("Bundle expired during import");
+  activeBundle={root,bytes,expires:r.expires};bundleStates.set(root,r.state);reset();scheduleBundleExpiry();if(!activeBundle)return;
+  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;
+ }catch(error){$("trust-status").textContent='Trust bundle rejected: '+error.message;}
+ finally{$("trust-submit").disabled=false;$("trust-bundle").disabled=false;$("trust-root").disabled=false;}
+};
+$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;};
+$("show-unknown").onclick=async()=>{
+ const report=currentReport,container=currentContainer,token=operation;if(!report?.canRevealUnknown||report.verdict!=='UNTRUSTED SIGNER')return;
+ $("show-unknown").disabled=true;
+ try{
+  let displayReport={...report,container};
+  if(report.version===1){const trust=await sessionTrust();displayReport=await createVerifier(trust.anchors,trust.policy,{allowUnknownDisplay:true})(await file.arrayBuffer());if(!displayReport.canRevealUnknown)throw Error('The file no longer qualifies for unknown-signer display');}
+  const image=await decode(displayReport);if(token!==operation||report!==currentReport){image.close?.();return;}
+  bitmap=image;unknownApproved=true;renderResult(report);metadata(report);$("image-panel").hidden=false;
+  const scale=Math.min(1,1600/Math.max(image.width,image.height));canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
+  canvas.setAttribute('aria-label',`Unknown signer; hold to reveal. ${report.meta.width} by ${report.meta.height} pixels.`);setMode(true);queueDraw();clock=setInterval(queueDraw,1000);delete report.payload;
+  setStatus('Image shown by your request. Signer identity is still unknown.');
+ }catch(error){if(token===operation)setStatus('Image could not be displayed: '+error.message);}
+ finally{$("show-unknown").disabled=false;}
+};
+
+function workspaceMode(mode){
+ const check=mode==='verify';$("inspection-panel").hidden=!check;$("convert").hidden=check;
+ for(const [id,active] of [['tab-verify',check],['tab-seal',!check]]){$(id).setAttribute('aria-selected',String(active));$(id).tabIndex=active?0:-1;}
+}
+for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
+ $(id).onclick=()=>workspaceMode(mode);
+ $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
+}

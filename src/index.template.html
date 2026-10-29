@@ -22,7 +22,7 @@
     <a class="skip" href="#workspace">Skip to verification workspace</a>
     <header class="header">
       <div class="header-inner">
-        <a class="brand" href="#" aria-label="Guard home"
+        <a class="brand" href="#"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
         ><span class="header-label">GRD1 + GRD2 + GRD3 / OFFLINE INSPECTOR</span
         ><a class="local-pill" href="#privacy"
@@ -47,62 +47,11 @@
           <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
       </section>
-      <section
-        class="convert-panel"
-        id="convert"
-        aria-labelledby="convert-heading"
-      >
-        <div class="convert-intro">
-          <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
-          <h2 id="convert-heading">MAKE A .GRD</h2>
-          <p>Choose a photo. Download a signed, redactable copy.</p>
-          <p class="file-help" id="convert-help">
-            PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
-            photos are fitted to GRD3’s 36-megapixel output limit. Animated images
-            use the first frame. Other files, including HEIC and PDF, need
-            exporting to PNG or JPG first.
-          </p>
-        </div>
-        <form id="convert-form" class="convert-form">
-          <label for="convert-input">Choose an image</label>
-          <input
-            id="convert-input"
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
-            aria-describedby="convert-help convert-status"
-          />
-          <label class="convert-resize" for="convert-resize">
-            <input id="convert-resize" type="checkbox" checked />
-            <span
-              >Fit large photos
-              <small
-                >Preview shows the output size. Your original stays
-                unchanged.</small
-              ></span
-            >
-          </label>
-          <div class="convert-preview" id="convert-preview" hidden>
-            <img id="convert-image" alt="Image selected for conversion" />
-            <span id="convert-details"></span>
-          </div>
-          <p class="file-help">
-            Anyone can make a self-signed file, including from an edited image.
-            Conversion does not verify authenticity. Your files stay on your
-            device.
-          </p>
-          <button class="primary" id="convert-submit" type="submit">
-            Convert & download .GRD <span aria-hidden="true">↓</span>
-          </button>
-          <p
-            id="convert-status"
-            class="convert-status"
-            role="status"
-            aria-live="polite"
-          >
-            Choose an image to begin. Your original stays unchanged.
-          </p>
-        </form>
-      </section>
+      <div class="workspace-tabs" role="tablist" aria-label="Guard task">
+        <button id="tab-verify" role="tab" aria-selected="true" aria-controls="inspection-panel" tabindex="0">Check a file</button>
+        <button id="tab-seal" role="tab" aria-selected="false" aria-controls="convert" tabindex="-1">Seal a picture</button>
+      </div>
+      <div id="inspection-panel" role="tabpanel" aria-labelledby="tab-verify">
       <div class="workspace-heading">
         <h2>FILE INSPECTION</h2>
         <span class="format-note">.GRD / LOCAL FILES</span>
@@ -124,9 +73,9 @@
           >
             <span class="file-symbol" aria-hidden="true"
               ><span>↑</span><i>.GRD</i></span
-            ><strong>DROP A FILE</strong
+            ><strong>Choose file</strong
             ><span>Browse files <span aria-hidden="true">↗</span></span
-            ><span class="drop-local">Drag & drop / .GRD</span></button
+            ><span class="drop-local">Drop a Guard file here (.GRD), or choose one</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
             GRD1: up to 64 MiB. GRD2: 32 MiB / 4 MP. GRD3: 256 MiB / 36 MP. Files stay on
@@ -197,7 +146,7 @@
             <button id="cancel" class="secondary">Cancel check</button>
           </div>
           <section id="result" hidden aria-labelledby="verdict-title">
-            <div id="verdict-banner" class="verdict-banner">
+            <div id="verdict-banner" class="verdict-banner" aria-live="polite">
               <span
                 id="verdict-icon"
                 class="verdict-icon"
@@ -210,24 +159,40 @@
                 <p id="verdict-signer" class="verdict-signer" hidden></p>
               </div>
             </div>
+            <details id="what-means" class="technical"><summary>What this means</summary><ul id="what-means-list"></ul></details>
+            <details id="verification-technical" class="technical"><summary>Technical details</summary><p id="technical-verdict"></p><dl id="metadata"></dl>
             <div id="checks" class="checks"></div>
             <div id="issues" class="issues" hidden>
               <h4>What needs attention</h4>
               <ul id="issue-list"></ul>
             </div>
+            </details>
+            <button id="show-unknown" class="secondary" hidden>Show image anyway (signer not verified)</button>
             <div id="result-actions" class="result-actions">
               <button id="download-report" class="secondary">
-                Save verification report
+                Download report
                 <span aria-hidden="true">↓</span></button
-              ><button id="download-plain" class="secondary" hidden>Download plain image</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
+              ><button id="download-plain" class="secondary" hidden>Download plain picture</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
                 Choose another file <span aria-hidden="true">↗</span>
               </button>
             </div>
+            <p class="file-help">Share the .GRD if the other person needs to check it. A plain picture carries no proof.</p>
             <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
             <p id="plain-note" hidden>Sealing never restricts use: 'Download plain image' saves an ordinary PNG with no Guard data and no overlay. Redacted areas stay black. The plain copy can no longer be verified as genuine; keep the .GRD if you need proof.</p>
           </section>
         </div>
       </section>
+      <details class="trust-import">
+        <summary>Load trust bundle…</summary>
+        <p id="trust-help">Only import a root whose full fingerprint you verified separately. Its signed list can identify signers for this tab only. No files are uploaded or stored; reloading clears imported trust. Rollback checks apply only within this session.</p>
+        <form id="trust-form" aria-describedby="trust-help">
+          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
+          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
+          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
+          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
+          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
+        </form>
+      </details>
       <section class="convert-section" aria-labelledby="copy-heading" style="padding: 24px; border: 1px solid currentColor; margin: 24px 0;">
         <h2 id="copy-heading">Check a recompressed or resized copy</h2>
         <p id="copy-help">Choose a visual proof downloaded from Guard and the PNG, JPEG or WebP copy. This checks block averages; it never verifies exact pixels as genuine. Fine edits, mean-preserving changes and some blurs can pass.</p>
@@ -362,7 +327,7 @@
           <aside class="image-info">
             <p class="eyebrow">THE SIGNED DETAILS</p>
             <h3>FILE DETAILS</h3>
-            <dl id="metadata"></dl>
+
             <details class="technical">
               <summary>File evidence <span aria-hidden="true">+</span></summary>
               <dl id="technical-data"></dl>
@@ -374,6 +339,67 @@
             </details>
           </aside>
         </div>
+      </section>
+      </div>
+      <section
+        class="convert-panel"
+        id="convert"
+        hidden
+        role="tabpanel"
+        aria-labelledby="tab-seal"
+      >
+        <div class="convert-intro">
+          <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
+          <h2 id="convert-heading">SEAL A PICTURE</h2>
+          <p>Choose a photo. Download a signed, redactable copy.</p>
+          <p class="file-help" id="convert-help">
+            PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
+            photos are fitted to GRD3’s 36-megapixel output limit. Animated images
+            use the first frame. Other files, including HEIC and PDF, need
+            exporting to PNG or JPG first.
+          </p>
+        </div>
+        <form id="convert-form" class="convert-form">
+          <label for="convert-input">Choose an image</label>
+          <input
+            id="convert-input"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp"
+            aria-describedby="convert-help convert-status"
+          />
+          <label class="convert-resize" for="convert-resize">
+            <input id="convert-resize" type="checkbox" checked />
+            <span
+              >Fit large photos
+              <small
+                >Preview shows the output size. Your original stays
+                unchanged.</small
+              ></span
+            >
+          </label>
+          <div class="convert-preview" id="convert-preview" hidden>
+            <img id="convert-image" alt="Image selected for conversion" />
+            <span id="convert-details"></span>
+          </div>
+          <p class="file-help">
+            Anyone can make a self-signed file, including from an edited image.
+            Conversion does not verify authenticity. Your files stay on your
+            device.
+          </p>
+          <p id="document-warning" class="privacy-warning" role="alert" hidden>This looks like an ID card or document. Sealed files keep every visible detail. Use blackout redaction first.</p>
+          <label class="privacy-consent"><input id="convert-privacy" type="checkbox" required> <span>I've hidden anything private (ID numbers, addresses, faces of children, card numbers, barcodes/QR codes) or I'm sure I want them sealed.</span></label>
+          <button class="primary" id="convert-submit" type="submit" disabled>
+            Convert & download .GRD <span aria-hidden="true">↓</span>
+          </button>
+          <p
+            id="convert-status"
+            class="convert-status"
+            role="status"
+            aria-live="polite"
+          >
+            Choose an image to begin. Your original stays unchanged.
+          </p>
+        </form>
       </section>
       <details class="explanation" id="about-verification">
         <summary>

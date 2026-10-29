@@ -20,13 +20,35 @@ class ResourceLimitError(IntegrityError): pass
 PROOF_ERRORS=(IntegrityError, UnicodeError, json.JSONDecodeError, zlib.error, InvalidSignature)
 
 EXIT = {
- 'GENUINE':0, 'TAMPERED':2, 'VISUALLY CONSISTENT':5, 'BORDERLINE (decoder-dependent)':5, 'VISUALLY INCONSISTENT':2, 'NOT A GRD':3,
+ 'GENUINE':0, 'TAMPERED':2, 'VISUALLY CONSISTENT':5, 'BORDERLINE (decoder-dependent)':7, 'VISUALLY INCONSISTENT':2, 'NOT A GRD':3,
  'CANNOT VERIFY':4, 'UNSUPPORTED':4, 'LIMIT EXCEEDED':4, 'UNREADABLE':4,
  'VERIFIED WITH REDACTIONS':5, 'FULLY REDACTED':5, 'DEMO':5,
  'UNVERIFIED: SELF-SIGNED':5, 'UNTRUSTED SIGNER':5, 'REVOKED KEY':6,
 }
 
 MF={'format','version','width','height','tileSize','pixelFormat','root','commitments','publicKey','keyId','policy','purpose','label'}
+
+def signer_report(r,keys_path=ROOT/'src/trusted-keys.json'):
+ r['fingerprint']=r.get('fingerprint') or r.get('revocation',{}).get('fingerprint')
+ r['signerStatus']={'REVOKED KEY':'revoked','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo','GENUINE':'trusted','VERIFIED WITH REDACTIONS':'trusted','FULLY REDACTED':'trusted'}.get(r['verdict'],'none')
+ if r.get('visualVerdict') and r.get('trustVerdict') and r.get('signature_valid'):r['signerStatus']={'TRUSTED':'trusted','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo'}.get(r['trustVerdict'],'none')
+ if r['signerStatus']=='trusted' and r.get('_purpose') in ('personal','demo'):r['signerStatus']='self' if r['_purpose']=='personal' else 'demo'
+ r['signerDisplayName']=None
+ try:
+  entry=next((s for s in load_trusted_keys(keys_path)['signers'] if s['fingerprint_sha256']==r['fingerprint']),None)
+  if entry:r['signerDisplayName']=entry['name']
+ except (ValueError,OSError):pass
+ if r.get('signerName'):r['signerDisplayName']=r['signerName']
+ return r
+
+def signer_line(r):
+ status=r.get('signerStatus','none')
+ if status=='trusted':return 'Verified: '+(r.get('signerDisplayName') or 'trusted key')
+ if status=='unknown':return 'Valid signature, unknown signer (fp '+str(r.get('fingerprint'))+')'
+ if status=='revoked':return 'Signer key revoked'
+ if status=='self':return 'Self-signed, identity not verified'
+ if status=='demo':return 'Demonstration, identity not verified'
+ return ''
 
 def load_trusted_keys(path=ROOT/'src/trusted-keys.json'):
  path=Path(path)
@@ -245,7 +267,7 @@ def verify_v2(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
   for i,entry in enumerate(doc['redactions']):
    if not isinstance(entry,dict) or set(entry)!={'index','method'} or type(entry['index']) is not int or entry['index']!=hidden[i] or entry['method'] not in ('black','blur'):raise IntegrityError('REDACTIONS does not match hidden tiles')
   if not valid_tree(doc) or canon(doc)!=raw:raise IntegrityError('Noncanonical JSON')
-  pk=bytes.fromhex(m['publicKey'])
+  pk=bytes.fromhex(m['publicKey']);r['fingerprint']=sha(pk);r['_purpose']=m['purpose']
   if sha(pk)!=m['keyId']:raise IntegrityError('Wrong signer fingerprint')
   r['revocation']=policy_check(pk,policy,keys_path)
   if r['revocation']['revoked']:
@@ -305,11 +327,11 @@ def verify_v2(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
    elif not isinstance(exc,PROOF_ERRORS):
     r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
- return r
+ return signer_report(r,keys_path)
 
 def verify_v1(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.json'):
  keys_path=Path(keys_path)
- r=dict(version=1,verdict='TAMPERED',genuine=False,problems=[])
+ r=dict(version=1,verdict='TAMPERED',genuine=False,signature_valid=False,problems=[])
  try:
   if len(data)>64*1024*1024:
    r['verdict']='LIMIT EXCEEDED'
@@ -329,17 +351,17 @@ def verify_v1(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
    sections[typ]=data[offset:offset+length];entries.append((typ,offset,length,digest_bytes));expected+=length
   if expected!=len(data) or not {1,2,6,7}<=sections.keys() or entries[-1][0]!=7 or len(sections[7])!=64 or entries[-1][3]!=bytes(32):raise IntegrityError('Bad signature entry or length')
   if bool(flags&1)!=(5 in sections) or bool(flags&2)!=(4 in sections) or flags&~3:raise IntegrityError('Bad flags')
+  if len(sections[6])!=40:raise IntegrityError('Bad public key')
+  kid=sections[6][:8].hex();pk=sections[6][8:];r['fingerprint']=sha(pk)
   for typ,off,length,dg in entries[:-1]:
    if hashlib.sha256(sections[typ]).digest()!=dg:raise IntegrityError('Section hash mismatch: '+str(typ))
-  if len(sections[6])!=40:raise IntegrityError('Bad public key')
-  kid=sections[6][:8].hex();pk=sections[6][8:]
   r['revocation']=policy_check(pk,policy,keys_path)
   if r['revocation']['revoked']:
    r['verdict']='REVOKED KEY'
    raise IntegrityError('Revoked signer')
   if sha(pk)[:16]!=kid:raise IntegrityError('Key ID mismatch')
   try:
-   Ed25519PublicKey.from_public_bytes(pk).verify(sections[7],hashlib.sha256(data[:entries[-1][1]]).digest())
+   Ed25519PublicKey.from_public_bytes(pk).verify(sections[7],hashlib.sha256(data[:entries[-1][1]]).digest());r['signature_valid']=True
   except Exception as e:
    raise IntegrityError('Signature verification failed: '+str(e))
   if pk.hex() not in (get_pinned_signers(keys_path) if trusted is None else trusted):
@@ -377,11 +399,11 @@ def verify_v1(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.jso
    elif not isinstance(exc,PROOF_ERRORS):
     r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
- return r
+ return signer_report(r,keys_path)
 
 def verify(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.json'):
  if data.startswith(b'GRD3\n'):return verify_v2(data,trusted,policy,keys_path)
- if len(data)>32*1024*1024 and not data.startswith(b'GRD1'):return dict(verdict='LIMIT EXCEEDED',genuine=False,problems=['Input exceeds GRD2 32 MiB limit'])
+ if len(data)>32*1024*1024 and not data.startswith(b'GRD1'):return signer_report(dict(verdict='LIMIT EXCEEDED',genuine=False,problems=['Input exceeds GRD2 32 MiB limit']),keys_path)
  return verify_v2(data,trusted,policy,keys_path) if data.startswith(b'GRD2\n') else verify_v1(data,trusted,policy,keys_path)
 
 def redact(data,rects,mode='black',granularity=64):
@@ -424,7 +446,7 @@ def verify_visual(proof,image_bytes,trusted=None,policy=None,keys_path=ROOT/'src
 def main():
  parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='command',required=True)
  s=sub.add_parser('seal');s.add_argument('input');s.add_argument('--key',required=True);s.add_argument('-o','--output',required=True);s.add_argument('--label',default='');s.add_argument('--sub-tile',type=int,choices=[8,16,32,64],default=64);s.add_argument('--format-version',type=int,choices=[2,3]);s.add_argument('--no-visual',action='store_true')
- v=sub.add_parser('verify');v.add_argument('input');v.add_argument('--trusted-key',action='append',default=[]);v.add_argument('--policy');v.add_argument('--trusted-keys')
+ v=sub.add_parser('verify');v.add_argument('input');v.add_argument('--trusted-key',action='append',default=[]);v.add_argument('--policy');v.add_argument('--trusted-keys');v.add_argument('--quiet',action='store_true')
  rd=sub.add_parser('redact');rd.add_argument('input');rd.add_argument('--rect',action='append',required=True);rd.add_argument('--mode',choices=['black'],default='black');rd.add_argument('--granularity',type=int,choices=[8,16,32,64],default=64);rd.add_argument('-o','--output',required=True)
  ex=sub.add_parser('export');ex.add_argument('input');ex.add_argument('--plain',action='store_true',required=True);ex.add_argument('--format',choices=['png','jpeg'],default='png');ex.add_argument('--quality',type=int,default=95);ex.add_argument('-o','--output',required=True)
  ep=sub.add_parser('export-proof');ep.add_argument('input');ep.add_argument('-o','--output',required=True)
@@ -463,6 +485,8 @@ def main():
     r=verify_visual(data,Path(args.image).read_bytes(),trusted,local_policy,keys_path=keys_path)
     if r.get('warning'):print('Warning: '+r['warning'],file=sys.stderr)
    else:r=verify(data,trusted,local_policy,keys_path=keys_path)
+   r=signer_report(r,keys_path)
+   if args.command=='verify' and not args.quiet and signer_line(r):print(signer_line(r),file=sys.stderr)
    r['exit_code']=EXIT.get(r['verdict'],4)
    print(json.dumps({k:v for k,v in r.items() if not k.startswith('_')},indent=2))
    return r['exit_code']

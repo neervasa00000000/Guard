@@ -13,3 +13,6 @@ results/
 
 # Local, unsubmitted manuscript review copy.
 paper-v2-review/
+
+# Local reference brief; publish implementation and status documentation.
+/BUILD_PROMPTS_V4.md

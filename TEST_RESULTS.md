@@ -66,7 +66,7 @@ The QA fixture helper was also repaired to replace the complete temporary trust 
 - Actual 12 MP JPEG conversion: 4000×3000 → 2305×1728, 999 tiles. Downloaded and reopened as UNVERIFIED: SELF-SIGNED, as expected for a browser-generated key. Then exported a blackout copy and its plain PNG. Python independently verified both downloaded GRDs; the root and asset ID were preserved. The plain PNG exactly matched the redacted pixels, tile 0 was zero, and only IHDR/IDAT/IEND chunks were present.
 - Repeated full suite: 62/62; Python vectors/regressions and the real C2PA SDK checks passed. The local 27-case/10,000-body-mutation check also passed in both languages. Rebuilt viewers and shared vectors reproduced byte-for-byte.
 
-### Public site: not yet equivalent to the corrected local build
+### Historical public-site observations before the 28 October push
 
 At `https://neervasa00000000.github.io/Guard/` during this audit:
 
@@ -75,7 +75,7 @@ At `https://neervasa00000000.github.io/Guard/` during this audit:
 - A 96×64 PNG conversion failed with `Conversion failed: file is not defined`.
 - The plain-download feature was absent.
 
-Therefore the live site cannot be described as fully working. The fixes are present locally; publishing the corrected production viewer remains outstanding. No push or deployment was performed.
+Those observations describe the site before the fix was published. Commit 5c616009 was pushed on 28 October 2026. On 29 October, the deployed index.html was fetched and was byte-identical to that commit: SHA-256 2745a9327c71a0cfbc90e01474bd1bf8fbfb370a8b2495ff489b84df37ad717c. This does not describe the subsequent v4 changes. No release tag or DOI was created by this work.
 
 ![Observed public-site conversion error](results/live-conversion-failure.png)
 
@@ -84,4 +84,24 @@ Raw follow-up evidence: `results/recheck-npm.log`, `results/recheck-python.log`,
 
 ## Later upgrade batch
 
-The observations above are historical. The conversion repair was subsequently pushed and checked live. New U0/U1/U3/U2 implementation evidence is recorded in [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md), with remaining scope in [UPGRADE_STATUS.md](UPGRADE_STATUS.md). This upgrade batch has not been deployed; older live-site observations do not describe the current local source.
+The observations above are historical. The conversion repair was subsequently pushed and checked live. New U0/U1/U3/U2 implementation evidence is recorded in [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md), with remaining scope in [UPGRADE_STATUS.md](UPGRADE_STATUS.md). The published revision is identified by the live hash recorded above; these local test results do not establish a later deployment.
+
+## V4 local batch — 29 October 2026
+
+| Check | Measured result |
+|---|---|
+| Node 22.16 and Node 20.19 | 100/100 tests passed in each runtime |
+| Python 3.13 | Shared exact/area/signer vectors, CLI visual exits 5/7/2, human line and --quiet passed |
+| Real C2PA SDK | GRD2 and GRD3 passed default round-trip command |
+| Named attacks | 27/27; 200/200 seeded body flips rejected in both implementations |
+| Local differential mutations | 10,000 cases; zero verdict disagreements, accepted mutants or uncaught exceptions |
+| Browser signer/trust workflow | Nine checks passed: trusted/self/unknown display, plain export, signed bundle, rollback and clear |
+| Browser privacy/conversion/drop | Ten checks passed, including real self-signed conversion and required acknowledgement |
+| axe-core 4.14 / Chrome 156 | Zero serious/critical issues across eight viewer states |
+| CSS reflow | 12/12 checks: empty/trusted/unknown at 320, 360, 390 and 1440 CSS pixels, no horizontal overflow |
+| Keyboard | Arrow/tab task navigation and Enter-triggered plain export exercised |
+| Revoked browser fixture | Red “Signer key revoked”, preview withheld, no unknown-signer override |
+
+These checks use deterministic TEST ONLY identities in isolated local QA copies. The iframe reflow fixtures disable frame guards only in those QA copies; production frame protection stays intact. This is not a real-phone, screen-reader, physical zoom or user-study result. The public display label was corrected to **Neer** at the owner's request; the existing key remains revoked. A new public key has not been supplied. These observations were recorded locally before v4 source publication; they are not a hosted-deployment check.
+
+Evidence: `results/v4-signer-flows.json`, `v4-privacy-drop.json`, `v4-axe.json`, `v4-css-viewports.json`, `v4-keyboard.json`, `v4-revoked.png`, `v4-reflow.png`; see V4_STATUS.md and REPRODUCE.md. No screenshot-reseal watermark rate or timestamp validity is claimed.

@@ -8,6 +8,8 @@ const trustedKeys = await readFile(
   new URL("src/trusted-keys.json", root),
   "utf8",
 );
+const publishedKeys = await readFile(new URL('.well-known/guard-signers.json',root),'utf8');
+if (JSON.stringify(JSON.parse(trustedKeys)) !== JSON.stringify(JSON.parse(publishedKeys))) throw new Error('Published signer registry differs from src/trusted-keys.json');
 const trust =
   "const policy=" +
   policy +
@@ -32,6 +34,7 @@ const hashWorker = (await readFile(new URL("src/hash-worker.js", root), "utf8"))
 const grd3 = (await readFile(new URL("src/grd3.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
 const visual = (await readFile(new URL("src/visual.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
 const subtiles = (await readFile(new URL("src/subtiles.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
+const bundle = (await readFile(new URL('src/trust-bundle.js',root),'utf8')).replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'');
 const app = (await readFile(new URL("src/app.js", root), "utf8")).replace(
   /^\/\/ SPDX[^\n]*\n/gm,
   "",
@@ -46,7 +49,7 @@ html = html
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${converter}\n${app}\n})();`,
+      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${bundle}\n${converter}\n${app}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

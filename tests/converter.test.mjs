@@ -162,9 +162,10 @@ test("actual conversion submit handler downloads and opens the signed file with 
     if (!nodes.has(id)) nodes.set(id, { disabled: false, setAttribute() {}, removeAttribute() {}, focus() {} });
     return nodes.get(id);
   };
+  $("convert-privacy").checked=true;
   const messages = [], downloads = [], opened = [];
   const execute = new Function("$", "conversionImage", "conversionVersion", "operation", "crypto", "sealRgba", "encodeGRD2", "verifyGRD2", "conversionStatus", "download", "openFile", "File", "bytesLabel",
-    app.slice(start) + '\nreturn $("convert-form").onsubmit({preventDefault() {}});');
+    app.slice(start,app.indexOf('$("copy-form").onsubmit',start)) + '\nreturn $("convert-form").onsubmit({preventDefault() {}});');
   await execute($, { rgba: new Uint8Array(64 * 64 * 4).fill(255), width: 64, height: 64, name: "TEST ONLY.png", sourceBytes: 4096 }, 1, 1, crypto, sealRgba, encodeGRD2, verifyGRD2,
     message => messages.push(message), (...args) => downloads.push(args), async file => opened.push(file), File, n => `${n} bytes`);
   assert.equal(downloads.length, 1, messages.join("\n"));
@@ -175,4 +176,9 @@ test("actual conversion submit handler downloads and opens the signed file with 
   assert.equal((await verifyGRD2(downloads[0][0], [])).verdict, "UNVERIFIED: SELF-SIGNED");
   assert.equal($("convert-submit").disabled, false);
   assert.equal($("convert-input").disabled, false);
+});
+
+test('ID/document shape heuristic covers both orientations and leaves squares unflagged',async()=>{
+ const {looksLikeDocument}=await import('../src/converter.js');for(const [w,h] of [[1012,638],[638,1012],[1414,1000],[1000,1414]])assert.equal(looksLikeDocument(w,h),true);
+ for(const [w,h] of [[1000,1000],[1,0],[Infinity,10],[2000,500]])assert.equal(looksLikeDocument(w,h),false);
 });

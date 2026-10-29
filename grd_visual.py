@@ -68,12 +68,13 @@ def verify_visual(proof,image_bytes,trusted,policy,keys_path,c):
   except (UnicodeError,json.JSONDecodeError,RecursionError) as e:raise c.IntegrityError('Invalid visual proof encoding') from e
   if not isinstance(p,dict) or set(p)!={'manifest','signature','vis'} or not c.valid_tree(p) or c.canon(p)!=raw:raise c.IntegrityError('Noncanonical visual proof')
   m=p['manifest'];count=c.validate_manifest(m)
-  if 'visual' not in m:r['verdict']='UNSUPPORTED';r['problems'].append('No visual layer.');return r
-  pk=bytes.fromhex(m['publicKey'])
+  if 'visual' not in m:r['verdict']='UNSUPPORTED';r['problems'].append('No visual layer.');return c.signer_report(r,keys_path)
+  pk=bytes.fromhex(m['publicKey']);r['fingerprint']=c.sha(pk)
   if c.sha(pk)!=m['keyId']:raise c.IntegrityError('Wrong signer fingerprint')
   r['revocation']=c.policy_check(pk,policy,keys_path)
-  if r['revocation']['revoked']:r['verdict']='REVOKED KEY';r['problems'].append('Signing key is revoked.');return r
+  if r['revocation']['revoked']:r['verdict']='REVOKED KEY';r['problems'].append('Signing key is revoked.');return c.signer_report(r,keys_path)
   c.Ed25519PublicKey.from_public_bytes(pk).verify(c.un64(p['signature']),c.digest(m))
+  r['signature_valid']=True
   if c.merkle(m['commitments'])!=m['root']:raise c.IntegrityError('Invalid exact commitment root')
   if not isinstance(p['vis'],list) or len(p['vis'])!=count:raise c.IntegrityError('Invalid visual disclosures')
   reference=[]
@@ -92,7 +93,7 @@ def verify_visual(proof,image_bytes,trusted,policy,keys_path,c):
   if len(image_bytes)>256*1024*1024:raise c.IntegrityError('Candidate exceeds image size limit')
   with c.Image.open(io.BytesIO(image_bytes)) as im:
    if im.format not in ('PNG','JPEG','WEBP') or max(im.size)>8192 or im.width*im.height>36_000_000:raise c.IntegrityError('Unsupported candidate image')
-   if abs((im.width/im.height)/(m['width']/m['height'])-1)>.01:r['verdict']='VISUALLY INCONSISTENT';r['visualVerdict']=r['verdict'];r['problems'].append('Aspect ratio differs by more than 1%.');return r
+   if abs((im.width/im.height)/(m['width']/m['height'])-1)>.01:r['verdict']='VISUALLY INCONSISTENT';r['visualVerdict']=r['verdict'];r['problems'].append('Aspect ratio differs by more than 1%.');return c.signer_report(r,keys_path)
    rgba=im.convert('RGBA');flattened=c.Image.new('RGB',im.size,'white');flattened.paste(rgba,mask=rgba.getchannel('A'))
    cw,ch=im.size;rgb=flattened.tobytes()
   r.update(worstError=0,worstTile=None,worstCell=None)
@@ -103,7 +104,7 @@ def verify_visual(proof,image_bytes,trusted,policy,keys_path,c):
     error=abs(actual[cell]-expected[cell]) if expected is not None else actual[cell]
     if error>r['worstError']:r.update(worstError=error,worstTile=i,worstCell=cell)
   r['visualVerdict']=visual_decision(r['worstError'],m['visual']['tau']);r['visualConsistent']=r['visualVerdict']=='VISUALLY CONSISTENT'
-  if not any(f is not None for f in reference) and r['visualVerdict']!='VISUALLY INCONSISTENT':r.update(verdict='FULLY REDACTED',visualVerdict='FULLY REDACTED',visualConsistent=False);r['problems'].append('No visible original block means are disclosed.');return r
+  if not any(f is not None for f in reference) and r['visualVerdict']!='VISUALLY INCONSISTENT':r.update(verdict='FULLY REDACTED',visualVerdict='FULLY REDACTED',visualConsistent=False);r['problems'].append('No visible original block means are disclosed.');return c.signer_report(r,keys_path)
   r['verdict']=r['visualVerdict'] if r['visualVerdict']=='BORDERLINE (decoder-dependent)' else 'VISUALLY INCONSISTENT' if not r['visualConsistent'] else 'VISUALLY CONSISTENT' if r['trusted'] else r['trustVerdict']
   if r['visualVerdict']=='BORDERLINE (decoder-dependent)':r['warning']='Close to the threshold; result may differ between apps';r['problems'].append(r['warning'])
   r.update(assetId=m['assetId'],width=m['width'],height=m['height'],tau=m['visual']['tau'])
@@ -111,4 +112,4 @@ def verify_visual(proof,image_bytes,trusted,policy,keys_path,c):
  except Exception as exc:
   if not isinstance(exc,c.PROOF_ERRORS):r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
- return r
+ return c.signer_report(r,keys_path)

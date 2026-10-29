@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import {canon,sha,TRUSTED,IntegrityError,encodedDimensions} from './verifier.js';
+import {signerReport,canon,sha,TRUSTED,IntegrityError,encodedDimensions} from './verifier.js';
 import {checkRevocation,TRUST_POLICY} from './trust.js';
 import {base64,decodeBase64,verifyGRD2,encodeGRD2,validateManifest,manifestDigest,merkleRoot,tileBounds,containerImage,GRD3_LIMITS} from './redactable.js';
 import {decodeRgbPng} from './png.js';
@@ -111,12 +111,14 @@ export async function verifyVisual(proof,imageBytes,anchors=TRUSTED,policy=TRUST
     try{raw=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(5));p=JSON.parse(raw);}catch(error){throw new IntegrityError('Invalid visual proof encoding.');}
     if(new TextDecoder().decode(bytes.subarray(0,5))!=='GRDP\n'||!p||Object.keys(p).sort().join(',')!=='manifest,signature,vis'||canon(p)!==raw)throw new IntegrityError('Noncanonical visual proof.');
     const m=p.manifest,count=validateManifest(m);
-    if(!m.visual){r.verdict='UNSUPPORTED';r.problems.push('No visual layer.');return r;}
+    if(!m.visual){r.verdict='UNSUPPORTED';r.problems.push('No visual layer.');return signerReport(r);}
     const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
-    if(await sha(pk)!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
-    r.revocation=await checkRevocation(pk,policy);if(r.revocation.revoked){r.verdict='REVOKED KEY';r.problems.push('Signing key is revoked.');return r;}
+    r.fingerprint=await sha(pk);r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
+    if(r.fingerprint!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
+    r.revocation=await checkRevocation(pk,policy);if(r.revocation.revoked){r.verdict='REVOKED KEY';r.problems.push('Signing key is revoked.');return signerReport(r);}
     const key=await crypto.subtle.importKey('raw',pk,'Ed25519',false,['verify']);
     if(!await crypto.subtle.verify('Ed25519',key,decodeBase64(p.signature,64),await manifestDigest(m)))throw new IntegrityError('Invalid visual manifest signature.');
+    r.signature_valid=true;
     if(await merkleRoot(m.commitments)!==m.root)throw new IntegrityError('Invalid exact commitment root.');
     if(!Array.isArray(p.vis)||p.vis.length!==count)throw new IntegrityError('Invalid visual disclosures.');
     const features=[];
@@ -135,7 +137,7 @@ export async function verifyVisual(proof,imageBytes,anchors=TRUSTED,policy=TRUST
     r.trusted=!!anchor&&m.purpose==='asset';r.signer=anchor?.name??anchor?.owner??'Identity not verified';r.trustVerdict=m.purpose==='demo'?'DEMO':m.purpose==='personal'?'UNVERIFIED: SELF-SIGNED':anchor?'TRUSTED':'UNTRUSTED SIGNER';
     const decoded=await visualDecodeImage(imageBytes instanceof Uint8Array?imageBytes:new Uint8Array(imageBytes),m);
     r.worstError=0;r.worstTile=null;r.worstCell=null;
-    if(decoded.aspectMismatch){r.verdict='VISUALLY INCONSISTENT';r.visualVerdict=r.verdict;r.problems.push('Aspect ratio differs by more than 1%.');return r;}
+    if(decoded.aspectMismatch){r.verdict='VISUALLY INCONSISTENT';r.visualVerdict=r.verdict;r.problems.push('Aspect ratio differs by more than 1%.');return signerReport(r);}
     for(let i=0;i<count;i++){
       const actual=mappedVisualTile(decoded.rgb,decoded.width,decoded.height,m,i),expected=features[i];
       for(let cell=0;cell<(expected?96:64);cell++){
@@ -147,11 +149,11 @@ export async function verifyVisual(proof,imageBytes,anchors=TRUSTED,policy=TRUST
     }
     r.visualVerdict=visualDecision(r.worstError,m.visual.tau);
     r.visualConsistent=r.visualVerdict==='VISUALLY CONSISTENT';
-    if(!features.some(feature=>feature!==null)&&r.visualVerdict!=='VISUALLY INCONSISTENT'){r.verdict='FULLY REDACTED';r.visualVerdict='FULLY REDACTED';r.visualConsistent=false;r.problems.push('No visible original block means are disclosed.');return r;}
+    if(!features.some(feature=>feature!==null)&&r.visualVerdict!=='VISUALLY INCONSISTENT'){r.verdict='FULLY REDACTED';r.visualVerdict='FULLY REDACTED';r.visualConsistent=false;r.problems.push('No visible original block means are disclosed.');return signerReport(r);}
     r.verdict=r.visualVerdict==='BORDERLINE (decoder-dependent)'?r.visualVerdict:!r.visualConsistent?'VISUALLY INCONSISTENT':r.trusted?'VISUALLY CONSISTENT':r.trustVerdict;
     if(r.visualVerdict==='BORDERLINE (decoder-dependent)'){r.warning='Close to the threshold; result may differ between apps';r.problems.push(r.warning);}
     r.assetId=m.assetId;r.width=m.width;r.height=m.height;r.tau=m.visual.tau;
     if(!r.trusted)r.problems.push('Visual matching does not establish signer identity. '+r.trustVerdict+'.');
-    return r;
-  }catch(error){if(error instanceof IntegrityError)r.verdict='TAMPERED';else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}r.problems.push(error.message);return r;}
+    return signerReport(r);
+  }catch(error){if(error instanceof IntegrityError)r.verdict='TAMPERED';else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}r.problems.push(error.message);return signerReport(r);}
 }

@@ -6,7 +6,7 @@ import {spawnSync} from 'node:child_process';
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {verifyTrustBundle} from '../src/trust-bundle.js';
+import {verifyTrustBundle,publicKeyHexFromPem} from '../src/trust-bundle.js';
 import {sealRgba,encodeGRD2} from '../src/redactable.js';
 const root=generateKeyPairSync('ed25519'), signer=generateKeyPairSync('ed25519');
 const raw=k=>k.publicKey.export({type:'spki',format:'der'}).subarray(-32);
@@ -47,4 +47,8 @@ test('CLI recognizes the signed issuer, persists state, rejects rollback and enf
   p.sequence=1;await writeFile(bundle,encode(p));proc=run();assert.equal(proc.status,4);assert.equal(await readFile(state,'utf8'),remembered);
   p.sequence=3;Object.assign(p.keys.signers[0],{revoked:true,revokedAt:issued,reason:'Test compromise'});await writeFile(bundle,encode(p));proc=run();assert.equal(proc.status,6,proc.stdout);assert.equal(JSON.parse(proc.stdout).verdict,'REVOKED KEY');assert.equal(JSON.parse(await readFile(state,'utf8')).sequence,3);
  }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('session import accepts only the Ed25519 public PEM representation',()=>{
+ const pem=root.publicKey.export({type:'spki',format:'pem'});assert.equal(publicKeyHexFromPem(pem),rootHex);assert.throws(()=>publicKeyHexFromPem(pem.replaceAll('PUBLIC KEY','PRIVATE KEY')),/public key PEM only/);assert.throws(()=>publicKeyHexFromPem('not a PEM'));
 });

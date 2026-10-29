@@ -190,7 +190,7 @@ Sidecar: `"GRDP\n" + canon({manifest, signature, vis})`, at most 16 MiB. Each or
 
 Visual verification checks canonical framing, the original manifest signature/domain, root, visual openings and local trust/revocation. Candidate PNG/JPEG/WebP dimensions are checked before full decode, bounded to 8192-edge/36M pixels and 256 MiB. Aspect-ratio changes above 1% give VISUALLY INCONSISTENT; otherwise native-size RGB is mapped directly to signed cells by the integer area-average method below. No library resize is used in candidate verification. Decoder/colour-management differences require empirical cross-checking and are not assumed bit-identical.
 
-For disclosed parents, compare all 96 absolute differences. For hidden parents, compare all nonempty Y values against zero. The worst error determines VISUALLY CONSISTENT (<7), BORDERLINE (decoder-dependent) (7..11), or VISUALLY INCONSISTENT (>11), with signed tau still 9. `genuine` is always false. `verdict` preserves untrusted/demo/self-signed status on a matching copy; only a trusted asset key receives VISUALLY CONSISTENT as its primary verdict. Visual inconsistency exits 2; borderline, consistency and valid-but-untrusted statuses exit 5. A wholly hidden sidecar makes no visible-content claim.
+For disclosed parents, compare all 96 absolute differences. For hidden parents, compare all nonempty Y values against zero. The worst error determines VISUALLY CONSISTENT (<7), BORDERLINE (decoder-dependent) (7..11), or VISUALLY INCONSISTENT (>11), with signed tau still 9. `genuine` is always false. `verdict` preserves untrusted/demo/self-signed status on a matching copy; only a trusted asset key receives VISUALLY CONSISTENT as its primary verdict. Visual inconsistency exits 2; consistency and valid-but-untrusted statuses exit 5; borderline exits 7. A wholly hidden sidecar makes no visible-content claim.
 
 A matching result authenticates only the disclosed block averages under the stated signer key. It does not authenticate fine detail, source capture or an untrusted identity. Mean-preserving edits can pass exactly, and some blurs pass. JPEG quality ranges and detection percentages are measured outcomes, not wire-format guarantees. See SECURITY_MODEL.md and UPGRADE_RESULTS.md.
 
@@ -204,6 +204,27 @@ First convert each candidate pixel to integer Y/Cb/Cr with the existing y8c16-v1
 
 At identical dimensions this is exactly the original feature function. The signed commitment format and `y8c16-v1` version remain unchanged; candidate normalization semantics change for differently sized copies. Same-size vectors and hand-calculated overlap/rounding vectors check compatibility. The aspect-ratio and native decoding limits still apply.
 
-Tau stays 9. For worstError e, e<7 gives VISUALLY CONSISTENT, 7≤e≤11 gives **BORDERLINE (decoder-dependent)**, and e>11 gives VISUALLY INCONSISTENT. BORDERLINE has `genuine=false`, `visualConsistent=false`, CLI exit 5 and warning “Close to the threshold; result may differ between apps”. Signer trust remains a separate field; borderline grants no identity or consistency acceptance. The browser shows the warning in amber with explicit text. A fully hidden proof makes no positive visible-content claim. Exact GRD verification is unchanged.
+Tau stays 9. For worstError e, e<7 gives VISUALLY CONSISTENT, 7≤e≤11 gives **BORDERLINE (decoder-dependent)**, and e>11 gives VISUALLY INCONSISTENT. BORDERLINE has `genuine=false`, `visualConsistent=false`, CLI exit 7 and warning “Close to the threshold; result may differ between apps”. Signer trust remains a separate field; borderline grants no identity or consistency acceptance. The browser shows the warning in amber with explicit text. A fully hidden proof makes no positive visible-content claim. Exact GRD verification is unchanged.
 
 All implementations now share the integer area mapping; remaining cross-runtime visual differences can arise in native image decoders/colour or alpha conversion. The borderline band reduces unstable near-threshold decisions but does not mathematically guarantee identical verdicts for every encoded image.
+
+## V4 report and exit semantics (local update, 29 October 2026)
+
+No tile commitment, manifest digest domain, tau or visual-feature format changed. BORDERLINE now has a distinct exit code, so exit-code-only consumers cannot confuse it with consistency. Exit 0 alone means GENUINE. Operational failures may return 1; argparse usage failures may return 2.
+
+| Exit | Verdict |
+|------|---------|
+| 0 | GENUINE |
+| 1 | Operational error (I/O, bad key file, write refused) |
+| 2 | TAMPERED, VISUALLY INCONSISTENT (also argparse usage errors; inspect JSON) |
+| 3 | NOT A GRD |
+| 4 | CANNOT VERIFY, UNSUPPORTED, LIMIT EXCEEDED, UNREADABLE |
+| 5 | VISUALLY CONSISTENT, VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
+| 6 | REVOKED KEY |
+| 7 | BORDERLINE (decoder-dependent): close to the threshold; treat as not proven |
+
+Exact reports add `signerStatus` (`trusted`, `unknown`, `revoked`, `self`, `demo`, `none`), `signerDisplayName` (configured name or null) and `fingerprint` (SHA-256 of the parsed public key, otherwise null). Names come from the configured public registry or a manually imported root-signed bundle, not from a claim in the image. A self-signed/personal purpose cannot become a trusted asset by pinning its key. A revoked key remains revoked even if explicitly pinned.
+
+Unknown signatures grant no genuineness or automatic viewability. The viewer can show an explicit user-requested, stamped preview after valid file checks; this does not change verdict, key trust or the proof. Default GRD1 API results still withhold image payload; an explicit display option is used only after the button is pressed. Malformed unknown files are not eligible for display. CLI `verify --quiet` suppresses the human signer line; stdout remains JSON.
+
+The public registry at `.well-known/guard-signers.json` must match `src/trusted-keys.json`; build failure prevents publishing inconsistent registries. Offline viewers do not fetch it. Session-only bundle import requires a separately verified Ed25519 public root, preserves in-session rollback state, rechecks expiry, resets the displayed file on trust changes, and cannot undo bundled revocations. No browser persistent storage or network permission was added.

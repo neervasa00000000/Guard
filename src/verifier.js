@@ -2,6 +2,22 @@
 import { checkRevocation, TRUST_POLICY } from "./trust.js";
 import trustedData from "./trusted-keys.json" with { type: "json" };
 
+export const EXIT_CODES = Object.freeze({
+ 'GENUINE':0,'TAMPERED':2,'VISUALLY CONSISTENT':5,'BORDERLINE (decoder-dependent)':7,'VISUALLY INCONSISTENT':2,'NOT A GRD':3,
+ 'CANNOT VERIFY':4,'UNSUPPORTED':4,'LIMIT EXCEEDED':4,'UNREADABLE':4,'VERIFIED WITH REDACTIONS':5,'FULLY REDACTED':5,
+ 'DEMO':5,'UNVERIFIED: SELF-SIGNED':5,'UNTRUSTED SIGNER':5,'REVOKED KEY':6,
+});
+export function signerReport(r) {
+ r.fingerprint ??= r.revocation?.fingerprint ?? null;
+ const known=trustedData.signers?.find(s=>s.fingerprint_sha256===r.fingerprint);
+ r.signerDisplayName=r.signerName??known?.name??null;
+ r.signerStatus=({'REVOKED KEY':'revoked','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo','GENUINE':'trusted','VERIFIED WITH REDACTIONS':'trusted','FULLY REDACTED':'trusted'})[r.verdict]??'none';
+ if(r.signerStatus==='unknown'&&(!r.signature_valid||(r.version===1&&!r.canRevealUnknown)||(r.version>=2&&!r.regionVerified)))r.signerStatus='none';
+ if(r.visualVerdict&&r.trustVerdict&&r.signature_valid)r.signerStatus=({'TRUSTED':'trusted','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo'})[r.trustVerdict]??'none';
+ if(r.signerStatus==='trusted'&&(r.personal||r.demo))r.signerStatus=r.personal?'self':'demo';
+ return r;
+}
+
 export class IntegrityError extends Error {
   constructor(message) {
     super(message);
@@ -130,7 +146,7 @@ function validTree(value, depth = 0) {
     );
   return true;
 }
-export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY) {
+export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY, {allowUnknownDisplay=false}={}) {
   if (anchors?._invalid || (!anchors && !trustedKeysValid)) {
     return async function verifyGRD() {
       return {
@@ -167,7 +183,7 @@ export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLIC
       r.checks.push({ name, status, detail });
     const finish = () => {
       r.changed = [...r.failed];
-      return r;
+      return signerReport(r);
     };
     try {
       if (anchors?._invalid) {
@@ -345,6 +361,8 @@ export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLIC
         keyId = hex(keyBytes.subarray(0, 8)),
         publicKey = keyBytes.subarray(8);
       r.keyId = keyId;
+      r.fingerprint=await sha(publicKey);
+      r.signerName=trusted.find(k=>k.public_key_hex===hex(publicKey))?.name??trusted.find(k=>k.public_key_hex===hex(publicKey))?.owner;
       r.revocation = await checkRevocation(publicKey, revocationPolicy);
       if (r.revocation.revoked) {
         r.verdict = "REVOKED KEY";
@@ -484,7 +502,7 @@ export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLIC
         "Canonical JSON, matching asset ID and signer key",
       );
       if (byType[5]) r.timestampPresent = true;
-      if (!r.problems.length) {
+      if (!r.problems.length || (r.verdict==="UNTRUSTED SIGNER" && r.failed.length===1 && r.failed[0]==="untrusted signer")) {
         try {
           const [width, height] = encodedDimensions(byType[2], r.meta.mime);
           if (width !== r.meta.width || height !== r.meta.height) {
@@ -514,6 +532,7 @@ export function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLIC
         r.genuine = true;
         r.payload = byType[2].slice();
       }
+      if(r.verdict==='UNTRUSTED SIGNER'&&r.signature_valid&&r.failed.length===1&&r.failed[0]==='untrusted signer'){if(allowUnknownDisplay)r.payload=byType[2].slice();r.canRevealUnknown=true;}
       return finish();
     } catch (error) {
       if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {

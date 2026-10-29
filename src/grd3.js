@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import {subTileCount,validateSubRecord,verifySubTile,subRedactionMap} from "./subtiles.js";
-import { canon, sha, TRUSTED, IntegrityError } from './verifier.js';
+import { signerReport, canon, sha, TRUSTED, IntegrityError } from './verifier.js';
 import { checkRevocation, TRUST_POLICY } from './trust.js';
 import { rgbPngParts, decodeRgbPngBands, PngFormatError } from './png.js';
 import { createTileHasher } from './hash-worker.js';
@@ -92,7 +92,8 @@ export async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
     ok("Container structure",doc.tiles.length+" ordered parent records · binary lengths agree");
     r.assetId=m.assetId;r.created=m.created;r.root=m.root;r.keyId=m.keyId;
     const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
-    if(await sha(pk)!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
+    r.fingerprint=await sha(pk);r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
+    if(r.fingerprint!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
     r.revocation=await checkRevocation(pk,policy);
     if(r.revocation.revoked){r.verdict='REVOKED KEY';throw new IntegrityError('Signing key is revoked.');}
     ok('Offline revocation','Not listed in bundled snapshot · '+r.revocation.asOf);
@@ -134,10 +135,10 @@ export async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
     const anchor=anchors.find(k=>k.public_key_hex===m.publicKey);
     r.demo=m.purpose==='demo';r.personal=m.purpose==='personal';r.trusted=!!anchor&&!r.demo&&!r.personal;r.signer=anchor?.name??anchor?.owner??'Untrusted signer';r.signerName=anchor?.name??anchor?.owner;r.fingerprint=m.keyId;
     r.checks.push({name:'Signer trust',status:r.trusted?'pass':r.demo||r.personal?'info':'fail',detail:r.demo?'DEMO ONLY':r.personal?'SELF-SIGNED':r.signer});
-    if(!r.trusted&&!r.demo&&!r.personal)r.verdict='UNTRUSTED SIGNER';
+    if(!r.trusted&&!r.demo&&!r.personal){r.verdict='UNTRUSTED SIGNER';r.canRevealUnknown=true;}
     else if(!doc.tiles.some(t=>t.salt||t.seed||t.sub?.some(s=>s.salt)))r.verdict='FULLY REDACTED';
     else {r.verdict=r.demo?'DEMO':r.personal?'UNVERIFIED: SELF-SIGNED':r.redactedTiles.length?'VERIFIED WITH REDACTIONS':'GENUINE';r.genuine=r.verdict==='GENUINE';r.viewable=true;}
-    return r;
+    return signerReport(r);
   }catch(error){
     if(error.message?.startsWith("blackout incomplete"))r.hiddenPixelsCleared=false;
     if(error.name==='ResourceLimitError')r.verdict='LIMIT EXCEEDED';
@@ -146,6 +147,6 @@ export async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
       else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';
       else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}
     }
-    r.problems.push(error.message);r.failed.push('GRD3 proof');r.changed=[...r.failed];return r;
+    r.problems.push(error.message);r.failed.push('GRD3 proof');r.changed=[...r.failed];return signerReport(r);
   }finally{hasher?.close();}
 }

@@ -30,14 +30,14 @@ test('rational overlaps and half-up ties are correct on a hand-computable fracti
  assert.equal(f[0],0);assert.equal(f[1],239);assert.equal(f[2],255);
  const tie=mappedVisualTile(Uint8Array.from([0,0,0,1,1,1]),2,1,{width:1,height:1,tileSize:64},0);assert.equal(tie[0],1);
 });
-test('tau±2 is BORDERLINE with no positive consistency flag; CLI warns and exits 5',async()=>{
+test('tau±2 is BORDERLINE with no positive consistency flag; CLI warns and exits 7',async()=>{
  const k=signer(),rgb=new Uint8Array(64*64*3).fill(100),rgba=new Uint8Array(64*64*4);for(let i=0;i<4096;i++)rgba.set([100,100,100,255],i*4);
  const source=await sealRgba({rgba,width:64,height:64,publicKey:k.raw,sign:b=>sign(null,b,k.privateKey)}),proof=await exportProof(encodeGRD2(source));
  const dir=await mkdtemp(join(tmpdir(),'guard-borderline-'));
  try{
   const p=join(dir,'proof.grdp'),image=join(dir,'copy.png');await writeFile(p,proof);
   for(const delta of [6,7,8,9,10,11,12]){const bytes=await encodeRgbPng(rgb.map(v=>v+delta),64,64),r=await verifyVisual(proof,bytes,[k.anchor]);assert.equal(r.visualVerdict,visualDecision(delta));assert.equal(r.worstError,delta);assert.equal(r.genuine,false);assert.equal(r.visualConsistent,delta===6);await writeFile(image,bytes);
-   const cli=spawnSync('python3',['grd.py','verify-visual',p,image],{encoding:'utf8'}),py=JSON.parse(cli.stdout);assert.equal(py.visualVerdict,r.visualVerdict);assert.equal(cli.status,delta===12?2:5);if(delta>=7&&delta<=11)assert.match(cli.stderr,/Close to the threshold; result may differ between apps/);
+   const cli=spawnSync('python3',['grd.py','verify-visual',p,image],{encoding:'utf8'}),py=JSON.parse(cli.stdout);assert.equal(py.visualVerdict,r.visualVerdict);assert.equal(cli.status,delta===12?2:delta>=7?7:5);if(delta>=7&&delta<=11)assert.match(cli.stderr,/Close to the threshold; result may differ between apps/);
   }
  }finally{await rm(dir,{recursive:true,force:true});}
 });

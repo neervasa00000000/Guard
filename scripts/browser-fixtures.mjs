@@ -43,18 +43,9 @@ const v2 = await sealRgba({
   sign: (b) => sign(null, b, key.privateKey),
 });
 const v2redacted = await redactGRD2(v2, [0, 1]);
-const revokedHtml = html.replace(
-  /"revoked"\s*:\s*\[\]/,
-  JSON.stringify({
-    revoked: [
-      {
-        fingerprint: v2.manifest.keyId,
-        reason: "QA ONLY revoked test signer",
-        revokedAt: "2026-10-26T00:00:00Z",
-      },
-    ],
-  }).slice(1, -1),
-);
+const productionPolicy=await readFile(new URL('../src/trust-policy.json',import.meta.url),'utf8');
+const qaPolicy=JSON.parse(productionPolicy);qaPolicy.revoked.push({fingerprint:v2.manifest.keyId,reason:'QA ONLY revoked test signer',revokedAt:'2026-10-26T00:00:00Z'});
+const revokedHtml=html.replace('const policy='+productionPolicy+';', 'const policy='+JSON.stringify(qaPolicy)+';');
 const tamperedV2 = structuredClone(v2);
 tamperedV2.manifest.label = "Changed label";
 const imageTable = 10 + 50;

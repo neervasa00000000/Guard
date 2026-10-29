@@ -1,6 +1,6 @@
 # Offline signed trust bundles
 
-This is opt-in tooling and a browser-capable API. The production standalone viewer still uses its existing bundled trust snapshot; no new production root or identity has been provisioned. Never deploy the public test root from the fixture generator.
+This is opt-in tooling, a browser-capable API, and a session-only manual import in the v4 local viewer. It defaults to the bundled snapshot; no new production root or identity has been provisioned. Never deploy the public test root from the fixture generator.
 
 A bundle is canonical UTF-8 JSON with exactly `payload` and `signature`. The payload has exactly:
 
@@ -39,7 +39,7 @@ Protect both the local clock and state directory. Deleting, replacing or rolling
 
 `verifyTrustBundle(bytes, rootPublicKeyHex, {now, minSequence, previous})` from `src/trust-bundle.js` returns `{keys, anchors, policy, state, expires}` only after all checks pass. Use the returned anchors and policy together with `verifyGRD2` or `createVerifier`. A revoked issuer is absent from anchors and present in policy. Keep `state` in trusted, serialized persistent storage before using newer snapshots; the API itself performs no storage or network operations. Recheck expiry for each use; do not retain a successful result past `expires` without checking the bundle again.
 
-This API is not yet wired into the standalone viewer's import/expiry UI. Browser persistence, root provisioning/rotation, refresh UX and deployment remain pending. The existing standalone viewer's no-storage privacy statement therefore remains accurate.
+The v4 local viewer has manual import/expiry UI. It requires a separately verified public root PEM, retains sequence/digest history in memory per root, checks expiry on each verification, clears active approvals at expiry, and resets the displayed file when trust changes. Bundled revocations cannot be undone by an imported bundle. Browser persistence, production root provisioning/rotation and deployment remain pending. The existing standalone viewer's no-storage privacy statement therefore remains accurate.
 
 ## Reproduction and evidence
 

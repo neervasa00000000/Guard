@@ -1,6 +1,6 @@
 # Reproducing Guard checks
 
-Run commands from this repository. Node 22 or later is needed for the JSON imports and native compression streams. Install `npm ci` and the Python packages in `requirements.txt` in your chosen environment. The optional C2PA check additionally needs `requirements-c2pa.txt` (`c2pa-python==0.38.1`). This checkout already has a `.venv-c2pa` environment.
+Run commands from this repository. Tested on Node 20.19 and 22; Python 3.13; Chrome 156. Install `npm ci` and the Python packages in `requirements.txt` in your chosen environment. The optional C2PA check additionally needs `requirements-c2pa.txt` (`c2pa-python==0.38.1`). This checkout already has a `.venv-c2pa` environment.
 
 ```sh
 npm run build
@@ -122,4 +122,21 @@ Run the two scale scripts sequentially, without other benchmarks. They now emit 
 
 Serve localhost and run `bench/visual-corpus.html` in Chrome. Expand Per-case report and save its JSON as `results/visual-corpus/chrome-report.json`, then run `python3 bench/visual-corpus.py --check results/visual-corpus/chrome-report.json`. This checks case IDs, candidate hashes and verdict/acceptance flags. The photographic dataset is downloaded from r0k.us with TLS certificate checking, and kept under ignored data/. The generator's fixed signing seed is public TEST ONLY.
 
-Tau is still nine, with BORDERLINE for worstError seven through eleven inclusive, exit five and no positive consistency flag. Do not aggregate it with consistent results. Raw vectors at .5/.75/1/1.25/1.5× require exact bytes; encoded photographic candidates can still have decoder differences.
+Tau is still nine, with BORDERLINE for worstError seven through eleven inclusive, exit seven and no positive consistency flag. Do not aggregate it with consistent results. Raw vectors at .5/.75/1/1.25/1.5× require exact bytes; encoded photographic candidates can still have decoder differences.
+
+## V4 signer, recipient and accessibility QA
+
+```sh
+python3 scripts/make-signer-vectors.py
+npm ci
+npm test
+python3 tests/test_vectors.py
+npm run build
+python3 scripts/make-trust-bundle-vectors.py
+node scripts/v4-browser-qa.mjs
+python3 -m http.server 4196 --bind 127.0.0.1 --directory /tmp/guard-v4-qa
+```
+
+The TEST ONLY viewer at localhost:4196 embeds only deterministic test trust and dev-only axe-core. Run its signer flow checks and accessibility audit, and inspect revoked.html separately. Never deploy these QA copies. Production CSP stays `connect-src 'none'` and production HTML does not include axe. `mobile.html` supplies Chromium iframe CSS widths for reflow checking; only these QA fixtures disable the app's frame guard. This is not evidence of a real phone, assistive-technology trial or physical browser zoom. The production frame guard remains intact.
+
+Create empty real-world measurement CSVs with `python3 bench/realworld-templates.py`; it never fabricates rows or overwrites recorded trials. File carrier, watermark and TSA experiments remain pending until implemented and actually measured.

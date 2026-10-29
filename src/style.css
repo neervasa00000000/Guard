@@ -5,7 +5,7 @@ html.framed body > *:not(.frame-warning) {
   --bg: #e9ebee;
   --surface: #fff;
   --ink: #17181b;
-  --muted: #696e76;
+  --muted: #535a66;
   --line: #cdd1d8;
   --blue: #214eef;
   --red: #b82929;
@@ -484,7 +484,7 @@ h1 span {
 .empty-checks i {
   font: 9px var(--mono);
   font-style: normal;
-  color: #7d838e;
+  color: #535a66;
 }
 .waiting {
   font-size: 11px;
@@ -1641,3 +1641,35 @@ footer > a:last-child {
 }
 
 #copy-status.borderline { color: #775000; background: #fff3cd; border-left: 4px solid #a66a00; padding: 1rem; }
+
+.workspace-tabs {display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;}
+.workspace-tabs button {padding:12px 18px;border:1px solid #42516e;background:#fff;color:#25344e;border-radius:6px;min-height:44px;}
+.workspace-tabs [aria-selected="true"] {background:#25344e;color:#fff;}
+.trust-import {border:1px solid #64748b;padding:16px;margin:20px 0;overflow-wrap:anywhere;}
+.trust-import input {max-width:100%;}
+.privacy-warning {background:#fff3cd;color:#533900;border-left:4px solid #936000;padding:12px;}
+.privacy-consent {display:flex;align-items:flex-start;gap:12px;min-height:44px;line-height:1.6;padding:12px 0;}
+.privacy-consent input {width:24px;height:24px;flex-shrink:0;margin-top:3px;}
+button,summary,input {min-height:24px;}
+:focus-visible {outline:3px solid #174bd9;outline-offset:3px;box-shadow:0 0 0 5px #fff;}
+html {scroll-padding-top:20px;scroll-padding-bottom:100px;}
+.technical {overflow-wrap:anywhere;}
+@media(max-width:760px){
+ body {padding-bottom:100px;}
+ .workspace {display:flex;flex-direction:column;}
+ .result-column {order:1;}
+ .workspace:has(#result:not([hidden])) .result-column {order:-1;}
+ .file-column,.result-column {width:100%;min-width:0;}
+ #choose-another {position:fixed;bottom:12px;left:16px;right:16px;z-index:20;background:#fff;border:2px solid #25344e;border-radius:6px;color:#25344e;min-height:44px;text-align:center;}
+ .rectangle-fields {flex-wrap:wrap;}
+ .workspace-tabs button {flex:1;}
+}
+
+@media(max-width:390px){.intro {padding:20px 0 12px;gap:12px;} .intro h1 {font-size:38px;} .intro-text {font-size:16px;} .format-block {display:none;} .workspace-heading {margin:12px 0;} .drop {min-height:190px;}}
+
+#verdict-signer {overflow-wrap:anywhere;word-break:break-word;}
+input[type="file"] {max-width:100%;width:100%;min-width:0;}
+a {overflow-wrap:anywhere;}
+.verdict-banner.neutral {border-left:4px solid #a66a00;padding-left:12px;}
+.verdict-banner.neutral .verdict-icon {background:#8b5a00;color:#fff;}
+.verdict-banner.neutral .eyebrow {color:#775000;}

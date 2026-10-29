@@ -5,7 +5,7 @@ The supplied SUBMIT_PROMPTS.md was treated as a technical checklist and the pape
 | Item | Current evidence | Remaining work |
 |---|---|---|
 | Shared candidate normalization | Native decoded RGB; one exact integer area mapper in JS/Python; five shared raw scale vectors; hand-computed overlap and rounding tests | Original external harness settings were not supplied |
-| BORDERLINE | Errors 7..11 inclusive return BORDERLINE (decoder-dependent), no genuineness/positive consistency; CLI exit 5 plus warning; actual viewer warning checked | Broader decoder/device testing |
+| BORDERLINE | Errors 7..11 inclusive return BORDERLINE (decoder-dependent), no genuineness/positive consistency; CLI exit 7 plus warning; actual viewer warning checked | Broader decoder/device testing |
 | Kodak visual corpus | Fresh 24-image × seven-transform run; Node/Python and Chrome/Python both 168/168 verdict agreement | Do not label it a byte-identical rerun of the absent external corpus |
 | C2PA default test | One command now always tests GRD2 and GRD3; both passed | Production CA identity remains outside test-chain evidence |
 | Scale honesty | JS and Python sealing measured with visual layer on and off at all five sizes; explicit column in UPGRADE_RESULTS.md and JSON outputs | Dedicated hardware/repetitions and tagged-release external rerun |
@@ -26,3 +26,7 @@ Email, real ORCID, approved affiliation, complete AI-tool list, funding and comp
 ## Build limitation
 
 The review project's compiler first timed out downloading packages; retry reached main.tex and stopped at missing `figures/fig06_threat.pdf`. `refs.bib` and all 13 referenced figures are absent from the supplied files. A completed paper PDF cannot be verified until those source assets are provided. The original Desktop TeX file remains unchanged.
+
+## Published source baseline and subsequent v4 work
+
+Commit 5c616009 was pushed on 28 October 2026. The live viewer was fetched on 29 October and matched that commit byte-for-byte (SHA-256 2745a9327c71a0cfbc90e01474bd1bf8fbfb370a8b2495ff489b84df37ad717c). Source publication of the subsequent v4 fixes was separately authorized on 29 October; its Pages deployment needs an independent revision check. Tagging, DOI registration and journal submission are still outside this work; none was performed here.

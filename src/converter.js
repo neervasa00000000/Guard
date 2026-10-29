@@ -90,3 +90,9 @@ export function fitConversionDimensions(width, height, { large = false } = {}) {
     height: Math.max(1, Math.floor(height * low)),
   };
 }
+
+export function looksLikeDocument(width,height) {
+ if(!Number.isFinite(width)||!Number.isFinite(height)||Math.min(width,height)<=0)return false;
+ const ratio=Math.max(width,height)/Math.min(width,height);
+ return [85.6/54,Math.SQRT2].some(target=>Math.abs(ratio/target-1)<=.04);
+}

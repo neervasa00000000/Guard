@@ -28,7 +28,7 @@ Or run locally:
 npm run dev
 ```
 
-Open http://127.0.0.1:4195/. The standalone viewer needs no installation. Use `npm ci` before builds/tests. Node.js 22+ is used for builds/tests; Python 3 serves the local preview.
+Open http://127.0.0.1:4195/. The standalone viewer needs no installation. Use `npm ci` before builds/tests. Tested on Node 20.19 and 22; Python 3.13; Chrome 156. Python serves the local preview.
 
 ## What changed
 
@@ -67,11 +67,12 @@ Exit 0 means GENUINE only. Other verdicts use the non-zero groups below; inspect
 |------|---------|
 | 0 | GENUINE |
 | 1 | Operational error (I/O, bad key file, write refused) |
-| 2 | TAMPERED (also argparse usage errors; inspect JSON) |
+| 2 | TAMPERED, VISUALLY INCONSISTENT (also argparse usage errors; inspect JSON) |
 | 3 | NOT A GRD |
 | 4 | CANNOT VERIFY, UNSUPPORTED, LIMIT EXCEEDED, UNREADABLE |
-| 5 | VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
+| 5 | VISUALLY CONSISTENT, VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
 | 6 | REVOKED KEY |
+| 7 | BORDERLINE (decoder-dependent): close to the threshold; treat as not proven |
 
 These groups replace the earlier 10–43 codes. Scripts must read the JSON verdict or migrate their exit-code handling.
 
@@ -151,4 +152,12 @@ The CLI defaults to the legacy 64 px parent-only grid unless `--sub-tile` is sup
 
 See [GRD_SPEC.md](GRD_SPEC.md), [SECURITY_MODEL.md](SECURITY_MODEL.md), and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md). Reported prototype detection rates, research novelty and comparisons with ZK systems require their own reproduced evidence.
 
-Signed trust-bundle tooling is available as an opt-in [CLI and JavaScript API](TRUST_BUNDLES.md). Production root provisioning and standalone-viewer integration remain pending. Native browser/Python cross-check instructions and measured limits are in [REPRODUCE.md](REPRODUCE.md) and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md).
+Signed trust bundles can be loaded manually for the current tab through **Load trust bundle…**. The root public PEM must be verified independently. Imported trust is memory-only, expires, and is cleared on reload; rollback history covers the current session only. The production identity root is not provisioned. See the [CLI and API documentation](TRUST_BUNDLES.md). Native browser/Python cross-check instructions and measured limits are in [REPRODUCE.md](REPRODUCE.md) and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md).
+
+### Signer identity and recipient use (v4 local work)
+
+The viewer opens on **Check a file**; **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
+
+A known signer is shown as **Verified: {name}** only after the file checks succeed. A valid unknown signer stays amber and withheld by default. **Show image anyway (signer not verified)** enables a stamped hold-to-reveal preview and plain export without changing the verdict or trusting the key. Revoked keys stay blocked. These labels identify a key; they do not prove a photograph's scene, ownership or capture time.
+
+Our signing key fingerprint is `{NEER_FINGERPRINT}` (not yet supplied or pinned). Once configured, compare all 64 characters with the public registry at [guard-signers.json](https://neervasa00000000.github.io/Guard/.well-known/guard-signers.json). The viewer never fetches that file. The legacy key is now revoked at the repository owner's request; no replacement identity has been invented. Verify the Pages deployment against the v4 source revision before treating the hosted viewer as updated.

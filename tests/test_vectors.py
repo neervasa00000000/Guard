@@ -83,3 +83,23 @@ import grd_visual
 for case in area['cases']:
  for i,feature in enumerate(case['features']):assert grd_visual.mapped_tile_features(grd.un64(case['rgb']),case['width'],case['height'],area['sealed'],i,grd).hex()==feature
 print('Native-area raw RGB vectors: five scales passed')
+
+# V4 signer metadata and visual-exit fixtures use a public TEST ONLY seed.
+sv=json.loads((root/'tests/vectors/signer-status-vectors.json').read_text())
+with tempfile.TemporaryDirectory(prefix='guard-v4-python-') as folder:
+ kp=Path(folder)/'keys.json';kp.write_text(json.dumps(sv['keys']))
+ for v in sv['cases']:
+  report=grd.verify(grd.un64(v['container']),keys_path=kp)
+  assert report['verdict']==v['expected_verdict'] and report['signerStatus']==v['status'],(v['id'],report)
+  assert report['fingerprint']==sv['keys']['signers'][0]['fingerprint_sha256']
+ for v in sv['visual']:
+  proof=Path(folder)/'copy.grdp';image=Path(folder)/'copy.png';proof.write_bytes(grd.un64(v['proof']));image.write_bytes(grd.un64(v['image']))
+  proc=subprocess.run([sys.executable,str(root/'grd.py'),'verify-visual',str(proof),str(image),'--trusted-keys',str(kp)],capture_output=True,text=True)
+  assert proc.returncode==v['exit_code'],(v['id'],proc.stdout,proc.stderr)
+  if v['id']=='borderline':assert 'Close to the threshold' in proc.stderr
+ source=Path(folder)/'signed.GRD';source.write_bytes(grd.un64(sv['cases'][0]['container']))
+ for quiet in (False,True):
+  proc=subprocess.run([sys.executable,str(root/'grd.py'),'verify',str(source),'--trusted-keys',str(kp)]+(['--quiet'] if quiet else []),capture_output=True,text=True)
+  assert proc.returncode==0 and json.loads(proc.stdout)['signerStatus']=='trusted'
+  assert (not proc.stderr.strip()) if quiet else 'Verified: Test Org (Tester)' in proc.stderr
+print('V4 signer metadata, visual exit codes 5/7/2, human stderr and --quiet: passed')

@@ -3,7 +3,7 @@ import { subTileBounds, subTileCount, sealSubTile, validateSubRecord, verifySubT
 import { visualFeatures, visualSalt, visualCommitment, exportProof, verifyVisual } from "./visual.js";
 import { GRD3_LIMITS, isGRD3, encodeGRD3, decodeGRD3, verifyGRD3 } from "./grd3.js";
 import { checkRevocation, TRUST_POLICY } from "./trust.js";
-import { canon, sha, hex, TRUSTED, validateTrustedKeys, IntegrityError } from "./verifier.js";
+import { signerReport, canon, sha, hex, TRUSTED, validateTrustedKeys, IntegrityError } from "./verifier.js";
 import { encodeRgbPng, decodeRgbPng, PngFormatError } from "./png.js";
 
 export { visualFeatures, exportProof, verifyVisual, redactRects, subTileBounds };
@@ -333,7 +333,7 @@ export async function verifyGRD2(
       r.verifierFault = true;
       r.problems.push("Trusted-keys file is invalid.");
       check("GRD2 verification", false, "Trusted-keys file is invalid.");
-      return r;
+      return signerReport(r);
     }
     const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
     r.byteLength = bytes.length;
@@ -420,7 +420,8 @@ export async function verifyGRD2(
     r.assetId = m.assetId;
     r.created = m.created;
     if (!m.assetId) r.problems.push("legacy manifest: no asset ID");
-    if ((await sha(unhex(m.publicKey))) !== m.keyId)
+    r.fingerprint=await sha(unhex(m.publicKey));r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
+    if (r.fingerprint !== m.keyId)
       throw new ProofError("Signer fingerprint does not match public key.");
     r.revocation = await checkRevocation(unhex(m.publicKey), revocationPolicy);
     if (r.revocation.revoked) {
@@ -563,17 +564,18 @@ export async function verifyGRD2(
     };
     if (!r.trusted && !r.demo && !r.personal) {
       r.verdict = "UNTRUSTED SIGNER";
+      r.container=doc;r.canRevealUnknown=true;
       r.problems.push(
         "The pixels match this key’s root, but the key is not pinned as trusted. Image withheld.",
       );
-      return r;
+      return signerReport(r);
     }
     if (!doc.tiles.some(t => t.salt || t.seed || t.sub?.some(s => s.salt))) {
       r.verdict = "FULLY REDACTED";
       r.problems.push(
         "No original pixels remain to inspect. No visible content is being called genuine.",
       );
-      return r;
+      return signerReport(r);
     }
     r.verdict = r.demo
       ? "DEMO"
@@ -604,7 +606,7 @@ export async function verifyGRD2(
     }
     r.imageRgba = rgba;
     r.container = doc;
-    return r;
+    return signerReport(r);
   } catch (error) {
     if (error.message?.startsWith("blackout incomplete")) r.hiddenPixelsCleared = false;
     if (error instanceof ResourceLimitError) {
@@ -627,7 +629,7 @@ export async function verifyGRD2(
     r.failed.push("GRD2 proof");
     r.changed = [...r.failed];
     check("GRD2 verification", false, error.message);
-    return r;
+    return signerReport(r);
   }
 }
 export async function redactGRD2(document, indices, method = "black") {

@@ -121,6 +121,7 @@ def verify3(data,trusted,policy,keys_path,c,include_pixels=False):
  r=dict(version=3,verdict='TAMPERED',genuine=False,viewable=False,problems=[],hiddenPixelsCleared=True,signature_valid=False,maxDecodedRows=64)
  try:
   doc=decode3(data,c);m=doc['manifest'];pk=bytes.fromhex(m['publicKey'])
+  r['fingerprint']=c.sha(pk);r['_purpose']=m['purpose']
   if c.sha(pk)!=m['keyId']:raise c.IntegrityError('Wrong signer fingerprint')
   r['revocation']=c.policy_check(pk,policy,keys_path)
   if r['revocation']['revoked']:
@@ -156,7 +157,7 @@ def verify3(data,trusted,policy,keys_path,c,include_pixels=False):
   if isinstance(exc,c.ResourceLimitError):r['verdict']='LIMIT EXCEEDED'
   elif r['verdict']!='REVOKED KEY' and not isinstance(exc,c.PROOF_ERRORS):r['verdict']='CANNOT VERIFY';r['verifierFault']=True
   r['problems'].append(str(exc) or type(exc).__name__)
- return r
+ return c.signer_report(r,keys_path)
 
 def png_write_stream(rgb,w,h):
  """Encode RGB scanlines in 64-row bands without a second full RGB image."""
