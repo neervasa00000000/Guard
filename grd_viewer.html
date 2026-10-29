@@ -1693,8 +1693,8 @@ a {overflow-wrap:anywhere;}
 
 /* A quieter recipient flow; specialist tools stay available on demand. */
 :root {--bg:#f4f6f9;--ink:#18212f;--line:#dbe1e9;--muted:#526072;}
-main,.header-inner,footer {max-width:1120px;}
-main,.header-inner {padding-left:28px;padding-right:28px;}
+main,.header-inner,footer {max-width:none;}
+main,.header-inner {padding-left:clamp(16px,3vw,48px);padding-right:clamp(16px,3vw,48px);}
 .intro {display:block;padding:32px 0 18px;}
 .intro h1 {display:block;font-size:clamp(34px,4.5vw,56px);line-height:1.1;letter-spacing:-2px;margin:0 0 10px;}
 .intro h1 span {font-size:inherit;letter-spacing:inherit;font-weight:inherit;}
@@ -1749,6 +1749,13 @@ main,.header-inner {padding-left:28px;padding-right:28px;}
 .privacy-disclosure {margin:20px 0;border-top:1px solid var(--line);}
 .privacy-disclosure>summary {padding:16px 0;font-size:14px;font-weight:600;}
 .privacy-details {padding-top:8px;}
+/* One disclosure pattern throughout: plus to open, minus to close. */
+details>summary {display:flex;align-items:center;justify-content:space-between;gap:20px;list-style:none;cursor:pointer;}
+details>summary::-webkit-details-marker {display:none;}
+details>summary::marker {content:"";}
+details>summary::after {content:"+";flex:none;width:24px;text-align:center;font:400 24px/1 Arial,sans-serif;}
+details[open]>summary::after {content:"−";}
+.explanation>summary>span[aria-hidden="true"] {display:none;}
 @media(max-width:760px){
  main,.header-inner {padding-left:16px;padding-right:16px;}
  .intro {padding-top:24px;}
