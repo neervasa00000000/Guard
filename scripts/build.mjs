@@ -36,6 +36,8 @@ const visual = (await readFile(new URL("src/visual.js", root), "utf8")).replace(
 const subtiles = (await readFile(new URL("src/subtiles.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
 const bundle = (await readFile(new URL('src/trust-bundle.js',root),'utf8')).replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'');
 const resultCopy=(await readFile(new URL('src/result-copy.js',root),'utf8')).replace(/^export /gm,'');
+const offlineSigner=(await readFile(new URL('src/offline-signer.js',root),'utf8')).replace(/^export /gm,'');
+const signerUi=await readFile(new URL('src/signer-ui.js',root),'utf8');
 const app = (await readFile(new URL("src/app.js", root), "utf8")).replace(
   /^\/\/ SPDX[^\n]*\n/gm,
   "",
@@ -50,7 +52,7 @@ html = html
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${bundle}\n${converter}\n${resultCopy}\n${app}\n})();`,
+      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${bundle}\n${converter}\n${resultCopy}\n${offlineSigner}\n${app}\n${signerUi}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

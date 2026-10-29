@@ -49,6 +49,7 @@
         <span class="format-note">On your device</span>
       </div>
       <p id="active-trust-note" class="session-trust" hidden>Additional signers loaded for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
+      <p id="person-trust-note" class="session-trust" hidden>People trusted for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
       <section
         id="workspace"
         class="workspace"
@@ -304,6 +305,17 @@
           <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
           <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
         </form>
+        <details class="person-trust"><summary>Trust a person</summary>
+          <p id="person-help">Get their public signer file. Confirm their name and full fingerprint through a separate, trusted channel. A name in a file is only a claim. Trust lasts for this tab; reloading clears it.</p>
+          <form id="person-form" aria-describedby="person-help">
+            <p><label for="person-file">Public signer file (.guardsigner)</label><input id="person-file" type="file" accept=".guardsigner,.json" required></p>
+            <p id="person-preview" role="status">Choose a public signer file to see its name and fingerprint.</p>
+            <p><label for="person-fingerprint">Fingerprint confirmed independently</label><input id="person-fingerprint" type="text" maxlength="64" minlength="64" pattern="[a-fA-F0-9]{64}" autocomplete="off" spellcheck="false" required></p>
+            <button id="person-submit" class="secondary" type="submit">Trust this signer for this tab</button>
+            <button id="person-clear" class="secondary" type="button" hidden>Clear people trusted in this tab</button>
+            <p id="person-status" role="status">No additional people trusted.</p>
+          </form>
+        </details>
       </section>
       <section class="advanced-tool" aria-labelledby="copy-heading">
         <h3 id="copy-heading">Check a recompressed or resized copy</h3>
@@ -333,6 +345,7 @@
         <div class="convert-intro">
           <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
           <h2 id="convert-heading">SEAL A PICTURE</h2>
+          <button id="download-viewer-seal" class="secondary" type="button">Download offline viewer</button>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
             PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
@@ -341,6 +354,34 @@
             exporting to PNG or JPG first.
           </p>
         </div>
+        <details id="signer-setup" class="signer-setup">
+          <summary>Sign with your name (optional)</summary>
+          <p id="signer-help">Create once, then unlock your saved key to sign offline. Recipients must independently trust your public key before your name shows as verified. Your name is included in signed files. This does not certify your identity.</p>
+          <div class="signer-grid">
+            <form id="signer-create" aria-describedby="signer-help signer-create-help">
+              <h3>Create a signer</h3>
+              <p><label for="signer-name">Your name</label><input id="signer-name" maxlength="80" autocomplete="name" required></p>
+              <p><label for="signer-password">New key password</label><input id="signer-password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
+              <p><label for="signer-confirm">Repeat password</label><input id="signer-confirm" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
+              <p id="signer-create-help">Use a unique password of at least 12 characters. Save the encrypted key file and a backup. Lost passwords cannot be recovered. Keep your key private.</p>
+              <button id="signer-create-submit" class="secondary" type="submit">Create &amp; save key</button>
+            </form>
+            <form id="signer-unlock" aria-describedby="signer-help">
+              <h3>Unlock a saved signer</h3>
+              <p><label for="signer-file">Encrypted key file (.guardkey)</label><input id="signer-file" type="file" accept=".guardkey" required></p>
+              <p><label for="signer-unlock-password">Key password</label><input id="signer-unlock-password" type="password" maxlength="1024" autocomplete="current-password" required></p>
+              <button id="signer-unlock-submit" class="secondary" type="submit">Unlock signer</button>
+            </form>
+          </div>
+          <p id="signer-status" role="status" aria-live="polite">No signer unlocked. Pictures use a disposable self-signed key.</p>
+          <div id="signer-active" hidden>
+            <p id="signer-identity"></p>
+            <button id="signer-public" class="secondary" type="button">Save public signer file</button>
+            <button id="signer-lock" class="secondary" type="button">Lock signer</button>
+            <p>Share only the public signer file and fingerprint. The unlocked key stays in memory until you lock it or close/reload this page. Browser access or malicious scripts can still use an unlocked key. Lock it when finished.</p>
+          </div>
+        </details>
+        <p id="seal-signer-summary" class="session-trust" role="status">Signing: disposable key · identity not verified.</p>
         <form id="convert-form" class="convert-form">
           <label for="convert-input">Choose an image</label>
           <input
@@ -364,8 +405,8 @@
             <span id="convert-details"></span>
           </div>
           <p class="file-help">
-            Anyone can make a self-signed file, including from an edited image.
-            Conversion does not verify authenticity. Your files stay on your
+            A signature does not prove a picture is true or establish ownership.
+            Your files stay on your
             device.
           </p>
           <p id="document-warning" class="privacy-warning" role="alert" hidden>This looks like an ID card or document. Sealed files keep every visible detail. Use blackout redaction first.</p>
@@ -421,7 +462,7 @@
         id="privacy-details"
         aria-labelledby="privacy-heading"
       >
-        <h2 id="privacy-heading">Privacy, plainly. Effective 27 October 2026.</h2>
+        <h2 id="privacy-heading">Privacy, plainly. Effective 29 October 2026.</h2>
         <p>
           <strong>Who runs this.</strong> Guard is an open-source project published at
           <a href="https://github.com/neervasa00000000/Guard" rel="noopener noreferrer">github.com/neervasa00000000/Guard</a>.
@@ -431,6 +472,7 @@
         <p>
           <strong>What Guard does with your files.</strong> Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
         </p>
+        <p><strong>Offline signing keys.</strong> Guard downloads a password-encrypted key file. Unlocked signing keys stay in memory until locked or this page closes/reloads; Guard does not save them in browser storage. Keep the encrypted file and password private. Public signer files contain a name, public key and fingerprint. Imported people are trusted only for this tab and are cleared on reload. Older offline viewers cannot know about newer revocations.</p>
         <p>
           <strong>What the website host collects.</strong> This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See
           <a
@@ -446,7 +488,7 @@
           >. To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
         </p>
         <p>
-          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". New browser conversions leave the label blank and download as image.GRD. Verification reports you save include these details. Check files and reports before sharing them.
+          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". Disposable-key conversions leave the label blank and download as image.GRD. Signing with a saved signer includes the name you entered in the signed file and public signer file. Verification reports you save include these details. Check files and reports before sharing them.
         </p>
         <p>
           <strong>Redaction limits.</strong> Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.

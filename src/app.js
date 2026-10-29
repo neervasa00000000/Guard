@@ -1152,7 +1152,7 @@ $("convert-input").onchange = async () => {
       (resized
         ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
         : "Ready at original size. ") +
-        "Self-signed; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+        "Transparency becomes white and animation uses the first frame. Source metadata is not copied.",
     );
   } catch (error) {
     if (token === conversionVersion)
@@ -1189,38 +1189,34 @@ $("convert-form").onsubmit = async (event) => {
   $("convert-form").setAttribute("aria-busy", "true");
   conversionStatus("Converting and signing on your device…");
   try {
-    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
-      "sign",
-      "verify",
-    ]);
-    const publicKey = new Uint8Array(
-      await crypto.subtle.exportKey("raw", key.publicKey),
-    );
+    const signingVersion=offlineSignerVersion, signer=unlockedSigner;
+    const key = signer ? {privateKey:signer.privateKey} : await crypto.subtle.generateKey({name:'Ed25519'},false,['sign','verify']);
+    const publicKey = signer ? signer.publicKey : new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
     const doc = await sealRgba({
       rgba: source.rgba,
       width: source.width,
       height: source.height,
       publicKey,
-      purpose: "personal",
+      purpose: signer ? "asset" : "personal",
       subTile: 16,
-      label: "",
+      label: signer ? signer.contact.name : "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
     const bytes = encodeGRD2(doc),
-      result = await verifyGRD2(bytes);
-    if (result.verdict !== "UNVERIFIED: SELF-SIGNED" || !result.viewable)
+      result = await verifyGRD2(bytes, signer ? [{public_key_hex:signer.contact.publicKey,name:signer.contact.name}] : TRUSTED, (await sessionTrust()).policy);
+    if ((signer ? !result.genuine : result.verdict !== "UNVERIFIED: SELF-SIGNED") || !result.viewable)
       throw new Error(
         "The generated file did not pass its integrity check. No download was created.",
       );
-    if (token !== conversionVersion || viewerToken !== operation)
+    if (token !== conversionVersion || viewerToken !== operation || signingVersion!==offlineSignerVersion)
       throw new Error(
-        "Another file was opened. Convert again when you are ready.",
+        "Your file or signer changed. Check the selection and try again.",
       );
     const name = "image.GRD";
     const W = source.width,
       H = source.height,
       ratio = (bytes.length / source.sourceBytes).toFixed(1);
-    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. ${signer ? 'Signed with '+signer.contact.name+'’s key. Recipients must trust the public key independently.' : 'Unverified: self-signed.'}`;
     if (bytes.length > 20 * 1024 * 1024)
       statusMsg += " Large file: some phones may be slow to open it.";
     conversionStatus(statusMsg);
@@ -1260,9 +1256,12 @@ $("copy-form").onsubmit = async event => {
 };
 
 async function sessionTrust(){
- if(!activeBundle)return {anchors:TRUSTED,policy:TRUST_POLICY,args:[TRUSTED,TRUST_POLICY]};
+ const base=[...TRUSTED,...Array.from(personTrust.values()).filter(c=>!TRUSTED.some(k=>k.public_key_hex===c.public_key_hex))];
+ if(TRUSTED._invalid)base._invalid=true;
+ if(!activeBundle)return {anchors:base,policy:TRUST_POLICY,args:[base,TRUST_POLICY]};
  const r=await verifyTrustBundle(activeBundle.bytes,activeBundle.root,{previous:bundleStates.get(activeBundle.root)??null});
- const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...TRUSTED.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
+ const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...base.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
+ if(base._invalid)anchors._invalid=true;
  const merged={version:Math.max(TRUST_POLICY.version,r.policy.version),asOf:r.policy.asOf,revoked};
  return {anchors,policy:merged,args:[anchors,merged]};
 }

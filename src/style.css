@@ -1754,3 +1754,20 @@ details[open]>summary::after {content:"−";}
  .image-panel {padding:16px;}
  .format-note {display:none;}
 }
+
+.convert-panel {display:block;border-color:var(--line);border-radius:12px;padding:24px;}
+.convert-form {max-width:860px;}
+.signer-setup {margin:20px 0;padding:0 20px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.signer-setup>summary,.person-trust>summary {min-height:56px;font-size:15px;font-weight:600;}
+.signer-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.signer-grid form {min-width:0;}
+.signer-setup p,.person-trust p {font-size:13px;line-height:1.65;overflow-wrap:anywhere;}
+.signer-setup h3 {font-size:17px;}
+.signer-setup label {display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+.signer-setup input,.person-trust input[type="text"] {display:block;width:100%;max-width:100%;min-height:44px;padding:10px;border:1px solid #788397;border-radius:6px;background:#fff;color:var(--ink);font-size:16px;}
+#signer-active {padding:0 0 16px;}
+#signer-active button {margin:0 8px 8px 0;}
+#signer-status {padding:12px 0;}
+#seal-signer-summary {margin:16px 0;}
+.person-trust {border-top:1px solid var(--line);margin-top:20px;}
+@media(max-width:760px){.signer-grid {grid-template-columns:minmax(0,1fr);gap:12px;}.signer-grid form+form {border-top:1px solid var(--line);padding-top:12px;}.signer-setup {padding:0 16px;}}

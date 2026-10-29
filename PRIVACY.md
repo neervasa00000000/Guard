@@ -1,12 +1,14 @@
-# Privacy, plainly. Effective 27 October 2026.
+# Privacy, plainly. Effective 29 October 2026.
 
 **Who runs this.** Guard is an open-source project published at [github.com/neervasa00000000/Guard](https://github.com/neervasa00000000/Guard). Questions or privacy requests: [https://github.com/neervasa00000000/Guard/issues](https://github.com/neervasa00000000/Guard/issues).
 
 **What Guard does with your files.** Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
 
+**Offline signing keys.** Guard downloads a password-encrypted key file. Unlocked signing keys stay in memory until locked or this page closes/reloads; Guard does not save them in browser storage. Keep the encrypted file and password private. Public signer files contain a name, public key and fingerprint. Imported people are trusted only for this tab and cleared on reload. Older offline viewers cannot know about newer revocations.
+
 **What the website host collects.** This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See [GitHub Pages data collection](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) and the [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement). To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
 
-**Personal information inside files.** A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". New browser conversions leave the label blank and download as image.GRD. Verification reports you save include these details. Check files and reports before sharing them.
+**Personal information inside files.** A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". Disposable-key conversions leave the label blank and download as image.GRD. Signing with a saved signer includes the name you entered in the signed file and public signer file. Verification reports you save include these details. Check files and reports before sharing them.
 
 **Redaction limits.** Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.
 

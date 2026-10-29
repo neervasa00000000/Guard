@@ -164,10 +164,10 @@ test("actual conversion submit handler downloads and opens the signed file with 
   };
   $("convert-privacy").checked=true;
   const messages = [], downloads = [], opened = [];
-  const execute = new Function("$", "conversionImage", "conversionVersion", "operation", "crypto", "sealRgba", "encodeGRD2", "verifyGRD2", "conversionStatus", "download", "openFile", "File", "bytesLabel",
+  const execute = new Function("$", "conversionImage", "conversionVersion", "operation", "crypto", "sealRgba", "encodeGRD2", "verifyGRD2", "conversionStatus", "download", "openFile", "File", "bytesLabel", "offlineSignerVersion", "unlockedSigner", "TRUSTED", "sessionTrust",
     app.slice(start,app.indexOf('$("copy-form").onsubmit',start)) + '\nreturn $("convert-form").onsubmit({preventDefault() {}});');
   await execute($, { rgba: new Uint8Array(64 * 64 * 4).fill(255), width: 64, height: 64, name: "TEST ONLY.png", sourceBytes: 4096 }, 1, 1, crypto, sealRgba, encodeGRD2, verifyGRD2,
-    message => messages.push(message), (...args) => downloads.push(args), async file => opened.push(file), File, n => `${n} bytes`);
+    message => messages.push(message), (...args) => downloads.push(args), async file => opened.push(file), File, n => `${n} bytes`, 0, null, [], async()=>({policy:(await import('../src/trust.js')).TRUST_POLICY}));
   assert.equal(downloads.length, 1, messages.join("\n"));
   assert.equal(downloads[0][1], "image.GRD");
   assert.equal(opened.length, 1);

@@ -142,3 +142,9 @@ The fixture generator must run before the QA script: `python3 scripts/make-trust
 Create empty real-world measurement CSVs with `python3 bench/realworld-templates.py`; it never fabricates rows or overwrites recorded trials. File carrier, watermark and TSA experiments remain pending until implemented and actually measured.
 
 The advanced-tools checks exercise the real copy form for consistent, borderline and inconsistent signed fixtures, and verify that both forms and visual-proof export remain available below the preview. The signer checks also cover the active session-trust notice. The native disclosures can be toggled with Enter; privacy links open the privacy disclosure before navigating.
+
+## Offline signer QA
+
+Run `npm test`, `npm run build`, and `GUARD_TEST_PYTHON=.venv/bin/python node scripts/check-offline-signer.mjs` (Python requirements installed). Regenerate the isolated browser QA copy as above; run **Run offline signer checks** for creation, encrypted export/unlock, incorrect password, named asset conversion, explicit fingerprint trust, clearing trust, revocation and pending-unlock cancellation. QA captures downloads in memory and uses random TEST ONLY identities; it never pins a real issuer. The accessibility audit includes expanded signer and person-trust forms. Responsive checks include those forms from 320 through 2560 CSS pixels.
+
+Manual offline check still required: download the production HTML, disconnect, open it directly in a current browser, create/save/reopen a TEST ONLY key, sign an image, share/import only its public contact, and verify it. The automated browser tool blocks file URLs, so an HTTP test must not be described as a completed local-file-origin trial.

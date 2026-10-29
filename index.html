@@ -1772,6 +1772,23 @@ details[open]>summary::after {content:"−";}
  .format-note {display:none;}
 }
 
+.convert-panel {display:block;border-color:var(--line);border-radius:12px;padding:24px;}
+.convert-form {max-width:860px;}
+.signer-setup {margin:20px 0;padding:0 20px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.signer-setup>summary,.person-trust>summary {min-height:56px;font-size:15px;font-weight:600;}
+.signer-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.signer-grid form {min-width:0;}
+.signer-setup p,.person-trust p {font-size:13px;line-height:1.65;overflow-wrap:anywhere;}
+.signer-setup h3 {font-size:17px;}
+.signer-setup label {display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+.signer-setup input,.person-trust input[type="text"] {display:block;width:100%;max-width:100%;min-height:44px;padding:10px;border:1px solid #788397;border-radius:6px;background:#fff;color:var(--ink);font-size:16px;}
+#signer-active {padding:0 0 16px;}
+#signer-active button {margin:0 8px 8px 0;}
+#signer-status {padding:12px 0;}
+#seal-signer-summary {margin:16px 0;}
+.person-trust {border-top:1px solid var(--line);margin-top:20px;}
+@media(max-width:760px){.signer-grid {grid-template-columns:minmax(0,1fr);gap:12px;}.signer-grid form+form {border-top:1px solid var(--line);padding-top:12px;}.signer-setup {padding:0 16px;}}
+
     </style>
   </head>
   <body>
@@ -1805,6 +1822,7 @@ details[open]>summary::after {content:"−";}
         <span class="format-note">On your device</span>
       </div>
       <p id="active-trust-note" class="session-trust" hidden>Additional signers loaded for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
+      <p id="person-trust-note" class="session-trust" hidden>People trusted for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
       <section
         id="workspace"
         class="workspace"
@@ -2060,6 +2078,17 @@ details[open]>summary::after {content:"−";}
           <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
           <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
         </form>
+        <details class="person-trust"><summary>Trust a person</summary>
+          <p id="person-help">Get their public signer file. Confirm their name and full fingerprint through a separate, trusted channel. A name in a file is only a claim. Trust lasts for this tab; reloading clears it.</p>
+          <form id="person-form" aria-describedby="person-help">
+            <p><label for="person-file">Public signer file (.guardsigner)</label><input id="person-file" type="file" accept=".guardsigner,.json" required></p>
+            <p id="person-preview" role="status">Choose a public signer file to see its name and fingerprint.</p>
+            <p><label for="person-fingerprint">Fingerprint confirmed independently</label><input id="person-fingerprint" type="text" maxlength="64" minlength="64" pattern="[a-fA-F0-9]{64}" autocomplete="off" spellcheck="false" required></p>
+            <button id="person-submit" class="secondary" type="submit">Trust this signer for this tab</button>
+            <button id="person-clear" class="secondary" type="button" hidden>Clear people trusted in this tab</button>
+            <p id="person-status" role="status">No additional people trusted.</p>
+          </form>
+        </details>
       </section>
       <section class="advanced-tool" aria-labelledby="copy-heading">
         <h3 id="copy-heading">Check a recompressed or resized copy</h3>
@@ -2089,6 +2118,7 @@ details[open]>summary::after {content:"−";}
         <div class="convert-intro">
           <p class="eyebrow">IMAGE → GUARD / ON YOUR DEVICE</p>
           <h2 id="convert-heading">SEAL A PICTURE</h2>
+          <button id="download-viewer-seal" class="secondary" type="button">Download offline viewer</button>
           <p>Choose a photo. Download a signed, redactable copy.</p>
           <p class="file-help" id="convert-help">
             PNG, JPG, WebP, GIF or BMP · up to 256 MiB and 50 megapixels. Large
@@ -2097,6 +2127,34 @@ details[open]>summary::after {content:"−";}
             exporting to PNG or JPG first.
           </p>
         </div>
+        <details id="signer-setup" class="signer-setup">
+          <summary>Sign with your name (optional)</summary>
+          <p id="signer-help">Create once, then unlock your saved key to sign offline. Recipients must independently trust your public key before your name shows as verified. Your name is included in signed files. This does not certify your identity.</p>
+          <div class="signer-grid">
+            <form id="signer-create" aria-describedby="signer-help signer-create-help">
+              <h3>Create a signer</h3>
+              <p><label for="signer-name">Your name</label><input id="signer-name" maxlength="80" autocomplete="name" required></p>
+              <p><label for="signer-password">New key password</label><input id="signer-password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
+              <p><label for="signer-confirm">Repeat password</label><input id="signer-confirm" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
+              <p id="signer-create-help">Use a unique password of at least 12 characters. Save the encrypted key file and a backup. Lost passwords cannot be recovered. Keep your key private.</p>
+              <button id="signer-create-submit" class="secondary" type="submit">Create &amp; save key</button>
+            </form>
+            <form id="signer-unlock" aria-describedby="signer-help">
+              <h3>Unlock a saved signer</h3>
+              <p><label for="signer-file">Encrypted key file (.guardkey)</label><input id="signer-file" type="file" accept=".guardkey" required></p>
+              <p><label for="signer-unlock-password">Key password</label><input id="signer-unlock-password" type="password" maxlength="1024" autocomplete="current-password" required></p>
+              <button id="signer-unlock-submit" class="secondary" type="submit">Unlock signer</button>
+            </form>
+          </div>
+          <p id="signer-status" role="status" aria-live="polite">No signer unlocked. Pictures use a disposable self-signed key.</p>
+          <div id="signer-active" hidden>
+            <p id="signer-identity"></p>
+            <button id="signer-public" class="secondary" type="button">Save public signer file</button>
+            <button id="signer-lock" class="secondary" type="button">Lock signer</button>
+            <p>Share only the public signer file and fingerprint. The unlocked key stays in memory until you lock it or close/reload this page. Browser access or malicious scripts can still use an unlocked key. Lock it when finished.</p>
+          </div>
+        </details>
+        <p id="seal-signer-summary" class="session-trust" role="status">Signing: disposable key · identity not verified.</p>
         <form id="convert-form" class="convert-form">
           <label for="convert-input">Choose an image</label>
           <input
@@ -2120,8 +2178,8 @@ details[open]>summary::after {content:"−";}
             <span id="convert-details"></span>
           </div>
           <p class="file-help">
-            Anyone can make a self-signed file, including from an edited image.
-            Conversion does not verify authenticity. Your files stay on your
+            A signature does not prove a picture is true or establish ownership.
+            Your files stay on your
             device.
           </p>
           <p id="document-warning" class="privacy-warning" role="alert" hidden>This looks like an ID card or document. Sealed files keep every visible detail. Use blackout redaction first.</p>
@@ -2177,7 +2235,7 @@ details[open]>summary::after {content:"−";}
         id="privacy-details"
         aria-labelledby="privacy-heading"
       >
-        <h2 id="privacy-heading">Privacy, plainly. Effective 27 October 2026.</h2>
+        <h2 id="privacy-heading">Privacy, plainly. Effective 29 October 2026.</h2>
         <p>
           <strong>Who runs this.</strong> Guard is an open-source project published at
           <a href="https://github.com/neervasa00000000/Guard" rel="noopener noreferrer">github.com/neervasa00000000/Guard</a>.
@@ -2187,6 +2245,7 @@ details[open]>summary::after {content:"−";}
         <p>
           <strong>What Guard does with your files.</strong> Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
         </p>
+        <p><strong>Offline signing keys.</strong> Guard downloads a password-encrypted key file. Unlocked signing keys stay in memory until locked or this page closes/reloads; Guard does not save them in browser storage. Keep the encrypted file and password private. Public signer files contain a name, public key and fingerprint. Imported people are trusted only for this tab and are cleared on reload. Older offline viewers cannot know about newer revocations.</p>
         <p>
           <strong>What the website host collects.</strong> This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See
           <a
@@ -2202,7 +2261,7 @@ details[open]>summary::after {content:"−";}
           >. To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
         </p>
         <p>
-          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". New browser conversions leave the label blank and download as image.GRD. Verification reports you save include these details. Check files and reports before sharing them.
+          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". Disposable-key conversions leave the label blank and download as image.GRD. Signing with a saved signer includes the name you entered in the signed file and public signer file. Verification reports you save include these details. Check files and reports before sharing them.
         </p>
         <p>
           <strong>Redaction limits.</strong> Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.
@@ -4535,6 +4594,72 @@ function signerSummary(report) {
   return '';
 }
 
+// SPDX-License-Identifier: MIT
+// Fixed-cost, versioned password envelope. No private material enters storage.
+const SIGNER_AAD = new TextEncoder().encode('Guard encrypted signer v1');
+const SIGNER_ROUNDS = 600000;
+function signerHex(bytes) { return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''); }
+function signerUnhex(s) { if(typeof s!=='string'||!/^[a-f0-9]{64}$/.test(s))throw Error('Invalid public key.');return Uint8Array.from(s.match(/../g),b=>parseInt(b,16)); }
+function signerB64(bytes) { return btoa(String.fromCharCode(...new Uint8Array(bytes))); }
+function signerDecode(s, max=2048) { if(typeof s!=='string'||s.length>max||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(s))throw Error('Invalid key file.');return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); }
+function signerObject(s, keys) { if(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).sort().join()!==keys.sort().join())throw Error('Invalid key file.'); }
+function signerJson(text) { if(typeof text!=='string'||text.length>16384)throw Error('Choose a Guard key file up to 16 KiB.');return JSON.parse(text); }
+function signerName(name) { if(typeof name!=='string'||!name.trim()||name.trim().length>80||/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(name))throw Error('Enter a name of 1–80 characters, without control characters.');return name.trim(); }
+function signerPassword(password) { if(typeof password!=='string'||password.length<12||password.length>1024)throw Error('Use a password of 12–1024 characters.'); }
+async function signerWrappingKey(password,salt) {
+  signerPassword(password);
+  const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',iterations:SIGNER_ROUNDS,salt},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function signerContact(publicKey,name) {
+  const raw=typeof publicKey==='string'?signerUnhex(publicKey):new Uint8Array(publicKey);
+  if(raw.length!==32)throw Error('Invalid public key.');
+  return {format:'Guard public signer',version:1,name:signerName(name),publicKey:signerHex(raw),fingerprint:signerHex(new Uint8Array(await crypto.subtle.digest('SHA-256',raw)))};
+}
+async function readSignerContact(text) {
+  const c=signerJson(text);signerObject(c,['format','version','name','publicKey','fingerprint']);
+  if(c.format!=='Guard public signer'||c.version!==1)throw Error('Choose a Guard public signer file, never a private key.');
+  const expected=await signerContact(c.publicKey,c.name);
+  if(c.fingerprint!==expected.fingerprint)throw Error('Public fingerprint does not match the key.');
+  return expected;
+}
+async function createOfflineSigner(name,password) {
+  name=signerName(name);signerPassword(password);
+  const pair=await crypto.subtle.generateKey('Ed25519',true,['sign','verify']);
+  const raw=new Uint8Array(await crypto.subtle.exportKey('raw',pair.publicKey));
+  const secret=new Uint8Array(await crypto.subtle.exportKey('pkcs8',pair.privateKey));
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const payload=new TextEncoder().encode(JSON.stringify({name,publicKey:signerHex(raw),pkcs8:signerB64(secret)}));
+  try {
+    const key=await signerWrappingKey(password,salt);
+    const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:SIGNER_AAD,tagLength:128},key,payload);
+    const envelope={format:'Guard encrypted signer',version:1,kdf:'PBKDF2-SHA256',iterations:SIGNER_ROUNDS,cipher:'AES-256-GCM',salt:signerB64(salt),iv:signerB64(iv),data:signerB64(encrypted)};
+    // Return only the encrypted backup. The UI unlocks this exact file before use.
+    return JSON.stringify(envelope);
+  } finally { secret.fill(0);payload.fill(0); }
+}
+async function unlockOfflineSigner(text,password) {
+  const e=signerJson(text);signerObject(e,['format','version','kdf','iterations','cipher','salt','iv','data']);
+  if(e.format!=='Guard encrypted signer'||e.version!==1||e.kdf!=='PBKDF2-SHA256'||e.iterations!==SIGNER_ROUNDS||e.cipher!=='AES-256-GCM')throw Error('Unsupported signer key file.');
+  const salt=signerDecode(e.salt),iv=signerDecode(e.iv),data=signerDecode(e.data);
+  if(salt.length!==16||iv.length!==12||data.length<16)throw Error('Invalid key file.');
+  let plain;
+  try {
+    const key=await signerWrappingKey(password,salt);
+    plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:SIGNER_AAD,tagLength:128},key,data));
+  } catch { throw Error('Could not unlock. Check your password and key file.'); }
+  let secret;
+  try {
+    const p=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(plain));signerObject(p,['name','publicKey','pkcs8']);
+    const contact=await signerContact(p.publicKey,p.name);secret=signerDecode(p.pkcs8);
+    const privateKey=await crypto.subtle.importKey('pkcs8',secret,'Ed25519',false,['sign']);
+    const publicKey=await crypto.subtle.importKey('raw',signerUnhex(contact.publicKey),'Ed25519',false,['verify']);
+    const challenge=crypto.getRandomValues(new Uint8Array(32));
+    if(!await crypto.subtle.verify('Ed25519',publicKey,await crypto.subtle.sign('Ed25519',privateKey,challenge),challenge))throw Error('Key pair does not match.');
+    return {contact,privateKey,publicKey:signerUnhex(contact.publicKey)};
+  } finally { plain.fill(0);secret?.fill(0); }
+}
+
 if (self !== top) {
   document.documentElement.classList.add("framed");
   const warning = document.createElement("p");
@@ -5688,7 +5813,7 @@ $("convert-input").onchange = async () => {
       (resized
         ? "Ready. The GRD will use the resized preview above. Your original stays unchanged. "
         : "Ready at original size. ") +
-        "Self-signed; transparency becomes white and animation uses the first frame. Source metadata is not copied.",
+        "Transparency becomes white and animation uses the first frame. Source metadata is not copied.",
     );
   } catch (error) {
     if (token === conversionVersion)
@@ -5725,38 +5850,34 @@ $("convert-form").onsubmit = async (event) => {
   $("convert-form").setAttribute("aria-busy", "true");
   conversionStatus("Converting and signing on your device…");
   try {
-    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
-      "sign",
-      "verify",
-    ]);
-    const publicKey = new Uint8Array(
-      await crypto.subtle.exportKey("raw", key.publicKey),
-    );
+    const signingVersion=offlineSignerVersion, signer=unlockedSigner;
+    const key = signer ? {privateKey:signer.privateKey} : await crypto.subtle.generateKey({name:'Ed25519'},false,['sign','verify']);
+    const publicKey = signer ? signer.publicKey : new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
     const doc = await sealRgba({
       rgba: source.rgba,
       width: source.width,
       height: source.height,
       publicKey,
-      purpose: "personal",
+      purpose: signer ? "asset" : "personal",
       subTile: 16,
-      label: "",
+      label: signer ? signer.contact.name : "",
       sign: (b) => crypto.subtle.sign("Ed25519", key.privateKey, b),
     });
     const bytes = encodeGRD2(doc),
-      result = await verifyGRD2(bytes);
-    if (result.verdict !== "UNVERIFIED: SELF-SIGNED" || !result.viewable)
+      result = await verifyGRD2(bytes, signer ? [{public_key_hex:signer.contact.publicKey,name:signer.contact.name}] : TRUSTED, (await sessionTrust()).policy);
+    if ((signer ? !result.genuine : result.verdict !== "UNVERIFIED: SELF-SIGNED") || !result.viewable)
       throw new Error(
         "The generated file did not pass its integrity check. No download was created.",
       );
-    if (token !== conversionVersion || viewerToken !== operation)
+    if (token !== conversionVersion || viewerToken !== operation || signingVersion!==offlineSignerVersion)
       throw new Error(
-        "Another file was opened. Convert again when you are ready.",
+        "Your file or signer changed. Check the selection and try again.",
       );
     const name = "image.GRD";
     const W = source.width,
       H = source.height,
       ratio = (bytes.length / source.sourceBytes).toFixed(1);
-    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. Unverified: self-signed.`;
+    let statusMsg = `Downloaded image.GRD · ${W} × ${H} · ${bytesLabel(bytes.length)} (${ratio}× the original file). Guard stores exact lossless pixels so every tile can be checked. ${signer ? 'Signed with '+signer.contact.name+'’s key. Recipients must trust the public key independently.' : 'Unverified: self-signed.'}`;
     if (bytes.length > 20 * 1024 * 1024)
       statusMsg += " Large file: some phones may be slow to open it.";
     conversionStatus(statusMsg);
@@ -5796,9 +5917,12 @@ $("copy-form").onsubmit = async event => {
 };
 
 async function sessionTrust(){
- if(!activeBundle)return {anchors:TRUSTED,policy:TRUST_POLICY,args:[TRUSTED,TRUST_POLICY]};
+ const base=[...TRUSTED,...Array.from(personTrust.values()).filter(c=>!TRUSTED.some(k=>k.public_key_hex===c.public_key_hex))];
+ if(TRUSTED._invalid)base._invalid=true;
+ if(!activeBundle)return {anchors:base,policy:TRUST_POLICY,args:[base,TRUST_POLICY]};
  const r=await verifyTrustBundle(activeBundle.bytes,activeBundle.root,{previous:bundleStates.get(activeBundle.root)??null});
- const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...TRUSTED.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
+ const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...base.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
+ if(base._invalid)anchors._invalid=true;
  const merged={version:Math.max(TRUST_POLICY.version,r.policy.version),asOf:r.policy.asOf,revoked};
  return {anchors,policy:merged,args:[anchors,merged]};
 }
@@ -5848,6 +5972,86 @@ for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
 for(const anchor of document.querySelectorAll('a[href="#privacy-details"],a[href="#advanced-tools"]')){
  anchor.addEventListener('click',()=>{const target=anchor.getAttribute('href')==='#privacy-details'?'privacy-disclosure':'advanced-tools';$(target).open=true;});
 }
+
+// SPDX-License-Identifier: MIT
+let unlockedSigner=null,offlineSignerVersion=0,signerBusy=false,personTrustEpoch=0;
+const personTrust=new Map();
+function lockOfflineSigner(message='Signer locked. Unlock your saved key to sign again.') {
+  offlineSignerVersion++;unlockedSigner=null;
+  $('signer-active').hidden=true;$('signer-identity').textContent='';
+  $('seal-signer-summary').textContent='Signing: disposable key · identity not verified.';
+  $('signer-status').textContent=message;
+}
+function activateOfflineSigner(signer) {
+  unlockedSigner=signer;$('signer-active').hidden=false;
+  $('signer-identity').textContent=signer.contact.name+' · SHA-256 '+signer.contact.fingerprint;
+  $('seal-signer-summary').textContent='Signing with '+signer.contact.name+'’s key. Recipients must trust it independently.';
+  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';
+}
+async function signerAction(event,kind) {
+  event.preventDefault();if(signerBusy)return;
+  const form=$(kind==='create'?'signer-create':'signer-unlock');
+  if(!form.reportValidity())return;
+  if(kind==='create'&&$('signer-password').value!==$('signer-confirm').value){$('signer-status').textContent='Passwords do not match. Repeat the same password.';$('signer-confirm').focus();return;}
+  signerBusy=true;lockOfflineSigner('Working locally…');const epoch=offlineSignerVersion;
+  $('signer-create-submit').disabled=true;$('signer-unlock-submit').disabled=true;form.setAttribute('aria-busy','true');
+  try {
+    let text,password;
+    if(kind==='create'){
+      password=$('signer-password').value;text=await createOfflineSigner($('signer-name').value,password);
+    }else{
+      const file=$('signer-file').files[0];if(!file||file.size>16384)throw Error('Choose a .guardkey file up to 16 KiB.');
+      text=await file.text();password=$('signer-unlock-password').value;
+    }
+    const signer=await unlockOfflineSigner(text,password);
+    if(epoch!==offlineSignerVersion)return;
+    const trust=await sessionTrust();
+    if((await checkRevocation(signer.publicKey,trust.policy)).revoked)throw Error('This key is revoked. Create a new signer.');
+    if(epoch!==offlineSignerVersion)return;
+    if(kind==='create')download(new TextEncoder().encode(text),'signer.guardkey','application/json');
+    activateOfflineSigner(signer);
+    if(kind==='create')$('signer-status').textContent='Encrypted key download requested. Keep the saved file and a backup; your password cannot be recovered. Signer unlocked for this page.';
+  }catch(error){if(epoch===offlineSignerVersion)$('signer-status').textContent=error.message;}
+  finally{
+    for(const id of ['signer-password','signer-confirm','signer-unlock-password'])$(id).value='';
+    signerBusy=false;$('signer-create-submit').disabled=false;$('signer-unlock-submit').disabled=false;form.removeAttribute('aria-busy');
+  }
+}
+$('signer-create').onsubmit=e=>signerAction(e,'create');
+$('signer-unlock').onsubmit=e=>signerAction(e,'unlock');
+$('signer-lock').onclick=()=>lockOfflineSigner();
+window.addEventListener('pagehide',()=>lockOfflineSigner());
+$('signer-public').onclick=()=>{if(unlockedSigner)download(new TextEncoder().encode(JSON.stringify(unlockedSigner.contact,null,2)),'public.guardsigner','application/json');};
+$('person-file').onchange=async()=>{
+  personTrustEpoch++;
+  $('person-fingerprint').value='';$('person-preview').textContent='';
+  const file=$('person-file').files[0];
+  try{if(!file||file.size>16384)throw Error('Choose a public signer file up to 16 KiB.');const c=await readSignerContact(await file.text());if($('person-file').files[0]!==file)return;$('person-preview').textContent='Claimed name: '+c.name+' · SHA-256 '+c.fingerprint;}
+  catch(error){$('person-preview').textContent=error.message;}
+};
+$('person-form').onsubmit=async event=>{
+  event.preventDefault();if($('person-submit').disabled||!$('person-form').reportValidity())return;
+  $('person-submit').disabled=true;
+  const epoch=++personTrustEpoch,trustEpoch=trustImportVersion;
+  try{
+    const file=$('person-file').files[0],confirmed=$('person-fingerprint').value.toLowerCase();
+    if(!file||file.size>16384)throw Error('Choose a public signer file up to 16 KiB.');
+    const c=await readSignerContact(await file.text());
+    if(c.fingerprint!==confirmed)throw Error('Fingerprint does not match. Check it independently with this person.');
+    const trust=await sessionTrust();
+    if((await checkRevocation(signerUnhex(c.publicKey),trust.policy)).revoked)throw Error('This key is revoked and cannot be trusted.');
+    if(epoch!==personTrustEpoch||trustEpoch!==trustImportVersion)throw Error('Trust changed during import. Check the file again.');
+    if(trust.anchors.some(k=>k.public_key_hex===c.publicKey))throw Error('This key is already trusted. Its existing identity stays unchanged.');
+    if(personTrust.size>=32)throw Error('This tab already trusts 32 people. Clear the list to start again.');
+    personTrust.set(c.publicKey,{public_key_hex:c.publicKey,name:c.name,owner:c.name,alg:'Ed25519',key_id:c.fingerprint.slice(0,16),fingerprint_sha256:c.fingerprint});trustImportVersion++;reset();
+    $('person-clear').hidden=false;$('person-trust-note').hidden=false;
+    $('person-status').textContent='Trusted '+c.name+' for this tab. Choose their .GRD file again. Reloading clears this trust.';
+  }catch(error){$('person-status').textContent=error.message;}
+  finally{$('person-submit').disabled=false;}
+};
+$('person-clear').onclick=()=>{personTrustEpoch++;personTrust.clear();trustImportVersion++;reset();$('person-clear').hidden=true;$('person-trust-note').hidden=true;$('person-status').textContent='People cleared. Bundled signers and any signed trust bundle still apply.';};
+
+$('download-viewer-seal').onclick=()=>download(ORIGINAL_HTML,'grd_viewer.html','text/html');
 
 })();
     </script>

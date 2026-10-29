@@ -57,7 +57,7 @@ The added size/schema/image limits are stricter than the supplied viewer. Files 
 
 ## Licence, privacy and issuer setup
 
-This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Browser conversions use an empty public label and generic download name. Redaction exports are blackout-only; method labels are unsigned claims.
+This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Disposable-key browser conversions use an empty public label and generic download name. An optional saved signer adds its name to signed files; recipients still need to trust its public key independently. Redaction exports are blackout-only; method labels are unsigned claims.
 
 Exit 0 means GENUINE only. Other verdicts use the non-zero groups below; inspect the JSON verdict for the precise result. Treat any non-zero code as 'not proven genuine'.
 
@@ -165,3 +165,5 @@ Our signing key fingerprint is `{NEER_FINGERPRINT}` (not yet supplied or pinned)
 Independent-review follow-up: the ownership-unconfirmed legacy record is labelled **Legacy viewer key (ownership unconfirmed)**, with its revocation retained. This record does not identify Neer. The intended name for a future, separately verified key remains **Neer**. Existing public-key labels require `pin-signer.mjs --public ... --name ... --rename` to change.
 
 The remaining banner titles use plain wording, while the exact verifier verdict remains visible in Technical details and JSON. A trusted redacted result still shows its configured signer in the signer line.
+
+Offline signing is available under **Seal a picture → Sign with your name (optional)**. Create and save a password-encrypted key, then unlock it on later visits. Share only its public signer file. Recipients import it under **Advanced tools → Trust a person** after independently confirming the fingerprint; that trust lasts for this tab. See [SIGNERS.md](SIGNERS.md) for the format, privacy and revocation limits. No account or online signing service is involved.

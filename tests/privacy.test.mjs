@@ -9,7 +9,7 @@ test("privacy section copy and links in index.html and PRIVACY.md", async () => 
     "utf8",
   );
   assert.ok(
-    indexHtml.includes("Effective 27 October 2026"),
+    indexHtml.includes("Effective 29 October 2026"),
     "index.html must include effective date",
   );
   assert.ok(
@@ -34,7 +34,7 @@ test("privacy section copy and links in index.html and PRIVACY.md", async () => 
     "utf8",
   );
   assert.ok(
-    privacyMd.includes("Effective 27 October 2026"),
+    privacyMd.includes("Effective 29 October 2026"),
     "PRIVACY.md must include effective date",
   );
   assert.ok(

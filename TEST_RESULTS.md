@@ -124,3 +124,17 @@ Validation: 105/105 Node tests; Chrome signer/session-trust flow, 8/8 advanced-t
 ## Wider workspace and consistent disclosures (local, 29 October 2026)
 
 Removed the 1120 px page cap; fluid side margins use 16–48 px. All six native details controls now share a right-aligned plus/minus indicator and retain keyboard expansion. Chrome measured a 1203 px workspace in a 1280 px viewport (94%). The extended iframe suite passes 18/18 cases at 320, 360, 390, 1440, 1920 and 2560 CSS pixels; eight-state axe reports zero violations. Enter toggling and computed plus/minus indicators were checked in Chrome. Local evidence: `results/wide-ui-axe.json`, `results/wide-ui-viewports.json`, `results/wide-ui-main.png`. These are local checks, not a deployment check.
+
+## Offline signer setup and recipient trust (local, 29 October 2026)
+
+Guard now creates a password-encrypted `.guardkey` backup, unlocks it to a nonextractable in-memory Ed25519 key, exports only public contact data, and signs new asset-purpose GRDs. Creating/unlocking never automatically trusts that signer. Recipients can explicitly trust a public `.guardsigner` contact after independently confirming its full fingerprint and name; this trust is tab-only. Existing disposable personal files remain self-signed. Revoked keys stay rejected. Download offline viewer is also available in Seal a picture.
+
+Validation:
+
+- Node: 112/112 tests, including wrong passwords, salt/nonce/ciphertext changes, fixed KDF bounds, malformed/oversized envelopes, public-contact validation, mismatched private/public pairs, unknown/trusted/revoked assets and unchanged personal-purpose semantics.
+- Chromium: 23/23 signer workflow checks through actual form handlers, including encrypted export/unlock, public-only export, named conversion, explicit trust, clear/revocation, cancellation during unlock/sign/import, and saved HTML excluding runtime passwords and keys. QA captures downloads in memory with random TEST ONLY identities; it does not establish a real signer or prove a browser completed saving to disk.
+- Existing browser workflows: 17/17 signer/bundle, 10/10 privacy/conversion/drop and 8/8 copy-consistency checks passed on appropriately fresh pages.
+- Python independently decrypts the encrypted key envelope, matches its public key, verifies unknown/trusted GRDs, and produces a signature verified by Web Crypto. Shared Python format/visual/CLI regressions also pass.
+- Final layout: zero axe violations across 10 states, and 30/30 CSS reflow cases passed at 320, 360, 390, 1440, 1920 and 2560 pixels, including the expanded signer and person-trust forms. Results are recorded in `results/offline-signer-axe.json` and `results/offline-signer-viewports.json`.
+
+Evidence is in ignored `results/offline-signer-*.json`, `results/offline-signer-setup.png`, `/tmp/guard-offline-final-tests.log` and `/tmp/guard-offline-python.log`. No real user key was generated, pinned or committed; no hardware, timestamp or C2PA identity claim is added. Direct saved-file/offline-origin browser testing remains **PENDING**: the browser tool explicitly blocks file URLs. HTTP Chromium tests exercise the same self-contained build, which has no online runtime dependencies; they must not be described as that pending file-origin trial. No deployment is established by these local checks.
