@@ -156,7 +156,7 @@ Signed trust bundles can be loaded manually for the current tab through **Load t
 
 ### Signer identity and recipient use (v4 local work)
 
-The viewer opens on **Check a file**; **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
+The viewer opens on **Check a file**. Trust-bundle import and recompressed/resized-copy checking are grouped under **Advanced tools**, collapsed below the image preview. Redaction controls and technical details also expand on demand. **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
 
 A known signer is shown as **Verified: {name}** only after the file checks succeed. A valid unknown signer stays amber and withheld by default. **Show image anyway (signer not verified)** enables a stamped hold-to-reveal preview and plain export without changing the verdict or trusting the key. Revoked keys stay blocked. These labels identify a key; they do not prove a photograph's scene, ownership or capture time.
 

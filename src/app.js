@@ -55,7 +55,7 @@ function disposeImage() {
   selectedTiles.clear();
   $("tile-overlay").replaceChildren();
   $("tile-overlay").hidden = true;
-  $("redaction-tools").hidden = true;
+  $("redaction-tools").hidden = true;$("redaction-options").hidden=true;$("redaction-options").open=false;
   $("legacy-redaction-note").hidden = true;
   $("redact-mode").setAttribute("aria-pressed", "false");
   $("redact-mode").textContent = "Mark tiles";
@@ -103,6 +103,7 @@ function renderResult(report) {
   $("plain-note").hidden = $("download-plain").hidden;
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
+  $("redaction-options").hidden=!currentContainer||!report.viewable;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -113,53 +114,53 @@ function renderResult(report) {
     GENUINE: [
       "GENUINE",
       "FILE VERIFIED.",
-      "Every section matched, the signature verified and the signer is pinned as trusted in this viewer.",
+      "The picture matches this signer’s original.",
     ],
     TAMPERED: [
       "TAMPERED",
       "VERIFICATION FAILED.",
-      "The image is withheld. One or more integrity or signer checks failed. Review the evidence below.",
+      "Some file checks failed. The picture is withheld.",
     ],
     "NOT A GRD": [
       "NOT A GRD",
       "INVALID FILE.",
-      "Choose a signed .GRD file. Renaming an ordinary image does not turn it into one.",
+      "Choose the original .GRD file from the sender.",
     ],
     UNSUPPORTED: [
       "UNSUPPORTED",
       "UNSUPPORTED.",
-      "The browser, file version or image format is not supported. No genuine claim has been made.",
+      "This file or browser is not supported. This does not mean the picture was changed.",
     ],
     "LIMIT EXCEEDED": [
       "LIMIT EXCEEDED",
       "FILE TOO LARGE.",
-      "GRD1 allows 64 MiB, GRD2 32 MiB, and GRD3 256 MiB. The format-specific size limit was exceeded.",
+      "This file exceeds its format’s size limit. See Technical details.",
     ],
     UNREADABLE: [
       "IMAGE UNREADABLE",
       "IMAGE UNREADABLE.",
-      "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
+      "The image could not be read safely. Try another copy of the original file.",
     ],
     "CANNOT VERIFY": [
       "CANNOT VERIFY",
       "CHECK DID NOT FINISH.",
-      "This viewer hit an internal limit or error before it could finish checking. This is not evidence of tampering. Try a current desktop browser or the Python checker (grd.py verify).",
+      "This is not evidence of tampering. Try the original file or a current browser.",
     ],
   };
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
     "RETAINED PIXELS VERIFIED.",
-    report.subTile ? `${report.subTilesVisible} of ${report.subTilesTotal} cells at ${report.subTile}px match the trusted signer’s proof. Hidden cells are black. Redactor approval is not attested.` : `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+    "The visible parts match the signed original. Hidden areas can’t be checked.",
   ];
   messages.DEMO = [
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
-    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} example regions retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+    "Try hiding an area. This example does not verify a real signer.",
   ];
   messages["UNVERIFIED: SELF-SIGNED"] = [
     "UNVERIFIED: SELF-SIGNED",
     "IDENTITY NOT VERIFIED.",
-    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} regions match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
+    "The file matches its own key. Anyone can edit a picture and make a new self-signed file.",
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -174,13 +175,13 @@ function renderResult(report) {
   messages["FULLY REDACTED"] = [
     "FULLY REDACTED",
     "NO VISIBLE PIXELS.",
-    "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
+    "The proof matches, but no original picture remains visible.",
   ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
   if (report.version >= 2 && report.genuine) {
     words[1] = "SIGNED TILE GRID VERIFIED.";
     words[2] =
-      "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
+      "The picture matches this signer’s original.";
   }
   $("verdict-banner").className =
     "verdict-banner " +
@@ -194,7 +195,7 @@ function renderResult(report) {
             ? "bad"
             : "neutral");
   words[1]=resultTitle(report);
-  if(report.signerStatus==='unknown'){words[2]='The signature matches this key. Its owner is not known to this viewer. The image is withheld unless you choose to display it.';}
+  if(report.signerStatus==='unknown'){words[2]='The signature matches, but this signer is not trusted here. The picture stays hidden unless you choose to show it.';}
   if(report.signerStatus==='revoked')words[1]='Signer key revoked';
   if(report.verdict==='UNTRUSTED SIGNER'&&report.signerStatus!=='unknown'){words[1]='Verification did not establish a valid file';words[2]='One or more integrity checks failed. This file cannot be displayed as a valid unknown-signer image.';}
   $("technical-verdict").textContent='Exact verdict: '+report.verdict;
@@ -348,7 +349,7 @@ function setMode(localReveal) {
   $("full-mode").setAttribute("aria-pressed", String(!reveal));
   $("reveal-hint").textContent = reveal
     ? "Hold a finger or pointer to reveal a spot. Keyboard: hold Space or Enter, move with arrow keys."
-    : "Full view is visible with a session stamp. Choose Hold to reveal for a smaller viewing window.";
+    : "Full picture shown. Choose Hold to reveal for a smaller viewing area.";
   queueDraw();
 }
 function showImage() {
@@ -935,6 +936,7 @@ $("try-redaction").onclick = async () => {
     });
     if (operation !== token) return;
     await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
+    $("redaction-options").open=true;
     $("image-panel").scrollIntoView({
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
@@ -1267,7 +1269,7 @@ async function sessionTrust(){
 function scheduleBundleExpiry(){
  clearTimeout(bundleExpiryTimer);if(!activeBundle)return;
  const remaining=Date.parse(activeBundle.expires)-Date.now();
- if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;return;}
+ if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;return;}
  bundleExpiryTimer=setTimeout(scheduleBundleExpiry,Math.min(remaining,2147483647));
 }
 $("trust-form").onsubmit=async event=>{
@@ -1278,11 +1280,11 @@ $("trust-form").onsubmit=async event=>{
   const root=publicKeyHexFromPem(await rootFile.text()),bytes=new Uint8Array(await bundleFile.arrayBuffer()),r=await verifyTrustBundle(bytes,root,{previous:bundleStates.get(root)??null});
   if(token!==trustImportVersion)return;if(Date.parse(r.expires)<=Date.now())throw Error("Bundle expired during import");
   activeBundle={root,bytes,expires:r.expires};bundleStates.set(root,r.state);reset();scheduleBundleExpiry();if(!activeBundle)return;
-  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;
+  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;$("active-trust-note").hidden=false;
  }catch(error){$("trust-status").textContent='Trust bundle rejected: '+error.message;}
  finally{$("trust-submit").disabled=false;$("trust-bundle").disabled=false;$("trust-root").disabled=false;}
 };
-$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;};
+$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;};
 $("show-unknown").onclick=async()=>{
  const report=currentReport,container=currentContainer,token=operation;if(!report?.canRevealUnknown||report.verdict!=='UNTRUSTED SIGNER')return;
  $("show-unknown").disabled=true;
@@ -1305,4 +1307,8 @@ function workspaceMode(mode){
 for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
  $(id).onclick=()=>workspaceMode(mode);
  $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
+}
+
+for(const anchor of document.querySelectorAll('a[href="#privacy-details"],a[href="#advanced-tools"]')){
+ anchor.addEventListener('click',()=>{const target=anchor.getAttribute('href')==='#privacy-details'?'privacy-disclosure':'advanced-tools';$(target).open=true;});
 }

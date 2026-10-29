@@ -114,3 +114,9 @@ Commit 3631573 was pushed on 29 October 2026 at 13:59 AEDT and GitHub Pages serv
 ## Independent-review follow-up (local)
 
 105/105 Node tests pass, including explicit CLI rename permission, symlink-safe CLI entry detection, neutral legacy attribution, revoked-banner identity suppression, plain-language titles and fresh-clone QA prerequisite messaging. Python vector/CLI checks and both C2PA formats pass. Chrome passes 14/14 updated signer/title workflow checks; accessibility results are recorded in `results/review-followup-axe.json`. Generated standalone files are checked for deterministic rebuild equivalence. No signature domains, pixel commitments, feature bytes, tau, verdict strings or exit codes changed in this follow-up. The owner subsequently authorized source publication of these fixes; this test record does not establish a later Pages deployment.
+
+## Simplified recipient interface (local, 29 October 2026)
+
+Trust import and copy checking now share a collapsed Advanced tools disclosure below the image preview. The main result keeps the plain-picture download; visual-proof and offline-viewer downloads remain available in Advanced tools. Redaction controls, privacy details and technical evidence expand on demand. Security verdicts and verification algorithms are unchanged.
+
+Validation: 105/105 Node tests; Chrome signer/session-trust flow, 8/8 advanced-tool checks (including consistent, borderline and inconsistent copy results), 10/10 privacy/conversion/drop checks; axe-core reports zero violations in eight states; 12/12 CSS viewport checks pass at 320, 360, 390 and 1440 pixels. Keyboard Enter collapses Advanced tools, and Privacy details opens its disclosure. These use isolated TEST ONLY identities and synthetic fixtures, not a user study or a hosted deployment check. Evidence is recorded in ignored local `results/simple-ui-*.json` and screenshots.

@@ -24,7 +24,7 @@
       <div class="header-inner">
         <a class="brand" href="#"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 + GRD2 + GRD3 / OFFLINE INSPECTOR</span
+        ><span class="header-label">PRIVATE IMAGE CHECK</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -33,18 +33,10 @@
     <main>
       <section class="intro">
         <div class="intro-copy">
-          <p class="eyebrow">GUARD / IMAGE VERIFICATION</p>
-          <h1>.GRD <span>INSPECTOR</span></h1>
+          <h1>Check your <span>image.</span></h1>
           <p class="intro-text">
-            Verify an image. Redact private regions. Keep the remaining proof.
+            Drop a Guard file. See the result. Download the picture.
           </p>
-        </div>
-        <div class="format-block">
-          <span class="format-label">SIGNED IMAGE / SELECTIVE DISCLOSURE</span>
-          <div class="format-sections" aria-label="Signed file structure">
-            <span>META</span><span>IMAGE</span><span>KEY</span><span>SIG</span>
-          </div>
-          <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
       </section>
       <div class="workspace-tabs" role="tablist" aria-label="Guard task">
@@ -53,9 +45,10 @@
       </div>
       <div id="inspection-panel" role="tabpanel" aria-labelledby="tab-verify">
       <div class="workspace-heading">
-        <h2>FILE INSPECTION</h2>
-        <span class="format-note">.GRD / LOCAL FILES</span>
+        <h2>Check a file</h2>
+        <span class="format-note">On your device</span>
       </div>
+      <p id="active-trust-note" class="session-trust" hidden>Additional signers loaded for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
       <section
         id="workspace"
         class="workspace"
@@ -63,7 +56,7 @@
       >
         <div class="file-column">
           <div class="column-label">
-            <span>01 / INPUT</span><span>LOCAL FILE</span>
+            <span>Choose your file</span>
           </div>
           <button
             id="drop"
@@ -74,18 +67,16 @@
             <span class="file-symbol" aria-hidden="true"
               ><span>↑</span><i>.GRD</i></span
             ><strong>Choose file</strong
-            ><span>Browse files <span aria-hidden="true">↗</span></span
-            ><span class="drop-local">Drop a Guard file here (.GRD), or choose one</span></button
+            ><span class="drop-local">or drop a .GRD file here</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            GRD1: up to 64 MiB. GRD2: 32 MiB / 4 MP. GRD3: 256 MiB / 36 MP. Files stay on
-            your device.
+            GRD files up to 256 MiB.
           </p>
           <button id="try-redaction" class="secondary demo-button">
-            Try redaction with an example <span aria-hidden="true">↗</span>
+            Try an example <span aria-hidden="true">↗</span>
           </button>
           <p class="file-help">
-            The example is self-signed demo data, not trusted evidence.
+            Demo only. No verified identity.
           </p>
           <div id="file-card" class="file-card" hidden>
             <div class="file-icon" aria-hidden="true">.grd</div>
@@ -104,21 +95,18 @@
           <div class="local-note" id="privacy">
             <span class="note-icon" aria-hidden="true">↳</span>
             <div>
-              <strong>Your files are processed locally.</strong>
+              <strong>Your files stay here.</strong>
               <p>
-                No file uploads or analytics. GitHub Pages logs visitors’ IP
-                addresses when serving this website.
+                No uploads or analytics.
                 <a href="#privacy-details">Privacy details</a>
               </p>
-              <button id="download-viewer" class="text-button">
-                Download offline viewer <span aria-hidden="true">↓</span>
-              </button>
+
             </div>
           </div>
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1 / GRD2 / GRD3</span>
+            <span>Your result</span>
           </div>
           <div
             id="live-status"
@@ -128,21 +116,15 @@
           ></div>
           <div id="empty" class="empty">
             <span class="empty-number" aria-hidden="true">—</span>
-            <p class="eyebrow">AWAITING INPUT</p>
-            <h3>NO FILE<br />LOADED.</h3>
-            <div class="empty-checks">
-              <span
-                ><b>File structure &amp; section hashes</b><i>WAITING</i></span
-              ><span><b>Pinned signing key</b><i>WAITING</i></span
-              ><span><b>Signature &amp; image binding</b><i>WAITING</i></span>
-            </div>
-            <p class="waiting">Choose a .GRD to start verification.</p>
+            <h3>Ready to check</h3>
+
+            <p class="waiting">Your result will appear here.</p>
           </div>
           <div id="loading" class="loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <p class="eyebrow">CHECKING YOUR FILE</p>
             <h3>VERIFYING FILE…</h3>
-            <p>Reading the structure, hashes and signing key…</p>
+            <p>Checking the file and signer…</p>
             <button id="cancel" class="secondary">Cancel check</button>
           </div>
           <section id="result" hidden aria-labelledby="verdict-title">
@@ -166,42 +148,24 @@
               <h4>What needs attention</h4>
               <ul id="issue-list"></ul>
             </div>
+            <dl id="technical-data"></dl>
+            <p class="file-help">Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here.</p>
+            <button id="download-report" class="secondary">
+                Download report
+                <span aria-hidden="true">↓</span></button
+              >
             </details>
             <button id="show-unknown" class="secondary" hidden>Show image anyway (signer not verified)</button>
             <div id="result-actions" class="result-actions">
-              <button id="download-report" class="secondary">
-                Download report
-                <span aria-hidden="true">↓</span></button
-              ><button id="download-plain" class="secondary" hidden>Download plain picture</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
+              <button id="download-plain" class="primary" hidden>Download plain picture</button><button id="choose-another" class="text-button">
                 Choose another file <span aria-hidden="true">↗</span>
               </button>
             </div>
-            <p class="file-help">Share the .GRD if the other person needs to check it. A plain picture carries no proof.</p>
-            <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
-            <p id="plain-note" hidden>Sealing never restricts use: 'Download plain image' saves an ordinary PNG with no Guard data and no overlay. Redacted areas stay black. The plain copy can no longer be verified as genuine; keep the .GRD if you need proof.</p>
+            <p class="file-help">Keep the .GRD to preserve its proof.</p>
+
+            <p id="plain-note" hidden>The plain picture has no proof or viewing stamp. Hidden areas stay black.</p>
           </section>
         </div>
-      </section>
-      <details class="trust-import">
-        <summary>Load trust bundle…</summary>
-        <p id="trust-help">Only import a root whose full fingerprint you verified separately. Its signed list can identify signers for this tab only. No files are uploaded or stored; reloading clears imported trust. Rollback checks apply only within this session.</p>
-        <form id="trust-form" aria-describedby="trust-help">
-          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
-          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
-          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
-          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
-          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
-        </form>
-      </details>
-      <section class="convert-section" aria-labelledby="copy-heading" style="padding: 24px; border: 1px solid currentColor; margin: 24px 0;">
-        <h2 id="copy-heading">Check a recompressed or resized copy</h2>
-        <p id="copy-help">Choose a visual proof downloaded from Guard and the PNG, JPEG or WebP copy. This checks block averages; it never verifies exact pixels as genuine. Fine edits, mean-preserving changes and some blurs can pass.</p>
-        <form id="copy-form" aria-describedby="copy-help">
-          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
-          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
-          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
-          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
-        </form>
       </section>
       <section
         id="image-panel"
@@ -212,7 +176,7 @@
         <div class="panel-heading">
           <div>
             <p class="eyebrow">02 / THE SIGNED IMAGE</p>
-            <h2 id="image-title">IMAGE PREVIEW</h2>
+            <h2 id="image-title">Your picture</h2>
           </div>
           <span class="session-pill" id="session-label"></span>
         </div>
@@ -232,6 +196,7 @@
                 Hide image <span aria-hidden="true">↘</span>
               </button>
             </div>
+            <details id="redaction-options" class="redaction-options" hidden><summary>Hide parts of the image</summary>
             <div id="redaction-tools" class="redaction-tools" hidden>
               <div>
                 <strong>REDACT REGIONS / EXACT PROOF</strong>
@@ -284,6 +249,7 @@
                 public.
               </p>
             </div>
+            </details>
             <p id="legacy-redaction-note" class="copy-note" hidden>
               GRD1 signs the entire image. Redaction needs a GRD2 file issued
               with tile commitments; an existing GRD1 cannot be upgraded without
@@ -319,27 +285,43 @@
               Enter, move with arrow keys.
             </p>
             <p class="copy-note">
-              The on-screen session stamp is a viewing deterrent, not a
-              copy-tracing guarantee. Browser screenshots cannot be blocked
-              reliably.
+              Viewing stamps do not prevent screenshots.
             </p>
           </div>
-          <aside class="image-info">
-            <p class="eyebrow">THE SIGNED DETAILS</p>
-            <h3>FILE DETAILS</h3>
 
-            <details class="technical">
-              <summary>File evidence <span aria-hidden="true">+</span></summary>
-              <dl id="technical-data"></dl>
-              <p>
-                These are signed claims, not independent proof of authorship or
-                ownership. The timestamp token’s chain and time are not
-                validated here.
-              </p>
-            </details>
-          </aside>
         </div>
       </section>
+      <details id="advanced-tools" class="advanced-tools">
+        <summary>Advanced tools</summary>
+        <div class="advanced-grid">
+      <section class="trust-import advanced-tool" aria-labelledby="trust-heading">
+        <h3 id="trust-heading">Load trust bundle</h3>
+        <p id="trust-help">Verify the root fingerprint independently before trusting it. Added signers and rollback protection last for this tab only; reloading clears them.</p>
+        <form id="trust-form" aria-describedby="trust-help">
+          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
+          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
+          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
+          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
+          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
+        </form>
+      </section>
+      <section class="advanced-tool" aria-labelledby="copy-heading">
+        <h3 id="copy-heading">Check a recompressed or resized copy</h3>
+        <p id="copy-help">Compare a JPEG, PNG or WebP copy with its Guard visual proof. This checks block averages, not exact pixels. Fine edits and some blurs can pass.</p>
+        <div class="advanced-actions"><button id="download-proof" class="secondary" hidden>Download visual proof</button></div>
+        <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
+        <form id="copy-form" aria-describedby="copy-help">
+          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
+          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
+          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
+          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
+        </form>
+      </section>
+        </div>
+        <div class="advanced-footer"><button id="download-viewer" class="text-button">
+                Download offline viewer <span aria-hidden="true">↓</span>
+              </button><span>Save Guard to use it offline.</span></div>
+      </details>
       </div>
       <section
         class="convert-panel"
@@ -433,6 +415,7 @@
           </article>
         </div>
       </details>
+      <details id="privacy-disclosure" class="privacy-disclosure"><summary>Privacy and hosting</summary>
       <section
         class="privacy-details"
         id="privacy-details"
@@ -472,6 +455,7 @@
           <strong>Links.</strong> Opening the source or privacy links contacts those sites. This page sends no referrer.
         </p>
       </section>
+      </details>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
         ><span>GRD1 + GRD2 + GRD3 / LOCAL VERIFICATION</span

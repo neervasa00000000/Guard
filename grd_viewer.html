@@ -1691,6 +1691,80 @@ a {overflow-wrap:anywhere;}
 .verdict-banner.neutral .verdict-icon {background:#8b5a00;color:#fff;}
 .verdict-banner.neutral .eyebrow {color:#775000;}
 
+/* A quieter recipient flow; specialist tools stay available on demand. */
+:root {--bg:#f4f6f9;--ink:#18212f;--line:#dbe1e9;--muted:#526072;}
+main,.header-inner,footer {max-width:1120px;}
+main,.header-inner {padding-left:28px;padding-right:28px;}
+.intro {display:block;padding:32px 0 18px;}
+.intro h1 {display:block;font-size:clamp(34px,4.5vw,56px);line-height:1.1;letter-spacing:-2px;margin:0 0 10px;}
+.intro h1 span {font-size:inherit;letter-spacing:inherit;font-weight:inherit;}
+.intro-text {font-size:16px;max-width:52ch;}
+.workspace-tabs {margin:12px 0 24px;gap:8px;}
+.workspace-tabs button {font-size:14px;border-color:var(--line);}
+.workspace-heading {border:0;padding:0 0 12px;}
+.workspace-heading h2 {font-size:14px;letter-spacing:0;text-transform:none;}
+.workspace {border-color:var(--line);border-radius:12px;overflow:hidden;min-height:340px;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);}
+.file-column {border-color:var(--line);padding:24px;background:#fafbfd;}
+.result-column {padding:24px;}
+.column-label {font-size:12px;letter-spacing:0;border:0;margin-bottom:16px;padding:0;color:var(--muted);}
+.drop {min-height:190px;padding:22px;border-radius:8px;gap:8px;}
+.drop:after {display:none;}
+.drop strong {font-size:26px;letter-spacing:-.5px;}
+.drop .file-symbol {margin:18px 0 8px;}
+.drop .file-symbol>span {font-size:48px;}
+.drop > span.drop-local {position:static;font:12px Arial,sans-serif;letter-spacing:0;opacity:1;}
+.file-help {font-size:12px;line-height:1.6;}
+.demo-button {min-height:40px;border:0;padding:8px 0;background:transparent;font-size:13px;}
+.local-note {margin-top:14px;padding-top:14px;}
+.empty {padding:34px 0;}
+.empty-number {display:none;}
+.empty h3 {font-size:24px;letter-spacing:-.5px;margin:8px 0;}
+.waiting {font-size:14px;margin-top:10px;}
+.verdict-banner h3 {font-size:clamp(24px,2.6vw,32px);line-height:1.15;letter-spacing:-.7px;}
+.verdict-banner p:last-child {max-width:58ch;font-size:13px;line-height:1.65;}
+.primary,.secondary {font-size:13px;border-radius:6px;gap:12px;}
+.result-actions {gap:12px;align-items:center;}
+.technical>summary {font-size:13px;padding-top:15px;padding-bottom:15px;}
+.image-panel {border:1px solid var(--line);border-radius:12px;padding:24px;margin-top:24px;}
+.image-workspace {display:block;}
+.panel-heading {padding:0 0 16px;}
+.panel-heading h2 {font-size:20px;letter-spacing:-.3px;}
+.session-pill {display:none;}
+.redaction-options {margin-bottom:18px;border:1px solid var(--line);border-radius:8px;padding:0 14px;}
+.redaction-options>summary {padding:14px 0;font-size:14px;font-weight:600;}
+.redaction-options .redaction-tools {border:0;margin-top:0;}
+.advanced-tools {margin:24px 0;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.advanced-tools>summary {padding:18px 22px;min-height:56px;font-size:16px;font-weight:600;}
+.advanced-tools[open]>summary {border-bottom:1px solid var(--line);}
+.advanced-grid {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.advanced-tool {padding:22px;margin:0;border:0;min-width:0;}
+.advanced-tool+.advanced-tool {border-left:1px solid var(--line);}
+.advanced-tool h3 {font-size:18px;line-height:1.3;letter-spacing:-.3px;margin:0 0 12px;}
+.advanced-tool p {font-size:13px;line-height:1.65;}
+.advanced-tool label {display:block;font-size:13px;font-weight:600;margin-bottom:7px;}
+.advanced-tool input[type="file"] {padding:9px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fafbfd;}
+.advanced-actions:has(button[hidden]) {display:none;}
+.advanced-footer {display:flex;align-items:center;gap:16px;padding:12px 22px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);}
+.session-trust {padding:10px 14px;border-radius:6px;background:#e9efff;font-size:13px;}
+.privacy-disclosure {margin:20px 0;border-top:1px solid var(--line);}
+.privacy-disclosure>summary {padding:16px 0;font-size:14px;font-weight:600;}
+.privacy-details {padding-top:8px;}
+@media(max-width:760px){
+ main,.header-inner {padding-left:16px;padding-right:16px;}
+ .intro {padding-top:24px;}
+ .file-column,.result-column {padding:20px;}
+ .file-column {border-right:0;}
+ .result-column {border-top:1px solid var(--line);}
+ .workspace:has(#result:not([hidden])) .result-column {border-top:0;border-bottom:1px solid var(--line);}
+ .workspace-tabs {margin-bottom:20px;}
+ .advanced-grid {grid-template-columns:minmax(0,1fr);}
+ .advanced-tool+.advanced-tool {border-left:0;border-top:1px solid var(--line);}
+ .advanced-tool {padding:20px;}
+ .advanced-footer {flex-wrap:wrap;gap:0 16px;}
+ .image-panel {padding:16px;}
+ .format-note {display:none;}
+}
+
     </style>
   </head>
   <body>
@@ -1699,7 +1773,7 @@ a {overflow-wrap:anywhere;}
       <div class="header-inner">
         <a class="brand" href="#"
           ><span class="brand-mark" aria-hidden="true">G</span>GUARD</a
-        ><span class="header-label">GRD1 + GRD2 + GRD3 / OFFLINE INSPECTOR</span
+        ><span class="header-label">PRIVATE IMAGE CHECK</span
         ><a class="local-pill" href="#privacy"
           ><span aria-hidden="true">●</span> LOCAL PROCESSING</a
         >
@@ -1708,18 +1782,10 @@ a {overflow-wrap:anywhere;}
     <main>
       <section class="intro">
         <div class="intro-copy">
-          <p class="eyebrow">GUARD / IMAGE VERIFICATION</p>
-          <h1>.GRD <span>INSPECTOR</span></h1>
+          <h1>Check your <span>image.</span></h1>
           <p class="intro-text">
-            Verify an image. Redact private regions. Keep the remaining proof.
+            Drop a Guard file. See the result. Download the picture.
           </p>
-        </div>
-        <div class="format-block">
-          <span class="format-label">SIGNED IMAGE / SELECTIVE DISCLOSURE</span>
-          <div class="format-sections" aria-label="Signed file structure">
-            <span>META</span><span>IMAGE</span><span>KEY</span><span>SIG</span>
-          </div>
-          <p>Ed25519 + SHA-256 <span>Runs locally</span></p>
         </div>
       </section>
       <div class="workspace-tabs" role="tablist" aria-label="Guard task">
@@ -1728,9 +1794,10 @@ a {overflow-wrap:anywhere;}
       </div>
       <div id="inspection-panel" role="tabpanel" aria-labelledby="tab-verify">
       <div class="workspace-heading">
-        <h2>FILE INSPECTION</h2>
-        <span class="format-note">.GRD / LOCAL FILES</span>
+        <h2>Check a file</h2>
+        <span class="format-note">On your device</span>
       </div>
+      <p id="active-trust-note" class="session-trust" hidden>Additional signers loaded for this tab. <a href="#advanced-tools">Manage trust</a>.</p>
       <section
         id="workspace"
         class="workspace"
@@ -1738,7 +1805,7 @@ a {overflow-wrap:anywhere;}
       >
         <div class="file-column">
           <div class="column-label">
-            <span>01 / INPUT</span><span>LOCAL FILE</span>
+            <span>Choose your file</span>
           </div>
           <button
             id="drop"
@@ -1749,18 +1816,16 @@ a {overflow-wrap:anywhere;}
             <span class="file-symbol" aria-hidden="true"
               ><span>↑</span><i>.GRD</i></span
             ><strong>Choose file</strong
-            ><span>Browse files <span aria-hidden="true">↗</span></span
-            ><span class="drop-local">Drop a Guard file here (.GRD), or choose one</span></button
+            ><span class="drop-local">or drop a .GRD file here</span></button
           ><input type="file" id="file-input" accept=".grd,.GRD" hidden />
           <p id="file-help" class="file-help">
-            GRD1: up to 64 MiB. GRD2: 32 MiB / 4 MP. GRD3: 256 MiB / 36 MP. Files stay on
-            your device.
+            GRD files up to 256 MiB.
           </p>
           <button id="try-redaction" class="secondary demo-button">
-            Try redaction with an example <span aria-hidden="true">↗</span>
+            Try an example <span aria-hidden="true">↗</span>
           </button>
           <p class="file-help">
-            The example is self-signed demo data, not trusted evidence.
+            Demo only. No verified identity.
           </p>
           <div id="file-card" class="file-card" hidden>
             <div class="file-icon" aria-hidden="true">.grd</div>
@@ -1779,21 +1844,18 @@ a {overflow-wrap:anywhere;}
           <div class="local-note" id="privacy">
             <span class="note-icon" aria-hidden="true">↳</span>
             <div>
-              <strong>Your files are processed locally.</strong>
+              <strong>Your files stay here.</strong>
               <p>
-                No file uploads or analytics. GitHub Pages logs visitors’ IP
-                addresses when serving this website.
+                No uploads or analytics.
                 <a href="#privacy-details">Privacy details</a>
               </p>
-              <button id="download-viewer" class="text-button">
-                Download offline viewer <span aria-hidden="true">↓</span>
-              </button>
+
             </div>
           </div>
         </div>
         <div class="result-column">
           <div class="column-label">
-            <span>02 / VERIFICATION</span><span>GRD1 / GRD2 / GRD3</span>
+            <span>Your result</span>
           </div>
           <div
             id="live-status"
@@ -1803,21 +1865,15 @@ a {overflow-wrap:anywhere;}
           ></div>
           <div id="empty" class="empty">
             <span class="empty-number" aria-hidden="true">—</span>
-            <p class="eyebrow">AWAITING INPUT</p>
-            <h3>NO FILE<br />LOADED.</h3>
-            <div class="empty-checks">
-              <span
-                ><b>File structure &amp; section hashes</b><i>WAITING</i></span
-              ><span><b>Pinned signing key</b><i>WAITING</i></span
-              ><span><b>Signature &amp; image binding</b><i>WAITING</i></span>
-            </div>
-            <p class="waiting">Choose a .GRD to start verification.</p>
+            <h3>Ready to check</h3>
+
+            <p class="waiting">Your result will appear here.</p>
           </div>
           <div id="loading" class="loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <p class="eyebrow">CHECKING YOUR FILE</p>
             <h3>VERIFYING FILE…</h3>
-            <p>Reading the structure, hashes and signing key…</p>
+            <p>Checking the file and signer…</p>
             <button id="cancel" class="secondary">Cancel check</button>
           </div>
           <section id="result" hidden aria-labelledby="verdict-title">
@@ -1841,42 +1897,24 @@ a {overflow-wrap:anywhere;}
               <h4>What needs attention</h4>
               <ul id="issue-list"></ul>
             </div>
+            <dl id="technical-data"></dl>
+            <p class="file-help">Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here.</p>
+            <button id="download-report" class="secondary">
+                Download report
+                <span aria-hidden="true">↓</span></button
+              >
             </details>
             <button id="show-unknown" class="secondary" hidden>Show image anyway (signer not verified)</button>
             <div id="result-actions" class="result-actions">
-              <button id="download-report" class="secondary">
-                Download report
-                <span aria-hidden="true">↓</span></button
-              ><button id="download-plain" class="secondary" hidden>Download plain picture</button><button id="download-proof" class="secondary" hidden>Download visual proof</button><button id="choose-another" class="text-button">
+              <button id="download-plain" class="primary" hidden>Download plain picture</button><button id="choose-another" class="text-button">
                 Choose another file <span aria-hidden="true">↗</span>
               </button>
             </div>
-            <p class="file-help">Share the .GRD if the other person needs to check it. A plain picture carries no proof.</p>
-            <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
-            <p id="plain-note" hidden>Sealing never restricts use: 'Download plain image' saves an ordinary PNG with no Guard data and no overlay. Redacted areas stay black. The plain copy can no longer be verified as genuine; keep the .GRD if you need proof.</p>
+            <p class="file-help">Keep the .GRD to preserve its proof.</p>
+
+            <p id="plain-note" hidden>The plain picture has no proof or viewing stamp. Hidden areas stay black.</p>
           </section>
         </div>
-      </section>
-      <details class="trust-import">
-        <summary>Load trust bundle…</summary>
-        <p id="trust-help">Only import a root whose full fingerprint you verified separately. Its signed list can identify signers for this tab only. No files are uploaded or stored; reloading clears imported trust. Rollback checks apply only within this session.</p>
-        <form id="trust-form" aria-describedby="trust-help">
-          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
-          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
-          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
-          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
-          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
-        </form>
-      </details>
-      <section class="convert-section" aria-labelledby="copy-heading" style="padding: 24px; border: 1px solid currentColor; margin: 24px 0;">
-        <h2 id="copy-heading">Check a recompressed or resized copy</h2>
-        <p id="copy-help">Choose a visual proof downloaded from Guard and the PNG, JPEG or WebP copy. This checks block averages; it never verifies exact pixels as genuine. Fine edits, mean-preserving changes and some blurs can pass.</p>
-        <form id="copy-form" aria-describedby="copy-help">
-          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
-          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
-          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
-          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
-        </form>
       </section>
       <section
         id="image-panel"
@@ -1887,7 +1925,7 @@ a {overflow-wrap:anywhere;}
         <div class="panel-heading">
           <div>
             <p class="eyebrow">02 / THE SIGNED IMAGE</p>
-            <h2 id="image-title">IMAGE PREVIEW</h2>
+            <h2 id="image-title">Your picture</h2>
           </div>
           <span class="session-pill" id="session-label"></span>
         </div>
@@ -1907,6 +1945,7 @@ a {overflow-wrap:anywhere;}
                 Hide image <span aria-hidden="true">↘</span>
               </button>
             </div>
+            <details id="redaction-options" class="redaction-options" hidden><summary>Hide parts of the image</summary>
             <div id="redaction-tools" class="redaction-tools" hidden>
               <div>
                 <strong>REDACT REGIONS / EXACT PROOF</strong>
@@ -1959,6 +1998,7 @@ a {overflow-wrap:anywhere;}
                 public.
               </p>
             </div>
+            </details>
             <p id="legacy-redaction-note" class="copy-note" hidden>
               GRD1 signs the entire image. Redaction needs a GRD2 file issued
               with tile commitments; an existing GRD1 cannot be upgraded without
@@ -1994,27 +2034,43 @@ a {overflow-wrap:anywhere;}
               Enter, move with arrow keys.
             </p>
             <p class="copy-note">
-              The on-screen session stamp is a viewing deterrent, not a
-              copy-tracing guarantee. Browser screenshots cannot be blocked
-              reliably.
+              Viewing stamps do not prevent screenshots.
             </p>
           </div>
-          <aside class="image-info">
-            <p class="eyebrow">THE SIGNED DETAILS</p>
-            <h3>FILE DETAILS</h3>
 
-            <details class="technical">
-              <summary>File evidence <span aria-hidden="true">+</span></summary>
-              <dl id="technical-data"></dl>
-              <p>
-                These are signed claims, not independent proof of authorship or
-                ownership. The timestamp token’s chain and time are not
-                validated here.
-              </p>
-            </details>
-          </aside>
         </div>
       </section>
+      <details id="advanced-tools" class="advanced-tools">
+        <summary>Advanced tools</summary>
+        <div class="advanced-grid">
+      <section class="trust-import advanced-tool" aria-labelledby="trust-heading">
+        <h3 id="trust-heading">Load trust bundle</h3>
+        <p id="trust-help">Verify the root fingerprint independently before trusting it. Added signers and rollback protection last for this tab only; reloading clears them.</p>
+        <form id="trust-form" aria-describedby="trust-help">
+          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
+          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
+          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
+          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
+          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
+        </form>
+      </section>
+      <section class="advanced-tool" aria-labelledby="copy-heading">
+        <h3 id="copy-heading">Check a recompressed or resized copy</h3>
+        <p id="copy-help">Compare a JPEG, PNG or WebP copy with its Guard visual proof. This checks block averages, not exact pixels. Fine edits and some blurs can pass.</p>
+        <div class="advanced-actions"><button id="download-proof" class="secondary" hidden>Download visual proof</button></div>
+        <p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles when you need to check JPEG or resized copies.</p>
+        <form id="copy-form" aria-describedby="copy-help">
+          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
+          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
+          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
+          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
+        </form>
+      </section>
+        </div>
+        <div class="advanced-footer"><button id="download-viewer" class="text-button">
+                Download offline viewer <span aria-hidden="true">↓</span>
+              </button><span>Save Guard to use it offline.</span></div>
+      </details>
       </div>
       <section
         class="convert-panel"
@@ -2108,6 +2164,7 @@ a {overflow-wrap:anywhere;}
           </article>
         </div>
       </details>
+      <details id="privacy-disclosure" class="privacy-disclosure"><summary>Privacy and hosting</summary>
       <section
         class="privacy-details"
         id="privacy-details"
@@ -2147,6 +2204,7 @@ a {overflow-wrap:anywhere;}
           <strong>Links.</strong> Opening the source or privacy links contacts those sites. This page sends no referrer.
         </p>
       </section>
+      </details>
       <footer>
         <a class="brand footer-brand" href="#">GUARD</a
         ><span>GRD1 + GRD2 + GRD3 / LOCAL VERIFICATION</span
@@ -4465,8 +4523,8 @@ function resultTitle(report) {
 function signerSummary(report) {
   const fp=report.fingerprint||'';
   if(report.signerStatus==='revoked')return `${report.revocation?.reason||'Key revoked'} (revoked ${report.revocation?.revokedAt||'date unavailable'}). Do not rely on this file.`;
-  if(report.signerStatus==='trusted')return `Signed by ${report.signerDisplayName||'trusted key'}. Fingerprint ${fp.slice(0,16)}… · matches the key pinned in this viewer`;
-  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. This viewer does not know who owns this key. Compare it with the fingerprint the sender published (for example on their website).`;
+  if(report.signerStatus==='trusted')return `Signed by ${report.signerDisplayName||'trusted key'}. Fingerprint ${fp.slice(0,16)}… · trusted in this viewer`;
+  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. Compare it with the sender’s independently published fingerprint.`;
   return '';
 }
 
@@ -4526,7 +4584,7 @@ function disposeImage() {
   selectedTiles.clear();
   $("tile-overlay").replaceChildren();
   $("tile-overlay").hidden = true;
-  $("redaction-tools").hidden = true;
+  $("redaction-tools").hidden = true;$("redaction-options").hidden=true;$("redaction-options").open=false;
   $("legacy-redaction-note").hidden = true;
   $("redact-mode").setAttribute("aria-pressed", "false");
   $("redact-mode").textContent = "Mark tiles";
@@ -4574,6 +4632,7 @@ function renderResult(report) {
   $("plain-note").hidden = $("download-plain").hidden;
   $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
   $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
+  $("redaction-options").hidden=!currentContainer||!report.viewable;
   $("loading").hidden = true;
   $("result").hidden = false;
   $("empty").hidden = true;
@@ -4584,53 +4643,53 @@ function renderResult(report) {
     GENUINE: [
       "GENUINE",
       "FILE VERIFIED.",
-      "Every section matched, the signature verified and the signer is pinned as trusted in this viewer.",
+      "The picture matches this signer’s original.",
     ],
     TAMPERED: [
       "TAMPERED",
       "VERIFICATION FAILED.",
-      "The image is withheld. One or more integrity or signer checks failed. Review the evidence below.",
+      "Some file checks failed. The picture is withheld.",
     ],
     "NOT A GRD": [
       "NOT A GRD",
       "INVALID FILE.",
-      "Choose a signed .GRD file. Renaming an ordinary image does not turn it into one.",
+      "Choose the original .GRD file from the sender.",
     ],
     UNSUPPORTED: [
       "UNSUPPORTED",
       "UNSUPPORTED.",
-      "The browser, file version or image format is not supported. No genuine claim has been made.",
+      "This file or browser is not supported. This does not mean the picture was changed.",
     ],
     "LIMIT EXCEEDED": [
       "LIMIT EXCEEDED",
       "FILE TOO LARGE.",
-      "GRD1 allows 64 MiB, GRD2 32 MiB, and GRD3 256 MiB. The format-specific size limit was exceeded.",
+      "This file exceeds its format’s size limit. See Technical details.",
     ],
     UNREADABLE: [
       "IMAGE UNREADABLE",
       "IMAGE UNREADABLE.",
-      "The cryptographic checks passed, but the image header or decoder could not be safely read. It has not been displayed.",
+      "The image could not be read safely. Try another copy of the original file.",
     ],
     "CANNOT VERIFY": [
       "CANNOT VERIFY",
       "CHECK DID NOT FINISH.",
-      "This viewer hit an internal limit or error before it could finish checking. This is not evidence of tampering. Try a current desktop browser or the Python checker (grd.py verify).",
+      "This is not evidence of tampering. Try the original file or a current browser.",
     ],
   };
   messages["VERIFIED WITH REDACTIONS"] = [
     "VERIFIED WITH REDACTIONS",
     "RETAINED PIXELS VERIFIED.",
-    report.subTile ? `${report.subTilesVisible} of ${report.subTilesTotal} cells at ${report.subTile}px match the trusted signer’s proof. Hidden cells are black. Redactor approval is not attested.` : `${report.tilesVisible} of ${report.tilesTotal} tiles match the trusted signer’s root. ${report.redactedTiles?.length} tiles were removed; their contents are not verified or shown. Redactor approval is not attested.`,
+    "The visible parts match the signed original. Hidden areas can’t be checked.",
   ];
   messages.DEMO = [
     "DEMONSTRATION / NOT TRUSTED EVIDENCE",
     "REDACTION EXAMPLE.",
-    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} example regions retained. Test the mechanism, select tiles and export a copy. This self-signed demo does not establish a real signer’s identity.`,
+    "Try hiding an area. This example does not verify a real signer.",
   ];
   messages["UNVERIFIED: SELF-SIGNED"] = [
     "UNVERIFIED: SELF-SIGNED",
     "IDENTITY NOT VERIFIED.",
-    `${report.subTilesVisible ?? report.tilesVisible} of ${report.subTilesTotal ?? report.tilesTotal} regions match this file’s signature. ${report.redactedTiles?.length || 0} tiles hidden. Anyone can edit an image and make a new self-signed file. Matching hashes only show consistency with this embedded key, not authenticity or identity.`,
+    "The file matches its own key. Anyone can edit a picture and make a new self-signed file.",
   ];
   messages["UNTRUSTED SIGNER"] = [
     "UNTRUSTED SIGNER",
@@ -4645,13 +4704,13 @@ function renderResult(report) {
   messages["FULLY REDACTED"] = [
     "FULLY REDACTED",
     "NO VISIBLE PIXELS.",
-    "The signed root verifies, but all image tiles have been hidden. There is no retained visual content to call genuine.",
+    "The proof matches, but no original picture remains visible.",
   ];
   const words = messages[report.verdict] ?? messages.TAMPERED;
   if (report.version >= 2 && report.genuine) {
     words[1] = "SIGNED TILE GRID VERIFIED.";
     words[2] =
-      "Every tile matches the signed Merkle root and the signer is pinned as trusted. You can remove selected tiles while retaining proof for the rest.";
+      "The picture matches this signer’s original.";
   }
   $("verdict-banner").className =
     "verdict-banner " +
@@ -4665,7 +4724,7 @@ function renderResult(report) {
             ? "bad"
             : "neutral");
   words[1]=resultTitle(report);
-  if(report.signerStatus==='unknown'){words[2]='The signature matches this key. Its owner is not known to this viewer. The image is withheld unless you choose to display it.';}
+  if(report.signerStatus==='unknown'){words[2]='The signature matches, but this signer is not trusted here. The picture stays hidden unless you choose to show it.';}
   if(report.signerStatus==='revoked')words[1]='Signer key revoked';
   if(report.verdict==='UNTRUSTED SIGNER'&&report.signerStatus!=='unknown'){words[1]='Verification did not establish a valid file';words[2]='One or more integrity checks failed. This file cannot be displayed as a valid unknown-signer image.';}
   $("technical-verdict").textContent='Exact verdict: '+report.verdict;
@@ -4819,7 +4878,7 @@ function setMode(localReveal) {
   $("full-mode").setAttribute("aria-pressed", String(!reveal));
   $("reveal-hint").textContent = reveal
     ? "Hold a finger or pointer to reveal a spot. Keyboard: hold Space or Enter, move with arrow keys."
-    : "Full view is visible with a session stamp. Choose Hold to reveal for a smaller viewing window.";
+    : "Full picture shown. Choose Hold to reveal for a smaller viewing area.";
   queueDraw();
 }
 function showImage() {
@@ -5406,6 +5465,7 @@ $("try-redaction").onclick = async () => {
     });
     if (operation !== token) return;
     await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
+    $("redaction-options").open=true;
     $("image-panel").scrollIntoView({
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
@@ -5738,7 +5798,7 @@ async function sessionTrust(){
 function scheduleBundleExpiry(){
  clearTimeout(bundleExpiryTimer);if(!activeBundle)return;
  const remaining=Date.parse(activeBundle.expires)-Date.now();
- if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;return;}
+ if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;return;}
  bundleExpiryTimer=setTimeout(scheduleBundleExpiry,Math.min(remaining,2147483647));
 }
 $("trust-form").onsubmit=async event=>{
@@ -5749,11 +5809,11 @@ $("trust-form").onsubmit=async event=>{
   const root=publicKeyHexFromPem(await rootFile.text()),bytes=new Uint8Array(await bundleFile.arrayBuffer()),r=await verifyTrustBundle(bytes,root,{previous:bundleStates.get(root)??null});
   if(token!==trustImportVersion)return;if(Date.parse(r.expires)<=Date.now())throw Error("Bundle expired during import");
   activeBundle={root,bytes,expires:r.expires};bundleStates.set(root,r.state);reset();scheduleBundleExpiry();if(!activeBundle)return;
-  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;
+  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;$("active-trust-note").hidden=false;
  }catch(error){$("trust-status").textContent='Trust bundle rejected: '+error.message;}
  finally{$("trust-submit").disabled=false;$("trust-bundle").disabled=false;$("trust-root").disabled=false;}
 };
-$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;};
+$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;};
 $("show-unknown").onclick=async()=>{
  const report=currentReport,container=currentContainer,token=operation;if(!report?.canRevealUnknown||report.verdict!=='UNTRUSTED SIGNER')return;
  $("show-unknown").disabled=true;
@@ -5776,6 +5836,10 @@ function workspaceMode(mode){
 for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
  $(id).onclick=()=>workspaceMode(mode);
  $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
+}
+
+for(const anchor of document.querySelectorAll('a[href="#privacy-details"],a[href="#advanced-tools"]')){
+ anchor.addEventListener('click',()=>{const target=anchor.getAttribute('href')==='#privacy-details'?'privacy-disclosure':'advanced-tools';$(target).open=true;});
 }
 
 })();

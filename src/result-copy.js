@@ -21,7 +21,7 @@ export function resultTitle(report) {
 export function signerSummary(report) {
   const fp=report.fingerprint||'';
   if(report.signerStatus==='revoked')return `${report.revocation?.reason||'Key revoked'} (revoked ${report.revocation?.revokedAt||'date unavailable'}). Do not rely on this file.`;
-  if(report.signerStatus==='trusted')return `Signed by ${report.signerDisplayName||'trusted key'}. Fingerprint ${fp.slice(0,16)}… · matches the key pinned in this viewer`;
-  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. This viewer does not know who owns this key. Compare it with the fingerprint the sender published (for example on their website).`;
+  if(report.signerStatus==='trusted')return `Signed by ${report.signerDisplayName||'trusted key'}. Fingerprint ${fp.slice(0,16)}… · trusted in this viewer`;
+  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. Compare it with the sender’s independently published fingerprint.`;
   return '';
 }
