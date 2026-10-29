@@ -30,3 +30,8 @@ The review project's compiler first timed out downloading packages; retry reache
 ## Published source baseline and subsequent v4 work
 
 Commit 5c616009 was pushed on 28 October 2026. The live viewer was fetched on 29 October and matched that commit byte-for-byte (SHA-256 2745a9327c71a0cfbc90e01474bd1bf8fbfb370a8b2495ff489b84df37ad717c). Source publication of the subsequent v4 fixes was separately authorized on 29 October; its Pages deployment needs an independent revision check. Tagging, DOI registration and journal submission are still outside this work; none was performed here.
+
+
+## Verified v4 deployment, 29 October 2026
+
+Commit 3631573 was pushed on 29 October 2026 at 13:59 AEDT and GitHub Pages serves it (index.html SHA-256 7c3ec4b255347d92e5190f503009f48f54eb24d400e5c65e80c37b3f49899341, byte-identical to that commit and its build). No release tag or DOI was created by this work. Source publication of the independent-review follow-up was subsequently authorized separately; verify its Pages revision independently.

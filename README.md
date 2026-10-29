@@ -161,3 +161,7 @@ The viewer opens on **Check a file**; **Seal a picture** requires a privacy ackn
 A known signer is shown as **Verified: {name}** only after the file checks succeed. A valid unknown signer stays amber and withheld by default. **Show image anyway (signer not verified)** enables a stamped hold-to-reveal preview and plain export without changing the verdict or trusting the key. Revoked keys stay blocked. These labels identify a key; they do not prove a photograph's scene, ownership or capture time.
 
 Our signing key fingerprint is `{NEER_FINGERPRINT}` (not yet supplied or pinned). Once configured, compare all 64 characters with the public registry at [guard-signers.json](https://neervasa00000000.github.io/Guard/.well-known/guard-signers.json). The viewer never fetches that file. The legacy key is now revoked at the repository owner's request; no replacement identity has been invented. Verify the Pages deployment against the v4 source revision before treating the hosted viewer as updated.
+
+Independent-review follow-up: the ownership-unconfirmed legacy record is labelled **Legacy viewer key (ownership unconfirmed)**, with its revocation retained. This record does not identify Neer. The intended name for a future, separately verified key remains **Neer**. Existing public-key labels require `pin-signer.mjs --public ... --name ... --rename` to change.
+
+The remaining banner titles use plain wording, while the exact verifier verdict remains visible in Technical details and JSON. A trusted redacted result still shows its configured signer in the signer line.

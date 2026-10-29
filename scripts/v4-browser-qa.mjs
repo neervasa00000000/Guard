@@ -3,8 +3,12 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createPrivateKey,createPublicKey,sign} from 'node:crypto';
 import {sealRgba,encodeGRD2} from '../src/redactable.js';
-const dir='/tmp/guard-v4-qa';await mkdir(dir,{recursive:true});
-const vectors=JSON.parse(await readFile(new URL('../tests/vectors/signer-status-vectors.json',import.meta.url))),bundleVectors=JSON.parse(await readFile(new URL('../results/trust-bundle-vectors.json',import.meta.url)));
+const dir='/tmp/guard-v4-qa';
+let bundleVectors;
+try {bundleVectors=JSON.parse(await readFile(new URL('../results/trust-bundle-vectors.json',import.meta.url)));}
+catch(error){if(error.code==='ENOENT'){console.error('Run python3 scripts/make-trust-bundle-vectors.py first');process.exit(1);}throw error;}
+const vectors=JSON.parse(await readFile(new URL('../tests/vectors/signer-status-vectors.json',import.meta.url)));
+await mkdir(dir,{recursive:true});
 const seed=n=>createPrivateKey({key:Buffer.concat([Buffer.from('302e020100300506032b657004220420','hex'),Buffer.alloc(32,n)]),format:'der',type:'pkcs8'});
 const keyB=seed(49),bundleIssuer=seed(44),rootKey=createPublicKey(seed(43)).export({type:'spki',format:'pem'});
 const make=async key=>Buffer.from(encodeGRD2(await sealRgba({width:128,height:64,rgba:new Uint8Array(128*64*4).fill(255),publicKey:createPublicKey(key).export({type:'spki',format:'der'}).subarray(-32),sign:b=>sign(null,b,key)}))).toString('base64');
@@ -18,13 +22,15 @@ const {default:qaSharp}=await import('sharp');
 const qaImages={id:(await qaSharp({create:{width:1012,height:638,channels:3,background:'#eee'}}).png().toBuffer()).toString('base64'),square:(await qaSharp({create:{width:1000,height:1000,channels:3,background:'#eee'}}).png().toBuffer()).toString('base64')};
 const qaCode=`
 const QA_CASES=${JSON.stringify(cases)},QA_BUNDLES=${JSON.stringify(bundleVectors)},QA_ROOT=${JSON.stringify(rootKey)},QA_IMAGES=${JSON.stringify(qaImages)};
-const qaPanel=document.createElement('section');qaPanel.setAttribute('aria-label','TEST ONLY QA controls');qaPanel.innerHTML='<h2>TEST ONLY QA controls</h2><button id="qa-signers">Run signer flow checks</button><button id="qa-axe">Run accessibility audit</button><button id="qa-ux">Run privacy and drop checks</button><button id="qa-unknown">Load unknown signer</button><button id="qa-genuine">Load trusted signer</button><pre id="qa-results" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>';document.querySelector('main').append(qaPanel);
+const qaPanel=document.createElement('section');qaPanel.setAttribute('aria-label','TEST ONLY QA controls');qaPanel.innerHTML='<h2>TEST ONLY QA controls</h2><button id="qa-signers">Run signer flow checks</button><button id="qa-axe">Run accessibility audit</button><button id="qa-ux">Run privacy and drop checks</button><button id="qa-redacted">Load redacted signer</button><button id="qa-self">Load self-signed file</button><button id="qa-unknown">Load unknown signer</button><button id="qa-genuine">Load trusted signer</button><pre id="qa-results" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>';document.querySelector('main').append(qaPanel);
 const qaLoad=kind=>openFile(new File([Uint8Array.from(atob(QA_CASES[kind]),c=>c.charCodeAt(0))],kind+'.GRD'));
-$('qa-unknown').onclick=()=>qaLoad('unknown');$('qa-genuine').onclick=()=>qaLoad('genuine');
+$('qa-redacted').onclick=()=>qaLoad('redact');$('qa-self').onclick=()=>qaLoad('self');$('qa-unknown').onclick=()=>qaLoad('unknown');$('qa-genuine').onclick=()=>qaLoad('genuine');
 function qaInputs(bundle){for(const [id,file] of [['trust-bundle',new File([Uint8Array.from(atob(bundle),c=>c.charCodeAt(0))],'bundle.json')],['trust-root',new File([QA_ROOT],'root.pem')]]){const dt=new DataTransfer();dt.items.add(file);$(id).files=dt.files;}}
 $('qa-signers').onclick=async()=>{const rows=[];const check=(name,ok)=>{rows.push({name,pass:!!ok});if(!ok)throw Error(name);};try{
  await qaLoad('genuine');check('trusted title', $('verdict-title').textContent==='Verified: Test Org (Tester)');
- await qaLoad('self');check('personal remains self-signed', currentReport.signerStatus==='self'&&!currentReport.genuine);
+ await qaLoad('self');check('personal remains self-signed', currentReport.signerStatus==='self'&&!currentReport.genuine);check('plain self title',$('verdict-title').textContent==='Not verified: anyone could have made this');
+ await qaLoad('tampered');check('plain tampered title',$('verdict-title').textContent==='Changed after signing');
+ await qaLoad('redact');check('plain redaction title',$('verdict-title').textContent==='Real, with parts hidden');check('redaction retains signer identity',$('verdict-signer').textContent.includes('Test Org (Tester)'));check('technical verdict retained',$('technical-verdict').textContent.includes('VERIFIED WITH REDACTIONS'));
  await qaLoad('unknown');check('unknown withheld by default',$('image-panel').hidden&&!$('show-unknown').hidden);await $('show-unknown').onclick();check('explicit unknown display preserves verdict',!$('image-panel').hidden&&currentReport.verdict==='UNTRUSTED SIGNER'&&!currentReport.genuine&&unknownApproved&&reveal);check('plain export enabled',!$('download-plain').hidden);
  qaInputs(QA_BUNDLES.cases.find(c=>c.id==='valid').bundle);await $('trust-form').onsubmit(new Event('submit',{cancelable:true}));check('bundle accepted',!!activeBundle);await qaLoad('bundle');check('bundle issuer recognized',currentReport.signerStatus==='trusted');
  qaInputs(QA_BUNDLES.cases.find(c=>c.id==='rollback').bundle);await $('trust-form').onsubmit(new Event('submit',{cancelable:true}));check('bundle rollback rejected',$('trust-status').textContent.startsWith('Trust bundle rejected:'));

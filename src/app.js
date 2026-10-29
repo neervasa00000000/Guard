@@ -193,8 +193,8 @@ function renderResult(report) {
           : (report.verdict === "TAMPERED" || report.signerStatus === "revoked")
             ? "bad"
             : "neutral");
-  if(report.signerStatus==='trusted'&&['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict))words[1]='Verified: '+(report.signerDisplayName||'trusted key');
-  if(report.signerStatus==='unknown'){words[1]='Valid signature, unknown signer';words[2]='The signature matches this key. Its owner is not known to this viewer. The image is withheld unless you choose to display it.';}
+  words[1]=resultTitle(report);
+  if(report.signerStatus==='unknown'){words[2]='The signature matches this key. Its owner is not known to this viewer. The image is withheld unless you choose to display it.';}
   if(report.signerStatus==='revoked')words[1]='Signer key revoked';
   if(report.verdict==='UNTRUSTED SIGNER'&&report.signerStatus!=='unknown'){words[1]='Verification did not establish a valid file';words[2]='One or more integrity checks failed. This file cannot be displayed as a valid unknown-signer image.';}
   $("technical-verdict").textContent='Exact verdict: '+report.verdict;
@@ -222,9 +222,7 @@ function renderResult(report) {
   $("verdict-description").textContent = words[2];
   const signerElem = $("verdict-signer"), fp=report.fingerprint||'';
   signerElem.hidden=!['trusted','unknown','revoked'].includes(report.signerStatus);
-  if(report.signerStatus==='trusted')signerElem.textContent=`Fingerprint ${fp.slice(0,16)}… · matches the key pinned in this viewer`;
-  else if(report.signerStatus==='unknown')signerElem.textContent=`Fingerprint ${fp}. This viewer does not know who owns this key. Compare it with the fingerprint the sender published (for example on their website).`;
-  else if(report.signerStatus==='revoked')signerElem.textContent=`${report.revocation?.reason||'Key revoked'} (revoked ${report.revocation?.revokedAt||'date unavailable'}). Do not rely on this file.`;
+  signerElem.textContent=signerSummary(report);
   $("verdict-icon").textContent=genuine?'✓':report.verdict==='TAMPERED'||report.signerStatus==='revoked'?'×':report.signerStatus==='unknown'?'!':'—';
   $("checks").replaceChildren();
   for (const item of report.checks) {

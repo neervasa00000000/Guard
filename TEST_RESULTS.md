@@ -1,6 +1,6 @@
 # Implementation and test record — 27 October 2026 (Australia/Melbourne)
 
-The three supplied documents were treated as reference requirements, not as proof of completed work or authority to publish. Work was applied to the local `Guard` checkout. No release, deployment, push or external communication was performed.
+The three supplied documents were treated as reference requirements, not as proof of completed work or authority to publish. Work was applied to the local `Guard` checkout. That statement described the initial preparation phase; later authorized pushes and verified deployment revisions are recorded below.
 
 ## Changes
 
@@ -102,6 +102,15 @@ The observations above are historical. The conversion repair was subsequently pu
 | Keyboard | Arrow/tab task navigation and Enter-triggered plain export exercised |
 | Revoked browser fixture | Red “Signer key revoked”, preview withheld, no unknown-signer override |
 
-These checks use deterministic TEST ONLY identities in isolated local QA copies. The iframe reflow fixtures disable frame guards only in those QA copies; production frame protection stays intact. This is not a real-phone, screen-reader, physical zoom or user-study result. The public display label was corrected to **Neer** at the owner's request; the existing key remains revoked. A new public key has not been supplied. These observations were recorded locally before v4 source publication; they are not a hosted-deployment check.
+These checks use deterministic TEST ONLY identities in isolated local QA copies. The iframe reflow fixtures disable frame guards only in those QA copies; production frame protection stays intact. This is not a real-phone, screen-reader, physical zoom or user-study result. That earlier revision used the label **Neer**; the independent-review follow-up removes that attribution from the ownership-unconfirmed legacy key. The key remains revoked. A new public key has not been supplied. These observations were recorded locally before v4 source publication; they are not a hosted-deployment check.
 
 Evidence: `results/v4-signer-flows.json`, `v4-privacy-drop.json`, `v4-axe.json`, `v4-css-viewports.json`, `v4-keyboard.json`, `v4-revoked.png`, `v4-reflow.png`; see V4_STATUS.md and REPRODUCE.md. No screenshot-reseal watermark rate or timestamp validity is claimed.
+
+
+## Verified v4 deployment, 29 October 2026
+
+Commit 3631573 was pushed on 29 October 2026 at 13:59 AEDT and GitHub Pages serves it (index.html SHA-256 7c3ec4b255347d92e5190f503009f48f54eb24d400e5c65e80c37b3f49899341, byte-identical to that commit and its build). No release tag or DOI was created by this work. Source publication of the independent-review follow-up was subsequently authorized separately; verify its Pages revision independently.
+
+## Independent-review follow-up (local)
+
+105/105 Node tests pass, including explicit CLI rename permission, symlink-safe CLI entry detection, neutral legacy attribution, revoked-banner identity suppression, plain-language titles and fresh-clone QA prerequisite messaging. Python vector/CLI checks and both C2PA formats pass. Chrome passes 14/14 updated signer/title workflow checks; accessibility results are recorded in `results/review-followup-axe.json`. Generated standalone files are checked for deterministic rebuild equivalence. No signature domains, pixel commitments, feature bytes, tau, verdict strings or exit codes changed in this follow-up. The owner subsequently authorized source publication of these fixes; this test record does not establish a later Pages deployment.
