@@ -345,21 +345,6 @@ function draw() {
     }
   } else ctx.drawImage(bitmap, 0, 0, w, h);
   overlay(ctx, w, h);
-  if (currentReport?.redactionMap) {
-    const m = currentReport.meta;
-    for (const [index,region] of mergedHiddenAreas(currentReport).entries()) {
-      const x = (region.x * w) / m.width,
-        y = (region.y * h) / m.height,
-        rw = (region.width * w) / m.width,
-        rh = (region.height * h) / m.height;
-      ctx.strokeStyle = "#F79009";
-      const outlineScale=w/(canvas.getBoundingClientRect().width||w);ctx.lineWidth=3*outlineScale;ctx.setLineDash([8*outlineScale,5*outlineScale]);
-      ctx.strokeRect(x + 1, y + 1, Math.max(0, rw - 2), Math.max(0, rh - 2));
-      ctx.fillStyle = "#dbe5ff";
-      ctx.font = `bold ${Math.max(7, Math.min(12, rw / 8))}px Arial`;
-      ctx.setLineDash([]);ctx.fillText("Hidden "+(index+1), x + 4, y + Math.min(rh - 3, 15));
-    }
-  }
   ctx.restore();
 }
 function queueDraw() {
@@ -1010,9 +995,9 @@ function drawSealEditor(draft=null){
  if(!sealPreview||!conversionImage)return;const c=$('seal-canvas'),ctx=c.getContext('2d');
  c.width=sealPreview.width;c.height=sealPreview.height;ctx.drawImage(sealPreview,0,0);
  const scale=c.width/conversionImage.width;
- for(const [i,r] of [...sealAreas,...(draft?[draft]:[])].entries()){
+ for(const r of [...sealAreas,...(draft?[draft]:[])]){
   const x=r.x*scale,y=r.y*scale,w=r.width*scale,h=r.height*scale;
-  ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#F79009';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.strokeRect(x+1,y+1,Math.max(0,w-2),Math.max(0,h-2));ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Area '+(i+1),x+4,y+15);
+  ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
  }
  // Preview stamps are not included in the downloaded pixels.
  ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText((sealUnknownApproved?'UNKNOWN SIGNER · ':'')+'GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
