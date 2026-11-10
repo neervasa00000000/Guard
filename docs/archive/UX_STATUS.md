@@ -69,6 +69,6 @@ The enlarged audit found an area-chip accessible-name mismatch; the chip now has
 
 ## Evidence and remaining limits
 
-Local raw evidence: `results/ux-layout.json`, `ux-text-200.json`, `ux-axe.json`, `ux-redesign-acceptance.json`, `ux-keyboard.json`, `ux-pointer.json`, `ux-preservation.json`, existing-workflow reports, `results/local-differential.json`, and the `/tmp/guard-ux-*.log` test logs. These diagnostic results are ignored by Git. The committed screenshot gallery is [docs/ux/README.md](docs/ux/README.md); captures are native browser JPEGs at the stated CSS widths.
+Local raw evidence: `results/ux-layout.json`, `ux-text-200.json`, `ux-axe.json`, `ux-redesign-acceptance.json`, `ux-keyboard.json`, `ux-pointer.json`, `ux-preservation.json`, existing-workflow reports, `results/local-differential.json`, and the `/tmp/guard-ux-*.log` test logs. These diagnostic results are ignored by Git. The committed screenshot gallery is [docs/ux/README.md](ux/README.md); captures are native browser JPEGs at the stated CSS widths.
 
 Direct saved-file/offline-origin browser validation remains pending because the browser tool blocks file URLs. The same self-contained code is exercised through local HTTP, with no external scripts/styles or storage APIs. Runtime Resource Timing reports no HTTP resource requests after the document; a raw DevTools Network-domain capture and a physical phone/screen-reader trial were not performed. No claim is made that these checks prove absence of all defects or establish a new hosted deployment.

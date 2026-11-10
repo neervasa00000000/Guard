@@ -65,7 +65,7 @@ The browser conversion smoke must actually click **Convert & download .GRD** and
 
 ## First upgrade batch (U0 / U1 / U3 / U2)
 
-The current local results and their limits are in [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md). Rebuild and check with:
+The current local results and their limits are in [UPGRADE_RESULTS.md](docs/archive/UPGRADE_RESULTS.md). Rebuild and check with:
 
 ```sh
 npm ci
@@ -101,7 +101,7 @@ Open `http://127.0.0.1:4195/bench/browser-differential.html`, run the cross-chec
 python3 bench/browser-differential.py --check /path/to/guard-browser-differential.json
 ```
 
-The checker requires the same corpus SHA-256, case order, verdicts and acceptance flags. It writes `results/browser-differential.json`. This exercises native browser codecs/WebCrypto on exact containers; visual-copy codec agreement is a separate experiment. Bundle fixtures and explicit-root CLI/API usage are documented in [TRUST_BUNDLES.md](TRUST_BUNDLES.md).
+The checker requires the same corpus SHA-256, case order, verdicts and acceptance flags. It writes `results/browser-differential.json`. This exercises native browser codecs/WebCrypto on exact containers; visual-copy codec agreement is a separate experiment. Bundle fixtures and explicit-root CLI/API usage are documented in [TRUST_BUNDLES.md](docs/archive/TRUST_BUNDLES.md).
 
 ## Submission resize regression and visual-on/off scale
 
@@ -124,7 +124,9 @@ Serve localhost and run `bench/visual-corpus.html` in Chrome. Expand Per-case re
 
 Tau is still nine, with BORDERLINE for worstError seven through eleven inclusive, exit seven and no positive consistency flag. Do not aggregate it with consistent results. Raw vectors at .5/.75/1/1.25/1.5× require exact bytes; encoded photographic candidates can still have decoder differences.
 
-## V4 signer, recipient and accessibility QA
+## Historical V4 signer, recipient and accessibility QA
+
+The following V4 checks run against the paper-era viewer. For the current browser workflow, use the [TileSeal test plan](TILESEAL.md).
 
 ```sh
 python3 scripts/make-signer-vectors.py

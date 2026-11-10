@@ -3,7 +3,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {readFile,mkdtemp,mkdir,cp,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {spawnSync} from 'node:child_process';
 import {resultTitle,signerSummary} from '../src/result-copy.js';
 test('plain-language titles preserve signer distinctions and technical verdicts',()=>{
- const cases={GENUINE:'Genuine','VERIFIED WITH REDACTIONS':'Genuine, with parts blacked out','UNVERIFIED: SELF-SIGNED':'Unknown signer',TAMPERED:'Changed',DEMO:'Example only','FULLY REDACTED':'Genuine, but everything is blacked out','NOT A GRD':'Not a Guard file','REVOKED KEY':'Revoked signer'};
+ const cases={GENUINE:'Genuine','VERIFIED WITH REDACTIONS':'Genuine, with parts blacked out','UNVERIFIED: SELF-SIGNED':'Self-signed file',TAMPERED:'Changed',DEMO:'Example only','FULLY REDACTED':'Everything is blacked out','NOT A GRD':'Not a TileSeal .GRD file','REVOKED KEY':'Revoked signer'};
  for(const [verdict,title] of Object.entries(cases)){const r={verdict,signerStatus:'trusted',signerDisplayName:'Test Org'};assert.equal(resultTitle(r),title);assert.equal(r.verdict,verdict);}
  for(const verdict of ['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'])assert.equal(resultTitle({verdict}),"Couldn't check this file");
  assert.equal(resultTitle({verdict:'UNTRUSTED SIGNER',signerStatus:'unknown'}),'Unknown signer');

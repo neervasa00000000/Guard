@@ -20,7 +20,7 @@
 - Unknown-signer files require explicit preview approval and a separate edit action. Export checks signature and region integrity again and retains the unknown verdict. Tampered and revoked files cannot enter the editor, including forced handler calls.
 - Existing signed files retain their original signer without requesting a signing key. GRD1 cannot use the key-free blackout flow.
 
-Current native drag screenshot: [blackout-editor-fixed.jpg](docs/ui-polish/blackout-editor-fixed.jpg). It shows two selected areas after an actual pointer drag on a synthetic TEST ONLY image. Earlier gallery captures document the visual polish before the new upload instructions and editor settings; their height measurements are superseded. Final layout measurements show no horizontal overflow at all three tested widths.
+Current native drag screenshot: [blackout-editor-fixed.jpg](ui-polish/blackout-editor-fixed.jpg). It shows two selected areas after an actual pointer drag on a synthetic TEST ONLY image. Earlier gallery captures document the visual polish before the new upload instructions and editor settings; their height measurements are superseded. Final layout measurements show no horizontal overflow at all three tested widths.
 
 ## Verification
 

@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createVerifier, validateTrustedKeys } from "../src/verifier.js";
 import { verifyGRD2 } from "../src/redactable.js";
+import { withConformanceFiles } from "./conformance-fixtures.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const conformanceDir = join(root, "conformance");
@@ -48,9 +49,10 @@ const trustPolicy = {
 
 const verifyGRD1 = createVerifier(anchors, trustPolicy);
 
-test("conformance vectors agree across JS and Python checkers", async () => {
+test("conformance vectors agree across JS and Python checkers", () => withConformanceFiles(async (fixturePath) => {
   for (const v of vectors) {
-    const bytes = await readFile(join(root, v.file));
+    const path = fixturePath(v);
+    const bytes = await readFile(path);
 
     // JS checker
     let js;
@@ -80,7 +82,7 @@ test("conformance vectors agree across JS and Python checkers", async () => {
       [
         "grd.py",
         "verify",
-        join(root, v.file),
+        path,
         "--trusted-keys",
         join(conformanceDir, "trusted-keys.test.json"),
       ],
@@ -108,4 +110,4 @@ test("conformance vectors agree across JS and Python checkers", async () => {
       );
     }
   }
-});
+}));

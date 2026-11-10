@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Independent GRD1 verifier and GRD2 issuer/redactor. No private key is needed to redact."""
+"""TileSeal reference CLI: verify GRD1/GRD2/GRD3 and issue or redact GRD2/GRD3 with optional width-class padding."""
 import grd3_codec, grd_visual, grd_subtiles
 from grd_geometry import pad_box
 import argparse, base64, hashlib, io, json, os, re, struct, sys, zlib, math

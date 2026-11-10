@@ -43,6 +43,7 @@ const visual = ["visualFeatures", "visualSalt", "visualCommitment"].map(name => 
 }).join("\n");
 const subtiles = (await readFile(new URL("src/subtiles.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
 const geometry = (await readFile(new URL("src/pad-box.js", root), "utf8")).replace(/^export /gm, "");
+const resultCopy = (await readFile(new URL("src/result-copy.js", root), "utf8")).replace(/^export /gm, "");
 const app = (await readFile(new URL("src/app.js", root), "utf8")).replace(
   /^\/\/ SPDX[^\n]*\n/gm,
   "",
@@ -57,7 +58,7 @@ html = html
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${converter}\n${geometry}\n${app}\n})();`,
+      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${converter}\n${geometry}\n${resultCopy}\n${app}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

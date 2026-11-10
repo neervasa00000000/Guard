@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import test from 'node:test';import assert from 'node:assert/strict';import {readFile,writeFile,mkdtemp,rm,mkdir} from 'node:fs/promises';import {join} from 'node:path';import {tmpdir} from 'node:os';import {spawnSync} from 'node:child_process';import {createPrivateKey} from 'node:crypto';import {verifyGRD2} from '../src/redactable.js';import {createVerifier} from '../src/verifier.js';import {updateSignerRegistry} from '../scripts/pin-signer.mjs';
+import { withConformanceFiles } from './conformance-fixtures.mjs';
 const shared=JSON.parse(await readFile(new URL('vectors/signer-status-vectors.json',import.meta.url))),key=shared.keys.signers[0];
 function python(bytes,keys=shared.keys,policy=null){const py=spawnSync('python3',['-c',`import sys,json,tempfile,base64;from pathlib import Path;import grd
 x=json.load(sys.stdin)
@@ -26,10 +27,14 @@ test('pin helper refuses private keys and keeps public registries/revocation in 
  }finally{await rm(dir,{recursive:true,force:true});}
 });
 
-test('all conformance GRD1/2/3 files have matching signer metadata in JS/Python',async()=>{
+test('all conformance GRD1/2/3 files have matching signer metadata in JS/Python', () => withConformanceFiles(async (fixturePath) => {
  const keys=JSON.parse(await readFile(new URL('../conformance/trusted-keys.test.json',import.meta.url))),vectors=JSON.parse(await readFile(new URL('../conformance/vectors.json',import.meta.url))),policy={version:1,asOf:keys.asOf,revoked:keys.signers.filter(s=>s.revoked).map(s=>({fingerprint:s.fingerprint_sha256,reason:s.reason,revokedAt:s.revokedAt}))};
- for(const v of vectors){const bytes=await readFile(new URL('../'+v.file,import.meta.url)),js=v.format===1?await createVerifier(keys.signers,policy)(bytes):await verifyGRD2(bytes,keys.signers,policy);assert.deepEqual(fields(js),python(bytes,keys,policy),v.id);}
-});
+ for (const v of vectors) {
+   const bytes = await readFile(fixturePath(v));
+   const js = v.format === 1 ? await createVerifier(keys.signers, policy)(bytes) : await verifyGRD2(bytes, keys.signers, policy);
+   assert.deepEqual(fields(js), python(bytes, keys, policy), v.id);
+ }
+}));
 
 test('build refuses a published registry that differs from the embedded registry',async()=>{
  const {cp}=await import('node:fs/promises'),dir=await mkdtemp(join(tmpdir(),'guard-build-registry-'));
