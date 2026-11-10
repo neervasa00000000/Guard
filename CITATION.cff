@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Cite this software at the revision you used. The IEEE Access manuscript in preparation cites commit f8f2558 (paper-v5.7)."
+title: "TileSeal (repository: Guard)"
+type: software
+authors:
+  - given-names: Neer
+    family-names: Vasa
+repository-code: "https://github.com/neervasa00000000/Guard"
+url: "https://neervasa00000000.github.io/Guard/"
+license: MIT

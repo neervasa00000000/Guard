@@ -3,9 +3,9 @@
 export function resultTitle(report) {
   if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return 'Genuine';
   if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return 'Genuine, with parts blacked out';
-  if(report.verdict==='FULLY REDACTED')return report.personal||report.demo?'Everything is blacked out':'Genuine, but everything is blacked out';
+  if(report.verdict==='FULLY REDACTED')return 'Everything is blacked out';
   if(report.verdict==='UNTRUSTED SIGNER')return report.signerStatus==='unknown'?'Unknown signer':"Couldn't check this file";
-  return ({'UNVERIFIED: SELF-SIGNED':'Unknown signer',TAMPERED:'Changed',DEMO:'Example only','NOT A GRD':'Not a Guard file','REVOKED KEY':'Revoked signer'})[report.verdict]||"Couldn't check this file";
+  return ({'UNVERIFIED: SELF-SIGNED':'Self-signed file',TAMPERED:'Changed',DEMO:'Example only','NOT A GRD':'Not a TileSeal .GRD file','REVOKED KEY':'Revoked signer'})[report.verdict]||"Couldn't check this file";
 }
 export function resultDescription(report,areas=report.redactionMap?.length||0) {
   const name=report.signerDisplayName||'the trusted signer';
@@ -18,7 +18,7 @@ export function resultDescription(report,areas=report.redactionMap?.length||0) {
   if(report.verdict==='DEMO')return 'This is a sample file. It does not come from a real signer.';
   if(report.verdict==='REVOKED KEY')return "The key that signed this file has been withdrawn. Don't rely on it.";
   if(report.verdict==='NOT A GRD')return 'Choose the original .GRD file from the sender.';
-  return "Guard couldn't finish the check. This is not a sign of tampering.";
+  return "TileSeal couldn't finish the check. This is not a sign of tampering.";
 }
 export function signerSummary(report) {
   const fp=report.fingerprint||'';

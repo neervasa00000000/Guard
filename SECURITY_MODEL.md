@@ -75,7 +75,7 @@ The verifiers now share one exact integer area-average mapping from native candi
 - Exact acceptance requires a valid signature, supported/bounded profile, valid disclosures, pixel commitments and blackout checks. Trust/purpose determines the final exact verdict.
 - Input/proof failures are TAMPERED; explicitly exceeded bounds are LIMIT EXCEEDED; unsupported capabilities/profiles are not accepted. Local verifier/policy faults are CANNOT VERIFY, never genuine evidence.
 - GRD3 verification processes RGB in 64-row bands plus PNG filter state and per-band tile messages. The input container/compressed PNG and the small signed commitment vector are still resident. Displaying, sealing, redacting or exporting an image necessarily uses additional image buffers; the bounded-band statement is about exact verification, not total browser/GPU memory.
-- The standalone viewer still uses its static trust snapshot. Opt-in root-signed bundle tooling now checks expiry, sequence and same-sequence equivocation, with an atomic, locked CLI cache; see TRUST_BUNDLES.md for its local-clock/state assumptions. Production root provisioning, standalone import/refresh UX, RFC 3161 time, hardware-key registration and production C2PA certificate trust remain pending.
+- The standalone viewer still uses its static trust snapshot. Opt-in root-signed bundle tooling now checks expiry, sequence and same-sequence equivocation, with an atomic, locked CLI cache; see [the archived trust-bundle guide](docs/archive/TRUST_BUNDLES.md) for its local-clock/state assumptions. Production root provisioning, standalone import/refresh UX, RFC 3161 time, hardware-key registration and production C2PA certificate trust remain pending.
 
 ## Evidence boundaries
 

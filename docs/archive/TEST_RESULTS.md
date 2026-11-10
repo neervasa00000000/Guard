@@ -38,8 +38,8 @@ The 20 MB base64 shape scan measured 68–89 ms when run independently on this l
 
 Raw local logs and JSON are in ignored `results/`. The captured Chrome result is shown below.
 
-![Chrome 156 shared-vector and 4 MP verification results](results/browser-check.png)
-Commands are in [REPRODUCE.md](REPRODUCE.md).
+Historical local capture: Chrome 156 shared-vector and 4 MP verification results (`results/browser-check.png`). The capture is not included in the repository.
+Commands are in [REPRODUCE.md](../../REPRODUCE.md).
 
 ## Still unverified
 
@@ -77,7 +77,7 @@ At `https://neervasa00000000.github.io/Guard/` during this audit:
 
 Those observations describe the site before the fix was published. Commit 5c616009 was pushed on 28 October 2026. On 29 October, the deployed index.html was fetched and was byte-identical to that commit: SHA-256 2745a9327c71a0cfbc90e01474bd1bf8fbfb370a8b2495ff489b84df37ad717c. This does not describe the subsequent v4 changes. No release tag or DOI was created by this work.
 
-![Observed public-site conversion error](results/live-conversion-failure.png)
+Historical local capture: Observed public-site conversion error (`results/live-conversion-failure.png`). The capture is not included in the repository.
 
 Raw follow-up evidence: `results/recheck-npm.log`, `results/recheck-python.log`, `results/recheck-c2pa.json`, `results/browser-verdict-checks.json`, and `results/browser-conversion-roundtrip.json`.
 

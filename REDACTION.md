@@ -54,7 +54,7 @@ The supplied original server and Goose Bumps fixture are absent. Python/JavaScri
 
 ## Strict command-line acceptance
 
-`grd.py verify` returns exit 0 only for GENUINE. Other verdicts use grouped non-zero exit codes (table in README), including exit 5 for VERIFIED WITH REDACTIONS, DEMO and UNVERIFIED: SELF-SIGNED. Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).
+`grd.py verify` returns exit 0 only for GENUINE. Other verdicts use [grouped non-zero exit codes](#cli-exit-codes), including exit 5 for VERIFIED WITH REDACTIONS, DEMO and UNVERIFIED: SELF-SIGNED. Read the JSON for regional-proof details; never treat these as whole-image acceptance. See [issuer setup](SIGNERS.md) and [privacy notes](PRIVACY.md).
 
 ## Plain download
 
@@ -74,3 +74,18 @@ The signed sub-tile size fixes the smallest permitted grid. You may choose a coa
 Visual proofs check 8×8 brightness and 16×16 colour averages with tolerance 9. They do not verify finer detail or turn self-signed/untrusted files into trusted identities. JPEG/resize acceptance is empirical, not guaranteed for every image. Mean-preserving edits and some blurs may pass.
 
 A visual sidecar omits features and nonces for wholly hidden parents. A partial parent cannot export its original aggregate feature without potentially leaking hidden information, so this combined export is deliberately refused. Use whole 64 px blackouts when visual-copy checking is needed. Plain exports retain only the actually hidden sub-tiles as black.
+
+## CLI exit codes
+
+Read the JSON verdict for the precise result.
+
+| Exit | Verdict |
+|------|---------|
+| 0 | GENUINE |
+| 1 | Operational error (I/O, bad key file, write refused) |
+| 2 | TAMPERED, VISUALLY INCONSISTENT (also argparse usage errors; inspect JSON) |
+| 3 | NOT A GRD |
+| 4 | CANNOT VERIFY, UNSUPPORTED, LIMIT EXCEEDED, UNREADABLE |
+| 5 | VISUALLY CONSISTENT, VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
+| 6 | REVOKED KEY |
+| 7 | BORDERLINE (decoder-dependent): close to the threshold; treat as not proven |

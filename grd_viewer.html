@@ -78,6 +78,7 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
 .area-chips li { display: flex; align-items: center; gap: .4rem; background: var(--accent-soft); padding-left: .6rem; border-radius: .45rem; }
 .area-chips button { border: 0; background: transparent; }
 #check-sealed { display: block; margin-top: .8rem; }
+.verdict-code { margin-top: -.45rem; font-weight: 600; }
 #result[data-tone=good] h2 { color: #17623f; }
 #result[data-tone=bad] h2 { color: #a22328; }
 #result[data-tone=caution] h2 { color: #745009; }
@@ -86,6 +87,15 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
 @media (min-width: 60rem) {
   #convert-form { grid-template-columns: minmax(0, 1fr) 19rem; }
   .finish { position: sticky; top: 1rem; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
 }
 </style>
 </head>
@@ -167,11 +177,13 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
       <section class="card upload">
         <h2>Check a file</h2>
         <label for="file-input">Drop a .GRD here or choose a file</label>
-        <input id="file-input" type="file" accept=".grd,.GRD">
+        <p id="check-help" class="hint">Files sealed here are self-signed. A successful check confirms that visible pixels match the seal, while the signer's identity remains unverified.</p>
+        <input id="file-input" type="file" accept=".grd,.GRD" aria-describedby="check-help">
         <p id="live-status" role="status"></p>
       </section>
       <section id="result" class="card" aria-labelledby="verdict-title" hidden>
-        <h2 id="verdict-title" tabindex="-1"></h2>
+        <h2 id="verdict-title" tabindex="-1" aria-describedby="verdict-code"></h2>
+        <p id="verdict-code" class="hint verdict-code"></p>
         <p id="verdict-description"></p>
         <p id="verdict-signer" class="hint"></p>
         <button id="show-unknown" type="button" class="secondary" hidden>Show picture from unknown signer</button>
@@ -190,7 +202,11 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
     <details id="about" class="card about">
       <summary>About TileSeal</summary>
       <p>TileSeal (repository: Guard)</p>
-      <p>TileSeal signs pictures locally and lets you black out whole grid cells without the signing key. Checking a .GRD tells you whether retained pixels match the signed file.</p>
+      <p>Black out parts of a picture, seal it as a .GRD, and check later that the visible pixels match the seal. This site creates self-signed files. Verifying a signer's identity requires a trusted key configured in the verifier.</p>
+      <p>The editor rounds boxes outward at 16 px by default. Padding widens them in steps of 128 px to reduce clues about hidden text length. Box shape can still reveal information. The editor offers 16, 32 and 64 px rounding. The Python CLI also offers 8 px for compatible seals.</p>
+      <p>Download plain picture saves a PNG. Keep the .GRD to check its proof again.</p>
+      <p>IEEE Access manuscript in preparation. The manuscript cites <a href="https://github.com/neervasa00000000/Guard/commit/f8f2558a5f82bb99842781a0e3bc03fec39fd3c5">f8f2558</a>, which predates the browser padding control.</p>
+      <p><a href="PRIVACY.md">Privacy notice</a> · <a href="SECURITY_MODEL.md">Security model</a> · <a href="GRD_SPEC.md">Format specification</a> · <a href="LICENSE">MIT licence</a></p>
       <p>Images and keys stay in this browser. The site is hosted on GitHub Pages. <a href="#privacy-details">Privacy details</a></p>
       <p id="privacy-details">Effective 29 October 2026. GitHub processes requests to load the page under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>.</p>
     </details>
@@ -2331,6 +2347,39 @@ function boxUnionArea(boxes) {
   return area;
 }
 
+// SPDX-License-Identifier: MIT
+// Presentation only. Technical verdicts, JSON and verification remain unchanged.
+function resultTitle(report) {
+  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return 'Genuine';
+  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return 'Genuine, with parts blacked out';
+  if(report.verdict==='FULLY REDACTED')return 'Everything is blacked out';
+  if(report.verdict==='UNTRUSTED SIGNER')return report.signerStatus==='unknown'?'Unknown signer':"Couldn't check this file";
+  return ({'UNVERIFIED: SELF-SIGNED':'Self-signed file',TAMPERED:'Changed',DEMO:'Example only','NOT A GRD':'Not a TileSeal .GRD file','REVOKED KEY':'Revoked signer'})[report.verdict]||"Couldn't check this file";
+}
+function resultDescription(report,areas=report.redactionMap?.length||0) {
+  const name=report.signerDisplayName||'the trusted signer';
+  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return `This picture matches what ${name} signed. Nothing was changed.`;
+  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return `Everything you can see matches what ${name} signed. ${areas} ${areas===1?'area was':'areas were'} blacked out after signing.`;
+  if(report.verdict==='FULLY REDACTED')return 'The whole picture was blacked out after signing. No original pixels remain to inspect.';
+  if(report.verdict==='TAMPERED')return "This file failed its integrity checks. Don't rely on it.";
+  if(report.signerStatus==='unknown')return "The file is intact, but this device doesn't know who signed it. Anyone can make a file like this.";
+  if(report.verdict==='UNVERIFIED: SELF-SIGNED')return 'This file uses a self-signed key, so anyone could have made it.';
+  if(report.verdict==='DEMO')return 'This is a sample file. It does not come from a real signer.';
+  if(report.verdict==='REVOKED KEY')return "The key that signed this file has been withdrawn. Don't rely on it.";
+  if(report.verdict==='NOT A GRD')return 'Choose the original .GRD file from the sender.';
+  return "TileSeal couldn't finish the check. This is not a sign of tampering.";
+}
+function signerSummary(report) {
+  const fp=report.fingerprint||'';
+  if(report.signerStatus==='revoked')return `${report.revocation?.reason||'Key revoked'}, revoked ${report.revocation?.revokedAt||'date unavailable'}. The picture is not shown. Do not rely on this file.`;
+  if(report.signerStatus==='trusted'&&!report.personal&&!report.demo)return `Signed by ${report.signerDisplayName||'trusted key'} · trusted on this device`;
+  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. Ask the sender to confirm it another way.`;
+  if(report.signerStatus==='self')return `Fingerprint ${fp}.`;
+  if(report.verdict==='TAMPERED')return 'The picture is not shown.';
+  if(['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'].includes(report.verdict))return 'Reason: '+(report.problems?.[0]||'The check could not finish.').slice(0,180);
+  return '';
+}
+
 const $ = id => document.getElementById(id);
 const sealCanvas = $("seal-canvas");
 const checkCanvas = $("canvas");
@@ -2426,7 +2475,8 @@ async function revealChecked(state, report) {
 }
 
 function renderCheck(report, file) {
-  $("verdict-title").textContent = report.verdict;
+  $("verdict-title").textContent = resultTitle(report);
+  $("verdict-code").textContent = report.verdict;
   $("verdict-description").textContent = report.verdict === "FULLY REDACTED"
     ? "All areas are blacked out."
     : report.regionVerified

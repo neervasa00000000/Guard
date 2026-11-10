@@ -1,62 +1,29 @@
 # TileSeal
 
-TileSeal (repository: Guard) lets you black out parts of a picture, seal it as a `.GRD` file, and check the retained pixels later. Images are processed inside your browser.
+**Versions.** The IEEE Access manuscript in preparation cites [commit f8f2558](https://github.com/neervasa00000000/Guard/commit/f8f2558a5f82bb99842781a0e3bc03fec39fd3c5), the [`paper-v5.7` pin](https://github.com/neervasa00000000/Guard/tree/paper-v5.7). The current [live demo](https://neervasa00000000.github.io/Guard/) adds the TileSeal interface and 128 px width-class padding.
 
-Open the standalone [index.html](index.html) in a current browser, or run `npm run dev` and open `http://127.0.0.1:4195/`. Choose a picture, drag or enter blackout areas, review the preview and download. The editor starts at 16 px rounding with width-class padding enabled. Use **Check a file** to inspect an existing GRD1, GRD2 or GRD3. GRD2 and GRD3 can be blacked out again without the signer key.
+[![MIT licence](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Verify and build](https://github.com/neervasa00000000/Guard/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/neervasa00000000/Guard/actions/workflows/check.yml)
 
-New browser files use a one-time key and show **UNVERIFIED: SELF-SIGNED**. **GENUINE** and **VERIFIED WITH REDACTIONS** require the verifier's configured signer trust. Unknown signer pictures require an explicit action before display. The result describes the signed file and its retained pixels.
+TileSeal (repository: Guard) lets you black out parts of a picture, save a `.GRD`, and later check that the visible pixels still match the sealed file. Images and private keys stay in your browser. See the [privacy notice](PRIVACY.md).
 
-Supported pictures are PNG, JPG, WebP, GIF and BMP, up to 256 MiB and within the GRD3 limits of 36 MP, 8,192 px per edge and 9,000 parent tiles. Larger pictures need resizing before selection. The browser chooses GRD2 or GRD3 based on the existing format limits. **Download plain picture** creates a PNG with the hidden pixels blacked out. Keep the GRD if you need to check the proof again.
+1. **Choose a picture.** Use the [live demo](https://neervasa00000000.github.io/Guard/#seal), open [index.html](index.html) locally, or run `npm run dev` and visit `http://127.0.0.1:4195/`.
+2. **Black out and seal.** Draw boxes, review the preview, and save the `.GRD`. The editor rounds outward to 16 px by default and pads widths in steps of 128 px. Padding reduces the clues a box's width gives about hidden text length. The editor also offers 32 and 64 px rounding. The Python CLI supports 8 px for compatible seals.
+3. **Check the file.** Open it in [Check a file](https://neervasa00000000.github.io/Guard/#check). New files are self-signed. A successful check confirms that the visible pixels match the seal, while the signer's identity remains unverified. You can black out more areas on GRD2 and GRD3 without the signing key. **Download plain picture** saves a PNG without the proof. Keep the `.GRD` to check it again.
 
-See the [manual test plan and removal list](TILESEAL.md), [CLI guide](REDACTION.md), [format specification](GRD_SPEC.md), [privacy notice](PRIVACY.md) and [MIT licence](LICENSE).
-
-Exit 0 means GENUINE only. Other verdicts use the non-zero groups below; inspect the JSON verdict for the precise result. Treat any non-zero code as 'not proven genuine'.
-
-### CLI exit codes
-
-| Exit | Verdict |
-|------|---------|
-| 0 | GENUINE |
-| 1 | Operational error (I/O, bad key file, write refused) |
-| 2 | TAMPERED, VISUALLY INCONSISTENT (also argparse usage errors; inspect JSON) |
-| 3 | NOT A GRD |
-| 4 | CANNOT VERIFY, UNSUPPORTED, LIMIT EXCEEDED, UNREADABLE |
-| 5 | VISUALLY CONSISTENT, VERIFIED WITH REDACTIONS, FULLY REDACTED, DEMO, UNVERIFIED: SELF-SIGNED, UNTRUSTED SIGNER |
-| 6 | REVOKED KEY |
-| 7 | BORDERLINE (decoder-dependent): close to the threshold; treat as not proven |
-
-These groups replace the earlier 10–43 codes. Scripts must read the JSON verdict or migrate their exit-code handling.
-
-## Hosting
-
-For browser-enforced anti-framing, host on a platform that sends Content-Security-Policy: frame-ancestors 'none' (for example Cloudflare Pages using _headers, or Netlify). GitHub Pages cannot send it.
+See the [browser test plan](TILESEAL.md), [format specification](GRD_SPEC.md), [security model](SECURITY_MODEL.md), [CLI guide](REDACTION.md), and [signer trust guide](SIGNERS.md). The project uses the [MIT licence](LICENSE). The [citation file](CITATION.cff) identifies the manuscript pin, and the [E1 checklist](research/e1/README.md) records the status of the research artifacts.
 
 ## Build and test
 
+Use Node.js 22 and Python 3.13. Run from the repository root:
+
 ```sh
+npm ci
+python3 -m pip install -r requirements.txt
 npm run build
 npm test
+python3 tests/test_vectors.py
+python3 tests/test_padding.py
 ```
 
-Build produces identical `index.html` and `grd_viewer.html` files with inline CSS and JavaScript. Both are directly usable; GitHub Pages can serve the repository root.
-
-The automated suite additionally covers GRD2 proof/mask/pixel tampering, chained redaction, full redaction, revoked keys, 2,000 deterministic GRD2 bit mutations, and independent Python ↔ JavaScript issue/redact/verify round trips. Optional C2PA integration checks a real SDK-signed PNG with an explicitly trusted temporary test CA and rejects a pixel-modified export. These mutation counts are not a security proof.
-
-The legacy suite includes **7,504 single-bit mutations** across a generated 938-byte GRD1 fixture, all rejected; unknown keys with valid signatures; truncated and extended files; unsafe offsets; duplicate sections; invalid metadata; size limits; typed-array offsets; optional sections; and acceptance comparison with the supplied reference verifier. It does not reproduce the absent Goose Bumps/server test suite.
-
-For UI testing only:
-
-```sh
-node scripts/browser-fixtures.mjs
-python3 -m http.server 4196 --bind 127.0.0.1 --directory /tmp/guard-qa
-```
-
-This creates a temporary QA viewer with an **ephemeral test trust anchor**, plus valid/tampered/unknown-key fixtures. Never publish that generated QA viewer. Production output uses the bundled signer registry and revocation policy. No private signing key is stored or shipped.
-
-## Source map
-
-- `src/app.js` handles file intake, the editor, signing and verification.
-- `src/pad-box.js` and `grd_geometry.py` implement matching blackout geometry.
-- `src/index.template.html`, `src/style.css` and `scripts/build.mjs` build the standalone page.
-- `tests/vectors/padding-vectors.json` is shared by the JavaScript and Python tests.
-- `REPRODUCE.md`, `UX_STATUS.md` and `UI_POLISH.md` include historical evidence for earlier Guard builds.
+The build writes identical standalone files to `index.html` and `grd_viewer.html`. See [REPRODUCE.md](REPRODUCE.md) for additional verification commands and the [archive](docs/archive/) for historical reports.

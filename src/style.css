@@ -68,6 +68,7 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
 .area-chips li { display: flex; align-items: center; gap: .4rem; background: var(--accent-soft); padding-left: .6rem; border-radius: .45rem; }
 .area-chips button { border: 0; background: transparent; }
 #check-sealed { display: block; margin-top: .8rem; }
+.verdict-code { margin-top: -.45rem; font-weight: 600; }
 #result[data-tone=good] h2 { color: #17623f; }
 #result[data-tone=bad] h2 { color: #a22328; }
 #result[data-tone=caution] h2 { color: #745009; }
@@ -76,4 +77,13 @@ canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain;
 @media (min-width: 60rem) {
   #convert-form { grid-template-columns: minmax(0, 1fr) 19rem; }
   .finish { position: sticky; top: 1rem; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
 }

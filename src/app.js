@@ -94,7 +94,8 @@ async function revealChecked(state, report) {
 }
 
 function renderCheck(report, file) {
-  $("verdict-title").textContent = report.verdict;
+  $("verdict-title").textContent = resultTitle(report);
+  $("verdict-code").textContent = report.verdict;
   $("verdict-description").textContent = report.verdict === "FULLY REDACTED"
     ? "All areas are blacked out."
     : report.regionVerified
