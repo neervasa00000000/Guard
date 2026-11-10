@@ -82,10 +82,10 @@ await writeFile(
 
 const vectors = [];
 
-async function addVector({ id, description, format, bytes, expectedVerdict, expectedExit, hiddenPixelsCleared }) {
+async function addVector({ id, description, format, bytes, expectedVerdict, expectedExit, hiddenPixelsCleared, generated = false }) {
   const filename = `${id}.GRD`;
   const relPath = `conformance/files/${filename}`;
-  await writeFile(join(filesDir, filename), bytes);
+  if (!generated) await writeFile(join(filesDir, filename), bytes);
   const v = {
     id,
     file: relPath,
@@ -94,6 +94,7 @@ async function addVector({ id, description, format, bytes, expectedVerdict, expe
     expected_verdict: expectedVerdict,
     expected_exit: expectedExit,
   };
+  if (generated) v.generated = true;
   if (hiddenPixelsCleared !== undefined) {
     v.expected_hidden_pixels_cleared = hiddenPixelsCleared;
   }
@@ -340,48 +341,23 @@ await addVector({
   expectedExit: 2,
 });
 
-// Oversized
-const oversizedBytes = Buffer.concat([
-  Buffer.from("GRD2\n"),
-  Buffer.alloc(33 * 1024 * 1024, 0x20),
-]);
+// Large cases are materialized by large_conformance_fixtures.py.
 await addVector({
   id: "grd2-oversized",
   description: "GRD2 file exceeding 32 MiB size limit",
   format: 2,
-  bytes: oversizedBytes,
   expectedVerdict: "LIMIT EXCEEDED",
   expectedExit: 4,
+  generated: true,
 });
 
-// 4 MP noise personal photo
-const wBig = 2496;
-const hBig = 1662;
-const bigRgba = new Uint8Array(wBig * hBig * 4);
-let lcg = 123456789;
-for (let i = 0; i < bigRgba.length; i += 4) {
-  lcg = (lcg * 1664525 + 1013904223) >>> 0;
-  bigRgba[i] = lcg & 0xff;
-  bigRgba[i + 1] = (lcg >>> 8) & 0xff;
-  bigRgba[i + 2] = (lcg >>> 16) & 0xff;
-  bigRgba[i + 3] = 255;
-}
-const bigDoc = await sealRgba({
-  rgba: bigRgba,
-  width: wBig,
-  height: hBig,
-  publicKey: trustedKey.raw,
-  purpose: "personal",
-  label: "Large 4MP Noise",
-  sign: (b) => nodeSign(null, Buffer.from(b), trustedKey.privateKey),
-});
 await addVector({
   id: "grd2-large-4mp-noise",
   description: "GRD2 4-megapixel photo (1014 tiles) with high-entropy noise",
   format: 2,
-  bytes: encodeGRD2(bigDoc),
   expectedVerdict: "UNVERIFIED: SELF-SIGNED",
   expectedExit: 5,
+  generated: true,
 });
 
 // -------------------------------------------------------------
@@ -436,3 +412,4 @@ console.log(`Generated ${vectors.length} conformance vectors in conformance/`);
 
 // Preserve the deterministic binary-profile cases when rebuilding the legacy corpus.
 execFileSync("python3", ["scripts/make-grd3-vectors.py"], {cwd:root,stdio:"inherit"});
+execFileSync("python3", ["scripts/large_conformance_fixtures.py", filesDir], {cwd:root,stdio:"inherit"});

@@ -97,6 +97,7 @@ GRD1 metadata now permits finite safe integers only (no fractional numbers), val
 ## Conformance vectors
 
 A conforming implementation MUST produce expected_verdict for every vector in conformance/vectors.json.
+See the [conformance guide](conformance/README.md) for the test commands and generated cases.
 
 ## GRD2 profile 2.1
 

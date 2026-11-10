@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import grd
+from scripts.large_conformance_fixtures import create_large_fixtures
 root=grd.ROOT
 vectors=json.loads((root/'tests/vectors/grd2-vectors.json').read_text())
 pk=vectors['public_key_hex'];trusted=[pk]
@@ -14,11 +15,21 @@ for v in vectors['vectors']:
  assert r['verdict']==v['expected_verdict'],(v['id'],r)
  if r.get('regionVerified'):assert r['root']==v['expected_root']
 print('Shared deterministic vectors:',len(vectors['vectors']),'passed')
-for v in json.loads((root/'conformance/vectors.json').read_text()):
- r=grd.verify((root/v['file']).read_bytes(),keys_path=root/'conformance/trusted-keys.test.json')
- assert r['verdict']==v['expected_verdict'],(v['id'],r)
- assert grd.EXIT[r['verdict']]==v['expected_exit']
+keys = root / 'conformance/trusted-keys.test.json'
+conformance = json.loads((root / 'conformance/vectors.json').read_text())
+with tempfile.TemporaryDirectory(prefix='tileseal-conformance-') as temp:
+    directory = Path(temp)
+    create_large_fixtures(directory)
+    for vector in conformance:
+        path = Path(vector['file'])
+        fixture = directory / path.name if vector.get('generated') else root / path
+        raw = fixture.read_bytes()
+        result = grd.verify(raw, keys_path=keys)
+        assert result['verdict'] == vector['expected_verdict'], (vector['id'], result)
+        assert grd.EXIT[result['verdict']] == vector['expected_exit']
+        assert grd.verify(raw, keys_path=str(keys))['verdict'] == result['verdict'], vector['id']
 print('Existing conformance vectors: all passed')
+print('String/Path trust paths: all conformance cases agree')
 data=grd.un64(vectors['vectors'][4]['container'])
 for body in [None,[],1,'text',{'manifest':None},dict(json.loads(data[5:]),tiles=None),dict(json.loads(data[5:]),redactions=[None])]:
  raw=b'GRD2\n'+json.dumps(body,separators=(',',':')).encode()
@@ -57,13 +68,6 @@ for v in vectors['vectors']:
   except ValueError:pass
   else:raise AssertionError('Export accepted tampered source '+v['id'])
 print('Python dimension/tile limits and rejection of all tampered plain exports: passed')
-
-# U0: paths supplied through the public Python API accept both str and Path.
-keys=root/'conformance/trusted-keys.test.json'
-for v in json.loads((root/'conformance/vectors.json').read_text()):
- raw=(root/v['file']).read_bytes()
- assert grd.verify(raw,keys_path=str(keys))['verdict']==grd.verify(raw,keys_path=keys)['verdict'],v['id']
-print('String/Path trust paths: all conformance cases agree')
 
 v3=json.loads((root/'tests/vectors/grd3-vectors.json').read_text())
 for v in v3['vectors']:
