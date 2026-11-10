@@ -19,6 +19,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: python tests/test_vectors.py
+      - run: python tests/test_padding.py
       - run: node bench/attacks-local.mjs
       - run: python bench/differential.py
       - run: npm run build

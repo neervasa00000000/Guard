@@ -1,548 +1,43 @@
 // SPDX-License-Identifier: MIT
-if (self !== top) {
-  document.documentElement.classList.add("framed");
-  const warning = document.createElement("p");
-  warning.className = "frame-warning";
-  warning.textContent =
-    "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
-  const link = document.createElement("a");
-  link.className = "frame-warning";
-  link.textContent = "Open Guard";
-  link.href = location.href;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  document.body.replaceChildren(warning, link);
-  return;
-}
-const $ = (id) => document.getElementById(id);
-const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
-const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
-let unknownApproved=false,activeBundle=null,bundleExpiryTimer=null,currentInputFile=null,trustImportVersion=0;
-const bundleStates=new Map();
-let currentContainer = null,
-  redactionEditing = false,
-  selectedTiles = new Set(),
-  operation = 0,
-  currentReport = null,
-  bitmap = null,
-  held = null,
-  keyboardPoint = null,
-  reveal = true,
-  clock = null,
-  drawQueued = false;
-const canvas = $("canvas"),
-  stage = $("stage");
-const setStatus = (message) => {
-  $("live-status").textContent = message;
-};
-function el(tag, text, cls) {
-  const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = String(text);
-  if (cls) node.className = cls;
-  return node;
-}
-function bytesLabel(n) {
-  return n < 1024
-    ? n + " bytes"
-    : n < 1024 * 1024
-      ? (n / 1024).toFixed(1) + " KiB"
-      : (n / 1024 / 1024).toFixed(1) + " MiB";
-}
-function disposeImage() {
-  unknownApproved=false;
-  currentContainer = null;
-  redactionEditing = false;
-  selectedTiles.clear();
-  $("tile-overlay").replaceChildren();
-  $("tile-overlay").hidden = true;
+const $ = id => document.getElementById(id);
+const sealCanvas = $("seal-canvas");
+const checkCanvas = $("canvas");
+const supportedGrids = [16, 32, 64];
+let checkVersion = 0, editVersion = 0;
+let checked = null, editor = null, savedFile = null;
+let selections = [], dragStart = null, busy = false;
+let activeMode = "seal";
 
-
-  $("redact-mode").setAttribute("aria-pressed", "false");
-  $("redact-mode").textContent = "Mark tiles";
-  $("export-redacted").disabled = true;
-  clearInterval(clock);
-  clock = null;
-  held = null;
-  keyboardPoint = null;
-  bitmap?.close?.();
-  bitmap = null;
-  canvas.width = 1;
-  canvas.height = 1;
-  $("image-panel").hidden = true;
-  stage.classList.remove("shielded");
-  $("shield").hidden = true;
-  $("metadata").replaceChildren();
-  $("technical-data").replaceChildren();
-  $("session-label").textContent = "";
-}
-function reset() {
-  operation++;
-  disposeImage();
-  currentReport = null;
-  $("file-card").hidden = true;
-  $("empty").hidden = false;
-  $("loading").hidden = true;
-  $("result").hidden = true;
-  $("file-input").value = "";
-  $("file-name").textContent = "";
-  $("file-size").textContent = "";
-  $("checks").replaceChildren();
-  $("issue-list").replaceChildren();
-  setStatus("Ready.");
-  $("drop").focus();
-  $("hidden-areas").hidden=true;
-}
-function showFile(file) {
-  $("file-card").hidden = false;
-  $("file-name").textContent = file.name;
-  $("file-size").textContent = bytesLabel(file.size);
-}
-function renderResult(report) {
-  currentReport = signerReport(report);
-  $("download-plain").hidden = !(report.version >= 2 && (report.viewable || unknownApproved) && report.regionVerified);
-  $("show-unknown").hidden=!(report.verdict==="UNTRUSTED SIGNER"&&report.canRevealUnknown&&!unknownApproved);
-  $("plain-note").hidden = $("download-plain").hidden;
-  $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
-  $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
-  $('empty').hidden=true;
-  $('redact-checked').disabled=!canEditChecked();$('blackout-format-note').hidden=report.version!==1;
-  $("loading").hidden = true;
-  $("result").hidden = false;
-  $("empty").hidden = true;
-  const genuine =
-    report.genuine ||
-    (report.viewable && report.regionVerified && report.trusted);
-  const words=[report.verdict,resultTitle(report),resultDescription(report,mergedHiddenAreas(report).length)];
-  const failure=['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE','NOT A GRD'].includes(report.verdict)||report.signerStatus==='none'&&report.verdict==='UNTRUSTED SIGNER';
-  $('verdict-banner').className='verdict-banner '+(failure?'fault':report.signerStatus==='revoked'||report.verdict==='TAMPERED'?'bad':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'good':'neutral');
-  $('technical-verdict').textContent='Exact result: '+report.verdict;
-  $('detail-signer').textContent='Signer: '+(report.signerDisplayName||report.signer||'Not verified')+' · Fingerprint '+(report.fingerprint||'unavailable')+' · Trust: '+report.signerStatus+' · Source: '+(activeBundle?'bundled snapshot and this tab’s signed trust bundle':Array.from(personTrust.values()).some(k=>k.fingerprint_sha256===report.fingerprint)?'public signer trusted for this tab':'bundled viewer snapshot');
-  $('verification-technical').open=false;
-  $('hidden-areas').replaceChildren(...mergedHiddenAreas(report).slice(0,200).map((r,i)=>el('li',`Hidden ${i+1}: ${r.width} × ${r.height} px at (${r.x}, ${r.y})`)));
-  $('hidden-areas').hidden=!mergedHiddenAreas(report).length;
-  if(mergedHiddenAreas(report).length>200)$('hidden-areas').append(el('li','More hidden areas are listed in the Advanced technical report.'));
-  const positive=['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict);
-  const meaning=positive?[
-    report.verdict==='GENUINE'?'Every pixel matches what the trusted key signed.':'Visible pixels match the signed original; blacked-out parts are hidden.',
-    'This does not prove who took the photo, ownership, capture time or whether the scene was staged.',
-    'Compare the signer fingerprint independently; share the .GRD to keep the proof.'
-  ]:report.signerStatus==='unknown'?[
-    'The signature and image proof match the key embedded in this file.',
-    'This viewer does not know who owns that key. Anyone can edit and re-sign a picture.',
-    'Compare the full fingerprint with one published independently by the sender before relying on it.'
-  ]:report.signerStatus==='self'||report.signerStatus==='demo'?[
-    'The file is consistent with its embedded signing key.',
-    'The signer identity is not verified. Anyone can make an edited self-signed file.',
-    'Ask a known issuer for a file signed with their verified key if identity matters.'
-  ]:[
-    'The precise result and completed checks appear under Details.',
-    report.verdict==='TAMPERED'?'This file failed its integrity checks.':'No positive claim about the image has been made.',
-    'Ask for the original .GRD and compare the sender’s fingerprint independently.'
-  ];
-  $("what-means-list").replaceChildren(...meaning.map(text=>el('li',text)));
-  $("verdict-kicker").textContent = words[0];
-  $("verdict-title").textContent = words[1];
-  $("verdict-description").textContent = words[2];
-  const signerElem = $("verdict-signer"), fp=report.fingerprint||'';
-  signerElem.hidden=!signerSummary(report);
-  signerElem.textContent=signerSummary(report);
-  $('verdict-icon').textContent=failure?'!':report.signerStatus==='revoked'?'⊘':report.verdict==='TAMPERED'?'✕':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'✓':'?';
-  $("checks").replaceChildren();
-  for (const item of report.checks) {
-    const row = el(
-      "div",
-      undefined,
-      "check-row " +
-        (item.status === "pass"
-          ? ""
-          : item.status === "info"
-            ? "informational"
-            : "failed"),
-    );
-    row.append(
-      el(
-        "span",
-        item.status === "pass" ? "✓" : item.status === "info" ? "i" : "×",
-        "check-icon",
-      ),
-    );
-    const copy = el("div");
-    copy.append(el("strong", item.name), el("small", item.detail));
-    row.append(
-      copy,
-      el(
-        "span",
-        item.status === "pass"
-          ? "PASSED"
-          : item.status === "info"
-            ? report.personal
-              ? "UNVERIFIED"
-              : "DEMO ONLY"
-            : "FAILED",
-        "check-tag",
-      ),
-    );
-    $("checks").append(row);
+function showMode(mode, updateHash = true) {
+  activeMode = mode;
+  $("convert-form").hidden = mode !== "seal";
+  $("inspection-panel").hidden = mode !== "check";
+  for (const [id, task] of [["tab-seal", "seal"], ["tab-verify", "check"]]) {
+    if (task === mode) $(id).setAttribute("aria-current", "page");
+    else $(id).removeAttribute("aria-current");
   }
-  if (!report.checks.length) {
-    const note = el(
-      "p",
-      "Verification stopped before the cryptographic checks.",
-      "file-help",
-    );
-    $("checks").append(note);
-  }
-  $("issues").hidden = !report.problems.length;
-  $("issue-list").replaceChildren(
-    ...report.problems.map((text) => el("li", text)),
-  );
-  setStatus('Result: '+words[1]);
-  if(!$('main-view').hidden)window.scrollTo(0,0);
-  $("verdict-title").focus({ preventScroll: true });
-}
-function pairs(target, rows) {
-  target.replaceChildren();
-  for (const [label, value] of rows) {
-    if (value === undefined || value === null || value === "") continue;
-    const row = el("div");
-    row.append(
-      el("dt", label),
-      el("dd", typeof value === "object" ? JSON.stringify(value) : value),
-    );
-    target.append(row);
-  }
-}
-function metadata(report) {
-  const m = report.meta ?? {};
-  pairs($("metadata"), [
-    ["Asset ID", m.asset_id],
-    ["Author · signed claim", m.author],
-    ["Issued by · signed claim", m.issued_by],
-    ["Public label · signed claim", m.original_filename],
-    ["Dimensions", m.width + " × " + m.height + " px"],
-    ["Time claimed by the signer", m.created_utc ?? m.created_melbourne],
-    [report.demo ? "Demo signer" : "Signer", report.signer],
-    [
-      report.subTile ? "Retained cells" : "Retained tiles",
-      report.version >= 2
-        ? `${report.subTilesVisible ?? report.tilesVisible} / ${report.subTilesTotal ?? report.tilesTotal}`
-        : undefined,
-    ],
-    ["Redacted tiles", report.redactedTiles?.length],
-  ]);
-  pairs($("technical-data"), [
-    ["File SHA-256", report.fileHash],
-    ["Signer key ID", report.keyId],
-    ["Watermark ID · signed claim", m.watermark_id],
-    ["Watermarks · signed claim", m.watermarks],
-    ["Source · signed claim", m.source],
-    [
-      "Timestamp token",
-      report.timestampPresent
-        ? "Present · not validated by this viewer"
-        : "Not present",
-    ],
-    ["Format", "GRD" + report.version],
-    ["Signed Merkle root", report.root],
-    [
-      "Offline trust snapshot",
-      report.revocation
-        ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
-        : undefined,
-    ],
-    ["Hidden rectangles · method is an unsigned claim", report.redactionMap],
-    ["Viewer session", SESSION],
-  ]);
-  $("session-label").textContent = "SESSION / " + SESSION;
-}
-function shield(reason) {
-  held = null;
-  keyboardPoint = null;
-  if (!bitmap) return;
-  $("tile-overlay").hidden = true;
-  stage.classList.add("shielded");
-  $("shield").hidden = false;
-  $("shield-reason").textContent = reason;
-}
-function setMode(localReveal) {
-  reveal = localReveal;
-  held = null;
-  keyboardPoint = null;
-  $("reveal-mode").setAttribute("aria-pressed", String(reveal));
-  $("full-mode").setAttribute("aria-pressed", String(!reveal));
-  $("reveal-hint").hidden=!reveal;
-  $("reveal-hint").textContent = reveal
-    ? "Hold a finger or pointer to reveal a spot. Keyboard: hold Space or Enter, move with arrow keys."
-    : "Full picture shown. Choose Hold to reveal for a smaller viewing area.";
-  queueDraw();
-}
-function showImage() {
-  if (!bitmap) return;
-  stage.classList.remove("shielded");
-  $("shield").hidden = true;
-  setMode(true);
-  canvas.focus({ preventScroll: true });
-  if (redactionEditing) {
-    setMode(false);
-    renderTileOverlay();
-  }
-  queueDraw();
-}
-function overlay(ctx, w, h) {
-  const message =
-    (currentReport?.demo
-      ? "DEMO / NOT EVIDENCE · "
-      : currentReport?.personal
-        ? "UNVERIFIED: SELF-SIGNED · "
-        : currentReport?.signerStatus==="unknown" ? "UNKNOWN SIGNER · " : "GUARD · ") +
-    SESSION +
-    " · " +
-    new Date().toISOString().slice(11, 19) +
-    " UTC";
-  ctx.save();
-  ctx.globalAlpha = 0.35;
-  ctx.font = `600 ${Math.max(12, Math.round(w / 44))}px Arial`;
-  ctx.fillStyle = "#fff";
-  ctx.strokeStyle = "#10271e";
-  ctx.lineWidth = Math.max(1, w / 800);
-  ctx.translate(w / 2, h / 2);
-  ctx.rotate(-Math.PI / 8);
-  const step = Math.max(80, h / 6),
-    span = ctx.measureText(message).width + 90;
-  for (let y = -h; y < h; y += step)
-    for (let x = -w; x < w; x += span) {
-      ctx.strokeText(message, x, y);
-      ctx.fillText(message, x, y);
-    }
-  ctx.restore();
-}
-function draw() {
-  drawQueued = false;
-  if (!bitmap || stage.classList.contains("shielded") || document.hidden)
-    return;
-  const ctx = canvas.getContext("2d"),
-    w = canvas.width,
-    h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  ctx.save();
-  if (reveal) {
-    ctx.filter = `blur(${Math.max(8, Math.round(w / 45))}px)`;
-    ctx.drawImage(bitmap, 0, 0, w, h);
-    ctx.filter = "none";
-    if (held) {
-      const radius = Math.min(w, h) * 0.16;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(held.x, held.y, radius, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(bitmap, 0, 0, w, h);
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(held.x, held.y, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = "#f4f4dc";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-  } else ctx.drawImage(bitmap, 0, 0, w, h);
-  overlay(ctx, w, h);
-  ctx.restore();
-}
-function queueDraw() {
-  if (!drawQueued) {
-    drawQueued = true;
-    requestAnimationFrame(draw);
-  }
-}
-function point(event) {
-  const r = canvas.getBoundingClientRect();
-  return {
-    x: Math.max(
-      0,
-      Math.min(
-        canvas.width,
-        ((event.clientX - r.left) * canvas.width) / r.width,
-      ),
-    ),
-    y: Math.max(
-      0,
-      Math.min(
-        canvas.height,
-        ((event.clientY - r.top) * canvas.height) / r.height,
-      ),
-    ),
-  };
+  if (updateHash) history.replaceState(null, "", "#" + mode);
 }
 
-async function decode(report) {
-  if (report.version === 3 || (report.version >= 2 && report.container && !report.imageRgba)) {
-    const blob = new Blob([containerImage(report.container)], {type:"image/png"});
-    return await createImageBitmap(blob, {imageOrientation:"none"});
+function readHash() {
+  if (location.hash === "#about" || location.hash === "#privacy-details") {
+    $("about").open = true;
+    showMode(activeMode, false);
+  } else if (location.hash !== "#workspace") {
+    showMode(location.hash === "#check" ? "check" : "seal", false);
   }
-  if (report.version >= 2) {
-    const surface = document.createElement("canvas");
-    surface.width = report.meta.width;
-    surface.height = report.meta.height;
-    surface
-      .getContext("2d")
-      .putImageData(
-        new ImageData(
-          new Uint8ClampedArray(report.imageRgba),
-          surface.width,
-          surface.height,
-        ),
-        0,
-        0,
-      );
-    return typeof createImageBitmap === "function"
-      ? await createImageBitmap(surface)
-      : surface;
-  }
-  const m = report.meta,
-    [width, height] = encodedDimensions(report.payload, m.mime);
-  if (width !== m.width || height !== m.height)
-    throw new Error(
-      "Encoded image dimensions differ from the signed metadata.",
-    );
-  if (
-    width * height > LIMITS.imagePixels ||
-    Math.max(width, height) > LIMITS.dimension
-  )
-    throw new Error("Encoded image exceeds the safe viewing limits.");
-  const blob = new Blob([report.payload], { type: m.mime });
-  let image;
-  if (typeof createImageBitmap === "function")
-    image = await createImageBitmap(blob, { imageOrientation: "none" });
-  else {
-    const url = URL.createObjectURL(blob);
-    try {
-      image = new Image();
-      image.src = url;
-      await image.decode();
-    } finally {
-      URL.revokeObjectURL(url);
-    }
-  }
-  if (image.width !== width || image.height !== height) {
-    image.close?.();
-    throw new Error(
-      "Decoded image dimensions differ from the signed metadata.",
-    );
-  }
-  return image;
 }
-async function openFile(file) {
-  workspaceMode("verify");
-  const token = ++operation;
-  disposeImage();
-  currentReport = null;
-  currentInputFile=file;
-  showFile(file);
-  $("empty").hidden = true;
-  $("result").hidden = true;
-  $("loading").hidden = false;
-  setStatus("Checking " + file.name + ".");
-  let report;
-  try {
-    if (file.size > GRD3_LIMITS.bytes)
-      report = {
-        verdict: "LIMIT EXCEEDED",
-        genuine: false,
-        checks: [],
-        problems: ["File exceeds the 256 MiB viewer limit."],
-        failed: ["file size"],
-        changed: ["file size"],
-        byteLength: file.size,
-      };
-    else {
-      const bytes = await file.arrayBuffer();
-      const trust=await sessionTrust();
-      report = await (isGRD2(bytes) ? verifyGRD2(bytes,trust.anchors,trust.policy) : createVerifier(trust.anchors,trust.policy)(bytes));
-    }
-    if (token !== operation) return;
-    if (report.genuine || report.viewable) {
-      try {
-        const decoded = await decode(report);
-        if (token !== operation) {
-          decoded.close?.();
-          return;
-        }
-        bitmap = decoded;
-        report.checks.push({
-          name:
-            report.version >= 2 ? "Rendered tile grid" : "Image dimensions",
-          status: "pass",
-          detail:
-            report.meta.width +
-            " × " +
-            report.meta.height +
-            (report.version >= 2
-              ? " · exact visible tiles; hidden tiles are placeholders"
-              : " · encoded and decoded dimensions match"),
-        });
-      } catch (error) {
-        report.genuine = false;
-        report.viewable = false;
-        report.verdict = "UNREADABLE";
-        report.problems.push(error.message);
-        report.checks.push({
-          name: "Image decoding",
-          status: "fail",
-          detail: error.message,
-        });
-        delete report.payload;
-      }
-    }
-    if (token !== operation) return;
-    report.fileName = file.name;
-    report.checkedAt = new Date().toISOString();
-    report.viewerSession = SESSION;
-    currentContainer = report.container ?? null;
-    if (currentContainer) {
-      const sealed = currentContainer.manifest.subTile || 64;
-      for (const size of [8,16,32,64]) { $("grid-"+size).disabled = size < sealed; $("grid-"+size).checked = size === (sealed <= 16 ? 16 : sealed); }
-    }
-    delete report.container;
-    delete report.imageRgba;
-    renderResult(report);metadata(report);
-    if ((report.genuine || report.viewable) && bitmap) {
-      metadata(report);
-      $("image-panel").hidden = false;
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      canvas.setAttribute("aria-label",`${report.verdict}. ${report.meta.width} by ${report.meta.height} pixels. Hold Space or Enter to reveal; arrow keys move the area.`);
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      setMode(true);
+window.addEventListener("hashchange", readHash);
+readHash();
 
-      if (currentContainer) {
-        $("redaction-status").textContent =
-          `${report.tilesVisible} retained / ${report.tilesTotal} total. ${report.redactedTiles.length} already redacted. Choose Mark tiles to hide more.`;
-        setMode(false);
-      }
-      queueDraw();
-      clock = setInterval(queueDraw, 1000);
-      if (document.hidden || !document.hasFocus())
-        shield("The check finished while this window was away.");
-    }
-    // Release the raw image bytes once the display bitmap exists; reports never include pixels.
-    if(!report.canRevealUnknown)delete report.payload;
-  } catch (error) {
-    if (token !== operation) return;
-    renderResult({
-      verdict: "UNSUPPORTED",
-      genuine: false,
-      checks: [],
-      problems: ["The file could not be read: " + error.message],
-      failed: [],
-      changed: [],
-      fileName: file.name,
-      checkedAt: new Date().toISOString(),
-      viewerSession: SESSION,
-    });
-  }
+function setEditorStatus(message, error = false) {
+  $("convert-status").textContent = message;
+  $("convert-status").classList.toggle("error", error);
 }
+
 function download(contents, name, type) {
-  const url = URL.createObjectURL(new Blob([contents], { type })),
-    link = document.createElement("a");
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const link = document.createElement("a");
   link.href = url;
   link.download = name;
   document.body.append(link);
@@ -550,742 +45,468 @@ function download(contents, name, type) {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-$("drop").onclick = () => {
-  $("file-input").click();
-};
-$("choose-another").onclick = () => {reset();$("file-input").click();};
-$("file-input").onchange = (event) => {
-  const file = event.target.files[0];
-  event.target.value = "";
-  if (file) void openFile(file);
-};
-$("clear").onclick = reset;
-$("cancel").onclick = reset;
-$("drop").ondragover = (event) => {
-  event.preventDefault();
-  $("drop").classList.add("over");
-};
-$("drop").ondragleave = () => $("drop").classList.remove("over");
-$("drop").ondrop = (event) => {
-  event.preventDefault();
-  $("drop").classList.remove("over");
-  const files = event.dataTransfer.files;
-  if (files.length) void routeDroppedFile(files[0]);
-};
-window.addEventListener("dragover", (event) => event.preventDefault());
-window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
-$("download-report").onclick = () => {
-  if (!currentReport) return;
-  const report = {
-    ...verificationReport(currentReport),
-    scope:
-      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo and self-signed files are not trusted evidence; anyone can edit and re-sign a replacement. Method labels are unsigned claims. Not proof of authorship, ownership, capture time or copy tracing.",
-  };
-  delete report.payload;
-  download(
-    JSON.stringify(report, null, 2),
-    "guard-verification-" +
-      (report.fileHash?.slice(0, 12) || "report") +
-      ".json",
-    "application/json",
-  );
-};
-$("download-proof").onclick = async () => {
-  if (!currentContainer) return;
-  try { download(await exportProof(currentContainer), "image.grdp", "application/octet-stream"); setStatus("Visual proof downloaded. Keep it with copies you want to compare."); }
-  catch (error) { setStatus("Visual proof export failed: " + error.message); }
-};
-$("download-plain").onclick = async () => {
-  if (!currentContainer) return;
-  try {
-    const png = await exportPlainImage(currentContainer);
-    download(png, "image.png", "image/png");
-    setStatus("Plain image downloaded. This copy can no longer be verified as genuine.");
-  } catch (error) { setStatus("Plain export failed: " + error.message); }
-};
-$("download-viewer").onclick = () =>
-  download(ORIGINAL_HTML, "grd_viewer.html", "text/html");
-$("reveal-mode").onclick = () => setMode(true);
-$("full-mode").onclick = () => setMode(false);
-$("hide-image").onclick = () => {
-  shield(
-    "You hid this image. Choose Show image again to return to hold-to-reveal mode.",
-  );
-  $("show-image").focus({ preventScroll: true });
-};
-$("show-image").onclick = showImage;
-canvas.addEventListener("pointerdown", (event) => {
-  if (!bitmap || stage.classList.contains("shielded")) return;
-  held = point(event);
-  canvas.setPointerCapture(event.pointerId);
-  queueDraw();
-});
-canvas.addEventListener("pointermove", (event) => {
-  if (held && canvas.hasPointerCapture(event.pointerId)) {
-    held = point(event);
-    queueDraw();
-  }
-});
-for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
-  canvas.addEventListener(name, () => {
-    held = null;
-    queueDraw();
-  });
-canvas.addEventListener("keydown", (event) => {
-  if (!bitmap || !reveal || stage.classList.contains("shielded")) return;
-  if (
-    [
-      " ",
-      "Enter",
-      "ArrowLeft",
-      "ArrowRight",
-      "ArrowUp",
-      "ArrowDown",
-      "Escape",
-    ].includes(event.key)
-  )
-    event.preventDefault();
-  if (event.key === "Escape") {
-    held = null;
-    queueDraw();
-    return;
-  }
-  if (event.key === " " || event.key === "Enter") {
-    keyboardPoint ??= { x: canvas.width / 2, y: canvas.height / 2 };
-    held = keyboardPoint;
-    queueDraw();
-  }
-  if (event.key.startsWith("Arrow")) {
-    keyboardPoint ??= { x: canvas.width / 2, y: canvas.height / 2 };
-    const step = Math.max(10, Math.min(canvas.width, canvas.height) / 12);
-    if (event.key === "ArrowLeft")
-      keyboardPoint.x = Math.max(0, keyboardPoint.x - step);
-    if (event.key === "ArrowRight")
-      keyboardPoint.x = Math.min(canvas.width, keyboardPoint.x + step);
-    if (event.key === "ArrowUp")
-      keyboardPoint.y = Math.max(0, keyboardPoint.y - step);
-    if (event.key === "ArrowDown")
-      keyboardPoint.y = Math.min(canvas.height, keyboardPoint.y + step);
-    if (held) held = keyboardPoint;
-    queueDraw();
-  }
-});
-canvas.addEventListener("keyup", (event) => {
-  if (event.key === " " || event.key === "Enter") {
-    held = null;
-    queueDraw();
-  }
-});
-canvas.addEventListener("blur", () => {
-  held = null;
-  queueDraw();
-});
-canvas.addEventListener("contextmenu", (event) => event.preventDefault());
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden)
-    shield("The image was hidden because you switched tabs or apps.");
-});
-window.addEventListener("blur", () =>
-  shield("The image was hidden because this window lost focus."),
-);
-window.addEventListener("beforeprint", () =>
-  shield("Protected image content is not included in printouts."),
-);
-window.addEventListener("keydown", (event) => {
-  if (event.key === "PrintScreen")
-    shield(
-      "The screenshot key was detected. Browsers cannot reliably block screenshots.",
-    );
-});
-window.addEventListener("pagehide", () => {
-  operation++;
-  disposeImage();
-});
-// Compatibility entry point; trust anchors are closed over and cannot be changed through this API.
-window.verifyGRD = (input) =>
-  isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
 
-function redactionGrid() {
-  if (!currentContainer?.manifest.subTile) return 64;
-  return [8,16,32,64].find(size => $("grid-"+size).checked) || 16;
+async function verifyFile(bytes, allowUnknownDisplay = false) {
+  if (isGRD2(bytes)) return verifyGRD2(bytes);
+  return createVerifier(TRUSTED, TRUST_POLICY, { allowUnknownDisplay })(bytes);
 }
-function gridBounds(index) {
-  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),x=(index%cols)*g,y=Math.floor(index/cols)*g;
-  return {x,y,width:Math.min(g,m.width-x),height:Math.min(g,m.height-y)};
-}
-function gridHidden(index) {
-  const b=gridBounds(index);
-  return (currentReport?.redactionMap || []).some(r=>r.x<=b.x&&r.y<=b.y&&r.x+r.width>=b.x+b.width&&r.y+r.height>=b.y+b.height);
-}
-function gridForRect(m,rect) {
-  const g=redactionGrid(),cols=Math.ceil(m.width/g),rows=Math.ceil(m.height/g),out=[];
-  if (![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.width<=0||rect.height<=0) throw new Error("Enter a rectangle with positive width and height.");
-  for(let row=Math.max(0,Math.floor(rect.y/g));row<Math.min(rows,Math.ceil((rect.y+rect.height)/g));row++)
-    for(let col=Math.max(0,Math.floor(rect.x/g));col<Math.min(cols,Math.ceil((rect.x+rect.width)/g));col++)out.push(row*cols+col);
-  return out;
-}
-function positionTileOverlay() {
-  if (!currentContainer || !redactionEditing) return;
-  const overlay=$("tile-overlay"),m=currentContainer.manifest,g=redactionGrid(),box=canvas.getBoundingClientRect();
-  overlay.style.width=box.width+"px";overlay.style.height=box.height+"px";
-  overlay.style.gridTemplateColumns=Array.from({length:Math.ceil(m.width/g)},(_,i)=>Math.min(g,m.width-i*g)+"fr").join(" ");
-  overlay.style.gridTemplateRows=Array.from({length:Math.ceil(m.height/g)},(_,i)=>Math.min(g,m.height-i*g)+"fr").join(" ");
-}
-function renderTileOverlay() {
-  const overlay=$("tile-overlay"),active=overlay.contains(document.activeElement)?document.activeElement.dataset.tileIndex:null;
-  overlay.hidden=!redactionEditing||!currentContainer||stage.classList.contains("shielded");overlay.replaceChildren();if(overlay.hidden)return;
-  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),count=cols*Math.ceil(m.height/g);
-  if(count>4096){
-    // Dense grids stay bounded in the DOM. Keyboard users select through the rectangle fields.
-    const mask=el("canvas");mask.width=canvas.width;mask.height=canvas.height;mask.setAttribute("aria-hidden","true");
-    mask.style.cssText="position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
-    const ctx=mask.getContext("2d");ctx.fillStyle="rgba(55,80,220,.45)";
-    for(const index of selectedTiles){const b=gridBounds(index);ctx.fillRect(b.x/m.width*mask.width,b.y/m.height*mask.height,b.width/m.width*mask.width,b.height/m.height*mask.height);}
-    overlay.append(mask);
-    $("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. This dense grid uses the rectangle fields or drag selection instead of individual buttons.`;
-  } else {
-    let first=true;
-    for(let index=0;index<count;index++){
-      const hidden=gridHidden(index),chosen=selectedTiles.has(index),button=el("button",hidden?"HIDDEN":chosen?"HIDE":"+",hidden?"tile-hidden":chosen?"tile-selected":"tile-visible");
-      button.type="button";button.dataset.tileIndex=String(index);button.disabled=hidden;button.tabIndex=!hidden&&(active!==null?String(index)===active:first)?0:-1;if(!hidden)first=false;
-      button.setAttribute("aria-label",`Cell ${index+1}, row ${Math.floor(index/cols)+1}, column ${index%cols+1}, ${g}px${hidden?", already hidden":""}`);button.setAttribute("aria-pressed",String(chosen));
-      button.onclick=()=>{if(selectedTiles.has(index))selectedTiles.delete(index);else selectedTiles.add(index);renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;$("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. Apply them by exporting a redacted copy.`;};overlay.append(button);
-    }
-  }
-  positionTileOverlay();if(active!==null)overlay.querySelector(`[data-tile-index="${active}"]`)?.focus({preventScroll:true});
-}
-for(const size of [8,16,32,64])$("grid-"+size).onchange=()=>{selectedTiles.clear();$("export-redacted").disabled=true;renderTileOverlay();};
-$("redact-mode").onclick = () => {
-  redactionEditing = !redactionEditing;
-  $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
-  $("redact-mode").textContent = redactionEditing
-    ? "Finish marking"
-    : "Mark tiles";
-  if (redactionEditing) setMode(false);
-  renderTileOverlay();
-};
-new ResizeObserver(positionTileOverlay).observe(canvas);
-$("export-redacted").onclick = async () => {
-  if (!currentContainer || !selectedTiles.size) return;
-  const source = currentContainer,
-    selection = [...selectedTiles],
-    token = operation;
-  $("export-redacted").disabled = true;
-  try {
-    const bytes = source.manifest.subTile ? await redactRects(source,selection.map(gridBounds),{granularity:redactionGrid()}) : await redactGRD2(source, selection, "black");
-    if (operation !== token || currentContainer !== source) return;
-    const name =
-      (currentReport.fileName ?? "image.GRD").replace(
-        /(?:\.redacted)?\.grd$/i,
-        "",
-      ) + ".redacted.GRD";
-    download(bytes, name, "application/octet-stream");
-    await openFile(new File([bytes], name));
-    setStatus(
-      "Redacted copy exported. The selected tiles were replaced and their original salts were removed.",
-    );
-  } catch (error) {
-    if (operation === token) {
-      $("redaction-status").textContent = "Export failed: " + error.message;
-      $("export-redacted").disabled = false;
-    }
-  }
-};
-$("try-redaction").onclick = async () => {
-  const token = operation;
-  $("try-redaction").disabled = true;
-  try {
-    const sample = document.createElement("canvas");
-    sample.width = 384;
-    sample.height = 256;
-    const ctx = sample.getContext("2d");
-    ctx.fillStyle = "#eef0f5";
-    ctx.fillRect(0, 0, 384, 256);
-    ctx.fillStyle = "#17213b";
-    ctx.fillRect(0, 0, 384, 48);
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 19px Arial";
-    ctx.fillText("DEMONSTRATION IMAGE", 16, 31);
-    ctx.fillStyle = "#9aaee3";
-    ctx.beginPath();
-    ctx.arc(90, 112, 33, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#35456d";
-    ctx.fillRect(47, 146, 86, 59);
-    ctx.fillStyle = "#17213b";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText("FICTIONAL PERSON", 174, 94);
-    ctx.font = "12px Arial";
-    ctx.fillText("EXAMPLE ADDRESS", 174, 128);
-    ctx.fillText("123 SAMPLE STREET", 174, 149);
-    ctx.fillText("ID: 000-123", 174, 184);
-    ctx.fillStyle = "#214eef";
-    ctx.fillRect(16, 224, 352, 2);
-    ctx.font = "10px Arial";
-    ctx.fillText("EXAMPLE ONLY / SELECT TILES TO REDACT", 16, 242);
-    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
-        "sign",
-        "verify",
-      ]),
-      publicKey = new Uint8Array(
-        await crypto.subtle.exportKey("raw", key.publicKey),
-      );
-    const doc = await sealRgba({
-      rgba: new Uint8Array(ctx.getImageData(0, 0, 384, 256).data),
-      width: 384,
-      height: 256,
-      tileSize: 64,
-      publicKey,
-      purpose: "demo",
-      subTile: 16,
-      label: "Demonstration only",
-      sign: (bytes) =>
-        crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
-    });
-    if (operation !== token) return;
-    await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
 
-    $("verdict-title").scrollIntoView({
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "start",
-    });
-  } catch (error) {
-    setStatus("The demo could not start: " + error.message);
-    $("file-help").textContent =
-      "The demo needs browser Ed25519 support: " + error.message;
+async function pictureBlob(report) {
+  if (report.container) {
+    // A legacy blur is valid as a disclosure but may still expose hidden pixels.
+    const bytes = report.hiddenPixelsCleared === false
+      ? await exportPlainImage(report.container) : containerImage(report.container);
+    return new Blob([bytes], { type: "image/png" });
+  }
+  if (report.payload) return new Blob([report.payload], { type: report.meta.mime });
+  throw new Error("The picture is unavailable.");
+}
+
+function paint(canvas, image, width, height) {
+  const scale = Math.min(1, 1200 / Math.max(width, height));
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+  canvas.style.width = `min(100%, ${canvas.width}px, ${65 * canvas.width / canvas.height}vh)`;
+  const context = canvas.getContext("2d");
+  context.fillStyle = image ? "#fff" : "#000";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  if (image) context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return context;
+}
+
+async function revealChecked(state, report) {
+  let image;
+  try {
+    if (report.verdict !== "FULLY REDACTED")
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+    if (state !== checked) return;
+    const { width, height } = report.meta;
+    if (image && (image.width !== width || image.height !== height))
+      throw new Error("Decoded dimensions differ from the signed file.");
+    paint(checkCanvas, image, width, height);
+    state.displayReport = report;
+    $("show-unknown").hidden = true;
+    $("image-panel").hidden = false;
+    $("redact-checked").hidden = !report.container || report.verdict === "FULLY REDACTED";
   } finally {
-    $("try-redaction").disabled = false;
+    image?.close();
+  }
+}
+
+function renderCheck(report, file) {
+  $("verdict-title").textContent = report.verdict;
+  $("verdict-description").textContent = report.verdict === "FULLY REDACTED"
+    ? "All areas are blacked out."
+    : report.regionVerified
+      ? report.redactionMap?.length
+        ? "The retained pixels match the signature. Hidden areas are solid black."
+        : "Every pixel matches the signature."
+      : report.genuine ? "The whole picture matches the signature."
+        : report.problems?.[0] ?? "The file could not be verified.";
+  const trusted = report.signerStatus === "trusted" && !report.demo && !report.personal;
+  $("verdict-signer").textContent = trusted && report.signerDisplayName
+    ? "Trusted signer: " + report.signerDisplayName
+    : report.signature_valid && ["self", "unknown", "demo"].includes(report.signerStatus)
+      ? "Signer identity is unverified." : "";
+  $("result").dataset.tone = trusted && (report.genuine || report.regionVerified) ? "good"
+    : ["TAMPERED", "REVOKED KEY"].includes(report.verdict) ? "bad" : "caution";
+  $("live-status").textContent = file.name;
+  $("legacy-redaction-note").hidden = report.version !== 1 || !report.signature_valid;
+  $("show-unknown").hidden = !report.canRevealUnknown;
+  $("show-unknown").disabled = false;
+  $("download-plain").disabled = false;
+  $("result").hidden = false;
+  $("verdict-title").focus();
+}
+
+async function openFile(file) {
+  showMode("check");
+  const version = ++checkVersion;
+  checked = null;
+  checkCanvas.width = checkCanvas.height = 1;
+  $("result").hidden = $("image-panel").hidden = true;
+  $("live-status").textContent = "Checking " + file.name + "…";
+  try {
+    const report = file.size > GRD3_LIMITS.bytes
+      ? { verdict: "LIMIT EXCEEDED", problems: ["Choose a .GRD file up to 256 MiB."] }
+      : await verifyFile(new Uint8Array(await file.arrayBuffer()));
+    if (version !== checkVersion) return;
+    const state = { file, report, displayReport: null };
+    checked = state;
+    renderCheck(report, file);
+    if (report.viewable || report.genuine || (report.verdict === "FULLY REDACTED" && report.regionVerified)) {
+      try {
+        await revealChecked(state, report);
+      } catch (error) {
+        if (state !== checked) return;
+        const unreadable = { verdict: "UNREADABLE", problems: [error.message] };
+        state.report = unreadable;
+        renderCheck(unreadable, file);
+      }
+    }
+  } catch (error) {
+    if (version !== checkVersion) return;
+    $("live-status").textContent = "Could not open the picture. " + error.message;
+  }
+}
+
+$("show-unknown").onclick = async () => {
+  const state = checked;
+  if (!state?.report.canRevealUnknown) return;
+  $("show-unknown").disabled = true;
+  try {
+    const report = state.report.version === 1
+      ? await verifyFile(new Uint8Array(await state.file.arrayBuffer()), true)
+      : state.report;
+    if (state !== checked || !report.canRevealUnknown) return;
+    await revealChecked(state, report);
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("show-unknown").disabled = false;
   }
 };
 
-function setTileSelection(indices) {
-  for (const index of indices) if (!gridHidden(index)) selectedTiles.add(index);
-  renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;
-  $("redaction-status").textContent=`${selectedTiles.size} cells selected. Export rounds to ${redactionGrid()}px boundaries.`;
-}
-$("select-rectangle").onclick = () => {
-  if (!currentContainer) return;
+$("download-plain").onclick = async () => {
+  const state = checked, report = state?.displayReport;
+  if (!report) return;
+  $("download-plain").disabled = true;
   try {
-    redactionEditing = true;
-    $("redact-mode").setAttribute("aria-pressed", "true");
-    $("redact-mode").textContent = "Finish marking";
-    setMode(false);
-    setTileSelection(
-      gridForRect(currentContainer.manifest, {
-        x: Number($("rect-x").value),
-        y: Number($("rect-y").value),
-        width: Number($("rect-width").value),
-        height: Number($("rect-height").value),
-      }),
-    );
+    let png;
+    if (report.container) png = await exportPlainImage(report.container);
+    else if (report.verdict === "FULLY REDACTED") {
+      const { width, height } = report.meta;
+      png = await encodeRgbPng(new Uint8Array(width * height * 3), width, height);
+    } else {
+      const image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      try {
+        const surface = document.createElement("canvas");
+        surface.width = image.width;
+        surface.height = image.height;
+        surface.getContext("2d").drawImage(image, 0, 0);
+        png = await new Promise(resolve => surface.toBlob(resolve, "image/png"));
+      } finally {
+        image.close();
+      }
+    }
+    if (!png) throw new Error("Could not create the PNG.");
+    if (state === checked) download(png, "picture.png", "image/png");
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("download-plain").disabled = false;
+  }
+};
+
+function setGrid(minimum, received) {
+  const select = $("rounding");
+  for (const option of select.options) option.disabled = Number(option.value) < minimum;
+  select.value = String(supportedGrids.find(grid => grid >= minimum));
+  $("grid-help").textContent = received
+    ? `This file was sealed on a ${minimum}-pixel grid. Larger rounding only changes the blackout box.`
+    : "Pictures are sealed on a 16-pixel grid. Choosing 32 or 64 px only makes this black-out box bigger; it does not change how the picture was sealed.";
+}
+
+function paddingOptions() {
+  const enabled = $("pad-boxes").checked;
+  const lineHeight = enabled ? $("line-height").valueAsNumber : 0;
+  if (enabled && (!Number.isInteger(lineHeight) || lineHeight < 1 || lineHeight > 8192))
+    throw new Error("Enter a full text-line height from 1 to 8,192 px.");
+  return {
+    grid: Number($("rounding").value), widthClass: enabled ? 128 : 0,
+    lineHeight, imgW: editor.width, imgH: editor.height,
+  };
+}
+
+function drawEditor(boxes, original) {
+  const { preview, width, height } = editor;
+  const context = sealCanvas.getContext("2d");
+  context.drawImage(preview, 0, 0, sealCanvas.width, sealCanvas.height);
+  context.fillStyle = "#000";
+  const scaleX = sealCanvas.width / width, scaleY = sealCanvas.height / height;
+  for (const box of boxes)
+    context.fillRect(box.x * scaleX, box.y * scaleY, box.w * scaleX, box.h * scaleY);
+  const area = boxUnionArea(boxes), selected = boxUnionArea(original);
+  $("blackout-area").textContent = selected
+    ? `Blacked-out area: ${area.toLocaleString()} px² (${(area / selected).toLocaleString(undefined, { maximumFractionDigits: 2 })}× what you selected)`
+    : "Blacked-out area: 0 px²";
+}
+
+function invalidateReview() {
+  $("convert-privacy").checked = false;
+  $("check-sealed").hidden = true;
+  savedFile = null;
+}
+
+function syncConsent() {
+  $("convert-submit").disabled = busy || !editor || !editor.boxes
+    || !$("convert-privacy").checked || (!!editor.doc && !selections.length);
+}
+
+function renderAreas(focusIndex = null) {
+  if (!editor) return;
+  $("line-height").disabled = !$("pad-boxes").checked;
+  const list = $("seal-area-list");
+  list.replaceChildren();
+  try {
+    const options = paddingOptions();
+    editor.boxes = selections.map(box => padBox(box, options));
+    drawEditor(editor.boxes, selections);
+    for (const [index, box] of editor.boxes.entries()) {
+      const item = document.createElement("li");
+      item.textContent = `Area ${index + 1} · ${box.w} × ${box.h} px`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove area " + (index + 1));
+      remove.onclick = () => {
+        if (busy) return;
+        selections.splice(index, 1);
+        invalidateReview();
+        renderAreas(index);
+      };
+      item.append(remove);
+      list.append(item);
+    }
+    $("redaction-status").textContent = `Areas round up to a ${options.grid}-pixel grid.`;
+  } catch (error) {
+    editor.boxes = null;
+    // Keep the last valid blackout preview until the settings are corrected.
+    $("redaction-status").textContent = error.message;
+  }
+  if (focusIndex !== null) {
+    const buttons = list.querySelectorAll("button");
+    (buttons[Math.min(focusIndex, buttons.length - 1)] ?? $("select-rectangle")).focus();
+  }
+  syncConsent();
+}
+
+function addArea(rect) {
+  if (!editor || busy) return;
+  try {
+    if (selections.length >= 200) throw new Error("Use up to 200 blackout areas.");
+    padBox(rect, paddingOptions());
+    const { x, y, w, h } = rect;
+    selections.push({ x, y, w: Math.min(w, editor.width - x), h: Math.min(h, editor.height - y) });
+    invalidateReview();
+    renderAreas();
   } catch (error) {
     $("redaction-status").textContent = error.message;
   }
-};
-let rectangleStart = null,
-  rectangleMoved = false,
-  skipTileClick = false;
-const overlayElement = $("tile-overlay");
+}
+
 function imagePoint(event) {
-  const box = canvas.getBoundingClientRect(),
-    m = currentContainer.manifest;
+  const rect = sealCanvas.getBoundingClientRect();
   return {
-    x: Math.max(
-      0,
-      Math.min(m.width, ((event.clientX - box.left) * m.width) / box.width),
-    ),
-    y: Math.max(
-      0,
-      Math.min(m.height, ((event.clientY - box.top) * m.height) / box.height),
-    ),
+    x: Math.max(0, Math.min(editor.width, (event.clientX - rect.left) * editor.width / rect.width)),
+    y: Math.max(0, Math.min(editor.height, (event.clientY - rect.top) * editor.height / rect.height)),
   };
 }
-overlayElement.addEventListener("pointerdown", (event) => {
-  if (!currentContainer || !redactionEditing) return;
-  rectangleStart = imagePoint(event);
-  rectangleMoved = false;
+
+function dragBox(event) {
+  const point = imagePoint(event);
+  const x = Math.min(editor.width - 1, Math.floor(Math.min(point.x, dragStart.x)));
+  const y = Math.min(editor.height - 1, Math.floor(Math.min(point.y, dragStart.y)));
+  return { x, y, w: Math.max(1, Math.ceil(Math.max(point.x, dragStart.x)) - x),
+    h: Math.max(1, Math.ceil(Math.max(point.y, dragStart.y)) - y) };
+}
+
+sealCanvas.addEventListener("pointerdown", event => {
+  if (!editor?.boxes || busy || dragStart || event.button !== 0) return;
+  dragStart = { ...imagePoint(event), pointerId: event.pointerId };
+  sealCanvas.setPointerCapture(event.pointerId);
 });
-overlayElement.addEventListener("pointermove", (event) => {
-  if (!rectangleStart || !currentContainer) return;
-  const p = imagePoint(event);
-  if (Math.abs(p.x - rectangleStart.x) + Math.abs(p.y - rectangleStart.y) > 8) {
-    rectangleMoved = true;
-    overlayElement.setPointerCapture(event.pointerId);
-  }
+sealCanvas.addEventListener("pointermove", event => {
+  if (!dragStart || dragStart.pointerId !== event.pointerId || !editor?.boxes || busy) return;
+  const rect = dragBox(event);
+  drawEditor([...editor.boxes, padBox(rect, paddingOptions())], [...selections, rect]);
 });
-overlayElement.addEventListener("pointerup", (event) => {
-  if (!rectangleStart || !currentContainer) return;
-  const start = rectangleStart;
-  rectangleStart = null;
-  if (!rectangleMoved) return;
-  const p = imagePoint(event);
-  skipTileClick = true;
-  event.preventDefault();
-  setTileSelection(
-    gridForRect(currentContainer.manifest, {
-      x: Math.min(start.x, p.x),
-      y: Math.min(start.y, p.y),
-      width: Math.max(1, Math.abs(start.x - p.x)),
-      height: Math.max(1, Math.abs(start.y - p.y)),
-    }),
-  );
-  setTimeout(() => (skipTileClick = false), 0);
+sealCanvas.addEventListener("pointerup", event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  const rect = dragBox(event);
+  dragStart = null;
+  addArea(rect);
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
 });
-overlayElement.addEventListener("pointercancel", () => {
-  rectangleStart = null;
-  rectangleMoved = false;
-});
-overlayElement.addEventListener(
-  "click",
-  (event) => {
-    if (skipTileClick) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
-  },
-  true,
-);
-overlayElement.addEventListener("keydown", (event) => {
-  if (!currentContainer || !event.key.startsWith("Arrow")) return;
-  const i = Number(event.target.dataset.tileIndex),
-    cols = Math.ceil(currentContainer.manifest.width / redactionGrid());
-  if (!Number.isInteger(i)) return;
-  const step =
-    event.key === "ArrowLeft"
-      ? -1
-      : event.key === "ArrowRight"
-        ? 1
-        : event.key === "ArrowUp"
-          ? -cols
-          : cols;
-  let next = i + step;
-  while (next >= 0 && next < currentContainer.tiles.length) {
-    const button = overlayElement.querySelector(`[data-tile-index="${next}"]`);
-    if (button && !button.disabled) {
-      event.target.tabIndex = -1;
-      button.tabIndex = 0;
-      button.focus();
-      break;
-    }
-    next += step;
-  }
-  event.preventDefault();
+for (const type of ["pointercancel", "lostpointercapture"]) sealCanvas.addEventListener(type, event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  dragStart = null;
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
 });
 
-// UI-only geometry and editor state. Pixel commitments remain in the core modules.
-function mergedHiddenAreas(report) {
- const rows=(report?.redactionMap||[]).map(({x,y,width,height})=>({x,y,width,height})).sort((a,b)=>a.y-b.y||a.x-b.x),horizontal=[];
- for(const r of rows){const last=horizontal.at(-1);if(last&&last.y===r.y&&last.height===r.height&&last.x+last.width===r.x)last.width+=r.width;else horizontal.push(r);}
- const out=[],ends=new Map();
- for(const r of horizontal){const key=r.x+':'+r.width,last=ends.get(key);if(last&&last.y+last.height===r.y)last.height+=r.height;else{out.push(r);ends.set(key,r);}}
- return out;
-}
-let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null,sealUnknownApproved=false;
-function sealGrid(){const minimum=sealSourceDoc?.manifest.subTile|| (sealSourceDoc?64:16);return Math.max(minimum,[8,16,32,64].find(n=>$('grid-'+n).checked)||minimum);}
-function roundSealArea(rect){
- if(!conversionImage)throw Error('Choose a picture first.');
- const m=conversionImage,g=sealGrid();
- if(![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.x<0||rect.y<0||rect.width<=0||rect.height<=0||rect.x>=m.width||rect.y>=m.height)throw Error('Enter an area inside the picture with a positive width and height.');
- const x=Math.floor(rect.x/g)*g,y=Math.floor(rect.y/g)*g,right=Math.min(m.width,Math.ceil((rect.x+rect.width)/g)*g),bottom=Math.min(m.height,Math.ceil((rect.y+rect.height)/g)*g);
- return {x,y,width:right-x,height:bottom-y};
-}
-function drawSealEditor(draft=null){
- if(!sealPreview||!conversionImage)return;const c=$('seal-canvas'),ctx=c.getContext('2d');
- c.width=sealPreview.width;c.height=sealPreview.height;ctx.drawImage(sealPreview,0,0);
- const scale=c.width/conversionImage.width;
- for(const r of [...sealAreas,...(draft?[draft]:[])]){
-  const x=r.x*scale,y=r.y*scale,w=r.width*scale,h=r.height*scale;
-  ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
- }
- // Preview stamps are not included in the downloaded pixels.
- ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText((sealUnknownApproved?'UNKNOWN SIGNER · ':'')+'GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
-}
-function renderSealAreas(){
- const list=$('seal-area-list');list.replaceChildren();
- sealAreas.forEach((r,i)=>{const li=el('li',undefined,'area-chip'),label=el('span',`Area ${i+1} · ${r.width} × ${r.height}`),b=el('button','×');b.type='button';b.setAttribute('aria-label','Remove area '+(i+1));b.onclick=()=>{sealAreas.splice(i,1);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();};li.append(label,b);list.append(li);});
- $('seal-grid-note').textContent=`Areas round up to a ${sealGrid()}-pixel grid.`;
- $('redaction-status').textContent=sealAreas.length?sealAreas.length+(sealAreas.length===1?' area selected.':' areas selected.'):'';drawSealEditor();
-}
-function addSealArea(rect){
- if(sealAreas.length>=200)throw Error('Use up to 200 areas. Combine overlapping areas when possible.');
- sealAreas.push(roundSealArea(rect));conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();
-}
-async function prepareSealPreview(surface=null){
- const m=conversionImage;if(!m)return;
- const prepared=document.createElement('canvas');const previewToken=conversionVersion;const scale=Math.min(1,1200/Math.max(m.width,m.height));prepared.width=Math.max(1,Math.round(m.width*scale));prepared.height=Math.max(1,Math.round(m.height*scale));
- let image;
- if(!surface){image=await createImageBitmap(new ImageData(new Uint8ClampedArray(m.rgba),m.width,m.height));surface=image;}
- if(previewToken!==conversionVersion||conversionImage!==m){image?.close();return;}prepared.getContext('2d').drawImage(surface,0,0,prepared.width,prepared.height);image?.close();sealPreview=prepared;
- $('seal-step-two').hidden=false;$('seal-step-three').hidden=false;$('convert-preview').hidden=false;$('redaction-options').hidden=false;$('redaction-tools').hidden=false;$('legacy-redaction-note').hidden=true;
- const minimum=sealSourceDoc?.manifest.subTile||(sealSourceDoc?64:16);
- for(const size of [8,16,32,64]){$('grid-'+size).disabled=size<minimum;$('grid-'+size).checked=size===minimum;}
- document.querySelector('.convert-resize').hidden=!!sealSourceDoc;
- $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();refreshSealSummary();
-}
-async function loadSealGrd(file,bytes,token,allowUnknown=false){
- const trust=await sessionTrust();const r=await (isGRD2(bytes)?verifyGRD2(bytes,trust.anchors,trust.policy):createVerifier(trust.anchors,trust.policy)(bytes));
- if(token!==conversionVersion)return;
- const approvedUnknown=allowUnknown&&file===currentInputFile&&unknownApproved&&currentReport?.canRevealUnknown&&r.canRevealUnknown&&r.signerStatus==='unknown'&&r.fingerprint===currentReport.fingerprint;
- if(!r.viewable&&!approvedUnknown){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
- if(!r.container){$('seal-step-two').hidden=false;$('legacy-redaction-note').hidden=false;conversionStatus('This GRD format cannot be blacked out without its signer.',true);return;}
- const doc=r.container,decoded=await decodeRgbPng(containerImage(doc),doc.manifest.version===3?GRD3_LIMITS:undefined);
- if(token!==conversionVersion)return;
- const rgba=new Uint8Array(decoded.width*decoded.height*4);
- for(let i=0;i<decoded.width*decoded.height;i++){rgba[i*4]=decoded.rgb[i*3];rgba[i*4+1]=decoded.rgb[i*3+1];rgba[i*4+2]=decoded.rgb[i*3+2];rgba[i*4+3]=255;}
- sealUnknownApproved=!!approvedUnknown;sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
- await prepareSealPreview();if(token!==conversionVersion)return;
- $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus(sealUnknownApproved?'Signer remains unknown. Blackouts keep the original key.':'Original signer kept. Choose any additional blackouts.');
-}
-$('select-rectangle').onclick=()=>{try{addSealArea({x:Number($('rect-x').value),y:Number($('rect-y').value),width:Number($('rect-width').value),height:Number($('rect-height').value)});}catch(error){$('redaction-status').textContent=error.message;}};
-const sealCanvas=$('seal-canvas');
-function sealPoint(event){const r=sealCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(conversionImage.width,(event.clientX-r.left)*conversionImage.width/r.width)),y:Math.max(0,Math.min(conversionImage.height,(event.clientY-r.top)*conversionImage.height/r.height))};}
-function sealDraft(event){const p=sealPoint(event);return {x:Math.min(p.x,sealPointer.x),y:Math.min(p.y,sealPointer.y),width:Math.max(1,Math.abs(p.x-sealPointer.x)),height:Math.max(1,Math.abs(p.y-sealPointer.y))};}
-sealCanvas.addEventListener('pointerdown',event=>{if(!conversionImage||$('convert-form').getAttribute('aria-busy')==='true')return;event.preventDefault();sealPointer=sealPoint(event);sealCanvas.setPointerCapture(event.pointerId);});
-sealCanvas.addEventListener('pointermove',event=>{if(!sealPointer)return;try{drawSealEditor(roundSealArea(sealDraft(event)));}catch{}});
-sealCanvas.addEventListener('pointerup',event=>{if(!sealPointer)return;try{addSealArea(sealDraft(event));}catch(error){$('redaction-status').textContent=error.message;}finally{sealPointer=null;drawSealEditor();}});
-sealCanvas.addEventListener('pointercancel',()=>{sealPointer=null;drawSealEditor();});
-for(const size of [8,16,32,64])$('grid-'+size).addEventListener('change',()=>{if(!conversionImage)return;sealAreas=sealAreas.map(roundSealArea);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();});
-$('check-sealed').onclick=event=>{event.preventDefault();if(lastSealedFile)void openFile(lastSealedFile);};
+$("select-rectangle").onclick = () => {
+  const [x, y, w, h] = ["rect-x", "rect-y", "rect-width", "rect-height"].map(id => $(id).valueAsNumber);
+  addArea({ x, y, w, h });
+};
+for (const id of ["rounding", "pad-boxes", "line-height"]) $(id).addEventListener("input", () => {
+  invalidateReview();
+  renderAreas();
+});
+$("convert-privacy").onchange = syncConsent;
 
-let conversionImage = null,
-  conversionVersion = 0,
-  conversionPreviewUrl = null;
-function conversionStatus(message, error = false) {
-  $("convert-status").textContent = message;
-  $("convert-status").classList.toggle("error", error);
-  $("convert-input").setAttribute("aria-invalid", String(error));
+function loadEditor(image, file, doc) {
+  const { width, height } = image;
+  const preview = document.createElement("canvas");
+  paint(preview, image, width, height);
+  paint(sealCanvas, preview, width, height);
+  editor = { width, height, preview, image, doc, boxes: [] };
+  setGrid(doc ? doc.manifest.subTile ?? 64 : 16, !!doc);
+  $("pad-boxes").checked = true;
+  $("line-height").value = "32";
+  $("finish-title").textContent = doc ? "Download the blacked-out copy" : "Seal and download";
+  $("convert-submit").textContent = doc ? "Download blacked-out .GRD" : "Seal and download .GRD";
+  $("seal-signer-summary").textContent = doc
+    ? "The original signature stays with the file. You can black out more areas without its key."
+    : "TileSeal creates a one-time key in this browser. The resulting file is self-signed.";
+  $("convert-details").textContent = `${file.name} · ${width} × ${height} px`;
+  $("seal-step-two").hidden = $("seal-step-three").hidden = false;
+  renderAreas();
 }
-async function prepareSealInput(file,allowUnknown=false){
-  const token=++conversionVersion;
-  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealUnknownApproved=false;sealPreview=null;lastSealedFile=null;sealPointer=null;
-  $('check-sealed').hidden=true;$('save-original').checked=false;syncSealExtras();$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
-  $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
-  $("convert-preview").hidden = true;
-  $("convert-image").removeAttribute("src");
-  if (conversionPreviewUrl) URL.revokeObjectURL(conversionPreviewUrl);
-  conversionPreviewUrl = null;
-  if (!file) {
-    conversionStatus("Choose an image to begin.");
-    return;
-  }
-  conversionStatus("Reading image locally…");
-  let decoded;
+
+async function prepareSealInput(file, approvedState = null) {
+  if (!file || busy) return;
+  showMode("seal");
+  const version = ++editVersion;
+  editor?.image.close();
+  editor = null;
+  sealCanvas.width = sealCanvas.height = 1;
+  selections = [];
+  dragStart = null;
+  savedFile = null;
+  $("check-sealed").hidden = $("seal-step-two").hidden = $("seal-step-three").hidden = true;
+  $("convert-privacy").checked = false;
+  syncConsent();
+  setEditorStatus("Opening " + file.name + "…");
+  let image;
   try {
-    if (file.size > GRD3_LIMITS.bytes)
-      throw new Error("Choose an image up to 256 MiB.");
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    if (token !== conversionVersion) return;
-    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token,allowUnknown);return;}
-    const allowResize = $("convert-resize").checked;
-    const info = inspectConversionImage(bytes, { allowResize, large: true });
-    decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
-    if (token !== conversionVersion) return;
-    if (
-      !decoded.width ||
-      !decoded.height ||
-      decoded.width > 16384 ||
-      decoded.height > 16384 ||
-      decoded.width * decoded.height > 50_000_000 ||
-      decoded.width * decoded.height !== info.width * info.height
-    )
-      throw new Error(
-        "Decoded image dimensions are unsupported. Export it to PNG and try again.",
-      );
-    const originalWidth = decoded.width,
-      originalHeight = decoded.height;
-    const fitted = fitConversionDimensions(originalWidth, originalHeight, { large: true });
-    const resized =
-      fitted.width !== originalWidth || fitted.height !== originalHeight;
-    if (resized && !allowResize)
-      throw new Error("Enable “Fit large photos” to convert this image here.");
-    const surface = document.createElement("canvas");
-    surface.width = fitted.width;
-    surface.height = fitted.height;
-    const context = surface.getContext("2d", { willReadFrequently: true });
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, surface.width, surface.height);
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
-    context.drawImage(decoded, 0, 0, surface.width, surface.height);
-    decoded.close();
-    const rgba = new Uint8Array(
-      context.getImageData(0, 0, surface.width, surface.height).data,
-    );
-    const preview = await new Promise((resolve) =>
-      surface.toBlob(resolve, "image/png"),
-    );
-    if (token !== conversionVersion) return;
-    if (!preview)
-      throw new Error("Could not prepare this image. Try a PNG or JPG export.");
-    conversionImage = {
-      rgba,
-      width: surface.width,
-      height: surface.height,
-      name: file.name,
-      sourceBytes: file.size,
-    };
-    await prepareSealPreview(surface);if(token!==conversionVersion)return;
-    conversionPreviewUrl = URL.createObjectURL(preview);
-    $("convert-image").src = conversionPreviewUrl;
-    $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
-    $("convert-preview").hidden = false;
-    $("document-warning").hidden=!looksLikeDocument(originalWidth,originalHeight);syncSealConsent();
-    conversionStatus(resized?'Ready. Uses the resized preview.':'Ready to seal.');
+    if (file.size > GRD3_LIMITS.bytes) throw new Error("Choose a file up to 256 MiB.");
+    if (approvedState) {
+      if (approvedState !== checked || !approvedState.displayReport?.container) return;
+      const report = approvedState.displayReport;
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      if (version !== editVersion || approvedState !== checked) return;
+      if (image.width !== report.meta.width || image.height !== report.meta.height)
+        throw new Error("Decoded dimensions differ from the signed file.");
+      loadEditor(image, file, report.container);
+    } else {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (version !== editVersion) return;
+      if (isGRD2(bytes) || /^GRD1$/.test(String.fromCharCode(...bytes.subarray(0, 4))) || /\.grd$/i.test(file.name)) {
+        setEditorStatus("");
+        await openFile(file);
+        return;
+      }
+      const info = inspectConversionImage(bytes, { large: true });
+      image = await createImageBitmap(new Blob([bytes], { type: info.mime }));
+      if (version !== editVersion) return;
+      const fitted = fitConversionDimensions(image.width, image.height, { large: true });
+      if (fitted.width !== image.width || fitted.height !== image.height ||
+          image.width * image.height !== info.width * info.height)
+        throw new Error("Decoded dimensions exceed the image limits. Choose a smaller picture.");
+      loadEditor(image, file, null);
+    }
+    image = null; // The editor now owns the bitmap.
+    setEditorStatus(file.name + " is ready.");
   } catch (error) {
-    if (token === conversionVersion)
-      conversionStatus(
-        error.message ||
-          "This browser cannot decode that image. Try PNG or JPG.",
-        true,
-      );
+    if (version === editVersion) setEditorStatus(error.message, true);
   } finally {
-    decoded?.close?.();
+    image?.close();
+  }
+}
+
+async function buildSeal(source, grid) {
+  let doc = source.doc;
+  if (!doc) {
+    const key = await crypto.subtle.generateKey("Ed25519", false, ["sign", "verify"]);
+    const publicKey = new Uint8Array(await crypto.subtle.exportKey("raw", key.publicKey));
+    const surface = document.createElement("canvas");
+    surface.width = source.width;
+    surface.height = source.height;
+    const context = surface.getContext("2d", { willReadFrequently: true });
+    context.drawImage(source.image, 0, 0);
+    const rgba = new Uint8Array(context.getImageData(0, 0, source.width, source.height).data.buffer);
+    doc = await sealRgba({
+      rgba, width: source.width, height: source.height, publicKey, purpose: "personal",
+      subTile: 16, visual: false, sign: bytes => crypto.subtle.sign("Ed25519", key.privateKey, bytes),
+    });
+  }
+
+  const rects = source.boxes.map(({ x, y, w, h }) => ({ x, y, width: w, height: h }));
+  if (!rects.length) return encodeGRD2(doc);
+  if (doc.manifest.subTile) return redactRects(doc, rects, { granularity: grid });
+  const indices = new Set(rects.flatMap(rect => tilesForRect(doc.manifest, rect)));
+  return redactGRD2(doc, [...indices]);
+}
+
+$("convert-form").onsubmit = async event => {
+  event.preventDefault();
+  if ($("convert-submit").disabled || busy || !editor?.boxes || !$("convert-privacy").checked) return;
+  const source = editor;
+  busy = true;
+  savedFile = null;
+  dragStart = null;
+  drawEditor(source.boxes, selections);
+  $("check-sealed").hidden = true;
+  $("convert-form").setAttribute("aria-busy", "true");
+  $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = true;
+  syncConsent();
+  setEditorStatus("Preparing and checking your .GRD…");
+  try {
+    const bytes = await buildSeal(source, Number($("rounding").value));
+    const report = await verifyGRD2(bytes);
+    if (!report.regionVerified || !report.signature_valid || report.verdict === "REVOKED KEY" ||
+        (source.boxes.length && report.hiddenPixelsCleared !== true))
+      throw new Error("The file failed its own check. Nothing was downloaded.");
+    savedFile = new File([bytes], "image.GRD", { type: "application/octet-stream" });
+    download(bytes, savedFile.name, savedFile.type);
+    setEditorStatus("Saved image.GRD.");
+    $("check-sealed").hidden = false;
+    if (activeMode === "seal") $("check-sealed").focus();
+  } catch (error) {
+    setEditorStatus(error.message, true);
+  } finally {
+    busy = false;
+    $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = false;
+    $("convert-form").removeAttribute("aria-busy");
+    syncConsent();
   }
 };
-$("convert-input").onchange=()=>prepareSealInput($("convert-input").files[0]);
-function syncSealConsent(){$("convert-submit").disabled=!conversionImage||!$("convert-privacy").checked;}
-$("convert-privacy").onchange=syncSealConsent;
-syncSealConsent();
-$("convert-resize").onchange = () => $("convert-input").onchange();
-$("convert-form").onsubmit = async (event) => {
+
+$("redact-checked").onclick = () => {
+  const state = checked;
+  if (!state?.displayReport?.container || state.displayReport.verdict === "FULLY REDACTED" || busy) return;
+  $("convert-input").value = "";
+  void prepareSealInput(state.file, state);
+};
+$("check-sealed").onclick = event => {
   event.preventDefault();
-  if ($('convert-submit').disabled || !$('convert-privacy').checked || !conversionImage) return;
-  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,unknownSource=sealUnknownApproved,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
-  $('convert-submit').disabled=true;$('convert-input').disabled=true;$('convert-resize').disabled=true;$('convert-privacy').disabled=true;$('select-rectangle').disabled=true;$('save-original').disabled=true;
-  $('convert-form').setAttribute('aria-busy','true');conversionStatus('Sealing and checking on your device…');
-  try{
-    const key=existing?null:signer?{privateKey:signer.privateKey}:await crypto.subtle.generateKey('Ed25519',false,['sign','verify']);
-    const publicKey=existing?null:signer?signer.publicKey:new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
-    const doc=existing||await sealRgba({rgba:source.rgba,width:source.width,height:source.height,publicKey,purpose:signer?'asset':'personal',subTile:16,label:signer?signer.contact.name:'',sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
-    const original=encodeGRD2(doc),bytes=areas.length?await redactRects(doc,areas,{granularity}):original;
-    const trust=await sessionTrust(),anchors=existing?trust.anchors:signer?[{public_key_hex:signer.contact.publicKey,name:signer.contact.name}]:TRUSTED;
-    const result=await verifyGRD2(bytes,anchors,trust.policy);
-    if(!result.regionVerified||!result.signature_valid||!(['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict)||existing&&unknownSource&&result.verdict==='UNTRUSTED SIGNER'&&result.canRevealUnknown))throw Error('The file did not pass its own check. Nothing was downloaded.');
-    if(token!==conversionVersion||viewerToken!==operation||signingVersion!==offlineSignerVersion)throw Error('Your file or signer changed. Check the selection and try again.');
-    download(bytes,'image.GRD','application/octet-stream');
-    if(saveOriginal&&areas.length)download(original,'private-original.GRD','application/octet-stream');
-    lastSealedFile=new File([bytes],'image.GRD');$('check-sealed').hidden=false;
-    conversionStatus('Saved image.GRD · '+bytesLabel(bytes.length)+'.');$('check-sealed').focus();
-  }catch(error){conversionStatus('Sealing failed: '+error.message,true);$('convert-status').tabIndex=-1;$('convert-status').focus();}
-  finally{$('convert-submit').disabled=!$('convert-privacy').checked;$('convert-input').disabled=false;$('convert-resize').disabled=false;$('convert-privacy').disabled=false;$('select-rectangle').disabled=false;$('save-original').disabled=false;$('convert-form').removeAttribute('aria-busy');}
+  if (savedFile) void openFile(savedFile);
 };
 
-$("copy-form").onsubmit = async event => {
-  event.preventDefault();const copyTrustVersion=trustImportVersion;
-  if ($("copy-submit").disabled) return;
-  const proofFile = $("copy-proof").files[0], imageFile = $("copy-image").files[0];
-  if (!proofFile || !imageFile) { $("copy-status").textContent = "Choose both the visual proof and image copy."; return; }
-  $("copy-submit").disabled = true; $("copy-proof").disabled = true; $("copy-image").disabled = true; $("copy-form").setAttribute("aria-busy", "true");
-  $("copy-status").classList.remove("borderline");
-  $("copy-status").textContent = "Checking signature, disclosures and visual block averages locally…";
-  try {
-    if (proofFile.size > 16*1024*1024 || imageFile.size > GRD3_LIMITS.bytes) throw new Error("Proof must be at most 16 MiB and the image at most 256 MiB.");
-    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()), ...(await sessionTrust()).args);
-    if(copyTrustVersion!==trustImportVersion || activeBundle && Date.parse(activeBundle.expires)<=Date.now()){ $("copy-status").textContent="Trust changed or expired during this check. Check the copy again.";return;}
-    const label = r.visualVerdict ?? r.verdict;
-    $("copy-status").classList.toggle("borderline", label === "BORDERLINE (decoder-dependent)");
-    $("copy-status").textContent = label + ". " + (r.trustVerdict && !r.trusted ? r.trustVerdict + ": signer identity is not verified. " : "") +
-      (r.worstError !== undefined ? "Largest block difference: " + r.worstError + " / 255. " : "") + r.guarantee +
-      (r.problems.length ? " " + r.problems.join(" ") : "");
-  } catch (error) { $("copy-status").textContent = "Copy check could not finish: " + error.message; }
-  finally { $("copy-submit").disabled = false; $("copy-proof").disabled = false; $("copy-image").disabled = false; $("copy-form").removeAttribute("aria-busy"); $("copy-status").focus(); }
+for (const [id, handler] of [
+  ["file-input", openFile],
+  ["convert-input", prepareSealInput],
+]) $(id).onchange = event => {
+  const file = event.target.files[0];
+  event.target.value = "";
+  if (file) void handler(file);
 };
 
-async function sessionTrust(){
- const base=[...TRUSTED,...Array.from(personTrust.values()).filter(c=>!TRUSTED.some(k=>k.public_key_hex===c.public_key_hex))];
- if(TRUSTED._invalid)base._invalid=true;
- if(!activeBundle)return {anchors:base,policy:TRUST_POLICY,args:[base,TRUST_POLICY]};
- const r=await verifyTrustBundle(activeBundle.bytes,activeBundle.root,{previous:bundleStates.get(activeBundle.root)??null});
- const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...base.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
- if(base._invalid)anchors._invalid=true;
- const merged={version:Math.max(TRUST_POLICY.version,r.policy.version),asOf:r.policy.asOf,revoked};
- return {anchors,policy:merged,args:[anchors,merged]};
-}
-function scheduleBundleExpiry(){
- clearTimeout(bundleExpiryTimer);if(!activeBundle)return;
- const remaining=Date.parse(activeBundle.expires)-Date.now();
- if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;return;}
- bundleExpiryTimer=setTimeout(scheduleBundleExpiry,Math.min(remaining,2147483647));
-}
-$("trust-form").onsubmit=async event=>{
- event.preventDefault();const bundleFile=$("trust-bundle").files[0],rootFile=$("trust-root").files[0];if(!bundleFile||!rootFile)return;
- const token=++trustImportVersion;$("trust-submit").disabled=true;$("trust-bundle").disabled=true;$("trust-root").disabled=true;
- try{
-  if(bundleFile.size>2*1024*1024||rootFile.size>4096)throw Error('Bundle or root file exceeds its size limit');
-  const root=publicKeyHexFromPem(await rootFile.text()),bytes=new Uint8Array(await bundleFile.arrayBuffer()),r=await verifyTrustBundle(bytes,root,{previous:bundleStates.get(root)??null});
-  if(token!==trustImportVersion)return;if(Date.parse(r.expires)<=Date.now())throw Error("Bundle expired during import");
-  activeBundle={root,bytes,expires:r.expires};bundleStates.set(root,r.state);reset();scheduleBundleExpiry();if(!activeBundle)return;
-  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;$("active-trust-note").hidden=false;
- }catch(error){$("trust-status").textContent='Trust bundle rejected: '+error.message;}
- finally{$("trust-submit").disabled=false;$("trust-bundle").disabled=false;$("trust-root").disabled=false;}
-};
-$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;};
-$("show-unknown").onclick=async()=>{
- const report=currentReport,container=currentContainer,token=operation;if(!report?.canRevealUnknown||report.verdict!=='UNTRUSTED SIGNER')return;
- $("show-unknown").disabled=true;
- try{
-  let displayReport={...report,container};
-  if(report.version===1){const trust=await sessionTrust();displayReport=await createVerifier(trust.anchors,trust.policy,{allowUnknownDisplay:true})(await file.arrayBuffer());if(!displayReport.canRevealUnknown)throw Error('The file no longer qualifies for unknown-signer display');}
-  const image=await decode(displayReport);if(token!==operation||report!==currentReport){image.close?.();return;}
-  bitmap=image;unknownApproved=true;renderResult(report);metadata(report);$("image-panel").hidden=false;
-  const scale=Math.min(1,1600/Math.max(image.width,image.height));canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
-  canvas.setAttribute('aria-label',`Unknown signer; hold to reveal. ${report.meta.width} by ${report.meta.height} pixels.`);setMode(true);queueDraw();clock=setInterval(queueDraw,1000);delete report.payload;
-  setStatus('Image shown by your request. Signer identity is still unknown.');
- }catch(error){if(token===operation)setStatus('Image could not be displayed: '+error.message);}
- finally{$("show-unknown").disabled=false;}
-};
-
-let activeMainMode='verify';
-function showGuardView(hash=location.hash,focus=true){
- const target=hash.replace(/^#/,'');
- const expert=['advanced','advanced-heading','advanced-tools','advanced-person','advanced-report','signer','viewing-options','offline-copy'].includes(target);
- const about=['about','about-heading','about-privacy','privacy-details'].includes(target);
- $('main-view').hidden=expert||about;$('advanced').hidden=!expert;$('about').hidden=!about;
- if(!expert&&!about){activeMainMode=target==='seal'||target==='convert'?'seal':'verify';const check=activeMainMode==='verify';$('inspection-panel').hidden=!check;$('convert').hidden=check;
-  for(const [id,selected] of [['tab-verify',check],['tab-seal',!check]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
- }
- for(const back of document.querySelectorAll('.back-link'))back.href=activeMainMode==='seal'?'#seal':'#check';
- document.querySelector('.skip').href=expert?'#advanced-heading':about?'#about-heading':activeMainMode==='verify'?'#workspace':'#convert';
- if(expert&&target!=='advanced'&&target!=='advanced-heading')revealAdvancedTool(target);
- for(const link of document.querySelectorAll('.header nav a')){if(link.getAttribute('href')===(expert?'#advanced':about?'#about':''))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
- if(about&&['privacy-details','about-privacy'].includes(target))$('privacy-disclosure').open=true;
- if(focus){const heading=expert?$('advanced-heading'):about?$('about-heading'):$('main-heading');heading.focus();if(expert&&target!=='advanced'&&target!=='advanced-heading'||about&&['privacy-details','about-privacy'].includes(target)){const section=$(target==='about-privacy'?'privacy-details':target);if(section){const title=section.querySelector('h2')||section;title.tabIndex=-1;title.focus();section.scrollIntoView({block:'start',behavior:'instant'});}}}
-}
-function workspaceMode(mode){activeMainMode=mode;const hash=mode==='seal'?'#seal':'#check';if(location.hash!==hash)history.replaceState(null,'',hash);showGuardView(hash,false);}
-for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
- $(id).onclick=()=>workspaceMode(mode);
- $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
-}
-window.addEventListener('hashchange',()=>showGuardView());
-showGuardView(location.hash,false);
-
-function revealAdvancedTool(target){
- const node=$(target)||$("tool-"+target);const panel=node?.matches('details.advanced-disclosure')?node:node?.querySelector('details.advanced-disclosure');
- if(!panel)return;for(const other of document.querySelectorAll('.advanced-disclosure'))other.open=other===panel;
-}
-for(const panel of document.querySelectorAll('.advanced-disclosure'))panel.querySelector('summary').addEventListener('click',()=>{if(!panel.open)for(const other of document.querySelectorAll('.advanced-disclosure'))if(other!==panel)other.open=false;});
-function syncSealExtras(){const on=$('save-original').checked;$('seal-extras-label').textContent=on?'More options · original copy enabled':'More options';document.querySelector('.seal-extras').classList.toggle('original-enabled',on);}
-$('save-original').addEventListener('change',syncSealExtras);
-function refreshSealSummary(){
- $('seal-signer-summary').textContent=sealSourceDoc?(sealUnknownApproved?'Original signer unknown · blackouts do not verify identity.':'Original signer kept · no signing key needed.'):unlockedSigner?unlockedSigner.contact.name+'’s key · recipients must trust it independently.':'One-time key · identity not verified.';
- $('seal-key-link').hidden=!!sealSourceDoc;syncSealExtras();
-}
-
-function canEditChecked(){return !!(currentInputFile&&currentContainer&&currentReport?.regionVerified&&currentReport.signature_valid&&(currentReport.viewable||unknownApproved&&currentReport.canRevealUnknown));}
-$('redact-checked').onclick=async()=>{
- if(!canEditChecked())return;
- const file=currentInputFile;workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;
- await prepareSealInput(file,true);
- if(conversionImage){$('seal-step-two').scrollIntoView({block:'start',behavior:'instant'});$('rect-numbers').querySelector('summary').focus({preventScroll:true});}
-};
-async function routeDroppedFile(file){
- const picture=/^image\//.test(file.type||'')||/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name);
- if(!$('convert').hidden||picture){workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;await prepareSealInput(file);}
- else await openFile(file);
-}
-$('convert').addEventListener('dragover',event=>{event.preventDefault();document.querySelector('.seal-upload').classList.add('over');});
-$('convert').addEventListener('dragleave',event=>{if(!$('convert').contains(event.relatedTarget))document.querySelector('.seal-upload').classList.remove('over');});
-$('convert').addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();document.querySelector('.seal-upload').classList.remove('over');const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
+window.addEventListener("dragover", event => {
+  if (!event.dataTransfer?.types.includes("Files")) return;
+  event.preventDefault();
+  const upload = document.querySelector(activeMode === "seal" ? "#convert-form .upload" : "#inspection-panel .upload");
+  upload.classList.add("over");
+});
+window.addEventListener("dragleave", event => {
+  if (!event.relatedTarget) document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+});
+window.addEventListener("drop", event => {
+  const file = event.dataTransfer?.files[0];
+  if (!file) return;
+  event.preventDefault();
+  document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+  if (/\.grd$/i.test(file.name) || (activeMode === "check" && !/^image\//.test(file.type)))
+    void openFile(file);
+  else void prepareSealInput(file);
+});

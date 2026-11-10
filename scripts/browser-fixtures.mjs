@@ -29,7 +29,7 @@ const qaTrust = {version: 1, asOf: "2026-10-27T00:00:00Z", signers: [{
 const trustDeclaration = "const trustedData=" + productionTrust + ";";
 if (!html.includes(trustDeclaration)) throw new Error("Built viewer trust declaration not found; rebuild first.");
 html = html.replace(trustDeclaration, "const trustedData=" + JSON.stringify(qaTrust) + ";");
-html = html.replace("<title>Guard /", "<title>QA FIXTURE ONLY — Guard /");
+html = html.replace("<title>TileSeal</title>", "<title>QA FIXTURE ONLY — TileSeal</title>");
 const bad = Buffer.from(valid);
 const rgba = new Uint8Array(192 * 128 * 4).fill(255);
 for (let i = 0; i < 192 * 128; i++)
@@ -53,6 +53,7 @@ const imageOffset = Number(bad.readBigUInt64LE(imageTable + 2));
 bad[imageOffset + 40] ^= 1;
 await Promise.all([
   writeFile(dir + "/index.html", html),
+  writeFile(dir + "/sample-picture.png", png(384, 192)),
   writeFile(dir + "/revoked.html", revokedHtml),
   writeFile(dir + "/genuine-v2.GRD", encodeGRD2(v2)),
   writeFile(dir + "/redacted-v2.GRD", v2redacted),

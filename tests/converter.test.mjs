@@ -27,7 +27,7 @@ test("conversion inspects PNG pixels rather than trusting filename or MIME", () 
   );
   assert.throws(
     () => inspectConversionImage(pngHeader(4096, 1025)),
-    /Fit large photos/,
+    /4-megapixel output limit/,
   );
   assert.throws(() => inspectConversionImage(new Uint8Array(0)), /32 MiB/);
 });
@@ -149,33 +149,6 @@ test("end-to-end 12 MP photo downscale, seal and verify passes", async () => {
   const res = await verifyGRD2(encodeGRD2(sealed), []);
   assert.equal(res.verdict, "UNVERIFIED: SELF-SIGNED");
   assert.equal(res.viewable, true);
-});
-
-test("actual conversion submit handler downloads a checked file and leaves opening it to the user", async () => {
-  const { readFile } = await import("node:fs/promises");
-  const { sealRgba, encodeGRD2, verifyGRD2 } = await import("../src/redactable.js");
-  const app = await readFile(new URL("../src/app.js", import.meta.url), "utf8");
-  const start = app.indexOf('$("convert-form").onsubmit =');
-  assert.ok(start >= 0, "conversion submit handler exists");
-  const nodes = new Map();
-  const $ = id => {
-    if (!nodes.has(id)) nodes.set(id, { disabled: false, setAttribute() {}, removeAttribute() {}, focus() {} });
-    return nodes.get(id);
-  };
-  $("convert-privacy").checked=true;
-  const messages = [], downloads = [], opened = [];
-  const execute = new Function("$", "conversionImage", "conversionVersion", "operation", "crypto", "sealRgba", "encodeGRD2", "verifyGRD2", "conversionStatus", "download", "openFile", "File", "bytesLabel", "offlineSignerVersion", "unlockedSigner", "TRUSTED", "sessionTrust", "sealSourceDoc", "sealUnknownApproved", "sealAreas", "sealGrid", "redactRects", "lastSealedFile",
-    app.slice(start,app.indexOf('$("copy-form").onsubmit',start)) + '\nreturn $("convert-form").onsubmit({preventDefault() {}});');
-  await execute($, { rgba: new Uint8Array(64 * 64 * 4).fill(255), width: 64, height: 64, name: "TEST ONLY.png", sourceBytes: 4096 }, 1, 1, crypto, sealRgba, encodeGRD2, verifyGRD2,
-    message => messages.push(message), (...args) => downloads.push(args), async file => opened.push(file), File, n => `${n} bytes`, 0, null, [], async()=>({policy:(await import('../src/trust.js')).TRUST_POLICY}),null,false,[],()=>16,(await import('../src/redactable.js')).redactRects,null);
-  assert.equal(downloads.length, 1, messages.join("\n"));
-  assert.equal(downloads[0][1], "image.GRD");
-  assert.equal(opened.length, 0);
-  assert.match(messages.at(-1), /Saved image.GRD/);
-  assert.doesNotMatch(messages.at(-1), /NaN|Infinity|failed/);
-  assert.equal((await verifyGRD2(downloads[0][0], [])).verdict, "UNVERIFIED: SELF-SIGNED");
-  assert.equal($("convert-submit").disabled, false);
-  assert.equal($("convert-input").disabled, false);
 });
 
 test('ID/document shape heuristic covers both orientations and leaves squares unflagged',async()=>{

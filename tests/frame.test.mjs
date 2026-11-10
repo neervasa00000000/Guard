@@ -53,8 +53,8 @@ test("frame guard triggers when self !== top and replaces body", async () => {
   assert.equal(replacedWith.length, 2);
   assert.equal(
     replacedWith[0].textContent,
-    "Guard does not run inside embedded pages. Open the inspector directly to check a file.",
+    "TileSeal does not run inside embedded pages. Open it directly to check a file.",
   );
-  assert.equal(replacedWith[1].textContent, "Open Guard");
+  assert.equal(replacedWith[1].textContent, "Open TileSeal");
   assert.equal(replacedWith[1].href, "https://example.com/guard");
 });
