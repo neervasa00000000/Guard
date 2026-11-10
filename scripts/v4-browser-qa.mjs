@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Generates isolated, visibly labelled QA viewers. NEVER deploy these copies.
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 import {createPrivateKey,createPublicKey,sign} from 'node:crypto';
 import {sealRgba,encodeGRD2,redactRects} from '../src/redactable.js';
 const dir='/tmp/guard-v4-qa';
@@ -18,7 +19,8 @@ const photoKey=seed(48),photoDoc=await sealRgba({width:384,height:256,subTile:16
 const photo=Buffer.from(encodeGRD2(photoDoc)).toString('base64'),photoRedacted=Buffer.from(await redactRects(photoDoc,[{x:32,y:32,width:96,height:80},{x:256,y:128,width:64,height:64}],{granularity:16})).toString('base64');
 const fully=Buffer.from(await redactRects(photoDoc,[{x:0,y:0,width:384,height:256}],{granularity:16})).toString('base64');
 const cases={photo,photoRedacted,fully,genuine,tampered:Buffer.from('GRD2\n'+canon(parsed)).toString('base64'),self:vectors.cases.find(c=>c.id==='grd2-personal').container,redact:vectors.cases.find(c=>c.id==='grd2-redacted').container,unknown:await make(keyB),bundle:await make(bundleIssuer)};
-let html=await readFile(new URL('../index.html',import.meta.url),'utf8');const productionTrust=await readFile(new URL('../src/trusted-keys.json',import.meta.url),'utf8'),policy=await readFile(new URL('../src/trust-policy.json',import.meta.url),'utf8');
+// Historical UX evidence is tied to the pre-TileSeal viewer.
+let html=execFileSync('git',['show','f8f2558:index.html'],{cwd:new URL('../',import.meta.url),encoding:'utf8'});const productionTrust=await readFile(new URL('../src/trusted-keys.json',import.meta.url),'utf8'),policy=await readFile(new URL('../src/trust-policy.json',import.meta.url),'utf8');
 html=html.replace('const trustedData='+productionTrust+';','const trustedData='+JSON.stringify(vectors.keys)+';').replace('<title>Guard /','<title>TEST ONLY QA — Guard /');
 const axe=(await readFile(new URL('../node_modules/axe-core/axe.min.js',import.meta.url),'utf8')).replaceAll('</script','<\\/script');html=html.replace('<script>','<script>'+axe+'</script><script>');
 const {default:qaSharp}=await import('sharp');

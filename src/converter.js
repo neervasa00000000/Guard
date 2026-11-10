@@ -9,7 +9,7 @@ export function inspectConversionImage(bytes, { allowResize = false, large = fal
     !bytes.length ||
     bytes.length > (large ? GRD3_LIMITS.bytes : TILE_LIMITS.bytes)
   )
-    throw new Error("Choose an image up to 32 MiB.");
+    throw new Error(large ? "Choose an image up to 256 MiB." : "Choose an image up to 32 MiB.");
   const ascii = (at, count) =>
     String.fromCharCode(...bytes.subarray(at, at + count));
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -56,7 +56,8 @@ export function inspectConversionImage(bytes, { allowResize = false, large = fal
   const fitted = fitConversionDimensions(width, height, { large });
   if (!allowResize && (fitted.width !== width || fitted.height !== height))
     throw new Error(
-      "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
+      large ? "This picture exceeds the GRD3 limit. Choose a smaller image (up to 36 MP, 8,192 px per edge and 9,000 tiles)."
+        : "This photo exceeds the GRD 4-megapixel output limit. Choose a smaller picture.",
     );
   return { mime, width, height };
 }

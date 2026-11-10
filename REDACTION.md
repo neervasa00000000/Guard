@@ -1,18 +1,10 @@
 # Redaction and interoperability guide
 
-## Convert an image in the browser
-
-Use **Make a .GRD** at the top of the inspector. Choose PNG, JPG, WebP, GIF or BMP, review the preview, then choose **Convert & download .GRD**. It downloads a real GRD2 container and opens it below for verification and further redaction. All processing stays on your device.
-
-In this upgrade checkout, input limits are 256 MiB, 50 megapixels and 16,384 pixels per edge. “Fit large photos” is enabled by default and fits the output within 36,000,000 pixels, 8,192 pixels per edge and 9,000 parent tiles, preserving aspect ratio. The preview shows original and output dimensions before conversion; smaller photos are not enlarged. Turn it off to require original-size conversion. Unsupported formats (including HEIC, AVIF, PDF and SVG) need a PNG/JPG export first. Encoded dimensions are inspected before decoding. Animated images use their first frame; transparency becomes white. Original EXIF/other metadata is not copied; new conversions omit the filename from their public label and download as `image.GRD`. The resized pixels become the signed original of the new GRD; the higher-resolution source file is not embedded or changed.
-
-Each conversion creates an ephemeral Ed25519 key; its private half is never exported or retained by the application. The signed purpose is `personal`, and both verifiers return **UNVERIFIED: SELF-SIGNED**, never genuine or identity-trusted, even if the public key were separately pinned. Reopening and redaction preserve that status. This is a consistency proof since conversion, not proof of the scene's truth or the creator's identity. Revocation checks still apply. Earlier experimental GRD2 viewers need updating to recognise this purpose. The C2PA bridge does not promote personal files to trusted evidence.
-
 ## Browser
 
-Open the [inspector](https://neervasa00000000.github.io/Guard/), then choose **Try redaction with an example**. Drag a rectangle, select tiles, or enter rectangle coordinates. Export a redacted `.GRD`; it reopens automatically. Rectangles round outward to the selected sealed grid (new browser files default to 16 px; legacy files remain 64 px). Blackout is the only export mode. Older blur containers can still be inspected, but hidden contents are not verified; re-exporting replaces all hidden pixels with black. Further redactions work on exported copies.
+Open TileSeal and choose **Seal a picture**. Select a PNG, JPG, WebP, GIF or BMP, draw blackout boxes or enter their coordinates, review the preview and download a .GRD. New browser seals use 16 px sub-tiles and a one-time key with self-signed identity. GRD2 or GRD3 is selected by the existing format limits.
 
-Demo keys are ephemeral and never pinned. The example always says **DEMO**, even when its proof is mathematically valid. The shipped viewer cannot import an arbitrary key and promote it to genuine. The original production public anchor is unchanged.
+Choose **Check a file** to inspect a .GRD and **Black out more areas** on a viewable GRD2 or GRD3. Existing hidden regions display as solid black, including regions from old blur files. The original signature is carried forward. The plain PNG export drops the proof. The editor and browser test plan are documented in [TILESEAL.md](TILESEAL.md).
 
 ## Python issuer, redactor and verifier
 
@@ -27,7 +19,7 @@ python3 -m venv .venv
 .venv/bin/python grd.py verify private.GRD --trusted-key /secure/signer-public.pem
 ```
 
-Repeat `--rect` for multiple regions. Redaction requires no signing key. Existing output files are never overwritten. `--trusted-key` is an explicit local trust decision. To support a new real issuer in the web viewer, review its identity and update the source anchors, then rebuild. Never commit private keys. A Node PNG issuer is also available in `scripts/issue-grd2.mjs`; install its dependency with `npm ci`.
+Repeat `--rect` for multiple regions. Add `--pad-boxes --line-height 32` to use the TileSeal padding rule. Use `--granularity 16` on a compatible seal to match the browser default. Redaction requires no signing key. Existing output files are never overwritten. `--trusted-key` is an explicit local trust decision. To support a new real issuer in the web viewer, review its identity and update the source anchors, then rebuild. Never commit private keys. A Node PNG issuer is also available in `scripts/issue-grd2.mjs`; install its dependency with `npm ci`.
 
 ## C2PA PNG export
 

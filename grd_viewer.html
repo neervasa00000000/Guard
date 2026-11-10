@@ -1,1585 +1,203 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="referrer" content="no-referrer" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#161719" />
-    <meta
-      name="description"
-      content="Guard verifies signed .GRD images locally. Inspect integrity, confirm the trusted signer and reveal protected images without uploading your files."
-    />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
-    />
-    <title>Guard / GRD Inspector</title>
-    <style>
-      /* SPDX-License-Identifier: MIT */
-html.framed body > *:not(.frame-warning) {
-  display: none;
-}
-
-:root {
-  --ink: #101828;
-  --muted: #475467;
-  --line: #d0d5dd;
-  --bg: #f6f8fb;
-  --blue: #1d4ed8;
-  --focus: #1d4ed8;
-  font-family: Arial,Helvetica,sans-serif;
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Black out areas, seal a picture, or check a .GRD file on your device.">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>TileSeal</title>
+  <style>:root {
+  color-scheme: light;
+  --ink: #162335;
+  --muted: #495b70;
+  --accent: #214ab6;
+  --accent-soft: #edf2ff;
+  --line: #cbd5e2;
+  --page: #f4f6fa;
+  --surface: #fff;
+  font: 100%/1.5 system-ui, sans-serif;
   color: var(--ink);
-  background: var(--bg);
-  font-synthesis: none
-}
-
-* {
-  box-sizing: border-box
-}
-
-body {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.5
-}
-
-button,input,select {
-  font: inherit
-}
-
-button,a,input,summary {
-  touch-action: manipulation
-}
-
-button {
-  cursor: pointer
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: .6
-}
-
-a {
-  color: var(--blue);
-  text-underline-offset: 3px
-}
-
-a,button,input,p,li,dd {
-  overflow-wrap: anywhere
-}
-
-[hidden] {
-  display: none!important
-}
-
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0
-}
-
-.skip {
-  position: fixed;
-  top: -100px;
-  left: 16px;
-  background: #fff;
-  padding: 12px;
-  z-index: 100
-}
-
-.skip:focus {
-  top: 8px
-}
-
-h1,h2,h3,p {
-  margin-top: 0
-}
-
-h1 {
-  font-size: 30px;
-  letter-spacing: -.8px
-}
-
-h2 {
-  font-size: 22px;
-  line-height: 1.25;
-  letter-spacing: -.4px
-}
-
-h3 {
-  font-size: 17px
-}
-
-p {
-  margin-bottom: 12px
-}
-
-small,.file-help,.privacy-line,.viewer-hint {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5
-}
-
-.optional {
-  font-size: .75em;
-  color: var(--muted);
-  font-weight: 400
-}
-
-ul {
-  padding-left: 22px
-}
-
-fieldset {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0
-}
-
-legend {
-  font-weight: 600
-}
-
-fieldset label {
-  margin-right: 16px
-}
-
-input[type=checkbox],input[type=radio] {
-  accent-color: var(--blue);
-  width: 20px;
-  height: 20px;
-  flex: none
-}
-
-input:not([type=checkbox]):not([type=radio]) {
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  border: 1px solid #667085;
-  border-radius: 7px;
-  background: #fff;
-  color: var(--ink);
-  padding: 10px;
-  font-size: 16px
-}
-
-input[type=file] {
-  max-width: 100%
-}
-
-input::file-selector-button {
-  border: 0;
-  border-radius: 5px;
-  padding: 8px 12px;
-  margin-right: 12px;
-  background: #e8eefb;
-  color: #153b9e;
-  font-weight: 600;
-  cursor: pointer
-}
-
-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px
-}
-
-.header {
-  background: #fff;
-  border-bottom: 1px solid var(--line)
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 10px clamp(16px,3vw,48px);
-  min-height: 64px
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: -.5px
-}
-
-.brand-mark {
-  width: 29px;
-  height: 31px;
-  display: grid;
-  place-items: center;
-  background: #101828;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 21px
-}
-
-.local-pill {
-  font-size: 12px;
-  color: #344054;
-  margin-left: auto;
-  white-space: nowrap
-}
-
-.local-pill>span:first-child {
-  color: #146c43
-}
-
-.header nav {
-  display: flex;
-  gap: 20px;
-  align-items: center
-}
-
-.header nav a {
-  font-size: 14px;
-  color: #344054;
-  text-decoration: none;
-  min-height: 44px;
-  display: flex;
-  align-items: center
-}
-
-main {
-  padding: 20px clamp(16px,3vw,48px) 28px;
-  max-width: none;
-  margin: 0 auto
-}
-
-.workspace-tabs {
-  display: flex;
-  gap: 4px;
-  margin: 0 0 20px;
-  padding: 4px;
-  background: #e9edf4;
-  border-radius: 9px;
-  width: max-content
-}
-
-.workspace-tabs button {
-  background: transparent;
-  border: 0;
-  border-radius: 6px;
-  padding: 9px 20px;
-  color: #344054;
-  min-height: 44px
-}
-
-.workspace-tabs [aria-selected=true] {
-  background: #fff;
-  color: #101828;
-  box-shadow: 0 1px 4px #10182822;
-  font-weight: 600
-}
-
-.drop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  min-height: 260px;
-  border: 2px dashed #8c9bb3;
-  border-radius: 14px;
-  background: #fff;
-  color: var(--muted);
-  font-size: 18px;
-  padding: 24px
-}
-
-.drop.over {
-  border-color: var(--blue);
-  background: #edf2ff
-}
-
-.drop-icon {
-  font-size: 40px;
-  line-height: 1;
-  color: var(--blue)
-}
-
-.drop strong {
-  background: var(--blue);
-  color: #fff;
-  display: inline-block;
-  border-radius: 7px;
-  padding: 12px 25px;
-  font-size: 15px
-}
-
-.privacy-line {
-  text-align: center;
-  margin: 16px 0 0
-}
-
-.primary,.secondary,.text-button,.mode-buttons button,.area-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  border-radius: 7px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.3
-}
-
-.primary {
-  color: #fff;
-  background: var(--blue);
-  border: 1px solid var(--blue)
-}
-
-.primary:hover {
-  background: #153da8
-}
-
-.secondary {
-  background: #fff;
-  color: #344054;
-  border: 1px solid #98a2b3
-}
-
-.text-button {
-  background: transparent;
-  color: var(--blue);
-  border: 0;
-  padding: 10px 8px
-}
-
-.session-trust {
-  padding: 10px 14px;
-  background: #fff4d6;
-  border: 1px solid #cda346;
-  color: #684400;
-  border-radius: 7px;
-  font-size: 13px
-}
-
-.verdict-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden
-}
-
-.verdict-banner {
-  display: flex;
-  gap: 14px;
-  padding: 20px 24px;
-  border-left: 8px solid;
-  color: #475467;
-  background: #eef0f3
-}
-
-.verdict-banner h2 {
-  font-size: clamp(22px,2vw,30px);
-  margin: 0 0 7px;
-  line-height: 1.15
-}
-
-.verdict-banner p {
-  margin: 0 0 5px;
-  line-height: 1.45;
-  font-size: 15px;
-  max-width: 90ch
-}
-
-.verdict-banner .verdict-signer {
-  font-size: 13px
-}
-
-.verdict-banner.good {
-  color: #146c43;
-  background: #e8f5ee
-}
-
-.verdict-banner.bad {
-  color: #b42318;
-  background: #fdecea
-}
-
-.verdict-banner.neutral {
-  color: #8a5a00;
-  background: #fff4d6
-}
-
-.verdict-banner.fault {
-  color: #475467;
-  background: #eef0f3
-}
-
-.verdict-icon {
-  font-size: 28px;
-  line-height: 1.2;
-  flex: none
-}
-
-.result-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 24px 0
-}
-
-.verdict-card>#show-unknown {
-  margin: 18px 24px 0
-}
-
-.verdict-card>#plain-note {
-  margin: 9px 24px 16px
-}
-
-.verdict-card>#hidden-areas {
-  margin: 8px 24px 0;
-  padding-left: 20px;
-  font-size: 13px;
-  color: var(--muted)
-}
-
-#image-panel {
-  padding: 16px 24px 0
-}
-
-.stage {
-  position: relative;
-  display: grid;
-  place-items: center;
-  background: #11151b;
-  border-radius: 7px;
-  overflow: hidden;
-  isolation: isolate;
-  min-height: 0
-}
-
-.stage canvas {
-  display: block;
-  max-width: 100%;
-  max-height: 45vh;
-  width: auto;
-  height: auto;
-  touch-action: none
-}
-
-.stage.shielded canvas {
-  visibility: hidden
-}
-
-.shield {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: #17202e;
-  color: #fff;
-  text-align: center
-}
-
-.shield p {
-  max-width: 36ch
-}
-
-.shield h3 {
-  color: #fff
-}
-
-.viewer-hint {
-  margin: 8px 0
-}
-
-.hidden-areas:empty {
-  display: none
-}
-
-.tile-overlay {
-  position: absolute;
-  display: grid;
-  inset: auto;
-  z-index: 2;
-  touch-action: none
-}
-
-.tile-overlay button {
-  font-size: 10px;
-  background: #ffffff22;
-  color: #fff;
-  border: 1px solid #fff6
-}
-
-.tile-overlay .tile-selected {
-  background: #1d4ed866
-}
-
-.tile-overlay .tile-hidden {
-  background: #000c
-}
-
-summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 48px;
-  font-size: 14px;
-  font-weight: 600
-}
-
-summary::-webkit-details-marker {
-  display: none
-}
-
-summary::marker {
-  content: ""
-}
-
-summary::after {
-  content: "+";
-  font-size: 22px;
-  line-height: 1;
-  width: 24px;
-  text-align: center;
-  font-weight: 400;
-  flex: none
-}
-
-details[open]>summary::after {
-  content: "−"
-}
-
-.technical {
-  margin: 16px 24px 0;
-  border-top: 1px solid var(--line)
-}
-
-.technical>summary {
-  color: #344054
-}
-
-.technical>section,.technical>p,.technical>.checks,.technical>#issues {
-  font-size: 13px
-}
-
-.technical h3 {
-  font-size: 14px;
-  margin: 12px 0 6px
-}
-
-.technical li {
-  margin-bottom: 6px
-}
-
-.check-row {
-  display: flex;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid #e4e7ec;
-  font-size: 12px
-}
-
-.check-row small {
-  display: block
-}
-
-.check-icon {
-  color: #146c43
-}
-
-.failed .check-icon {
-  color: #b42318
-}
-
-.check-tag {
-  margin-left: auto;
-  font-size: 10px;
-  white-space: nowrap
-}
-
-dl>div {
-  padding: 8px 0;
-  border-bottom: 1px solid #e4e7ec
-}
-
-dt {
-  font-weight: 600;
-  font-size: 13px
-}
-
-dd {
-  margin: 4px 0 0;
-  font-size: 13px;
-  overflow-wrap: anywhere
-}
-
-#loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  min-height: 200px
-}
-
-.spinner {
-  height: 22px;
-  width: 22px;
-  border-radius: 50%;
-  border: 2px solid #d0d5dd;
-  border-top-color: var(--blue);
-  animation: spin 1s linear infinite
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg)
-  }
-
-}
-
-.convert-form {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 24px
-}
-
-.seal-step+.seal-step {
-  border-top: 1px solid var(--line);
-  padding-top: 20px;
-  margin-top: 24px
-}
-
-.seal-step h2 {
-  font-size: 20px
-}
-
-.seal-step input[type=file] {
-  max-width: 720px
-}
-
-.seal-step>.file-help {
-  margin: 8px 0 0
-}
-
-.seal-stage {
-  display: grid;
-  place-items: center;
-  background: #11151b;
-  border-radius: 8px;
-  overflow: hidden
-}
-
-.seal-stage canvas {
-  max-width: 100%;
-  max-height: 55vh;
-  touch-action: none;
-  width: auto;
-  height: auto;
-  display: block
-}
-
-.rectangle-fields {
-  display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr)) auto;
-  gap: 12px;
-  align-items: end;
-  padding: 8px 0 16px
-}
-
-.rectangle-fields label {
-  margin: 0
-}
-
-.area-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 0;
-  list-style: none
-}
-
-.area-chip {
-  min-height: 40px;
-  background: #eef2ff;
-  color: #193f9b;
-  border: 1px solid #a5b9f4;
-  font-size: 12px;
-  padding: 8px 12px
-}
-
-.privacy-consent {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 400;
-  margin: 14px 0;
-  max-width: 75ch
-}
-
-.privacy-consent input {
-  margin: 0;
-  min-height: 20px
-}
-
-.privacy-warning {
-  background: #fff4d6;
-  border-left: 4px solid #8a5a00;
-  padding: 12px 16px;
-  color: #684400;
-  font-size: 14px;
-  margin-top: 14px;
-  max-width: 85ch
-}
-
-#convert-status {
-  font-size: 14px;
-  margin: 14px 0 0
-}
-
-#convert-status:empty {
-  margin: 0
-}
-
-#convert-status.error {
-  color: #b42318
-}
-
-#check-sealed {
-  display: inline-block;
-  margin-top: 10px;
-  min-height: 44px;
-  padding: 10px 0
-}
-
-.page-view {
-  max-width: none
-}
-
-.page-view>h1 {
-  margin: 16px 0 24px
-}
-
-.back-link {
-  display: inline-block;
-  min-height: 44px;
-  padding: 10px 0
-}
-
-.expert-section {
-  padding: 24px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  margin: 0 0 20px
-}
-
-.expert-section>p {
-  max-width: 90ch;
-  color: var(--muted);
-  font-size: 14px
-}
-
-.expert-section form {
-  max-width: 900px
-}
-
-.expert-section h2 {
-  font-size: 22px
-}
-
-.expert-section form p {
-  margin: 16px 0
-}
-
-.expert-section .secondary {
-  margin: 0 8px 8px 0
-}
-
-.expert-section input[type=text] {
-  font-family: monospace
-}
-
-.signer-setup {
-  margin-top: 16px;
-  border-top: 1px solid var(--line)
-}
-
-.signer-grid {
-  display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 32px
-}
-
-.signer-grid form {
-  min-width: 0
-}
-
-.signer-setup p,.person-trust p {
-  font-size: 14px;
-  max-width: 85ch
-}
-
-.signer-setup>summary {
-  font-size: 16px
-}
-
-.signer-setup>p {
-  margin: 14px 0
-}
-
-.signer-setup h3 {
-  margin-top: 18px
-}
-
-.signer-setup label,.person-trust label {
-  font-size: 14px
-}
-
-#signer-status {
-  padding: 12px 0
-}
-
-#signer-identity {
-  font-family: monospace
-}
-
-#signer-active .secondary {
-  margin-right: 8px
-}
-
-.person-trust>summary {
-  font-size: 16px
-}
-
-.mode-buttons {
-  display: inline-flex;
-  gap: 4px;
-  margin-right: 12px
-}
-
-.mode-buttons button {
-  background: #fff;
-  color: #344054;
-  border: 1px solid #98a2b3
-}
-
-.mode-buttons [aria-pressed=true] {
-  background: #1d4ed8;
-  color: #fff;
-  border-color: #1d4ed8
-}
-
-.convert-resize {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  max-width: 65ch;
-  margin-top: 16px
-}
-
-.convert-resize small {
-  display: block
-}
-
-#about-verification {
-  padding: 24px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  margin-bottom: 20px
-}
-
-.explanation-grid {
-  display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 24px
-}
-
-.explanation-grid article>span {
-  font-size: 12px;
-  color: var(--muted)
-}
-
-.explanation-grid h3 {
-  margin: 8px 0
-}
-
-.explanation-grid p {
-  font-size: 14px
-}
-
-.privacy-details {
-  background: #fff;
-  padding: 24px;
-  border: 1px solid var(--line);
-  border-radius: 10px
-}
-
-.privacy-details p {
-  max-width: 95ch;
-  font-size: 14px
-}
-
-.privacy-details h2 {
-  font-size: 22px
-}
-
-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin-top: 28px;
-  font-size: 14px
-}
-
-.frame-warning,.noscript {
-  display: block;
-  margin: 24px;
-  padding: 20px;
-  background: #fff;
-  font-size: 18px
-}
-
-.framed body {
-  padding: 20px
-}
-
-@media(max-width:600px) {
-  .header-inner {
-    gap: 12px;
-    min-height: 60px;
-    padding: 8px 16px
-  }
-
-  .brand {
-    font-size: 19px
-  }
-
-  .brand-mark {
-    width: 25px;
-    height: 27px;
-    font-size: 19px
-  }
-
-  .local-pill {
-    font-size: 11px
-  }
-
-  .pill-detail {
-    display: none
-  }
-
-  .header nav {
-    gap: 12px
-  }
-
-  .header nav a {
-    font-size: 13px
-  }
-
-  .header nav a {
-    min-height: 44px
-  }
-
-  main {
-    padding: 12px 16px 24px
-  }
-
-  .workspace-tabs {
-    width: 100%;
-    margin: 0 0 12px
-  }
-
-  .workspace-tabs button {
-    flex: 1;
-    padding: 8px 4px;
-    font-size: 14px
-  }
-
-  .drop {
-    min-height: 200px;
-    font-size: 16px;
-    padding: 20px;
-    gap: 14px
-  }
-
-  .privacy-line {
-    max-width: 34ch;
-    margin: 14px auto 0
-  }
-
-  .verdict-banner {
-    padding: 14px 14px;
-    gap: 10px;
-    border-left-width: 6px
-  }
-
-  .verdict-banner h2 {
-    font-size: 22px
-  }
-
-  .verdict-banner p {
-    font-size: 14px
-  }
-
-  .verdict-banner .verdict-signer {
-    font-size: 12px
-  }
-
-  .verdict-icon {
-    font-size: 24px
-  }
-
-  #image-panel {
-    padding: 12px 12px 0
-  }
-
-  .stage canvas {
-    max-height: 40vh
-  }
-
-  .result-actions {
-    padding: 12px 12px 0;
-    flex-wrap: wrap;
-    gap: 4px
-  }
-
-  .result-actions .primary {
-    width: 100%;
-    min-height: 48px
-  }
-
-  .result-actions .text-button {
-    padding-left: 0
-  }
-
-  .verdict-card>#plain-note {
-    margin: 6px 12px 12px
-  }
-
-  .verdict-card>#show-unknown {
-    margin: 12px 12px 0;
-    max-width: calc(100% - 24px)
-  }
-
-  .technical {
-    margin: 8px 12px 0
-  }
-
-  .verdict-card>#hidden-areas {
-    margin: 8px 12px 0;
-    font-size: 12px
-  }
-
-  .convert-form,.expert-section {
-    padding: 16px
-  }
-
-  .seal-step h2 {
-    font-size: 19px
-  }
-
-  .rectangle-fields {
-    grid-template-columns: repeat(2,minmax(0,1fr))
-  }
-
-  .rectangle-fields button {
-    grid-column: 1/-1
-  }
-
-  .signer-grid,.explanation-grid {
-    grid-template-columns: minmax(0,1fr);
-    gap: 16px
-  }
-
-  .signer-grid form+form {
-    border-top: 1px solid var(--line);
-    padding-top: 12px
-  }
-
-  .expert-section form,.signer-grid form {
-    max-width: 100%
-  }
-
-  .mode-buttons {
-    display: flex;
-    margin: 0 0 12px
-  }
-
-  .mode-buttons button {
-    flex: 1
-  }
-
-  .privacy-details,#about-verification {
-    padding: 16px
-  }
-
-  .check-tag {
-    display: none
-  }
-
-}
-
-@media(prefers-reduced-motion:reduce) {
-  * {
-    scroll-behavior: auto!important;
-    animation: none!important;
-    transition: none!important
-  }
-
-}
-
-.brand-mark::before {
-  content: 'G'
-}
-
-.drop-icon::before {
-  content: '⇧'
-}
-
-.status-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #146c43;
-  vertical-align: middle;
-  margin-right: 3px
-}
-
-.pill-detail::before {
-  content: ' · '
-}
-
-/* Keep navigation usable when text is enlarged. */
-.header-inner {
-  flex-wrap: wrap
-}
-
-.area-chip {padding: 4px 8px 4px 12px; gap: 8px;}
-.area-chip button {min-width: 32px; min-height: 32px; padding: 4px; border: 0; border-radius: 4px; background: transparent; color: #193f9b; font-size: 20px;}
-h1,h2,h3 {overflow-wrap: anywhere;}
-
-/* Product polish: a focused work area, quieter status and compact tool groups. */
-:root {--bg:#f4f6fa;--line:#e0e5ee;--ink:#172235;--muted:#536176;--blue:#2455cf;--focus:#2455cf}
-body {font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:-.012em}
-.header-inner {min-height:72px;gap:28px}
-.brand {font-size:22px;letter-spacing:-.8px}
-.brand-mark {border-radius:9px;width:32px;height:34px;background:#172235}
-.header nav a {font-weight:500;padding:8px 10px;border-radius:7px}
-.header nav a:hover,.header nav a[aria-current="page"] {background:#edf2fc;color:#204ab0}
-.local-pill {background:#f2f6f3;border:1px solid #e4ece6;border-radius:24px;padding:6px 10px;font-size:11px}
-main {padding-top:24px}
-.workspace-tabs {background:transparent;border-radius:0;padding:0;gap:24px;border-bottom:1px solid var(--line);width:100%;margin-bottom:24px}
-.workspace-tabs button {border-radius:0;padding:10px 3px 14px;font-size:14px;min-height:48px;border-bottom:2px solid transparent}
-.workspace-tabs [aria-selected="true"] {background:transparent;box-shadow:none;color:var(--blue);border-bottom-color:var(--blue)}
-#empty {background:#fff;border:1px solid var(--line);border-radius:16px;padding:clamp(24px,4vw,52px);box-shadow:0 5px 24px #26385405}
-.drop {min-height:260px;background:#fbfcff;border:1.5px dashed #c0ccdf;border-radius:12px;gap:14px;color:var(--muted);font-size:17px;transition:background .16s,border-color .16s}
-.drop:hover,.drop.over {background:#f0f5ff;border-color:#2455cf}
-.drop-icon {display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:#edf2ff;color:#2455cf;font-size:0;margin-bottom:4px}
-.drop-icon::before {content:none}
-.drop-icon svg {width:28px;height:28px}
-.drop strong {font-weight:600;font-size:14px;border-radius:8px;padding:12px 24px;box-shadow:0 2px 3px #2455cf18}
-.privacy-line {margin-top:18px;font-size:12px}
-.primary,.secondary,.text-button {font-weight:600;font-size:14px;border-radius:8px;transition:background .15s,border-color .15s}
-.primary {box-shadow:0 2px 3px #2455cf14}
-.secondary {border-color:#cbd4e1;color:#33435b}
-.secondary:hover {background:#f4f7fc;border-color:#9caec8}
-.text-button {font-weight:500}
-.verdict-card {border-radius:16px;box-shadow:0 5px 24px #26385405}
-.verdict-banner {border-left-width:4px;padding:24px;gap:14px}
-.verdict-banner h2 {font-size:25px;letter-spacing:-.65px;font-weight:650}
-.verdict-banner p {font-size:14px;line-height:1.55;margin-bottom:7px}
-.verdict-banner.good {background:#f4faf6}
-.verdict-banner.bad {background:#fff6f4}
-.verdict-banner.neutral {background:#fffaf0}
-.verdict-banner.fault {background:#f7f8fb}
-.verdict-icon {display:grid;place-items:center;flex:none;width:32px;height:32px;font-size:23px;border:1px solid currentColor;border-radius:50%;opacity:.9}
-.verdict-signer {font-size:12px!important;padding-top:7px;border-top:1px solid #17223516}
-#image-panel {padding:20px 24px 0}
-.stage {background:#e9edf3;border-radius:10px}
-.hidden-areas {display:flex;flex-wrap:wrap;gap:4px 20px;list-style:none;padding:0!important;font-size:12px}
-.hidden-areas li {padding:6px 0}
-.technical {margin-top:18px}
-.technical>summary {font-weight:500;color:#536176;font-size:13px;min-height:54px}
-summary::after {font-family:Arial,sans-serif;font-size:20px;color:#687890}
-.result-actions .primary {min-height:46px}
-.result-actions .text-button {color:#536176}
-.convert-form {padding:0;border:0;background:transparent}
-.seal-step {background:#fff;padding:24px;border:1px solid var(--line);border-radius:14px;min-width:0}
-.seal-step+.seal-step {margin:0;padding-top:24px;border-top:1px solid var(--line)}
-.seal-step h2 {display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:17px;font-weight:650;letter-spacing:-.3px;margin-bottom:18px}
-.step-number {display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#edf2fb;color:#455c80;font-size:12px;font-weight:600;letter-spacing:0;flex:none}
-.seal-step h2 .optional {font-size:12px}
-#convert-form {display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
-#convert-form>.seal-step:first-child {display:grid;grid-template-columns:minmax(200px,.8fr) minmax(0,1.3fr);gap:4px 32px;align-items:center}
-#convert-form>.seal-step:first-child h2 {grid-column:1;grid-row:1/3;margin:0}
-#convert-input {grid-column:2;grid-row:1;max-width:none;border-color:#d2dae6;background:#fbfcfe;font-size:14px}
-#convert-form>.seal-step:first-child>.file-help {grid-column:2;grid-row:2;font-size:12px;margin-top:4px}
-#document-warning {grid-column:1/-1;margin:12px 0 0;padding:10px 14px;font-size:13px;border-radius:6px;background:#fffbef;border-left-width:3px;max-width:none}
-.seal-stage {background:#e9edf3;border-radius:9px;min-height:180px}
-.seal-stage canvas {max-height:52vh}
-#convert-details {font-size:11px;margin-top:8px;color:#607089}
-#seal-grid-note {font-size:11px;margin:10px 0;color:#607089}
-#redaction-status {font-size:12px;margin:8px 0 0;color:#536176}
-#rect-numbers {margin-top:12px;border-top:1px solid var(--line)}
-#rect-numbers>summary {font-size:13px;font-weight:500}
-.rectangle-fields {gap:12px}
-.area-chip {border:1px solid #d4dfef;background:#f4f7fc;color:#3f5778;border-radius:7px;font-size:12px}
-.area-chip button {color:#3f5778}
-#seal-step-three .primary {width:100%;margin-top:8px;min-height:48px}
-#seal-step-three .privacy-consent {font-size:13px;line-height:1.6;margin:0 0 12px}
-#seal-signer-summary {font-size:12px;color:#607089;margin:12px 0}
-.seal-extras {margin-top:16px;border-top:1px solid var(--line)}
-.seal-extras>summary {font-size:12px;font-weight:500;color:#607089}
-.seal-extras>p {margin:8px 0 12px}
-.seal-extras>a {font-size:12px;display:inline-block;padding:6px 0}
-.seal-extras.original-enabled>summary {color:#805300;font-weight:600}
-#convert-status {font-size:13px;color:#536176;margin:0 2px;line-height:1.6}
-#convert-status.error {color:#b42318}
-#check-sealed {margin:0 2px}
-.page-subtitle {color:#607089;font-size:14px;margin-top:-12px;margin-bottom:28px}
-.page-view>.back-link {color:#607089;text-decoration:none;font-size:13px}
-.page-view>h1 {font-size:30px;font-weight:650;margin:12px 0 20px}
-#advanced-tools {display:grid;gap:12px}
-#advanced-tools>.expert-section {padding:0;margin:0;border-radius:12px;overflow:hidden}
-.advanced-disclosure {border:0;margin:0;padding:0}
-.advanced-disclosure>summary {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 20px;padding:18px 22px;min-height:78px;position:relative}
-.advanced-disclosure>summary h2 {font-size:15px;font-weight:600;letter-spacing:-.2px;margin:0;grid-column:1}
-.advanced-disclosure>summary .tool-hint {font-size:12px;font-weight:400;color:#607089;grid-column:1}
-.advanced-disclosure>summary::after {grid-column:2;grid-row:1/3}
-.advanced-disclosure[open]>summary {border-bottom:1px solid var(--line);background:#fafcff}
-.advanced-disclosure>p,.advanced-disclosure>.signer-grid,.advanced-disclosure>#signer-status,.advanced-disclosure>#signer-active {margin-left:22px;margin-right:22px}
-.advanced-disclosure>.signer-grid {margin-top:16px}
-.advanced-disclosure>.tool-body {padding:20px 22px}
-.advanced-disclosure>form {padding:8px 22px 22px;max-width:950px}
-.advanced-disclosure>p {margin-top:18px;font-size:13px}
-.advanced-disclosure form label {font-size:13px}
-.advanced-disclosure form input {font-size:15px}
-.signer-grid {gap:28px}
-.signer-grid h3 {font-size:15px}
-.signer-setup p,.person-trust p {font-size:13px;line-height:1.65}
-#signer-status {font-size:12px;color:#536176}
-#signer-active {padding-bottom:16px}
-#about-verification,.privacy-details,#about>.expert-section {border-radius:12px;border-color:var(--line);padding:24px}
-#about-verification article>span {display:none}
-#about-verification h3 {font-size:16px;font-weight:600;letter-spacing:-.3px}
-#about-verification p {line-height:1.7;color:#536176}
-#about>#privacy-disclosure {border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 24px}
-#about>#privacy-disclosure>summary {min-height:64px;font-size:15px}
-#about .privacy-details {border:0;padding:12px 0}
-@media(min-width:960px){
- #convert-form:has(#seal-step-two:not([hidden])) {grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"choose choose" "edit finish" "status status" "check check";align-items:start}
- #convert-form:has(#seal-step-two:not([hidden]))>.seal-step:first-child {grid-area:choose}
- #convert-form:has(#seal-step-two:not([hidden]))>#seal-step-two {grid-area:edit}
- #convert-form:has(#seal-step-two:not([hidden]))>#seal-step-three {grid-area:finish}
- #convert-form:has(#seal-step-two:not([hidden]))>#convert-status {grid-area:status}
- #convert-form:has(#seal-step-two:not([hidden]))>#check-sealed {grid-area:check}
- .verdict-card:has(#image-panel:not([hidden])) {display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);grid-template-areas:"image summary" "image actions" "areas note" "details details";grid-template-rows:auto 1fr auto auto}
- .verdict-card:has(#image-panel:not([hidden])) #image-panel {grid-area:image;padding:24px}
- .verdict-card:has(#image-panel:not([hidden])) .verdict-banner {grid-area:summary;border-left:0;border-top:3px solid currentColor;margin:24px 24px 0 0;border-radius:9px;padding:20px}
- .verdict-card:has(#image-panel:not([hidden])) .result-actions {grid-area:actions;align-content:start;align-self:start;flex-wrap:wrap;padding:20px 24px 12px 0}
- .verdict-card:has(#image-panel:not([hidden])) #plain-note {grid-area:note;margin:0 24px 18px 0}
- .verdict-card:has(#image-panel:not([hidden])) #hidden-areas {grid-area:areas;margin:0 24px 18px}
- .verdict-card:has(#image-panel:not([hidden])) .technical {grid-area:details}
- .stage canvas {max-height:56vh}
-}
-@media(max-width:600px){
- .header-inner {min-height:60px;gap:10px}
- .brand {font-size:20px}
- .brand-mark {width:28px;height:30px;border-radius:8px}
- .header nav {gap:4px}
- .header nav a {padding:8px 5px;font-size:12px}
- .local-pill {padding:5px 7px;font-size:10px}
- main {padding-top:12px}
- .workspace-tabs {gap:0;margin-bottom:16px}
- .workspace-tabs button {font-size:13px;min-height:44px;padding:8px 4px 12px}
- #empty {padding:20px 16px;border-radius:13px}
- .drop {min-height:218px;gap:12px;font-size:15px}
- .drop-icon {width:50px;height:50px;border-radius:14px;margin-bottom:0}
- .privacy-line {font-size:11px;max-width:none;margin:14px 0 0}
- .verdict-banner {padding:16px 14px;gap:10px}
- .verdict-banner h2 {font-size:21px;line-height:1.2;letter-spacing:-.45px}
- .verdict-banner p {font-size:13px;line-height:1.5}
- .verdict-icon {width:25px;height:25px;font-size:18px}
- .verdict-signer {font-size:11px!important}
- #image-panel {padding:14px 12px 0}
- .stage canvas {max-height:36vh}
- .hidden-areas {gap:0}
- .result-actions {padding-top:10px}
- .result-actions .primary {min-height:46px}
- .technical {margin-top:12px}
- #convert-form {gap:12px}
- .seal-step,.seal-step+.seal-step {padding:16px;border-radius:12px}
- #convert-form>.seal-step:first-child {display:block}
- #convert-form>.seal-step:first-child h2 {margin-bottom:12px}
- .seal-step h2 {font-size:15px;gap:8px;margin-bottom:14px}
- .step-number {width:22px;height:22px;font-size:11px}
- #document-warning {font-size:12px;margin-top:12px;padding:9px 11px}
- .seal-stage {min-height:0}
- .seal-stage canvas {max-height:36vh}
- #convert-details {font-size:11px;margin:8px 0}
- .area-chips {margin:8px 0}
- #seal-step-three .privacy-consent {font-size:12px}
- #seal-step-three .primary {font-size:13px}
- #seal-signer-summary {margin-bottom:0;font-size:11px}
- #convert-status {font-size:12px}
- .page-view>h1 {font-size:27px}
- .page-subtitle {font-size:13px}
- .advanced-disclosure>summary {padding:16px;min-height:76px}
- .advanced-disclosure>summary h2 {font-size:14px}
- .advanced-disclosure>summary .tool-hint {font-size:11px}
- .advanced-disclosure>.tool-body,.advanced-disclosure>form {padding:16px}
- .advanced-disclosure>p,.advanced-disclosure>.signer-grid,.advanced-disclosure>#signer-status,.advanced-disclosure>#signer-active {margin-left:16px;margin-right:16px}
- #about-verification,.privacy-details,#about>.expert-section {padding:18px}
- #about>#privacy-disclosure {padding:0 18px}
-}
-@media(max-width:600px){#seal-step-three .privacy-consent{font-size:14px}#seal-signer-summary{font-size:12px}}
-.picture-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-.picture-toolbar .secondary{color:#204ab0;background:#edf3ff;border-color:#c4d3f0}
-.picture-toolbar .text-button{color:#536176;font-size:12px}
-.seal-upload{grid-column:2;grid-row:1;padding:12px;border:1px dashed #b6c5db;background:#fafcff;border-radius:9px;min-width:0}
-.seal-upload>label{font-size:12px;font-weight:500;color:#536176;margin-bottom:8px;cursor:pointer}
-.seal-upload.over{border-color:#2455cf;background:#edf3ff}
-.editor-instruction{font-size:13px;color:#475b75;margin:-4px 0 14px}
-.editor-settings{margin-top:8px;border-top:1px solid var(--line)}
-.editor-settings>summary{font-size:12px;font-weight:500;color:#607089}
-.editor-settings fieldset{padding:12px}
-.editor-settings fieldset label{display:inline-flex;align-items:center;gap:6px;margin:6px 12px 6px 0;font-size:12px}
-.editor-settings .convert-resize{font-size:12px;margin:12px 0}
-@media(max-width:600px){.picture-toolbar{gap:8px;margin-bottom:10px}.picture-toolbar button{font-size:12px;padding:8px 10px}.editor-instruction{font-size:12px}.seal-upload{margin-top:12px}}
-
-    </style>
-  </head>
-  <body>
-<a class="skip" href="#workspace">Skip to workspace</a>
-<header class="header"><div class="header-inner">
-  <span class="brand"><span class="brand-mark" aria-hidden="true"></span>Guard</span>
-  <span class="local-pill"><span class="status-dot" aria-hidden="true"></span> Offline<span class="pill-detail"> nothing uploaded</span></span>
-  <nav aria-label="More about Guard"><a href="#about">About</a><a href="#advanced">Advanced</a></nav>
-</div></header>
-<main>
-<section id="main-view" aria-labelledby="main-heading">
-<h1 id="main-heading" class="sr-only" tabindex="-1">Guard: check or seal a picture</h1>
-<div class="workspace-tabs" role="tablist" aria-label="Guard task">
-<button id="tab-verify" role="tab" aria-selected="true" aria-controls="inspection-panel" tabindex="0">Check a file</button>
-<button id="tab-seal" role="tab" aria-selected="false" aria-controls="convert" tabindex="-1">Seal a picture</button>
-</div>
-<section id="inspection-panel" role="tabpanel" aria-labelledby="tab-verify">
-<p id="active-trust-note" class="session-trust" hidden>Additional signers loaded for this tab. <a href="#advanced">Manage trust</a>.</p>
-<p id="person-trust-note" class="session-trust" hidden>People trusted for this tab. <a href="#advanced">Manage trust</a>.</p>
-<section id="workspace" aria-label="File check">
-<div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
-<div id="empty">
-<button id="drop" type="button" class="drop" aria-describedby="file-help"><span aria-hidden="true" class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Drop a .GRD file here</span><strong>Choose file</strong></button>
-<input id="file-input" type="file" accept=".grd,.GRD" hidden>
-<p id="file-help" class="privacy-line">The check runs on this device. Nothing is uploaded.</p>
-</div>
-<div id="loading" role="status" hidden><span class="spinner" aria-hidden="true"></span><p>Checking…</p><button id="cancel" class="secondary" type="button">Cancel</button></div>
-<section id="result" class="verdict-card" aria-labelledby="verdict-title" hidden>
-<div id="verdict-banner" class="verdict-banner"><span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span><div><span id="verdict-kicker" hidden></span><h2 id="verdict-title" tabindex="-1"></h2><p id="verdict-description"></p><p id="verdict-signer" class="verdict-signer" hidden></p></div></div>
-<section id="image-panel" aria-labelledby="image-title" hidden><h3 id="image-title" class="sr-only">Checked picture</h3>
-<div class="picture-toolbar"><button id="redact-checked" class="secondary" type="button">Black out areas</button><button id="hide-image" class="text-button" type="button">Hide preview</button></div><p id="blackout-format-note" class="file-help" hidden>To black out this file, ask its signer for a GRD2 or GRD3 copy.</p><div class="stage" id="stage"><canvas id="canvas" tabindex="0" aria-label="Checked picture" aria-describedby="reveal-hint"></canvas><div id="tile-overlay" class="tile-overlay" hidden role="group" aria-label="Select image tiles to redact"></div>
-<div id="shield" class="shield" hidden><h3>Picture hidden</h3><p id="shield-reason">The image is hidden while this window is away.</p><button class="primary" id="show-image">Show picture again</button></div></div>
-<p id="reveal-hint" class="viewer-hint"></p></section>
-<ul id="hidden-areas" class="hidden-areas" hidden></ul>
-<button id="show-unknown" class="secondary" hidden>Show picture anyway</button>
-<div id="result-actions" class="result-actions"><button id="download-plain" class="primary" hidden>Download plain picture</button><button id="choose-another" class="text-button">Check another file</button></div>
-<p id="plain-note" class="file-help" hidden>Keep the .GRD file. The plain picture has no proof.</p>
-<details id="verification-technical" class="technical"><summary>Details</summary>
-<section id="what-means"><h3>What this means</h3><ul id="what-means-list"></ul></section><p id="technical-verdict"></p><p id="detail-signer"></p>
-<div id="file-card" hidden><span id="file-name"></span> · <span id="file-size"></span></div><p id="session-label"></p>
-<div id="checks" class="checks"></div><div id="issues" hidden><h3>What needs attention</h3><ul id="issue-list"></ul></div>
-<p><a href="#advanced-report">More technical data in Advanced →</a></p></details>
-</section></section></section>
-<section id="convert" role="tabpanel" aria-labelledby="tab-seal" hidden>
-<form id="convert-form" class="convert-form">
-<section class="seal-step"><h2><span class="step-number" aria-hidden="true">1</span>Choose a picture</h2><div class="seal-upload"><label for="convert-input">Drop a picture here, or choose a file</label><input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="convert-status"></div><p class="file-help">Or a .GRD you already have.</p><p id="document-warning" class="privacy-warning" role="alert" hidden>Looks like an ID or document. Black out private details before sealing.</p></section>
-<section id="seal-step-two" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">2</span>Black out areas <span class="optional">(optional)</span></h2>
-<p class="editor-instruction">Drag across the picture to black out an area, or add an area by numbers.</p><div id="convert-preview" hidden><img id="convert-image" alt="Picture selected for sealing" hidden><div class="seal-stage"><canvas id="seal-canvas" aria-label="Blackout preview. Drag an area, or use Add an area by numbers below."></canvas></div><p id="convert-details" class="file-help"></p></div>
-<div id="redaction-options" hidden><div id="redaction-tools" hidden><details id="rect-numbers"><summary>Add an area by numbers</summary><div class="rectangle-fields">
-<label>X<input id="rect-x" type="number" min="0" value="0"></label><label>Y<input id="rect-y" type="number" min="0" value="0"></label><label>Width<input id="rect-width" type="number" min="1" value="64"></label><label>Height<input id="rect-height" type="number" min="1" value="64"></label><button id="select-rectangle" type="button" class="secondary">Add area</button></div></details><p id="seal-grid-note" class="file-help">Areas round up to a 16-pixel grid.</p><details class="editor-settings"><summary>Blackout settings</summary><fieldset aria-describedby="grid-help"><legend>Blackout grid</legend>
-                <label><input type="radio" name="redaction-grid" id="grid-8" value="8"> 8 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-16" value="16" checked> 16 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-32" value="32"> 32 pixels</label>
-                <label><input type="radio" name="redaction-grid" id="grid-64" value="64"> 64 pixels</label>
-              </fieldset><p id="grid-help">The smallest grid is fixed when sealed. Whole 64px areas also support visual copy proofs.</p><label class="convert-resize" for="convert-resize">
-            <input id="convert-resize" type="checkbox" checked />
-            <span
-              >Fit large photos to Guard’s limit
-              <small
-                >Preview shows the output size. Your original stays
-                unchanged.</small
-              ></span
-            >
+  background: var(--page);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+a { color: var(--accent); text-underline-offset: .2em; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+html.framed body > *:not(.frame-warning) { display: none !important; }
+.frame-warning { margin: 1rem; }
+.skip { position: absolute; left: 1rem; top: -6rem; background: var(--surface); padding: .75rem; }
+.skip:focus { top: .5rem; z-index: 2; }
+.header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.header-inner, main { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+.header-inner { min-height: 4rem; display: flex; align-items: center; gap: .75rem 1.25rem; flex-wrap: wrap; padding-block: .75rem; }
+.header h1 { font-size: 1.4rem; margin: 0; letter-spacing: -.035em; }
+.header p { font-size: .9rem; color: var(--muted); margin: 0 auto 0 0; }
+main { padding: 1.25rem 0 3rem; }
+.tabs { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.tabs a { padding: .65rem .9rem; border-radius: .4rem; text-decoration: none; font-weight: 650; }
+.tabs a[aria-current] { background: var(--accent-soft); }
+.workspace { display: grid; gap: 1rem; align-items: start; }
+.card { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: .7rem; padding: clamp(.85rem, 3vw, 1.5rem); }
+.upload { grid-column: 1 / -1; }
+.upload.over { background: var(--accent-soft); outline: 2px dashed var(--accent); outline-offset: -4px; }
+h2 { margin: 0 0 .75rem; font-size: 1.125rem; line-height: 1.35; }
+p { margin: .65rem 0; }
+p:last-child { margin-bottom: 0; }
+p:empty, ul:empty { display: none; }
+.step { display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); border-radius: 50%; width: 1.6rem; height: 1.6rem; margin-right: .6rem; font-size: .85rem; }
+.hint { color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
+.warning { border-left: .25rem solid #876419; background: #fff8e4; padding: .75rem 1rem; border-radius: .2rem; }
+.error { color: #a22328; }
+label { display: block; font-weight: 600; }
+input, select, button { font: inherit; }
+input[type=file] { display: block; max-width: 100%; margin-top: .45rem; }
+input::file-selector-button, button, select, input[type=number] { min-height: 2.75rem; border: 1px solid var(--line); border-radius: .4rem; padding: .45rem .7rem; background: var(--surface); color: var(--ink); }
+input::file-selector-button { margin-right: .55rem; }
+button, input::file-selector-button, summary { cursor: pointer; font-weight: 650; }
+button:disabled { opacity: .58; cursor: default; }
+.primary { background: var(--accent); color: white; border-color: var(--accent); }
+.secondary { background: var(--accent-soft); color: var(--accent); }
+.checkbox { display: flex; align-items: start; gap: .55rem; font-weight: 500; padding-block: .65rem; }
+input[type=checkbox] { width: 1.15rem; height: 1.15rem; margin: .2rem 0 0; flex: none; accent-color: var(--accent); }
+fieldset { min-width: 0; margin: .8rem 0; border: 0; padding: 0; }
+legend { font-weight: 700; margin-bottom: .4rem; }
+select, input[type=number] { margin-top: .25rem; }
+input[type=number] { width: 100%; }
+#line-height { width: 7rem; }
+summary { padding-block: .55rem; }
+.coordinates { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: .65rem; align-items: end; }
+.picture { display: grid; place-items: center; background: #e8edf4; border-radius: .45rem; overflow: hidden; }
+canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; width: auto; height: auto; }
+#seal-canvas { cursor: crosshair; touch-action: none; }
+.area-total { font-weight: 650; }
+.area-chips, .actions { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: .75rem 0; }
+.area-chips li { display: flex; align-items: center; gap: .4rem; background: var(--accent-soft); padding-left: .6rem; border-radius: .45rem; }
+.area-chips button { border: 0; background: transparent; }
+#check-sealed { display: block; margin-top: .8rem; }
+#result[data-tone=good] h2 { color: #17623f; }
+#result[data-tone=bad] h2 { color: #a22328; }
+#result[data-tone=caution] h2 { color: #745009; }
+#image-panel { margin-top: .75rem; }
+.about { margin-top: 1rem; }
+@media (min-width: 60rem) {
+  #convert-form { grid-template-columns: minmax(0, 1fr) 19rem; }
+  .finish { position: sticky; top: 1rem; }
+}
+</style>
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to workspace</a>
+  <header class="header">
+    <div class="header-inner">
+      <h1>TileSeal</h1>
+      <p>Images never leave your browser.</p>
+      <a href="#about">About</a>
+    </div>
+  </header>
+  <main id="workspace" tabindex="-1">
+    <nav class="tabs" aria-label="TileSeal tasks">
+      <a id="tab-seal" href="#seal" aria-current="page">Seal a picture</a>
+      <a id="tab-verify" href="#check">Check a file</a>
+    </nav>
+
+    <form id="convert-form" class="workspace" aria-label="Seal a picture">
+      <section class="card upload">
+        <h2><span class="step" aria-hidden="true">1</span>Choose a picture</h2>
+        <label for="convert-input">Drop a picture here or choose a file</label>
+        <input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="picture-formats convert-status">
+        <p id="picture-formats" class="hint">PNG, JPG, WebP, GIF, BMP or an existing .GRD</p>
+        <p id="convert-status" role="status"></p>
+      </section>
+
+      <section id="seal-step-two" class="card" hidden>
+        <h2><span class="step" aria-hidden="true">2</span>Black out areas</h2>
+        <p class="warning">Black boxes hide what's under them, but not their size. A box's width and height stay visible and can hint at how long the hidden text is. Use padding below to reduce this.</p>
+        <p>Drag a box over the picture or enter its coordinates below.</p>
+        <div class="picture"><canvas id="seal-canvas" aria-label="Picture with blackout preview"></canvas></div>
+        <p id="blackout-area" class="area-total" role="status"></p>
+        <p id="convert-details" class="hint"></p>
+        <fieldset id="blackout-controls">
+          <legend>Blackout settings</legend>
+          <label for="rounding">Black-out rounding</label>
+          <select id="rounding" aria-describedby="grid-help">
+            <option value="16">16 px (default)</option>
+            <option value="32">32 px</option>
+            <option value="64">64 px</option>
+          </select>
+          <p id="grid-help" class="hint"></p>
+          <label class="checkbox" for="pad-boxes">
+            <input id="pad-boxes" type="checkbox" checked>
+            <span>Pad box sizes (recommended). Boxes are widened to fixed 128-px steps so their width reveals less about text length.</span>
           </label>
-</details><ul id="seal-area-list" class="area-chips"></ul><p id="redaction-status" role="status"></p></div></div>
-<p id="legacy-redaction-note" class="privacy-warning" hidden>GRD1 signs the whole picture. It cannot be blacked out without a new file from its signer.</p></section>
-<section id="seal-step-three" class="seal-step" hidden><h2><span class="step-number" aria-hidden="true">3</span>Seal and download</h2><label class="privacy-consent"><input id="convert-privacy" type="checkbox" required><span>I've hidden anything private, or I'm sure I want it sealed.</span></label><button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button><p id="seal-signer-summary" class="file-help">One-time key · identity not verified.</p><details class="seal-extras"><summary id="seal-extras-label">More options</summary><p><label class="privacy-consent"><input id="save-original" type="checkbox"><span>Also save the full original .GRD (keep it private; it contains the hidden parts)</span></label></p><a id="seal-key-link" href="#signer">Sign with your own key</a></details></section>
-<p id="convert-status" role="status" aria-live="polite"></p><a id="check-sealed" href="#check" hidden>Check this file</a>
-</form></section></section>
-<section id="advanced" class="page-view" aria-labelledby="advanced-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="advanced-heading" tabindex="-1">Advanced tools</h1><p class="page-subtitle">Signing, trust and file tools. Open only what you need.</p>
-<section id="advanced-tools">
-<section class="expert-section" id="signer">
-<details id="signer-setup" class="signer-setup advanced-disclosure">
-          <summary><h2>Your signer key</h2><span class="tool-hint">Create or unlock a signing key</span></summary>
-          <p id="signer-help">Create once, then unlock your saved key to sign offline. Recipients must independently trust your public key before your name shows as verified. Your name is included in signed files. This does not certify your identity.</p>
-          <div class="signer-grid">
-            <form id="signer-create" aria-describedby="signer-help signer-create-help">
-              <h3>Create a signer</h3>
-              <p><label for="signer-name">Your name</label><input id="signer-name" maxlength="80" autocomplete="name" required></p>
-              <p><label for="signer-password">New key password</label><input id="signer-password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
-              <p><label for="signer-confirm">Repeat password</label><input id="signer-confirm" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></p>
-              <p id="signer-create-help">Use a unique password of at least 12 characters. Save the encrypted key file and a backup. Lost passwords cannot be recovered. Keep your key private.</p>
-              <button id="signer-create-submit" class="secondary" type="submit">Create &amp; save key</button>
-            </form>
-            <form id="signer-unlock" aria-describedby="signer-help">
-              <h3>Unlock a saved signer</h3>
-              <p><label for="signer-file">Encrypted key file (.guardkey)</label><input id="signer-file" type="file" accept=".guardkey" required></p>
-              <p><label for="signer-unlock-password">Key password</label><input id="signer-unlock-password" type="password" maxlength="1024" autocomplete="current-password" required></p>
-              <button id="signer-unlock-submit" class="secondary" type="submit">Unlock signer</button>
-            </form>
+          <label for="line-height">Full text-line height (px)</label>
+          <input id="line-height" type="number" min="1" max="8192" step="1" value="32" aria-describedby="line-help">
+          <p id="line-help" class="hint">Set this to the line height in the original picture. A class may include a partial tile at the picture edge.</p>
+          <details id="rect-numbers">
+            <summary>Add an area by numbers</summary>
+            <div class="coordinates">
+              <label>X<input id="rect-x" type="number" min="0" step="1" value="0"></label>
+              <label>Y<input id="rect-y" type="number" min="0" step="1" value="0"></label>
+              <label>Width<input id="rect-width" type="number" min="1" step="1" value="64"></label>
+              <label>Height<input id="rect-height" type="number" min="1" step="1" value="32"></label>
+              <button id="select-rectangle" type="button" class="secondary">Add area</button>
+            </div>
+          </details>
+        </fieldset>
+        <ul id="seal-area-list" class="area-chips" aria-label="Selected blackout areas"></ul>
+        <p id="redaction-status" role="status"></p>
+      </section>
+
+      <section id="seal-step-three" class="card finish" hidden>
+        <h2><span class="step" aria-hidden="true">3</span><span id="finish-title">Seal and download</span></h2>
+        <p id="seal-signer-summary" class="hint"></p>
+        <label class="checkbox" for="convert-privacy">
+          <input id="convert-privacy" type="checkbox">
+          <span>I've checked the picture for private details.</span>
+        </label>
+        <button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button>
+        <a id="check-sealed" href="#check" hidden>Check this file</a>
+      </section>
+    </form>
+
+    <section id="inspection-panel" class="workspace" aria-label="Check a file" hidden>
+      <section class="card upload">
+        <h2>Check a file</h2>
+        <label for="file-input">Drop a .GRD here or choose a file</label>
+        <input id="file-input" type="file" accept=".grd,.GRD">
+        <p id="live-status" role="status"></p>
+      </section>
+      <section id="result" class="card" aria-labelledby="verdict-title" hidden>
+        <h2 id="verdict-title" tabindex="-1"></h2>
+        <p id="verdict-description"></p>
+        <p id="verdict-signer" class="hint"></p>
+        <button id="show-unknown" type="button" class="secondary" hidden>Show picture from unknown signer</button>
+        <p id="legacy-redaction-note" class="warning" hidden>GRD1 signs the whole picture. It cannot be blacked out without a new file from its signer.</p>
+        <div id="image-panel" hidden>
+          <div class="picture"><canvas id="canvas" aria-label="Checked picture"></canvas></div>
+          <div class="actions">
+            <button id="redact-checked" type="button" class="primary" hidden>Black out more areas</button>
+            <button id="download-plain" type="button" class="secondary">Download plain picture</button>
           </div>
-          <p id="signer-status" role="status" aria-live="polite">No signer unlocked. Pictures use a disposable self-signed key.</p>
-          <div id="signer-active" hidden>
-            <p id="signer-identity"></p>
-            <button id="signer-public" class="secondary" type="button">Save public signer file</button>
-            <button id="signer-lock" class="secondary" type="button">Lock signer</button>
-            <p>Share only the public signer file and fingerprint. The unlocked key stays in memory until you lock it or close/reload this page. Browser access or malicious scripts can still use an unlocked key. Lock it when finished.</p>
-          </div>
-        </details></section>
-<section class="expert-section" id="advanced-person"><details class="person-trust advanced-disclosure"><summary><h2>Trust a person</h2><span class="tool-hint">Recognize a known sender</span></summary>
-          <p id="person-help">Get their public signer file. Confirm their name and full fingerprint through a separate, trusted channel. A name in a file is only a claim. Trust lasts for this tab; reloading clears it.</p>
-          <form id="person-form" aria-describedby="person-help">
-            <p><label for="person-file">Public signer file (.guardsigner)</label><input id="person-file" type="file" accept=".guardsigner,.json" required></p>
-            <p id="person-preview" role="status">Choose a public signer file to see its name and fingerprint.</p>
-            <p><label for="person-fingerprint">Fingerprint confirmed independently</label><input id="person-fingerprint" type="text" maxlength="64" minlength="64" pattern="[a-fA-F0-9]{64}" autocomplete="off" spellcheck="false" required></p>
-            <button id="person-submit" class="secondary" type="submit">Trust this signer for this tab</button>
-            <button id="person-clear" class="secondary" type="button" hidden>Clear people trusted in this tab</button>
-            <p id="person-status" role="status">No additional people trusted.</p>
-          </form>
-        </details></section>
-<section class="expert-section"><details class="advanced-disclosure" id="tool-trust"><summary><h2 id="trust-heading">Load a trust bundle</h2><span class="tool-hint">Use an organization’s key list</span></summary><div class="tool-body"><p id="trust-help">Verify the root fingerprint independently. Signers and rollback protection last for this tab only.</p><form id="trust-form" aria-describedby="trust-help">
-          <p><label for="trust-bundle">Signed trust bundle (.json)</label><input id="trust-bundle" type="file" accept=".json" required></p>
-          <p><label for="trust-root">Trusted root public key (.pem)</label><input id="trust-root" type="file" accept=".pem" required></p>
-          <button id="trust-submit" type="submit" class="secondary">Load trust bundle for this tab</button>
-          <button id="trust-clear" type="button" class="secondary" hidden>Clear imported trust</button>
-          <p id="trust-status" role="status" aria-live="polite">Using this viewer’s bundled trust snapshot.</p>
-        </form></div></details></section>
-<section class="expert-section"><details class="advanced-disclosure" id="tool-copy"><summary><h2 id="copy-heading">Check a recompressed copy <span class="optional">(experimental)</span></h2><span class="tool-hint">Compare a JPEG or resized copy</span></summary><div class="tool-body"><p id="copy-help">Compares a JPEG or resized copy with a visual proof (.grdp). It checks block averages, not exact pixels. Fine edits and some blurs can pass.</p><button id="download-proof" class="secondary" hidden>Download visual proof</button><p id="partial-visual-note" hidden>Partial tile redactions cannot export a visual proof without revealing original block averages. Use whole 64px tiles for visual copy proofs.</p><form id="copy-form" aria-describedby="copy-help">
-          <p><label for="copy-proof">Guard visual proof (.grdp)</label><br><input id="copy-proof" type="file" accept=".grdp" required></p>
-          <p><label for="copy-image">Image copy</label><br><input id="copy-image" type="file" accept="image/png,image/jpeg,image/webp" required></p>
-          <button id="copy-submit" type="submit" class="secondary">Check visual consistency</button>
-          <p id="copy-status" role="status" aria-live="polite" tabindex="-1">Choose both files to check a copy.</p>
-        </form></div></details></section>
-<section class="expert-section" id="advanced-report"><details class="advanced-disclosure" id="tool-report"><summary><h2>Technical report</h2><span class="tool-hint">Inspect the last checked file</span></summary><div class="tool-body"><p>Evidence for the last checked file. Reports can contain personal information.</p><button id="download-report" class="secondary">Download report</button><dl id="metadata"></dl><dl id="technical-data"></dl><button id="clear" type="button" class="secondary">Clear checked file</button></div></details></section>
-<section class="expert-section" id="viewing-options"><details class="advanced-disclosure" id="tool-viewing"><summary><h2>Viewing options</h2><span class="tool-hint">Display and blackout settings</span></summary><div class="tool-body"><p>Viewing stamps do not prevent screenshots.</p><div class="mode-buttons" role="group" aria-label="Image viewing mode"><button id="reveal-mode" aria-pressed="true">Hold to reveal</button><button id="full-mode" aria-pressed="false">Full view</button></div><p class="file-help">Preview controls are beside the checked picture. Blackout settings are beside the editor.</p>
-<div hidden><button id="redact-mode" aria-pressed="false">Mark tiles</button><button id="export-redacted" disabled>Export blacked-out .GRD</button></div></div></details></section>
-<section class="expert-section" id="offline-copy"><details class="advanced-disclosure" id="tool-offline"><summary><h2>Offline copy</h2><span class="tool-hint">Save Guard for later</span></summary><div class="tool-body"><p>Download this page to use it with no internet.</p><button id="download-viewer" class="secondary">Download offline viewer</button></div></details></section>
-</section></section>
-<section id="about" class="page-view" aria-labelledby="about-heading" hidden><a class="back-link" href="#check">← Back</a><h1 id="about-heading" tabindex="-1">About Guard</h1><p><a href="#privacy-details">Privacy and hosting</a></p>
-<section class="explanation" id="about-verification">
-        <h2>What the verdicts mean</h2>
-        <div class="explanation-grid">
-          <article>
-            <span>01 / INTEGRITY</span>
-            <h3>Unchanged signed bytes.</h3>
-            <p>
-              The section hashes, image binding and signature pass against this
-              viewer’s pinned key. This does not independently prove authorship
-              or ownership.
-            </p>
-          </article>
-          <article>
-            <span>02 / PRIVACY</span>
-            <h3>No uploads.</h3>
-            <p>
-              Checks run on your device. Download the HTML viewer to use it
-              offline in a current browser.
-            </p>
-          </article>
-          <article>
-            <span>03 / LIMITS</span>
-            <h3>Viewing controls aren’t DRM.</h3>
-            <p>
-              Screenshots cannot be reliably blocked. Timestamp validation and
-              copy tracing are not performed by this viewer.
-            </p>
-          </article>
+          <p class="hint">A plain PNG has no .GRD proof. Keep the .GRD to check it again.</p>
         </div>
       </section>
-<section class="expert-section"><h2>Limits</h2><p id="convert-help">PNG, JPG, WebP, GIF or BMP. Up to 256 MiB and 50 megapixels; large photos fit GRD3’s 36-megapixel output limit. Animation uses the first frame. Transparency becomes white; source metadata is not copied. Export HEIC or PDF to PNG or JPG first.</p><p>Viewing stamps do not prevent screenshots. Blackout only: positions and sizes of hidden areas stay visible. Redactor identity is not attested. Signed claims do not prove ownership or capture time. Timestamp tokens are not validated here. A signature does not prove a picture is true or establish ownership.</p></section>
-<details id="privacy-disclosure"><summary>Privacy and hosting</summary><section
-        class="privacy-details"
-        id="privacy-details"
-        aria-labelledby="privacy-heading"
-      >
-        <h2 id="privacy-heading">Privacy, plainly. Effective 29 October 2026.</h2>
-        <p>
-          <strong>Who runs this.</strong> Guard is an open-source project published at
-          <a href="https://github.com/neervasa00000000/Guard" rel="noopener noreferrer">github.com/neervasa00000000/Guard</a>.
-          Questions or privacy requests:
-          <a href="https://github.com/neervasa00000000/Guard/issues" rel="noopener noreferrer">https://github.com/neervasa00000000/Guard/issues</a>.
-        </p>
-        <p>
-          <strong>What Guard does with your files.</strong> Images and .GRD files you choose are read, checked and converted only inside your browser. Guard does not upload their contents, use analytics, cookies or trackers, or store files in localStorage, IndexedDB or a service worker. Files you download stay on your device.
-        </p>
-        <p><strong>Offline signing keys.</strong> Guard downloads a password-encrypted key file. Unlocked signing keys stay in memory until locked or this page closes/reloads; Guard does not save them in browser storage. Keep the encrypted file and password private. Public signer files contain a name, public key and fingerprint. Imported people are trusted only for this tab and are cleared on reload. Older offline viewers cannot know about newer revocations.</p>
-        <p>
-          <strong>What the website host collects.</strong> This site is served by GitHub Pages. When your browser loads the page, GitHub receives standard request data, including your IP address, and logs it for security, even if you are not signed in to GitHub. Guard cannot see or control those logs. See
-          <a
-            href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"
-            rel="noopener noreferrer"
-            >GitHub Pages data collection</a
-          >
-          and the
-          <a
-            href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
-            rel="noopener noreferrer"
-            >GitHub General Privacy Statement</a
-          >. To avoid contacting the host, use Download offline viewer, disconnect, and open the saved file.
-        </p>
-        <p>
-          <strong>Personal information inside files.</strong> A .GRD can contain a public label, signer name, signer fingerprint, image dimensions, retained pixels and a list of hidden areas. Labels and file names may identify people, for example "passport_jane_smith.jpg". Disposable-key conversions leave the label blank and download as image.GRD. Signing with a saved signer includes the name you entered in the signed file and public signer file. Verification reports you save include these details. Check files and reports before sharing them.
-        </p>
-        <p>
-          <strong>Redaction limits.</strong> Exports replace hidden areas with solid black. Anyone who already has the original or an earlier copy still has those pixels. Surrounding details can still identify a person.
-        </p>
-        <p>
-          <strong>Links.</strong> Opening the source or privacy links contacts those sites. This page sends no referrer.
-        </p>
-      </section></details>
-<p><button id="try-redaction" class="secondary">See an example file</button></p>
-<p><a href="#offline-copy">Download an offline copy</a></p>
-<footer><a href="#about">About</a><a href="#advanced">Advanced</a><a href="https://github.com/neervasa00000000/Guard" rel="noopener noreferrer">Source code and format notes ↗</a></footer></section>
-</main>
-<noscript><p class="noscript">Guard needs JavaScript to check files locally. Enable JavaScript in a current browser.</p></noscript>
-<script>(()=>{
+    </section>
+
+    <details id="about" class="card about">
+      <summary>About TileSeal</summary>
+      <p>TileSeal (repository: Guard)</p>
+      <p>TileSeal signs pictures locally and lets you black out whole grid cells without the signing key. Checking a .GRD tells you whether retained pixels match the signed file.</p>
+      <p>Images and keys stay in this browser. The site is hosted on GitHub Pages. <a href="#privacy-details">Privacy details</a></p>
+      <p id="privacy-details">Effective 29 October 2026. GitHub processes requests to load the page under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>.</p>
+    </details>
+  </main>
+  <script>(()=>{
 'use strict';
-if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='Guard does not run inside embedded pages. Open the inspector directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open Guard';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}
+if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='TileSeal does not run inside embedded pages. Open it directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open TileSeal';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}
 const policy={
   "version": 2,
   "asOf": "2026-10-28T16:07:50Z",
@@ -2720,8 +1338,6 @@ async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
   }finally{hasher?.close();}
 }
 
-// SPDX-License-Identifier: MIT
-const VISUAL_GUARANTEE = 'A VISUALLY CONSISTENT result means every disclosed 8×8 brightness block and 16×16 colour block is within 9 levels of the signed reference. Finer detail is NOT verified. Mean-preserving edits and some smooth blurs can pass.';
 function visualFeatures(rgb,width,height) {
   if (!(rgb instanceof Uint8Array)||!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>64||height>64||rgb.length!==width*height*3)throw new IntegrityError('Invalid visual tile dimensions.');
   const sums=new Uint32Array(96),counts=new Uint16Array(96);
@@ -2735,30 +1351,6 @@ function visualFeatures(rgb,width,height) {
   }
   return Uint8Array.from(sums,(sum,i)=>counts[i]?Math.floor((sum+Math.floor(counts[i]/2))/counts[i]):i<64?0:128);
 }
-// Exact rational overlap in integer coordinate units. Cell sums are <=255*256*cw*ch,
-// hence <=2,350,080,000,000 under the 36M-pixel limit: exact in Number (<2^42).
-function mappedVisualTile(rgb,cw,ch,m,index) {
-  if (!(rgb instanceof Uint8Array)||!Number.isInteger(cw)||!Number.isInteger(ch)||cw<1||ch<1||cw>8192||ch>8192||cw*ch>36_000_000||rgb.length!==cw*ch*3)throw new IntegrityError('Invalid native visual pixels.');
-  if(!m||m.tileSize!==64||!Number.isInteger(m.width)||!Number.isInteger(m.height)||m.width<1||m.height<1||m.width>8192||m.height>8192||m.width*m.height>36_000_000||!Number.isInteger(index)||index<0||index>=Math.ceil(m.width/64)*Math.ceil(m.height/64))throw new IntegrityError('Invalid signed visual grid.');
-  const b=tileBounds(m,index),out=new Uint8Array(96);out.fill(128,64);
-  for(const size of [8,16])for(let yy=0;yy<64;yy+=size)for(let xx=0;xx<64;xx+=size){
-    if(xx>=b.width||yy>=b.height)continue;
-    const left=(b.x+xx)*cw,right=(b.x+Math.min(xx+size,b.width))*cw,top=(b.y+yy)*ch,bottom=(b.y+Math.min(yy+size,b.height))*ch;
-    let sy=0,scb=0,scr=0;const area=(right-left)*(bottom-top);
-    for(let y=Math.floor(top/m.height);y<Math.ceil(bottom/m.height);y++){
-      const wy=Math.min(bottom,(y+1)*m.height)-Math.max(top,y*m.height);
-      for(let x=Math.floor(left/m.width);x<Math.ceil(right/m.width);x++){
-        const weight=wy*(Math.min(right,(x+1)*m.width)-Math.max(left,x*m.width)),at=(y*cw+x)*3,r=rgb[at],g=rgb[at+1],v=rgb[at+2];
-        if(size===8)sy+=weight*Math.floor((299*r+587*g+114*v+500)/1000);
-        else {scb+=weight*Math.max(0,Math.min(255,Math.floor((128000000-168736*r-331264*g+500000*v+500000)/1000000)));scr+=weight*Math.max(0,Math.min(255,Math.floor((128000000+500000*r-418688*g-81312*v+500000)/1000000)));}
-      }
-    }
-    const cell=(yy/size)*(64/size)+xx/size,round=n=>Math.floor((n+Math.floor(area/2))/area);
-    if(size===8)out[cell]=round(sy);else {out[64+cell]=round(scb);out[80+cell]=round(scr);}
-  }
-  return out;
-}
-function visualDecision(error,tau=9) {return error>=tau-2&&error<=tau+2?'BORDERLINE (decoder-dependent)':error<tau-2?'VISUALLY CONSISTENT':'VISUALLY INCONSISTENT';}
 async function visualSalt(salt) {
   const bytes=Uint8Array.from(salt.match(/../g),x=>parseInt(x,16));
   const key=await crypto.subtle.importKey('raw',bytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
@@ -2768,114 +1360,6 @@ async function visualCommitment(index,salt,feature) {
   const prefix=new TextEncoder().encode('GRD-VIS'),message=new Uint8Array(prefix.length+4+16+96);
   message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,index);message.set(salt,prefix.length+4);message.set(feature,prefix.length+20);return sha(message);
 }
-function visualTile(rgb,m,index) {
-  const b=tileBounds(m,index),out=new Uint8Array(b.width*b.height*3);
-  for(let y=0;y<b.height;y++)out.set(rgb.subarray(((b.y+y)*m.width+b.x)*3,((b.y+y)*m.width+b.x+b.width)*3),y*b.width*3);
-  return visualFeatures(out,b.width,b.height);
-}
-async function exportProof(container) {
-  const bytes=container instanceof Uint8Array?container:encodeGRD2(container),report=await verifyGRD2(bytes,[]);
-  if(!report.regionVerified||report.verdict==='REVOKED KEY')throw new IntegrityError('Cannot export proof from invalid source.');
-  const doc=report.container??JSON.parse(new TextDecoder().decode(bytes.subarray(5))),m=doc.manifest;
-  if(doc.tiles.some(t=>t.sub))throw new Error("Visual proof export requires whole 64px tile redactions; partially hidden tiles cannot disclose their original block means safely.");
-  if(!m.visual)throw new Error('No visual layer in this legacy file.');
-  const decoded=await decodeRgbPng(containerImage(doc),m.version===3?GRD3_LIMITS:undefined),vis=[];
-  for(let i=0;i<doc.tiles.length;i++){
-    const t=doc.tiles[i];
-    if(Object.hasOwn(t,'commitment'))vis.push({index:i,commitment:m.visual.commitments[i]});
-    else{
-      const salt=await visualSalt(t.salt??t.seed),feature=mappedVisualTile(decoded.rgb,decoded.width,decoded.height,m,i);
-      if(await visualCommitment(i,salt,feature)!==m.visual.commitments[i])throw new IntegrityError('Visual reference no longer opens (tile '+i+').');
-      vis.push({index:i,salt:base64(salt),feature:base64(feature)});
-    }
-  }
-  return new TextEncoder().encode('GRDP\n'+canon({manifest:m,signature:doc.signature,vis}));
-}
-async function visualDecodeImage(bytes,m) {
-  if(bytes.length>GRD3_LIMITS.bytes)throw new IntegrityError('Candidate image exceeds size limit.');
-  if(typeof createImageBitmap==='function'){
-    const ascii=(start,length)=>String.fromCharCode(...bytes.subarray(start,start+length));
-    const mime=bytes[0]===137&&ascii(1,3)==='PNG'?'image/png':bytes[0]===255&&bytes[1]===216?'image/jpeg':ascii(0,4)==='RIFF'&&ascii(8,4)==='WEBP'?'image/webp':null;
-    if(!mime)throw new IntegrityError('Use a PNG, JPEG or WebP copy.');
-    const [encodedWidth,encodedHeight]=encodedDimensions(bytes,mime);
-    if(!encodedWidth||!encodedHeight||encodedWidth>8192||encodedHeight>8192||encodedWidth*encodedHeight>36_000_000)throw new IntegrityError('Candidate image dimensions exceed limits.');
-    if(Math.abs((encodedWidth/encodedHeight)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
-    let bitmap;
-    try {
-      bitmap=await createImageBitmap(new Blob([bytes]),{imageOrientation:'none'});
-      const w=bitmap.width,h=bitmap.height;
-      if(!w||!h||w>8192||h>8192||w*h>36_000_000)throw new IntegrityError('Candidate image dimensions exceed limits.');
-      if(Math.abs((w/h)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
-      const canvas=typeof OffscreenCanvas==='function'?new OffscreenCanvas(w,h):document.createElement('canvas');canvas.width=w;canvas.height=h;
-      const context=canvas.getContext('2d',{willReadFrequently:true});context.fillStyle='#fff';context.fillRect(0,0,w,h);context.drawImage(bitmap,0,0);
-      const rgba=context.getImageData(0,0,w,h).data,rgb=new Uint8Array(w*h*3);
-      for(let i=0;i<w*h;i++)rgb.set(rgba.subarray(i*4,i*4+3),i*3);return {rgb,width:w,height:h};
-    }finally{bitmap?.close();}
-  }
-  // Node uses a local image codec. The browser never loads this dependency.
-  if(!globalThis.process?.versions?.node)throw new DOMException('Image-copy decoding is unavailable in this browser.','NotSupportedError');
-  const {default:sharp}=await import('sharp');
-  const image=sharp(bytes,{limitInputPixels:36_000_000,failOn:'warning'}),info=await image.metadata();
-  if(!['png','jpeg','webp'].includes(info.format)||!info.width||!info.height||info.width>8192||info.height>8192)throw new IntegrityError('Unsupported candidate image.');
-  if(Math.abs((info.width/info.height)/(m.width/m.height)-1)>.01)return {aspectMismatch:true};
-  const rgb=await image.flatten({background:'#fff'}).removeAlpha().toColourspace('srgb').raw().toBuffer();return {rgb,width:info.width,height:info.height};
-}
-async function verifyVisual(proof,imageBytes,anchors=TRUSTED,policy=TRUST_POLICY) {
-  const r={verdict:'TAMPERED',genuine:false,viewable:false,problems:[],visualConsistent:false,guarantee:VISUAL_GUARANTEE};
-  try{
-    const bytes=proof instanceof Uint8Array?proof:new Uint8Array(proof);
-    if(bytes.length>16*1024*1024)throw new IntegrityError('Visual proof exceeds 16 MiB.');
-    let raw,p;
-    try{raw=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(5));p=JSON.parse(raw);}catch(error){throw new IntegrityError('Invalid visual proof encoding.');}
-    if(new TextDecoder().decode(bytes.subarray(0,5))!=='GRDP\n'||!p||Object.keys(p).sort().join(',')!=='manifest,signature,vis'||canon(p)!==raw)throw new IntegrityError('Noncanonical visual proof.');
-    const m=p.manifest,count=validateManifest(m);
-    if(!m.visual){r.verdict='UNSUPPORTED';r.problems.push('No visual layer.');return signerReport(r);}
-    const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
-    r.fingerprint=await sha(pk);r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
-    if(r.fingerprint!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
-    r.revocation=await checkRevocation(pk,policy);if(r.revocation.revoked){r.verdict='REVOKED KEY';r.problems.push('Signing key is revoked.');return signerReport(r);}
-    const key=await crypto.subtle.importKey('raw',pk,'Ed25519',false,['verify']);
-    if(!await crypto.subtle.verify('Ed25519',key,decodeBase64(p.signature,64),await manifestDigest(m)))throw new IntegrityError('Invalid visual manifest signature.');
-    r.signature_valid=true;
-    if(await merkleRoot(m.commitments)!==m.root)throw new IntegrityError('Invalid exact commitment root.');
-    if(!Array.isArray(p.vis)||p.vis.length!==count)throw new IntegrityError('Invalid visual disclosures.');
-    const features=[];
-    for(let i=0;i<count;i++){
-      const t=p.vis[i];if(!t||t.index!==i)throw new IntegrityError('Unordered visual tile.');
-      if(Object.keys(t).sort().join(',')==='commitment,index'){
-        if(t.commitment!==m.visual.commitments[i])throw new IntegrityError('Wrong hidden visual commitment.');features.push(null);
-      }else{
-        if(Object.keys(t).sort().join(',')!=='feature,index,salt')throw new IntegrityError('Invalid visual disclosure fields.');
-        const salt=decodeBase64(t.salt,16),feature=decodeBase64(t.feature,96);
-        if(await visualCommitment(i,salt,feature)!==m.visual.commitments[i])throw new IntegrityError('Visual feature proof mismatch (tile '+i+').');features.push(feature);
-      }
-    }
-    const anchor=Array.isArray(anchors)?anchors.find(k=>k.public_key_hex===m.publicKey):null;
-    if(!Array.isArray(anchors)||anchors._invalid)throw new Error('Invalid local trust anchors.');
-    r.trusted=!!anchor&&m.purpose==='asset';r.signer=anchor?.name??anchor?.owner??'Identity not verified';r.trustVerdict=m.purpose==='demo'?'DEMO':m.purpose==='personal'?'UNVERIFIED: SELF-SIGNED':anchor?'TRUSTED':'UNTRUSTED SIGNER';
-    const decoded=await visualDecodeImage(imageBytes instanceof Uint8Array?imageBytes:new Uint8Array(imageBytes),m);
-    r.worstError=0;r.worstTile=null;r.worstCell=null;
-    if(decoded.aspectMismatch){r.verdict='VISUALLY INCONSISTENT';r.visualVerdict=r.verdict;r.problems.push('Aspect ratio differs by more than 1%.');return signerReport(r);}
-    for(let i=0;i<count;i++){
-      const actual=mappedVisualTile(decoded.rgb,decoded.width,decoded.height,m,i),expected=features[i];
-      for(let cell=0;cell<(expected?96:64);cell++){
-        const b=tileBounds(m,i),cx=(cell%8)*8,cy=Math.floor(cell/8)*8;
-        if(!expected&&(cx>=b.width||cy>=b.height))continue;
-        const error=expected?Math.abs(actual[cell]-expected[cell]):actual[cell];
-        if(error>r.worstError){r.worstError=error;r.worstTile=i;r.worstCell=cell;}
-      }
-    }
-    r.visualVerdict=visualDecision(r.worstError,m.visual.tau);
-    r.visualConsistent=r.visualVerdict==='VISUALLY CONSISTENT';
-    if(!features.some(feature=>feature!==null)&&r.visualVerdict!=='VISUALLY INCONSISTENT'){r.verdict='FULLY REDACTED';r.visualVerdict='FULLY REDACTED';r.visualConsistent=false;r.problems.push('No visible original block means are disclosed.');return signerReport(r);}
-    r.verdict=r.visualVerdict==='BORDERLINE (decoder-dependent)'?r.visualVerdict:!r.visualConsistent?'VISUALLY INCONSISTENT':r.trusted?'VISUALLY CONSISTENT':r.trustVerdict;
-    if(r.visualVerdict==='BORDERLINE (decoder-dependent)'){r.warning='Close to the threshold; result may differ between apps';r.problems.push(r.warning);}
-    r.assetId=m.assetId;r.width=m.width;r.height=m.height;r.tau=m.visual.tau;
-    if(!r.trusted)r.problems.push('Visual matching does not establish signer identity. '+r.trustVerdict+'.');
-    return signerReport(r);
-  }catch(error){if(error instanceof IntegrityError)r.verdict='TAMPERED';else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}r.problems.push(error.message);return signerReport(r);}
-}
-
 // SPDX-License-Identifier: MIT
 function subTileBounds(m,index,j) {
   const b=tileBounds(m,index),g=m.subTile,cols=Math.ceil(b.width/g),x=(j%cols)*g,y=Math.floor(j/cols)*g;
@@ -3695,68 +2179,6 @@ async function exportPlainImage(container) {
 function containerImage(doc) { return doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image); }
 
 // SPDX-License-Identifier: MIT
-// Explicit-root, offline trust-bundle verification. No network or persistent storage.
-const bundleDomain = new TextEncoder().encode('GUARD-TRUST-BUNDLE-V1\0');
-function bundleCanon(v) {
-  if (Array.isArray(v)) return '[' + v.map(bundleCanon).join(',') + ']';
-  if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map(k => JSON.stringify(k)+':'+bundleCanon(v[k])).join(',') + '}';
-  return JSON.stringify(v);
-}
-function portable(v, depth=0) {
-  if (depth>32) return false;
-  if (typeof v==='number') return Number.isSafeInteger(v);
-  if (typeof v==='string') return !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(v);
-  if (Array.isArray(v)) return v.every(x=>portable(x,depth+1));
-  if (v && typeof v==='object') return Object.entries(v).every(([k,x])=>portable(k,depth+1)&&portable(x,depth+1));
-  return v===null||typeof v==='boolean';
-}
-const bundleHex = b => Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');
-const bundleExact = (v, fields) => v && typeof v==='object' && !Array.isArray(v) && Object.keys(v).sort().join(',')===fields.sort().join(',');
-function bundleDate(v) {
-  if (typeof v!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(v)||v.startsWith('0000')||!Number.isFinite(Date.parse(v))||new Date(v).toISOString()!==v.replace('Z','.000Z')) throw Error('Invalid bundle bundleDate');
-  return Date.parse(v);
-}
-async function verifyTrustBundle(bytes, rootHex, {now=Date.now(), minSequence=1, previous=null}={}) {
-  if (!(bytes instanceof Uint8Array)||bytes.length>2*1024*1024) throw Error('Bundle exceeds input limit');
-  if (!/^[0-9a-f]{64}$/.test(rootHex)) throw Error('An explicit Ed25519 root is required');
-  const text = new TextDecoder('utf-8',{fatal:true}).decode(bytes), doc=JSON.parse(text);
-  if (!portable(doc)||!bundleExact(doc,['payload','signature'])||bundleCanon(doc)!==text) throw Error('Noncanonical bundle');
-  const p=doc.payload;
-  if (!bundleExact(p,['format','sequence','issued','expires','keys'])||p.format!=='GUARD-TRUST-1'||!Number.isSafeInteger(p.sequence)||p.sequence<1||!Number.isSafeInteger(minSequence)||minSequence<1||p.sequence<minSequence) throw Error('Invalid bundle or rollback');
-  const issued=bundleDate(p.issued),expires=bundleDate(p.expires);
-  if (!Number.isFinite(now)||issued>now||expires<=now||expires<=issued||expires-issued>90*86400000) throw Error('Bundle expired, future-dated or validity exceeds 90 days');
-  validateTrustedKeys(p.keys);
-  if (!bundleExact(p.keys,['version','asOf','signers'])||p.keys.asOf!==p.issued||p.keys.signers.length>4096) throw Error('Invalid bundle key snapshot');
-  const seen=new Set();
-  for (const s of p.keys.signers) {
-    if (!bundleExact(s,['key_id','public_key_hex','fingerprint_sha256','name','alg','revoked','revokedAt','reason'])) throw Error('Invalid signer fields');
-    const fp=bundleHex(new Uint8Array(await crypto.subtle.digest('SHA-256',Uint8Array.from(s.public_key_hex.match(/../g),x=>parseInt(x,16)))));
-    if (fp!==s.fingerprint_sha256||s.key_id!==fp.slice(0,16)||seen.has(fp)||typeof s.name!=='string'||!s.name.replace(/[ \t\r\n]/g,'')||(s.revoked&&(typeof s.reason!=='string'||!s.reason.replace(/[ \t\r\n]/g,'')||bundleDate(s.revokedAt)>issued))) throw Error('Invalid or duplicate signer');
-    if (!s.revoked && s.reason!==null) throw Error('Invalid revocation reason');
-    seen.add(fp);
-  }
-  const root=Uint8Array.from(rootHex.match(/../g),x=>parseInt(x,16)),rootFingerprint=bundleHex(new Uint8Array(await crypto.subtle.digest('SHA-256',root)));
-  const digest=bundleHex(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)));
-  if (previous !== null && (!bundleExact(previous,['rootFingerprint','sequence','digest'])||previous.rootFingerprint!==rootFingerprint||!Number.isSafeInteger(previous.sequence)||previous.sequence<1||!/^[0-9a-f]{64}$/.test(previous.digest)||p.sequence<previous.sequence||(p.sequence===previous.sequence&&digest!==previous.digest))) throw Error('Bundle rollback, equivocation or cache/root mismatch');
-  if (typeof doc.signature!=='string'||!/^[A-Za-z0-9+/]{86}==$/.test(doc.signature)) throw Error('Invalid bundle signature');
-  const signature=Uint8Array.from(atob(doc.signature),c=>c.charCodeAt(0));
-  if (btoa(String.fromCharCode(...signature))!==doc.signature) throw Error('Noncanonical signature');
-  const payload=new TextEncoder().encode(bundleCanon(p)),message=new Uint8Array(bundleDomain.length+payload.length);message.set(bundleDomain);message.set(payload,bundleDomain.length);
-  const key=await crypto.subtle.importKey('raw',root,{name:'Ed25519'},false,['verify']);
-  if (!await crypto.subtle.verify('Ed25519',key,signature,message)) throw Error('Bundle signature failed');
-  return {keys:p.keys,anchors:p.keys.signers.filter(s=>!s.revoked),policy:{version:p.sequence,asOf:p.issued,revoked:p.keys.signers.filter(s=>s.revoked).map(s=>({fingerprint:s.fingerprint_sha256,reason:s.reason,revokedAt:s.revokedAt}))},state:{rootFingerprint,sequence:p.sequence,digest},expires:p.expires};
-}
-
-function publicKeyHexFromPem(pem) {
- if(typeof pem!=='string'||pem.length>4096||pem.includes('PRIVATE KEY'))throw Error('Pass an Ed25519 public key PEM only.');
- const match=pem.trim().match(/^-----BEGIN PUBLIC KEY-----\s+([A-Za-z0-9+/=\s]+)-----END PUBLIC KEY-----$/);
- if(!match)throw Error('Invalid public key PEM');
- const bytes=Uint8Array.from(atob(match[1].replace(/\s/g,'')),c=>c.charCodeAt(0));
- if(bytes.length!==44||bundleHex(bytes.subarray(0,12))!=='302a300506032b6570032100')throw Error('An Ed25519 public key is required');
- return bundleHex(bytes.subarray(12));
-}
-
-// SPDX-License-Identifier: MIT
 
 // Inspect encoded dimensions before giving compressed bytes to an image decoder.
 function inspectConversionImage(bytes, { allowResize = false, large = false } = {}) {
@@ -3765,7 +2187,7 @@ function inspectConversionImage(bytes, { allowResize = false, large = false } = 
     !bytes.length ||
     bytes.length > (large ? GRD3_LIMITS.bytes : TILE_LIMITS.bytes)
   )
-    throw new Error("Choose an image up to 32 MiB.");
+    throw new Error(large ? "Choose an image up to 256 MiB." : "Choose an image up to 32 MiB.");
   const ascii = (at, count) =>
     String.fromCharCode(...bytes.subarray(at, at + count));
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -3812,7 +2234,8 @@ function inspectConversionImage(bytes, { allowResize = false, large = false } = 
   const fitted = fitConversionDimensions(width, height, { large });
   if (!allowResize && (fitted.width !== width || fitted.height !== height))
     throw new Error(
-      "This photo exceeds the GRD 4-megapixel output limit. Enable “Fit large photos” to convert it here.",
+      large ? "This picture exceeds the GRD3 limit. Choose a smaller image (up to 36 MP, 8,192 px per edge and 9,000 tiles)."
+        : "This photo exceeds the GRD 4-megapixel output limit. Choose a smaller picture.",
     );
   return { mime, width, height };
 }
@@ -3854,648 +2277,99 @@ function looksLikeDocument(width,height) {
 }
 
 // SPDX-License-Identifier: MIT
-// Presentation only. Technical verdicts, JSON and verification remain unchanged.
-function resultTitle(report) {
-  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return 'Genuine';
-  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return 'Genuine, with parts blacked out';
-  if(report.verdict==='FULLY REDACTED')return report.personal||report.demo?'Everything is blacked out':'Genuine, but everything is blacked out';
-  if(report.verdict==='UNTRUSTED SIGNER')return report.signerStatus==='unknown'?'Unknown signer':"Couldn't check this file";
-  return ({'UNVERIFIED: SELF-SIGNED':'Unknown signer',TAMPERED:'Changed',DEMO:'Example only','NOT A GRD':'Not a Guard file','REVOKED KEY':'Revoked signer'})[report.verdict]||"Couldn't check this file";
-}
-function resultDescription(report,areas=report.redactionMap?.length||0) {
-  const name=report.signerDisplayName||'the trusted signer';
-  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return `This picture matches what ${name} signed. Nothing was changed.`;
-  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return `Everything you can see matches what ${name} signed. ${areas} ${areas===1?'area was':'areas were'} blacked out after signing.`;
-  if(report.verdict==='FULLY REDACTED')return 'The whole picture was blacked out after signing. No original pixels remain to inspect.';
-  if(report.verdict==='TAMPERED')return "This file failed its integrity checks. Don't rely on it.";
-  if(report.signerStatus==='unknown')return "The file is intact, but this device doesn't know who signed it. Anyone can make a file like this.";
-  if(report.verdict==='UNVERIFIED: SELF-SIGNED')return 'This file uses a self-signed key, so anyone could have made it.';
-  if(report.verdict==='DEMO')return 'This is a sample file. It does not come from a real signer.';
-  if(report.verdict==='REVOKED KEY')return "The key that signed this file has been withdrawn. Don't rely on it.";
-  if(report.verdict==='NOT A GRD')return 'Choose the original .GRD file from the sender.';
-  return "Guard couldn't finish the check. This is not a sign of tampering.";
-}
-function signerSummary(report) {
-  const fp=report.fingerprint||'';
-  if(report.signerStatus==='revoked')return `${report.revocation?.reason||'Key revoked'}, revoked ${report.revocation?.revokedAt||'date unavailable'}. The picture is not shown. Do not rely on this file.`;
-  if(report.signerStatus==='trusted'&&!report.personal&&!report.demo)return `Signed by ${report.signerDisplayName||'trusted key'} · trusted on this device`;
-  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. Ask the sender to confirm it another way.`;
-  if(report.signerStatus==='self')return `Fingerprint ${fp}.`;
-  if(report.verdict==='TAMPERED')return 'The picture is not shown.';
-  if(['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'].includes(report.verdict))return 'Reason: '+(report.problems?.[0]||'The check could not finish.').slice(0,180);
-  return '';
+function snapAxis(start, size, limit, grid) {
+  if (!Number.isFinite(start) || !Number.isFinite(size) || start < 0 || start >= limit || size <= 0)
+    throw new RangeError("Enter an area inside the picture with a positive width and height.");
+  const left = Math.floor(start / grid) * grid;
+  const right = Math.ceil(Math.min(limit, start + size) / grid) * grid;
+  return [left, Math.min(limit, Math.max(left + grid, right))];
 }
 
-// SPDX-License-Identifier: MIT
-// Fixed-cost, versioned password envelope. No private material enters storage.
-const SIGNER_AAD = new TextEncoder().encode('Guard encrypted signer v1');
-const SIGNER_ROUNDS = 600000;
-function signerHex(bytes) { return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''); }
-function signerUnhex(s) { if(typeof s!=='string'||!/^[a-f0-9]{64}$/.test(s))throw Error('Invalid public key.');return Uint8Array.from(s.match(/../g),b=>parseInt(b,16)); }
-function signerB64(bytes) { return btoa(String.fromCharCode(...new Uint8Array(bytes))); }
-function signerDecode(s, max=2048) { if(typeof s!=='string'||s.length>max||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(s))throw Error('Invalid key file.');return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); }
-function signerObject(s, keys) { if(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).sort().join()!==keys.sort().join())throw Error('Invalid key file.'); }
-function signerJson(text) { if(typeof text!=='string'||text.length>16384)throw Error('Choose a Guard key file up to 16 KiB.');return JSON.parse(text); }
-function signerName(name) { if(typeof name!=='string'||!name.trim()||name.trim().length>80||/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(name))throw Error('Enter a name of 1–80 characters, without control characters.');return name.trim(); }
-function signerPassword(password) { if(typeof password!=='string'||password.length<12||password.length>1024)throw Error('Use a password of 12–1024 characters.'); }
-async function signerWrappingKey(password,salt) {
-  signerPassword(password);
-  const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',iterations:SIGNER_ROUNDS,salt},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-}
-async function signerContact(publicKey,name) {
-  const raw=typeof publicKey==='string'?signerUnhex(publicKey):new Uint8Array(publicKey);
-  if(raw.length!==32)throw Error('Invalid public key.');
-  return {format:'Guard public signer',version:1,name:signerName(name),publicKey:signerHex(raw),fingerprint:signerHex(new Uint8Array(await crypto.subtle.digest('SHA-256',raw)))};
-}
-async function readSignerContact(text) {
-  const c=signerJson(text);signerObject(c,['format','version','name','publicKey','fingerprint']);
-  if(c.format!=='Guard public signer'||c.version!==1)throw Error('Choose a Guard public signer file, never a private key.');
-  const expected=await signerContact(c.publicKey,c.name);
-  if(c.fingerprint!==expected.fingerprint)throw Error('Public fingerprint does not match the key.');
-  return expected;
-}
-async function createOfflineSigner(name,password) {
-  name=signerName(name);signerPassword(password);
-  const pair=await crypto.subtle.generateKey('Ed25519',true,['sign','verify']);
-  const raw=new Uint8Array(await crypto.subtle.exportKey('raw',pair.publicKey));
-  const secret=new Uint8Array(await crypto.subtle.exportKey('pkcs8',pair.privateKey));
-  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const payload=new TextEncoder().encode(JSON.stringify({name,publicKey:signerHex(raw),pkcs8:signerB64(secret)}));
-  try {
-    const key=await signerWrappingKey(password,salt);
-    const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:SIGNER_AAD,tagLength:128},key,payload);
-    const envelope={format:'Guard encrypted signer',version:1,kdf:'PBKDF2-SHA256',iterations:SIGNER_ROUNDS,cipher:'AES-256-GCM',salt:signerB64(salt),iv:signerB64(iv),data:signerB64(encrypted)};
-    // Return only the encrypted backup. The UI unlocks this exact file before use.
-    return JSON.stringify(envelope);
-  } finally { secret.fill(0);payload.fill(0); }
-}
-async function unlockOfflineSigner(text,password) {
-  const e=signerJson(text);signerObject(e,['format','version','kdf','iterations','cipher','salt','iv','data']);
-  if(e.format!=='Guard encrypted signer'||e.version!==1||e.kdf!=='PBKDF2-SHA256'||e.iterations!==SIGNER_ROUNDS||e.cipher!=='AES-256-GCM')throw Error('Unsupported signer key file.');
-  const salt=signerDecode(e.salt),iv=signerDecode(e.iv),data=signerDecode(e.data);
-  if(salt.length!==16||iv.length!==12||data.length<16)throw Error('Invalid key file.');
-  let plain;
-  try {
-    const key=await signerWrappingKey(password,salt);
-    plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:SIGNER_AAD,tagLength:128},key,data));
-  } catch { throw Error('Could not unlock. Check your password and key file.'); }
-  let secret;
-  try {
-    const p=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(plain));signerObject(p,['name','publicKey','pkcs8']);
-    const contact=await signerContact(p.publicKey,p.name);secret=signerDecode(p.pkcs8);
-    const privateKey=await crypto.subtle.importKey('pkcs8',secret,'Ed25519',false,['sign']);
-    const publicKey=await crypto.subtle.importKey('raw',signerUnhex(contact.publicKey),'Ed25519',false,['verify']);
-    const challenge=crypto.getRandomValues(new Uint8Array(32));
-    if(!await crypto.subtle.verify('Ed25519',publicKey,await crypto.subtle.sign('Ed25519',privateKey,challenge),challenge))throw Error('Key pair does not match.');
-    return {contact,privateKey,publicKey:signerUnhex(contact.publicKey)};
-  } finally { plain.fill(0);secret?.fill(0); }
+// Choose the closest centred, grid-aligned start that still covers both ends.
+// A partial edge tile can make an edge-clamped box slightly wider than its class.
+function growAxis([start, end], target, limit, grid) {
+  if (target >= limit) return [0, limit];
+  const low = Math.ceil(Math.max(0, end - target) / grid) * grid;
+  const high = Math.floor(Math.min(start, limit - target) / grid) * grid;
+  if (low > high) return [high, limit];
+  const centre = Math.floor((start + end - target) / (2 * grid) + 0.5) * grid;
+  const left = Math.max(low, Math.min(high, centre));
+  return [left, left + target];
 }
 
-if (self !== top) {
-  document.documentElement.classList.add("framed");
-  const warning = document.createElement("p");
-  warning.className = "frame-warning";
-  warning.textContent =
-    "Guard does not run inside embedded pages. Open the inspector directly to check a file.";
-  const link = document.createElement("a");
-  link.className = "frame-warning";
-  link.textContent = "Open Guard";
-  link.href = location.href;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  document.body.replaceChildren(warning, link);
-  return;
-}
-const $ = (id) => document.getElementById(id);
-const ORIGINAL_HTML = "<!doctype html>\n" + document.documentElement.outerHTML;
-const SESSION = hex(crypto.getRandomValues(new Uint8Array(8))).toUpperCase();
-let unknownApproved=false,activeBundle=null,bundleExpiryTimer=null,currentInputFile=null,trustImportVersion=0;
-const bundleStates=new Map();
-let currentContainer = null,
-  redactionEditing = false,
-  selectedTiles = new Set(),
-  operation = 0,
-  currentReport = null,
-  bitmap = null,
-  held = null,
-  keyboardPoint = null,
-  reveal = true,
-  clock = null,
-  drawQueued = false;
-const canvas = $("canvas"),
-  stage = $("stage");
-const setStatus = (message) => {
-  $("live-status").textContent = message;
-};
-function el(tag, text, cls) {
-  const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = String(text);
-  if (cls) node.className = cls;
-  return node;
-}
-function bytesLabel(n) {
-  return n < 1024
-    ? n + " bytes"
-    : n < 1024 * 1024
-      ? (n / 1024).toFixed(1) + " KiB"
-      : (n / 1024 / 1024).toFixed(1) + " MiB";
-}
-function disposeImage() {
-  unknownApproved=false;
-  currentContainer = null;
-  redactionEditing = false;
-  selectedTiles.clear();
-  $("tile-overlay").replaceChildren();
-  $("tile-overlay").hidden = true;
-
-
-  $("redact-mode").setAttribute("aria-pressed", "false");
-  $("redact-mode").textContent = "Mark tiles";
-  $("export-redacted").disabled = true;
-  clearInterval(clock);
-  clock = null;
-  held = null;
-  keyboardPoint = null;
-  bitmap?.close?.();
-  bitmap = null;
-  canvas.width = 1;
-  canvas.height = 1;
-  $("image-panel").hidden = true;
-  stage.classList.remove("shielded");
-  $("shield").hidden = true;
-  $("metadata").replaceChildren();
-  $("technical-data").replaceChildren();
-  $("session-label").textContent = "";
-}
-function reset() {
-  operation++;
-  disposeImage();
-  currentReport = null;
-  $("file-card").hidden = true;
-  $("empty").hidden = false;
-  $("loading").hidden = true;
-  $("result").hidden = true;
-  $("file-input").value = "";
-  $("file-name").textContent = "";
-  $("file-size").textContent = "";
-  $("checks").replaceChildren();
-  $("issue-list").replaceChildren();
-  setStatus("Ready.");
-  $("drop").focus();
-  $("hidden-areas").hidden=true;
-}
-function showFile(file) {
-  $("file-card").hidden = false;
-  $("file-name").textContent = file.name;
-  $("file-size").textContent = bytesLabel(file.size);
-}
-function renderResult(report) {
-  currentReport = signerReport(report);
-  $("download-plain").hidden = !(report.version >= 2 && (report.viewable || unknownApproved) && report.regionVerified);
-  $("show-unknown").hidden=!(report.verdict==="UNTRUSTED SIGNER"&&report.canRevealUnknown&&!unknownApproved);
-  $("plain-note").hidden = $("download-plain").hidden;
-  $("download-proof").hidden = $("download-plain").hidden || !currentContainer?.manifest.visual || currentContainer.tiles.some(t=>t.sub);
-  $("partial-visual-note").hidden = !currentContainer?.tiles.some(t=>t.sub);
-  $('empty').hidden=true;
-  $('redact-checked').disabled=!canEditChecked();$('blackout-format-note').hidden=report.version!==1;
-  $("loading").hidden = true;
-  $("result").hidden = false;
-  $("empty").hidden = true;
-  const genuine =
-    report.genuine ||
-    (report.viewable && report.regionVerified && report.trusted);
-  const words=[report.verdict,resultTitle(report),resultDescription(report,mergedHiddenAreas(report).length)];
-  const failure=['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE','NOT A GRD'].includes(report.verdict)||report.signerStatus==='none'&&report.verdict==='UNTRUSTED SIGNER';
-  $('verdict-banner').className='verdict-banner '+(failure?'fault':report.signerStatus==='revoked'||report.verdict==='TAMPERED'?'bad':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'good':'neutral');
-  $('technical-verdict').textContent='Exact result: '+report.verdict;
-  $('detail-signer').textContent='Signer: '+(report.signerDisplayName||report.signer||'Not verified')+' · Fingerprint '+(report.fingerprint||'unavailable')+' · Trust: '+report.signerStatus+' · Source: '+(activeBundle?'bundled snapshot and this tab’s signed trust bundle':Array.from(personTrust.values()).some(k=>k.fingerprint_sha256===report.fingerprint)?'public signer trusted for this tab':'bundled viewer snapshot');
-  $('verification-technical').open=false;
-  $('hidden-areas').replaceChildren(...mergedHiddenAreas(report).slice(0,200).map((r,i)=>el('li',`Hidden ${i+1}: ${r.width} × ${r.height} px at (${r.x}, ${r.y})`)));
-  $('hidden-areas').hidden=!mergedHiddenAreas(report).length;
-  if(mergedHiddenAreas(report).length>200)$('hidden-areas').append(el('li','More hidden areas are listed in the Advanced technical report.'));
-  const positive=['GENUINE','VERIFIED WITH REDACTIONS'].includes(report.verdict);
-  const meaning=positive?[
-    report.verdict==='GENUINE'?'Every pixel matches what the trusted key signed.':'Visible pixels match the signed original; blacked-out parts are hidden.',
-    'This does not prove who took the photo, ownership, capture time or whether the scene was staged.',
-    'Compare the signer fingerprint independently; share the .GRD to keep the proof.'
-  ]:report.signerStatus==='unknown'?[
-    'The signature and image proof match the key embedded in this file.',
-    'This viewer does not know who owns that key. Anyone can edit and re-sign a picture.',
-    'Compare the full fingerprint with one published independently by the sender before relying on it.'
-  ]:report.signerStatus==='self'||report.signerStatus==='demo'?[
-    'The file is consistent with its embedded signing key.',
-    'The signer identity is not verified. Anyone can make an edited self-signed file.',
-    'Ask a known issuer for a file signed with their verified key if identity matters.'
-  ]:[
-    'The precise result and completed checks appear under Details.',
-    report.verdict==='TAMPERED'?'This file failed its integrity checks.':'No positive claim about the image has been made.',
-    'Ask for the original .GRD and compare the sender’s fingerprint independently.'
-  ];
-  $("what-means-list").replaceChildren(...meaning.map(text=>el('li',text)));
-  $("verdict-kicker").textContent = words[0];
-  $("verdict-title").textContent = words[1];
-  $("verdict-description").textContent = words[2];
-  const signerElem = $("verdict-signer"), fp=report.fingerprint||'';
-  signerElem.hidden=!signerSummary(report);
-  signerElem.textContent=signerSummary(report);
-  $('verdict-icon').textContent=failure?'!':report.signerStatus==='revoked'?'⊘':report.verdict==='TAMPERED'?'✕':genuine||report.verdict==='FULLY REDACTED'&&!report.personal&&!report.demo?'✓':'?';
-  $("checks").replaceChildren();
-  for (const item of report.checks) {
-    const row = el(
-      "div",
-      undefined,
-      "check-row " +
-        (item.status === "pass"
-          ? ""
-          : item.status === "info"
-            ? "informational"
-            : "failed"),
-    );
-    row.append(
-      el(
-        "span",
-        item.status === "pass" ? "✓" : item.status === "info" ? "i" : "×",
-        "check-icon",
-      ),
-    );
-    const copy = el("div");
-    copy.append(el("strong", item.name), el("small", item.detail));
-    row.append(
-      copy,
-      el(
-        "span",
-        item.status === "pass"
-          ? "PASSED"
-          : item.status === "info"
-            ? report.personal
-              ? "UNVERIFIED"
-              : "DEMO ONLY"
-            : "FAILED",
-        "check-tag",
-      ),
-    );
-    $("checks").append(row);
+function padBox({ x, y, w, h }, { grid, widthClass = 128, lineHeight = 32, imgW, imgH }) {
+  if (![grid, imgW, imgH].every(n => Number.isSafeInteger(n) && n > 0) ||
+      ![widthClass, lineHeight].every(n => Number.isSafeInteger(n) && n >= 0) ||
+      widthClass % grid !== 0)
+    throw new RangeError("Invalid grid, padding or image size.");
+  let horizontal = snapAxis(x, w, imgW, grid);
+  let vertical = snapAxis(y, h, imgH, grid);
+  if (widthClass) {
+    const width = Math.ceil((horizontal[1] - horizontal[0]) / widthClass) * widthClass;
+    horizontal = growAxis(horizontal, width, imgW, grid);
   }
-  if (!report.checks.length) {
-    const note = el(
-      "p",
-      "Verification stopped before the cryptographic checks.",
-      "file-help",
-    );
-    $("checks").append(note);
+  if (lineHeight > vertical[1] - vertical[0]) {
+    vertical = growAxis(vertical, Math.ceil(lineHeight / grid) * grid, imgH, grid);
   }
-  $("issues").hidden = !report.problems.length;
-  $("issue-list").replaceChildren(
-    ...report.problems.map((text) => el("li", text)),
-  );
-  setStatus('Result: '+words[1]);
-  if(!$('main-view').hidden)window.scrollTo(0,0);
-  $("verdict-title").focus({ preventScroll: true });
-}
-function pairs(target, rows) {
-  target.replaceChildren();
-  for (const [label, value] of rows) {
-    if (value === undefined || value === null || value === "") continue;
-    const row = el("div");
-    row.append(
-      el("dt", label),
-      el("dd", typeof value === "object" ? JSON.stringify(value) : value),
-    );
-    target.append(row);
-  }
-}
-function metadata(report) {
-  const m = report.meta ?? {};
-  pairs($("metadata"), [
-    ["Asset ID", m.asset_id],
-    ["Author · signed claim", m.author],
-    ["Issued by · signed claim", m.issued_by],
-    ["Public label · signed claim", m.original_filename],
-    ["Dimensions", m.width + " × " + m.height + " px"],
-    ["Time claimed by the signer", m.created_utc ?? m.created_melbourne],
-    [report.demo ? "Demo signer" : "Signer", report.signer],
-    [
-      report.subTile ? "Retained cells" : "Retained tiles",
-      report.version >= 2
-        ? `${report.subTilesVisible ?? report.tilesVisible} / ${report.subTilesTotal ?? report.tilesTotal}`
-        : undefined,
-    ],
-    ["Redacted tiles", report.redactedTiles?.length],
-  ]);
-  pairs($("technical-data"), [
-    ["File SHA-256", report.fileHash],
-    ["Signer key ID", report.keyId],
-    ["Watermark ID · signed claim", m.watermark_id],
-    ["Watermarks · signed claim", m.watermarks],
-    ["Source · signed claim", m.source],
-    [
-      "Timestamp token",
-      report.timestampPresent
-        ? "Present · not validated by this viewer"
-        : "Not present",
-    ],
-    ["Format", "GRD" + report.version],
-    ["Signed Merkle root", report.root],
-    [
-      "Offline trust snapshot",
-      report.revocation
-        ? `${report.revocation.asOf} / version ${report.revocation.policyVersion}. Newer revocations may be unknown.`
-        : undefined,
-    ],
-    ["Hidden rectangles · method is an unsigned claim", report.redactionMap],
-    ["Viewer session", SESSION],
-  ]);
-  $("session-label").textContent = "SESSION / " + SESSION;
-}
-function shield(reason) {
-  held = null;
-  keyboardPoint = null;
-  if (!bitmap) return;
-  $("tile-overlay").hidden = true;
-  stage.classList.add("shielded");
-  $("shield").hidden = false;
-  $("shield-reason").textContent = reason;
-}
-function setMode(localReveal) {
-  reveal = localReveal;
-  held = null;
-  keyboardPoint = null;
-  $("reveal-mode").setAttribute("aria-pressed", String(reveal));
-  $("full-mode").setAttribute("aria-pressed", String(!reveal));
-  $("reveal-hint").hidden=!reveal;
-  $("reveal-hint").textContent = reveal
-    ? "Hold a finger or pointer to reveal a spot. Keyboard: hold Space or Enter, move with arrow keys."
-    : "Full picture shown. Choose Hold to reveal for a smaller viewing area.";
-  queueDraw();
-}
-function showImage() {
-  if (!bitmap) return;
-  stage.classList.remove("shielded");
-  $("shield").hidden = true;
-  setMode(true);
-  canvas.focus({ preventScroll: true });
-  if (redactionEditing) {
-    setMode(false);
-    renderTileOverlay();
-  }
-  queueDraw();
-}
-function overlay(ctx, w, h) {
-  const message =
-    (currentReport?.demo
-      ? "DEMO / NOT EVIDENCE · "
-      : currentReport?.personal
-        ? "UNVERIFIED: SELF-SIGNED · "
-        : currentReport?.signerStatus==="unknown" ? "UNKNOWN SIGNER · " : "GUARD · ") +
-    SESSION +
-    " · " +
-    new Date().toISOString().slice(11, 19) +
-    " UTC";
-  ctx.save();
-  ctx.globalAlpha = 0.35;
-  ctx.font = `600 ${Math.max(12, Math.round(w / 44))}px Arial`;
-  ctx.fillStyle = "#fff";
-  ctx.strokeStyle = "#10271e";
-  ctx.lineWidth = Math.max(1, w / 800);
-  ctx.translate(w / 2, h / 2);
-  ctx.rotate(-Math.PI / 8);
-  const step = Math.max(80, h / 6),
-    span = ctx.measureText(message).width + 90;
-  for (let y = -h; y < h; y += step)
-    for (let x = -w; x < w; x += span) {
-      ctx.strokeText(message, x, y);
-      ctx.fillText(message, x, y);
-    }
-  ctx.restore();
-}
-function draw() {
-  drawQueued = false;
-  if (!bitmap || stage.classList.contains("shielded") || document.hidden)
-    return;
-  const ctx = canvas.getContext("2d"),
-    w = canvas.width,
-    h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  ctx.save();
-  if (reveal) {
-    ctx.filter = `blur(${Math.max(8, Math.round(w / 45))}px)`;
-    ctx.drawImage(bitmap, 0, 0, w, h);
-    ctx.filter = "none";
-    if (held) {
-      const radius = Math.min(w, h) * 0.16;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(held.x, held.y, radius, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(bitmap, 0, 0, w, h);
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(held.x, held.y, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = "#f4f4dc";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-  } else ctx.drawImage(bitmap, 0, 0, w, h);
-  overlay(ctx, w, h);
-  ctx.restore();
-}
-function queueDraw() {
-  if (!drawQueued) {
-    drawQueued = true;
-    requestAnimationFrame(draw);
-  }
-}
-function point(event) {
-  const r = canvas.getBoundingClientRect();
-  return {
-    x: Math.max(
-      0,
-      Math.min(
-        canvas.width,
-        ((event.clientX - r.left) * canvas.width) / r.width,
-      ),
-    ),
-    y: Math.max(
-      0,
-      Math.min(
-        canvas.height,
-        ((event.clientY - r.top) * canvas.height) / r.height,
-      ),
-    ),
-  };
+  return { x: horizontal[0], y: vertical[0], w: horizontal[1] - horizontal[0], h: vertical[1] - vertical[0] };
 }
 
-async function decode(report) {
-  if (report.version === 3 || (report.version >= 2 && report.container && !report.imageRgba)) {
-    const blob = new Blob([containerImage(report.container)], {type:"image/png"});
-    return await createImageBitmap(blob, {imageOrientation:"none"});
-  }
-  if (report.version >= 2) {
-    const surface = document.createElement("canvas");
-    surface.width = report.meta.width;
-    surface.height = report.meta.height;
-    surface
-      .getContext("2d")
-      .putImageData(
-        new ImageData(
-          new Uint8ClampedArray(report.imageRgba),
-          surface.width,
-          surface.height,
-        ),
-        0,
-        0,
-      );
-    return typeof createImageBitmap === "function"
-      ? await createImageBitmap(surface)
-      : surface;
-  }
-  const m = report.meta,
-    [width, height] = encodedDimensions(report.payload, m.mime);
-  if (width !== m.width || height !== m.height)
-    throw new Error(
-      "Encoded image dimensions differ from the signed metadata.",
-    );
-  if (
-    width * height > LIMITS.imagePixels ||
-    Math.max(width, height) > LIMITS.dimension
-  )
-    throw new Error("Encoded image exceeds the safe viewing limits.");
-  const blob = new Blob([report.payload], { type: m.mime });
-  let image;
-  if (typeof createImageBitmap === "function")
-    image = await createImageBitmap(blob, { imageOrientation: "none" });
-  else {
-    const url = URL.createObjectURL(blob);
-    try {
-      image = new Image();
-      image.src = url;
-      await image.decode();
-    } finally {
-      URL.revokeObjectURL(url);
+// Measure the union so overlapping selections are counted once.
+function boxUnionArea(boxes) {
+  const edges = [...new Set(boxes.flatMap(({ x, w }) => [x, x + w]))].sort((a, b) => a - b);
+  let area = 0;
+  for (let i = 1; i < edges.length; i++) {
+    const left = edges[i - 1], right = edges[i];
+    const rows = boxes.filter(b => b.x < right && b.x + b.w > left).sort((a, b) => a.y - b.y);
+    let covered = 0, bottom = 0;
+    for (const { y, h } of rows) {
+      covered += Math.max(0, y + h - Math.max(bottom, y));
+      bottom = Math.max(bottom, y + h);
     }
+    area += (right - left) * covered;
   }
-  if (image.width !== width || image.height !== height) {
-    image.close?.();
-    throw new Error(
-      "Decoded image dimensions differ from the signed metadata.",
-    );
-  }
-  return image;
+  return area;
 }
-async function openFile(file) {
-  workspaceMode("verify");
-  const token = ++operation;
-  disposeImage();
-  currentReport = null;
-  currentInputFile=file;
-  showFile(file);
-  $("empty").hidden = true;
-  $("result").hidden = true;
-  $("loading").hidden = false;
-  setStatus("Checking " + file.name + ".");
-  let report;
-  try {
-    if (file.size > GRD3_LIMITS.bytes)
-      report = {
-        verdict: "LIMIT EXCEEDED",
-        genuine: false,
-        checks: [],
-        problems: ["File exceeds the 256 MiB viewer limit."],
-        failed: ["file size"],
-        changed: ["file size"],
-        byteLength: file.size,
-      };
-    else {
-      const bytes = await file.arrayBuffer();
-      const trust=await sessionTrust();
-      report = await (isGRD2(bytes) ? verifyGRD2(bytes,trust.anchors,trust.policy) : createVerifier(trust.anchors,trust.policy)(bytes));
-    }
-    if (token !== operation) return;
-    if (report.genuine || report.viewable) {
-      try {
-        const decoded = await decode(report);
-        if (token !== operation) {
-          decoded.close?.();
-          return;
-        }
-        bitmap = decoded;
-        report.checks.push({
-          name:
-            report.version >= 2 ? "Rendered tile grid" : "Image dimensions",
-          status: "pass",
-          detail:
-            report.meta.width +
-            " × " +
-            report.meta.height +
-            (report.version >= 2
-              ? " · exact visible tiles; hidden tiles are placeholders"
-              : " · encoded and decoded dimensions match"),
-        });
-      } catch (error) {
-        report.genuine = false;
-        report.viewable = false;
-        report.verdict = "UNREADABLE";
-        report.problems.push(error.message);
-        report.checks.push({
-          name: "Image decoding",
-          status: "fail",
-          detail: error.message,
-        });
-        delete report.payload;
-      }
-    }
-    if (token !== operation) return;
-    report.fileName = file.name;
-    report.checkedAt = new Date().toISOString();
-    report.viewerSession = SESSION;
-    currentContainer = report.container ?? null;
-    if (currentContainer) {
-      const sealed = currentContainer.manifest.subTile || 64;
-      for (const size of [8,16,32,64]) { $("grid-"+size).disabled = size < sealed; $("grid-"+size).checked = size === (sealed <= 16 ? 16 : sealed); }
-    }
-    delete report.container;
-    delete report.imageRgba;
-    renderResult(report);metadata(report);
-    if ((report.genuine || report.viewable) && bitmap) {
-      metadata(report);
-      $("image-panel").hidden = false;
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      canvas.setAttribute("aria-label",`${report.verdict}. ${report.meta.width} by ${report.meta.height} pixels. Hold Space or Enter to reveal; arrow keys move the area.`);
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      setMode(true);
 
-      if (currentContainer) {
-        $("redaction-status").textContent =
-          `${report.tilesVisible} retained / ${report.tilesTotal} total. ${report.redactedTiles.length} already redacted. Choose Mark tiles to hide more.`;
-        setMode(false);
-      }
-      queueDraw();
-      clock = setInterval(queueDraw, 1000);
-      if (document.hidden || !document.hasFocus())
-        shield("The check finished while this window was away.");
-    }
-    // Release the raw image bytes once the display bitmap exists; reports never include pixels.
-    if(!report.canRevealUnknown)delete report.payload;
-  } catch (error) {
-    if (token !== operation) return;
-    renderResult({
-      verdict: "UNSUPPORTED",
-      genuine: false,
-      checks: [],
-      problems: ["The file could not be read: " + error.message],
-      failed: [],
-      changed: [],
-      fileName: file.name,
-      checkedAt: new Date().toISOString(),
-      viewerSession: SESSION,
-    });
+const $ = id => document.getElementById(id);
+const sealCanvas = $("seal-canvas");
+const checkCanvas = $("canvas");
+const supportedGrids = [16, 32, 64];
+let checkVersion = 0, editVersion = 0;
+let checked = null, editor = null, savedFile = null;
+let selections = [], dragStart = null, busy = false;
+let activeMode = "seal";
+
+function showMode(mode, updateHash = true) {
+  activeMode = mode;
+  $("convert-form").hidden = mode !== "seal";
+  $("inspection-panel").hidden = mode !== "check";
+  for (const [id, task] of [["tab-seal", "seal"], ["tab-verify", "check"]]) {
+    if (task === mode) $(id).setAttribute("aria-current", "page");
+    else $(id).removeAttribute("aria-current");
+  }
+  if (updateHash) history.replaceState(null, "", "#" + mode);
+}
+
+function readHash() {
+  if (location.hash === "#about" || location.hash === "#privacy-details") {
+    $("about").open = true;
+    showMode(activeMode, false);
+  } else if (location.hash !== "#workspace") {
+    showMode(location.hash === "#check" ? "check" : "seal", false);
   }
 }
+window.addEventListener("hashchange", readHash);
+readHash();
+
+function setEditorStatus(message, error = false) {
+  $("convert-status").textContent = message;
+  $("convert-status").classList.toggle("error", error);
+}
+
 function download(contents, name, type) {
-  const url = URL.createObjectURL(new Blob([contents], { type })),
-    link = document.createElement("a");
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const link = document.createElement("a");
   link.href = url;
   link.download = name;
   document.body.append(link);
@@ -4503,823 +2377,472 @@ function download(contents, name, type) {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-$("drop").onclick = () => {
-  $("file-input").click();
-};
-$("choose-another").onclick = () => {reset();$("file-input").click();};
-$("file-input").onchange = (event) => {
-  const file = event.target.files[0];
-  event.target.value = "";
-  if (file) void openFile(file);
-};
-$("clear").onclick = reset;
-$("cancel").onclick = reset;
-$("drop").ondragover = (event) => {
-  event.preventDefault();
-  $("drop").classList.add("over");
-};
-$("drop").ondragleave = () => $("drop").classList.remove("over");
-$("drop").ondrop = (event) => {
-  event.preventDefault();
-  $("drop").classList.remove("over");
-  const files = event.dataTransfer.files;
-  if (files.length) void routeDroppedFile(files[0]);
-};
-window.addEventListener("dragover", (event) => event.preventDefault());
-window.addEventListener("drop", event=>{if(event.defaultPrevented)return;event.preventDefault();const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
-$("download-report").onclick = () => {
-  if (!currentReport) return;
-  const report = {
-    ...verificationReport(currentReport),
-    scope:
-      "Local GRD verification. GRD2 checks retained exact pixels against a signed root; redacted regions and redactor approval are not attested. Demo and self-signed files are not trusted evidence; anyone can edit and re-sign a replacement. Method labels are unsigned claims. Not proof of authorship, ownership, capture time or copy tracing.",
-  };
-  delete report.payload;
-  download(
-    JSON.stringify(report, null, 2),
-    "guard-verification-" +
-      (report.fileHash?.slice(0, 12) || "report") +
-      ".json",
-    "application/json",
-  );
-};
-$("download-proof").onclick = async () => {
-  if (!currentContainer) return;
-  try { download(await exportProof(currentContainer), "image.grdp", "application/octet-stream"); setStatus("Visual proof downloaded. Keep it with copies you want to compare."); }
-  catch (error) { setStatus("Visual proof export failed: " + error.message); }
-};
-$("download-plain").onclick = async () => {
-  if (!currentContainer) return;
-  try {
-    const png = await exportPlainImage(currentContainer);
-    download(png, "image.png", "image/png");
-    setStatus("Plain image downloaded. This copy can no longer be verified as genuine.");
-  } catch (error) { setStatus("Plain export failed: " + error.message); }
-};
-$("download-viewer").onclick = () =>
-  download(ORIGINAL_HTML, "grd_viewer.html", "text/html");
-$("reveal-mode").onclick = () => setMode(true);
-$("full-mode").onclick = () => setMode(false);
-$("hide-image").onclick = () => {
-  shield(
-    "You hid this image. Choose Show image again to return to hold-to-reveal mode.",
-  );
-  $("show-image").focus({ preventScroll: true });
-};
-$("show-image").onclick = showImage;
-canvas.addEventListener("pointerdown", (event) => {
-  if (!bitmap || stage.classList.contains("shielded")) return;
-  held = point(event);
-  canvas.setPointerCapture(event.pointerId);
-  queueDraw();
-});
-canvas.addEventListener("pointermove", (event) => {
-  if (held && canvas.hasPointerCapture(event.pointerId)) {
-    held = point(event);
-    queueDraw();
-  }
-});
-for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
-  canvas.addEventListener(name, () => {
-    held = null;
-    queueDraw();
-  });
-canvas.addEventListener("keydown", (event) => {
-  if (!bitmap || !reveal || stage.classList.contains("shielded")) return;
-  if (
-    [
-      " ",
-      "Enter",
-      "ArrowLeft",
-      "ArrowRight",
-      "ArrowUp",
-      "ArrowDown",
-      "Escape",
-    ].includes(event.key)
-  )
-    event.preventDefault();
-  if (event.key === "Escape") {
-    held = null;
-    queueDraw();
-    return;
-  }
-  if (event.key === " " || event.key === "Enter") {
-    keyboardPoint ??= { x: canvas.width / 2, y: canvas.height / 2 };
-    held = keyboardPoint;
-    queueDraw();
-  }
-  if (event.key.startsWith("Arrow")) {
-    keyboardPoint ??= { x: canvas.width / 2, y: canvas.height / 2 };
-    const step = Math.max(10, Math.min(canvas.width, canvas.height) / 12);
-    if (event.key === "ArrowLeft")
-      keyboardPoint.x = Math.max(0, keyboardPoint.x - step);
-    if (event.key === "ArrowRight")
-      keyboardPoint.x = Math.min(canvas.width, keyboardPoint.x + step);
-    if (event.key === "ArrowUp")
-      keyboardPoint.y = Math.max(0, keyboardPoint.y - step);
-    if (event.key === "ArrowDown")
-      keyboardPoint.y = Math.min(canvas.height, keyboardPoint.y + step);
-    if (held) held = keyboardPoint;
-    queueDraw();
-  }
-});
-canvas.addEventListener("keyup", (event) => {
-  if (event.key === " " || event.key === "Enter") {
-    held = null;
-    queueDraw();
-  }
-});
-canvas.addEventListener("blur", () => {
-  held = null;
-  queueDraw();
-});
-canvas.addEventListener("contextmenu", (event) => event.preventDefault());
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden)
-    shield("The image was hidden because you switched tabs or apps.");
-});
-window.addEventListener("blur", () =>
-  shield("The image was hidden because this window lost focus."),
-);
-window.addEventListener("beforeprint", () =>
-  shield("Protected image content is not included in printouts."),
-);
-window.addEventListener("keydown", (event) => {
-  if (event.key === "PrintScreen")
-    shield(
-      "The screenshot key was detected. Browsers cannot reliably block screenshots.",
-    );
-});
-window.addEventListener("pagehide", () => {
-  operation++;
-  disposeImage();
-});
-// Compatibility entry point; trust anchors are closed over and cannot be changed through this API.
-window.verifyGRD = (input) =>
-  isGRD2(input) ? verifyGRD2(input) : verifyGRD(input);
 
-function redactionGrid() {
-  if (!currentContainer?.manifest.subTile) return 64;
-  return [8,16,32,64].find(size => $("grid-"+size).checked) || 16;
+async function verifyFile(bytes, allowUnknownDisplay = false) {
+  if (isGRD2(bytes)) return verifyGRD2(bytes);
+  return createVerifier(TRUSTED, TRUST_POLICY, { allowUnknownDisplay })(bytes);
 }
-function gridBounds(index) {
-  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),x=(index%cols)*g,y=Math.floor(index/cols)*g;
-  return {x,y,width:Math.min(g,m.width-x),height:Math.min(g,m.height-y)};
-}
-function gridHidden(index) {
-  const b=gridBounds(index);
-  return (currentReport?.redactionMap || []).some(r=>r.x<=b.x&&r.y<=b.y&&r.x+r.width>=b.x+b.width&&r.y+r.height>=b.y+b.height);
-}
-function gridForRect(m,rect) {
-  const g=redactionGrid(),cols=Math.ceil(m.width/g),rows=Math.ceil(m.height/g),out=[];
-  if (![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.width<=0||rect.height<=0) throw new Error("Enter a rectangle with positive width and height.");
-  for(let row=Math.max(0,Math.floor(rect.y/g));row<Math.min(rows,Math.ceil((rect.y+rect.height)/g));row++)
-    for(let col=Math.max(0,Math.floor(rect.x/g));col<Math.min(cols,Math.ceil((rect.x+rect.width)/g));col++)out.push(row*cols+col);
-  return out;
-}
-function positionTileOverlay() {
-  if (!currentContainer || !redactionEditing) return;
-  const overlay=$("tile-overlay"),m=currentContainer.manifest,g=redactionGrid(),box=canvas.getBoundingClientRect();
-  overlay.style.width=box.width+"px";overlay.style.height=box.height+"px";
-  overlay.style.gridTemplateColumns=Array.from({length:Math.ceil(m.width/g)},(_,i)=>Math.min(g,m.width-i*g)+"fr").join(" ");
-  overlay.style.gridTemplateRows=Array.from({length:Math.ceil(m.height/g)},(_,i)=>Math.min(g,m.height-i*g)+"fr").join(" ");
-}
-function renderTileOverlay() {
-  const overlay=$("tile-overlay"),active=overlay.contains(document.activeElement)?document.activeElement.dataset.tileIndex:null;
-  overlay.hidden=!redactionEditing||!currentContainer||stage.classList.contains("shielded");overlay.replaceChildren();if(overlay.hidden)return;
-  const m=currentContainer.manifest,g=redactionGrid(),cols=Math.ceil(m.width/g),count=cols*Math.ceil(m.height/g);
-  if(count>4096){
-    // Dense grids stay bounded in the DOM. Keyboard users select through the rectangle fields.
-    const mask=el("canvas");mask.width=canvas.width;mask.height=canvas.height;mask.setAttribute("aria-hidden","true");
-    mask.style.cssText="position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
-    const ctx=mask.getContext("2d");ctx.fillStyle="rgba(55,80,220,.45)";
-    for(const index of selectedTiles){const b=gridBounds(index);ctx.fillRect(b.x/m.width*mask.width,b.y/m.height*mask.height,b.width/m.width*mask.width,b.height/m.height*mask.height);}
-    overlay.append(mask);
-    $("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. This dense grid uses the rectangle fields or drag selection instead of individual buttons.`;
-  } else {
-    let first=true;
-    for(let index=0;index<count;index++){
-      const hidden=gridHidden(index),chosen=selectedTiles.has(index),button=el("button",hidden?"HIDDEN":chosen?"HIDE":"+",hidden?"tile-hidden":chosen?"tile-selected":"tile-visible");
-      button.type="button";button.dataset.tileIndex=String(index);button.disabled=hidden;button.tabIndex=!hidden&&(active!==null?String(index)===active:first)?0:-1;if(!hidden)first=false;
-      button.setAttribute("aria-label",`Cell ${index+1}, row ${Math.floor(index/cols)+1}, column ${index%cols+1}, ${g}px${hidden?", already hidden":""}`);button.setAttribute("aria-pressed",String(chosen));
-      button.onclick=()=>{if(selectedTiles.has(index))selectedTiles.delete(index);else selectedTiles.add(index);renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;$("redaction-status").textContent=`${selectedTiles.size} cells selected at ${g}px. Apply them by exporting a redacted copy.`;};overlay.append(button);
-    }
-  }
-  positionTileOverlay();if(active!==null)overlay.querySelector(`[data-tile-index="${active}"]`)?.focus({preventScroll:true});
-}
-for(const size of [8,16,32,64])$("grid-"+size).onchange=()=>{selectedTiles.clear();$("export-redacted").disabled=true;renderTileOverlay();};
-$("redact-mode").onclick = () => {
-  redactionEditing = !redactionEditing;
-  $("redact-mode").setAttribute("aria-pressed", String(redactionEditing));
-  $("redact-mode").textContent = redactionEditing
-    ? "Finish marking"
-    : "Mark tiles";
-  if (redactionEditing) setMode(false);
-  renderTileOverlay();
-};
-new ResizeObserver(positionTileOverlay).observe(canvas);
-$("export-redacted").onclick = async () => {
-  if (!currentContainer || !selectedTiles.size) return;
-  const source = currentContainer,
-    selection = [...selectedTiles],
-    token = operation;
-  $("export-redacted").disabled = true;
-  try {
-    const bytes = source.manifest.subTile ? await redactRects(source,selection.map(gridBounds),{granularity:redactionGrid()}) : await redactGRD2(source, selection, "black");
-    if (operation !== token || currentContainer !== source) return;
-    const name =
-      (currentReport.fileName ?? "image.GRD").replace(
-        /(?:\.redacted)?\.grd$/i,
-        "",
-      ) + ".redacted.GRD";
-    download(bytes, name, "application/octet-stream");
-    await openFile(new File([bytes], name));
-    setStatus(
-      "Redacted copy exported. The selected tiles were replaced and their original salts were removed.",
-    );
-  } catch (error) {
-    if (operation === token) {
-      $("redaction-status").textContent = "Export failed: " + error.message;
-      $("export-redacted").disabled = false;
-    }
-  }
-};
-$("try-redaction").onclick = async () => {
-  const token = operation;
-  $("try-redaction").disabled = true;
-  try {
-    const sample = document.createElement("canvas");
-    sample.width = 384;
-    sample.height = 256;
-    const ctx = sample.getContext("2d");
-    ctx.fillStyle = "#eef0f5";
-    ctx.fillRect(0, 0, 384, 256);
-    ctx.fillStyle = "#17213b";
-    ctx.fillRect(0, 0, 384, 48);
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 19px Arial";
-    ctx.fillText("DEMONSTRATION IMAGE", 16, 31);
-    ctx.fillStyle = "#9aaee3";
-    ctx.beginPath();
-    ctx.arc(90, 112, 33, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#35456d";
-    ctx.fillRect(47, 146, 86, 59);
-    ctx.fillStyle = "#17213b";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText("FICTIONAL PERSON", 174, 94);
-    ctx.font = "12px Arial";
-    ctx.fillText("EXAMPLE ADDRESS", 174, 128);
-    ctx.fillText("123 SAMPLE STREET", 174, 149);
-    ctx.fillText("ID: 000-123", 174, 184);
-    ctx.fillStyle = "#214eef";
-    ctx.fillRect(16, 224, 352, 2);
-    ctx.font = "10px Arial";
-    ctx.fillText("EXAMPLE ONLY / SELECT TILES TO REDACT", 16, 242);
-    const key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, [
-        "sign",
-        "verify",
-      ]),
-      publicKey = new Uint8Array(
-        await crypto.subtle.exportKey("raw", key.publicKey),
-      );
-    const doc = await sealRgba({
-      rgba: new Uint8Array(ctx.getImageData(0, 0, 384, 256).data),
-      width: 384,
-      height: 256,
-      tileSize: 64,
-      publicKey,
-      purpose: "demo",
-      subTile: 16,
-      label: "Demonstration only",
-      sign: (bytes) =>
-        crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, bytes),
-    });
-    if (operation !== token) return;
-    await openFile(new File([encodeGRD2(doc)], "redaction-example.GRD"));
 
-    $("verdict-title").scrollIntoView({
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "start",
-    });
-  } catch (error) {
-    setStatus("The demo could not start: " + error.message);
-    $("file-help").textContent =
-      "The demo needs browser Ed25519 support: " + error.message;
+async function pictureBlob(report) {
+  if (report.container) {
+    // A legacy blur is valid as a disclosure but may still expose hidden pixels.
+    const bytes = report.hiddenPixelsCleared === false
+      ? await exportPlainImage(report.container) : containerImage(report.container);
+    return new Blob([bytes], { type: "image/png" });
+  }
+  if (report.payload) return new Blob([report.payload], { type: report.meta.mime });
+  throw new Error("The picture is unavailable.");
+}
+
+function paint(canvas, image, width, height) {
+  const scale = Math.min(1, 1200 / Math.max(width, height));
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+  canvas.style.width = `min(100%, ${canvas.width}px, ${65 * canvas.width / canvas.height}vh)`;
+  const context = canvas.getContext("2d");
+  context.fillStyle = image ? "#fff" : "#000";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  if (image) context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return context;
+}
+
+async function revealChecked(state, report) {
+  let image;
+  try {
+    if (report.verdict !== "FULLY REDACTED")
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+    if (state !== checked) return;
+    const { width, height } = report.meta;
+    if (image && (image.width !== width || image.height !== height))
+      throw new Error("Decoded dimensions differ from the signed file.");
+    paint(checkCanvas, image, width, height);
+    state.displayReport = report;
+    $("show-unknown").hidden = true;
+    $("image-panel").hidden = false;
+    $("redact-checked").hidden = !report.container || report.verdict === "FULLY REDACTED";
   } finally {
-    $("try-redaction").disabled = false;
+    image?.close();
+  }
+}
+
+function renderCheck(report, file) {
+  $("verdict-title").textContent = report.verdict;
+  $("verdict-description").textContent = report.verdict === "FULLY REDACTED"
+    ? "All areas are blacked out."
+    : report.regionVerified
+      ? report.redactionMap?.length
+        ? "The retained pixels match the signature. Hidden areas are solid black."
+        : "Every pixel matches the signature."
+      : report.genuine ? "The whole picture matches the signature."
+        : report.problems?.[0] ?? "The file could not be verified.";
+  const trusted = report.signerStatus === "trusted" && !report.demo && !report.personal;
+  $("verdict-signer").textContent = trusted && report.signerDisplayName
+    ? "Trusted signer: " + report.signerDisplayName
+    : report.signature_valid && ["self", "unknown", "demo"].includes(report.signerStatus)
+      ? "Signer identity is unverified." : "";
+  $("result").dataset.tone = trusted && (report.genuine || report.regionVerified) ? "good"
+    : ["TAMPERED", "REVOKED KEY"].includes(report.verdict) ? "bad" : "caution";
+  $("live-status").textContent = file.name;
+  $("legacy-redaction-note").hidden = report.version !== 1 || !report.signature_valid;
+  $("show-unknown").hidden = !report.canRevealUnknown;
+  $("show-unknown").disabled = false;
+  $("download-plain").disabled = false;
+  $("result").hidden = false;
+  $("verdict-title").focus();
+}
+
+async function openFile(file) {
+  showMode("check");
+  const version = ++checkVersion;
+  checked = null;
+  checkCanvas.width = checkCanvas.height = 1;
+  $("result").hidden = $("image-panel").hidden = true;
+  $("live-status").textContent = "Checking " + file.name + "…";
+  try {
+    const report = file.size > GRD3_LIMITS.bytes
+      ? { verdict: "LIMIT EXCEEDED", problems: ["Choose a .GRD file up to 256 MiB."] }
+      : await verifyFile(new Uint8Array(await file.arrayBuffer()));
+    if (version !== checkVersion) return;
+    const state = { file, report, displayReport: null };
+    checked = state;
+    renderCheck(report, file);
+    if (report.viewable || report.genuine || (report.verdict === "FULLY REDACTED" && report.regionVerified)) {
+      try {
+        await revealChecked(state, report);
+      } catch (error) {
+        if (state !== checked) return;
+        const unreadable = { verdict: "UNREADABLE", problems: [error.message] };
+        state.report = unreadable;
+        renderCheck(unreadable, file);
+      }
+    }
+  } catch (error) {
+    if (version !== checkVersion) return;
+    $("live-status").textContent = "Could not open the picture. " + error.message;
+  }
+}
+
+$("show-unknown").onclick = async () => {
+  const state = checked;
+  if (!state?.report.canRevealUnknown) return;
+  $("show-unknown").disabled = true;
+  try {
+    const report = state.report.version === 1
+      ? await verifyFile(new Uint8Array(await state.file.arrayBuffer()), true)
+      : state.report;
+    if (state !== checked || !report.canRevealUnknown) return;
+    await revealChecked(state, report);
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("show-unknown").disabled = false;
   }
 };
 
-function setTileSelection(indices) {
-  for (const index of indices) if (!gridHidden(index)) selectedTiles.add(index);
-  renderTileOverlay();$("export-redacted").disabled=!selectedTiles.size;
-  $("redaction-status").textContent=`${selectedTiles.size} cells selected. Export rounds to ${redactionGrid()}px boundaries.`;
-}
-$("select-rectangle").onclick = () => {
-  if (!currentContainer) return;
+$("download-plain").onclick = async () => {
+  const state = checked, report = state?.displayReport;
+  if (!report) return;
+  $("download-plain").disabled = true;
   try {
-    redactionEditing = true;
-    $("redact-mode").setAttribute("aria-pressed", "true");
-    $("redact-mode").textContent = "Finish marking";
-    setMode(false);
-    setTileSelection(
-      gridForRect(currentContainer.manifest, {
-        x: Number($("rect-x").value),
-        y: Number($("rect-y").value),
-        width: Number($("rect-width").value),
-        height: Number($("rect-height").value),
-      }),
-    );
+    let png;
+    if (report.container) png = await exportPlainImage(report.container);
+    else if (report.verdict === "FULLY REDACTED") {
+      const { width, height } = report.meta;
+      png = await encodeRgbPng(new Uint8Array(width * height * 3), width, height);
+    } else {
+      const image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      try {
+        const surface = document.createElement("canvas");
+        surface.width = image.width;
+        surface.height = image.height;
+        surface.getContext("2d").drawImage(image, 0, 0);
+        png = await new Promise(resolve => surface.toBlob(resolve, "image/png"));
+      } finally {
+        image.close();
+      }
+    }
+    if (!png) throw new Error("Could not create the PNG.");
+    if (state === checked) download(png, "picture.png", "image/png");
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("download-plain").disabled = false;
+  }
+};
+
+function setGrid(minimum, received) {
+  const select = $("rounding");
+  for (const option of select.options) option.disabled = Number(option.value) < minimum;
+  select.value = String(supportedGrids.find(grid => grid >= minimum));
+  $("grid-help").textContent = received
+    ? `This file was sealed on a ${minimum}-pixel grid. Larger rounding only changes the blackout box.`
+    : "Pictures are sealed on a 16-pixel grid. Choosing 32 or 64 px only makes this black-out box bigger; it does not change how the picture was sealed.";
+}
+
+function paddingOptions() {
+  const enabled = $("pad-boxes").checked;
+  const lineHeight = enabled ? $("line-height").valueAsNumber : 0;
+  if (enabled && (!Number.isInteger(lineHeight) || lineHeight < 1 || lineHeight > 8192))
+    throw new Error("Enter a full text-line height from 1 to 8,192 px.");
+  return {
+    grid: Number($("rounding").value), widthClass: enabled ? 128 : 0,
+    lineHeight, imgW: editor.width, imgH: editor.height,
+  };
+}
+
+function drawEditor(boxes, original) {
+  const { preview, width, height } = editor;
+  const context = sealCanvas.getContext("2d");
+  context.drawImage(preview, 0, 0, sealCanvas.width, sealCanvas.height);
+  context.fillStyle = "#000";
+  const scaleX = sealCanvas.width / width, scaleY = sealCanvas.height / height;
+  for (const box of boxes)
+    context.fillRect(box.x * scaleX, box.y * scaleY, box.w * scaleX, box.h * scaleY);
+  const area = boxUnionArea(boxes), selected = boxUnionArea(original);
+  $("blackout-area").textContent = selected
+    ? `Blacked-out area: ${area.toLocaleString()} px² (${(area / selected).toLocaleString(undefined, { maximumFractionDigits: 2 })}× what you selected)`
+    : "Blacked-out area: 0 px²";
+}
+
+function invalidateReview() {
+  $("convert-privacy").checked = false;
+  $("check-sealed").hidden = true;
+  savedFile = null;
+}
+
+function syncConsent() {
+  $("convert-submit").disabled = busy || !editor || !editor.boxes
+    || !$("convert-privacy").checked || (!!editor.doc && !selections.length);
+}
+
+function renderAreas(focusIndex = null) {
+  if (!editor) return;
+  $("line-height").disabled = !$("pad-boxes").checked;
+  const list = $("seal-area-list");
+  list.replaceChildren();
+  try {
+    const options = paddingOptions();
+    editor.boxes = selections.map(box => padBox(box, options));
+    drawEditor(editor.boxes, selections);
+    for (const [index, box] of editor.boxes.entries()) {
+      const item = document.createElement("li");
+      item.textContent = `Area ${index + 1} · ${box.w} × ${box.h} px`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove area " + (index + 1));
+      remove.onclick = () => {
+        if (busy) return;
+        selections.splice(index, 1);
+        invalidateReview();
+        renderAreas(index);
+      };
+      item.append(remove);
+      list.append(item);
+    }
+    $("redaction-status").textContent = `Areas round up to a ${options.grid}-pixel grid.`;
+  } catch (error) {
+    editor.boxes = null;
+    // Keep the last valid blackout preview until the settings are corrected.
+    $("redaction-status").textContent = error.message;
+  }
+  if (focusIndex !== null) {
+    const buttons = list.querySelectorAll("button");
+    (buttons[Math.min(focusIndex, buttons.length - 1)] ?? $("select-rectangle")).focus();
+  }
+  syncConsent();
+}
+
+function addArea(rect) {
+  if (!editor || busy) return;
+  try {
+    if (selections.length >= 200) throw new Error("Use up to 200 blackout areas.");
+    padBox(rect, paddingOptions());
+    const { x, y, w, h } = rect;
+    selections.push({ x, y, w: Math.min(w, editor.width - x), h: Math.min(h, editor.height - y) });
+    invalidateReview();
+    renderAreas();
   } catch (error) {
     $("redaction-status").textContent = error.message;
   }
-};
-let rectangleStart = null,
-  rectangleMoved = false,
-  skipTileClick = false;
-const overlayElement = $("tile-overlay");
+}
+
 function imagePoint(event) {
-  const box = canvas.getBoundingClientRect(),
-    m = currentContainer.manifest;
+  const rect = sealCanvas.getBoundingClientRect();
   return {
-    x: Math.max(
-      0,
-      Math.min(m.width, ((event.clientX - box.left) * m.width) / box.width),
-    ),
-    y: Math.max(
-      0,
-      Math.min(m.height, ((event.clientY - box.top) * m.height) / box.height),
-    ),
+    x: Math.max(0, Math.min(editor.width, (event.clientX - rect.left) * editor.width / rect.width)),
+    y: Math.max(0, Math.min(editor.height, (event.clientY - rect.top) * editor.height / rect.height)),
   };
 }
-overlayElement.addEventListener("pointerdown", (event) => {
-  if (!currentContainer || !redactionEditing) return;
-  rectangleStart = imagePoint(event);
-  rectangleMoved = false;
+
+function dragBox(event) {
+  const point = imagePoint(event);
+  const x = Math.min(editor.width - 1, Math.floor(Math.min(point.x, dragStart.x)));
+  const y = Math.min(editor.height - 1, Math.floor(Math.min(point.y, dragStart.y)));
+  return { x, y, w: Math.max(1, Math.ceil(Math.max(point.x, dragStart.x)) - x),
+    h: Math.max(1, Math.ceil(Math.max(point.y, dragStart.y)) - y) };
+}
+
+sealCanvas.addEventListener("pointerdown", event => {
+  if (!editor?.boxes || busy || dragStart || event.button !== 0) return;
+  dragStart = { ...imagePoint(event), pointerId: event.pointerId };
+  sealCanvas.setPointerCapture(event.pointerId);
 });
-overlayElement.addEventListener("pointermove", (event) => {
-  if (!rectangleStart || !currentContainer) return;
-  const p = imagePoint(event);
-  if (Math.abs(p.x - rectangleStart.x) + Math.abs(p.y - rectangleStart.y) > 8) {
-    rectangleMoved = true;
-    overlayElement.setPointerCapture(event.pointerId);
-  }
+sealCanvas.addEventListener("pointermove", event => {
+  if (!dragStart || dragStart.pointerId !== event.pointerId || !editor?.boxes || busy) return;
+  const rect = dragBox(event);
+  drawEditor([...editor.boxes, padBox(rect, paddingOptions())], [...selections, rect]);
 });
-overlayElement.addEventListener("pointerup", (event) => {
-  if (!rectangleStart || !currentContainer) return;
-  const start = rectangleStart;
-  rectangleStart = null;
-  if (!rectangleMoved) return;
-  const p = imagePoint(event);
-  skipTileClick = true;
-  event.preventDefault();
-  setTileSelection(
-    gridForRect(currentContainer.manifest, {
-      x: Math.min(start.x, p.x),
-      y: Math.min(start.y, p.y),
-      width: Math.max(1, Math.abs(start.x - p.x)),
-      height: Math.max(1, Math.abs(start.y - p.y)),
-    }),
-  );
-  setTimeout(() => (skipTileClick = false), 0);
+sealCanvas.addEventListener("pointerup", event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  const rect = dragBox(event);
+  dragStart = null;
+  addArea(rect);
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
 });
-overlayElement.addEventListener("pointercancel", () => {
-  rectangleStart = null;
-  rectangleMoved = false;
-});
-overlayElement.addEventListener(
-  "click",
-  (event) => {
-    if (skipTileClick) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
-  },
-  true,
-);
-overlayElement.addEventListener("keydown", (event) => {
-  if (!currentContainer || !event.key.startsWith("Arrow")) return;
-  const i = Number(event.target.dataset.tileIndex),
-    cols = Math.ceil(currentContainer.manifest.width / redactionGrid());
-  if (!Number.isInteger(i)) return;
-  const step =
-    event.key === "ArrowLeft"
-      ? -1
-      : event.key === "ArrowRight"
-        ? 1
-        : event.key === "ArrowUp"
-          ? -cols
-          : cols;
-  let next = i + step;
-  while (next >= 0 && next < currentContainer.tiles.length) {
-    const button = overlayElement.querySelector(`[data-tile-index="${next}"]`);
-    if (button && !button.disabled) {
-      event.target.tabIndex = -1;
-      button.tabIndex = 0;
-      button.focus();
-      break;
-    }
-    next += step;
-  }
-  event.preventDefault();
+for (const type of ["pointercancel", "lostpointercapture"]) sealCanvas.addEventListener(type, event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  dragStart = null;
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
 });
 
-// UI-only geometry and editor state. Pixel commitments remain in the core modules.
-function mergedHiddenAreas(report) {
- const rows=(report?.redactionMap||[]).map(({x,y,width,height})=>({x,y,width,height})).sort((a,b)=>a.y-b.y||a.x-b.x),horizontal=[];
- for(const r of rows){const last=horizontal.at(-1);if(last&&last.y===r.y&&last.height===r.height&&last.x+last.width===r.x)last.width+=r.width;else horizontal.push(r);}
- const out=[],ends=new Map();
- for(const r of horizontal){const key=r.x+':'+r.width,last=ends.get(key);if(last&&last.y+last.height===r.y)last.height+=r.height;else{out.push(r);ends.set(key,r);}}
- return out;
-}
-let sealAreas=[],sealSourceDoc=null,sealPreview=null,lastSealedFile=null,sealPointer=null,sealUnknownApproved=false;
-function sealGrid(){const minimum=sealSourceDoc?.manifest.subTile|| (sealSourceDoc?64:16);return Math.max(minimum,[8,16,32,64].find(n=>$('grid-'+n).checked)||minimum);}
-function roundSealArea(rect){
- if(!conversionImage)throw Error('Choose a picture first.');
- const m=conversionImage,g=sealGrid();
- if(![rect.x,rect.y,rect.width,rect.height].every(Number.isFinite)||rect.x<0||rect.y<0||rect.width<=0||rect.height<=0||rect.x>=m.width||rect.y>=m.height)throw Error('Enter an area inside the picture with a positive width and height.');
- const x=Math.floor(rect.x/g)*g,y=Math.floor(rect.y/g)*g,right=Math.min(m.width,Math.ceil((rect.x+rect.width)/g)*g),bottom=Math.min(m.height,Math.ceil((rect.y+rect.height)/g)*g);
- return {x,y,width:right-x,height:bottom-y};
-}
-function drawSealEditor(draft=null){
- if(!sealPreview||!conversionImage)return;const c=$('seal-canvas'),ctx=c.getContext('2d');
- c.width=sealPreview.width;c.height=sealPreview.height;ctx.drawImage(sealPreview,0,0);
- const scale=c.width/conversionImage.width;
- for(const r of [...sealAreas,...(draft?[draft]:[])]){
-  const x=r.x*scale,y=r.y*scale,w=r.width*scale,h=r.height*scale;
-  ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
- }
- // Preview stamps are not included in the downloaded pixels.
- ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#fff';ctx.font='12px Arial';ctx.fillText((sealUnknownApproved?'UNKNOWN SIGNER · ':'')+'GUARD · PREVIEW · '+SESSION,8,c.height-10);ctx.restore();
-}
-function renderSealAreas(){
- const list=$('seal-area-list');list.replaceChildren();
- sealAreas.forEach((r,i)=>{const li=el('li',undefined,'area-chip'),label=el('span',`Area ${i+1} · ${r.width} × ${r.height}`),b=el('button','×');b.type='button';b.setAttribute('aria-label','Remove area '+(i+1));b.onclick=()=>{sealAreas.splice(i,1);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();};li.append(label,b);list.append(li);});
- $('seal-grid-note').textContent=`Areas round up to a ${sealGrid()}-pixel grid.`;
- $('redaction-status').textContent=sealAreas.length?sealAreas.length+(sealAreas.length===1?' area selected.':' areas selected.'):'';drawSealEditor();
-}
-function addSealArea(rect){
- if(sealAreas.length>=200)throw Error('Use up to 200 areas. Combine overlapping areas when possible.');
- sealAreas.push(roundSealArea(rect));conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();
-}
-async function prepareSealPreview(surface=null){
- const m=conversionImage;if(!m)return;
- const prepared=document.createElement('canvas');const previewToken=conversionVersion;const scale=Math.min(1,1200/Math.max(m.width,m.height));prepared.width=Math.max(1,Math.round(m.width*scale));prepared.height=Math.max(1,Math.round(m.height*scale));
- let image;
- if(!surface){image=await createImageBitmap(new ImageData(new Uint8ClampedArray(m.rgba),m.width,m.height));surface=image;}
- if(previewToken!==conversionVersion||conversionImage!==m){image?.close();return;}prepared.getContext('2d').drawImage(surface,0,0,prepared.width,prepared.height);image?.close();sealPreview=prepared;
- $('seal-step-two').hidden=false;$('seal-step-three').hidden=false;$('convert-preview').hidden=false;$('redaction-options').hidden=false;$('redaction-tools').hidden=false;$('legacy-redaction-note').hidden=true;
- const minimum=sealSourceDoc?.manifest.subTile||(sealSourceDoc?64:16);
- for(const size of [8,16,32,64]){$('grid-'+size).disabled=size<minimum;$('grid-'+size).checked=size===minimum;}
- document.querySelector('.convert-resize').hidden=!!sealSourceDoc;
- $('convert-submit').textContent=sealSourceDoc?'Download blacked-out .GRD':'Seal and download .GRD';renderSealAreas();refreshSealSummary();
-}
-async function loadSealGrd(file,bytes,token,allowUnknown=false){
- const trust=await sessionTrust();const r=await (isGRD2(bytes)?verifyGRD2(bytes,trust.anchors,trust.policy):createVerifier(trust.anchors,trust.policy)(bytes));
- if(token!==conversionVersion)return;
- const approvedUnknown=allowUnknown&&file===currentInputFile&&unknownApproved&&currentReport?.canRevealUnknown&&r.canRevealUnknown&&r.signerStatus==='unknown'&&r.fingerprint===currentReport.fingerprint;
- if(!r.viewable&&!approvedUnknown){await openFile(file);conversionStatus('This file cannot be edited until its checks and signer allow the picture to be shown.',true);return;}
- if(!r.container){$('seal-step-two').hidden=false;$('legacy-redaction-note').hidden=false;conversionStatus('This GRD format cannot be blacked out without its signer.',true);return;}
- const doc=r.container,decoded=await decodeRgbPng(containerImage(doc),doc.manifest.version===3?GRD3_LIMITS:undefined);
- if(token!==conversionVersion)return;
- const rgba=new Uint8Array(decoded.width*decoded.height*4);
- for(let i=0;i<decoded.width*decoded.height;i++){rgba[i*4]=decoded.rgb[i*3];rgba[i*4+1]=decoded.rgb[i*3+1];rgba[i*4+2]=decoded.rgb[i*3+2];rgba[i*4+3]=255;}
- sealUnknownApproved=!!approvedUnknown;sealSourceDoc=doc;conversionImage={rgba,width:decoded.width,height:decoded.height,name:file.name,sourceBytes:file.size};
- await prepareSealPreview();if(token!==conversionVersion)return;
- $('convert-details').textContent=file.name+' · '+decoded.width+' × '+decoded.height+' px';$('document-warning').hidden=!looksLikeDocument(decoded.width,decoded.height);syncSealConsent();conversionStatus(sealUnknownApproved?'Signer remains unknown. Blackouts keep the original key.':'Original signer kept. Choose any additional blackouts.');
-}
-$('select-rectangle').onclick=()=>{try{addSealArea({x:Number($('rect-x').value),y:Number($('rect-y').value),width:Number($('rect-width').value),height:Number($('rect-height').value)});}catch(error){$('redaction-status').textContent=error.message;}};
-const sealCanvas=$('seal-canvas');
-function sealPoint(event){const r=sealCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(conversionImage.width,(event.clientX-r.left)*conversionImage.width/r.width)),y:Math.max(0,Math.min(conversionImage.height,(event.clientY-r.top)*conversionImage.height/r.height))};}
-function sealDraft(event){const p=sealPoint(event);return {x:Math.min(p.x,sealPointer.x),y:Math.min(p.y,sealPointer.y),width:Math.max(1,Math.abs(p.x-sealPointer.x)),height:Math.max(1,Math.abs(p.y-sealPointer.y))};}
-sealCanvas.addEventListener('pointerdown',event=>{if(!conversionImage||$('convert-form').getAttribute('aria-busy')==='true')return;event.preventDefault();sealPointer=sealPoint(event);sealCanvas.setPointerCapture(event.pointerId);});
-sealCanvas.addEventListener('pointermove',event=>{if(!sealPointer)return;try{drawSealEditor(roundSealArea(sealDraft(event)));}catch{}});
-sealCanvas.addEventListener('pointerup',event=>{if(!sealPointer)return;try{addSealArea(sealDraft(event));}catch(error){$('redaction-status').textContent=error.message;}finally{sealPointer=null;drawSealEditor();}});
-sealCanvas.addEventListener('pointercancel',()=>{sealPointer=null;drawSealEditor();});
-for(const size of [8,16,32,64])$('grid-'+size).addEventListener('change',()=>{if(!conversionImage)return;sealAreas=sealAreas.map(roundSealArea);conversionVersion++;$('convert-privacy').checked=false;syncSealConsent();renderSealAreas();});
-$('check-sealed').onclick=event=>{event.preventDefault();if(lastSealedFile)void openFile(lastSealedFile);};
+$("select-rectangle").onclick = () => {
+  const [x, y, w, h] = ["rect-x", "rect-y", "rect-width", "rect-height"].map(id => $(id).valueAsNumber);
+  addArea({ x, y, w, h });
+};
+for (const id of ["rounding", "pad-boxes", "line-height"]) $(id).addEventListener("input", () => {
+  invalidateReview();
+  renderAreas();
+});
+$("convert-privacy").onchange = syncConsent;
 
-let conversionImage = null,
-  conversionVersion = 0,
-  conversionPreviewUrl = null;
-function conversionStatus(message, error = false) {
-  $("convert-status").textContent = message;
-  $("convert-status").classList.toggle("error", error);
-  $("convert-input").setAttribute("aria-invalid", String(error));
+function loadEditor(image, file, doc) {
+  const { width, height } = image;
+  const preview = document.createElement("canvas");
+  paint(preview, image, width, height);
+  paint(sealCanvas, preview, width, height);
+  editor = { width, height, preview, image, doc, boxes: [] };
+  setGrid(doc ? doc.manifest.subTile ?? 64 : 16, !!doc);
+  $("pad-boxes").checked = true;
+  $("line-height").value = "32";
+  $("finish-title").textContent = doc ? "Download the blacked-out copy" : "Seal and download";
+  $("convert-submit").textContent = doc ? "Download blacked-out .GRD" : "Seal and download .GRD";
+  $("seal-signer-summary").textContent = doc
+    ? "The original signature stays with the file. You can black out more areas without its key."
+    : "TileSeal creates a one-time key in this browser. The resulting file is self-signed.";
+  $("convert-details").textContent = `${file.name} · ${width} × ${height} px`;
+  $("seal-step-two").hidden = $("seal-step-three").hidden = false;
+  renderAreas();
 }
-async function prepareSealInput(file,allowUnknown=false){
-  const token=++conversionVersion;
-  conversionImage = null;sealAreas=[];sealSourceDoc=null;sealUnknownApproved=false;sealPreview=null;lastSealedFile=null;sealPointer=null;
-  $('check-sealed').hidden=true;$('save-original').checked=false;syncSealExtras();$('seal-step-two').hidden=true;$('seal-step-three').hidden=true;$('redaction-options').hidden=true;$('redaction-tools').hidden=true;$('legacy-redaction-note').hidden=true;
-  $("convert-privacy").checked=false;$("convert-submit").disabled=true;$("document-warning").hidden=true;
-  $("convert-preview").hidden = true;
-  $("convert-image").removeAttribute("src");
-  if (conversionPreviewUrl) URL.revokeObjectURL(conversionPreviewUrl);
-  conversionPreviewUrl = null;
-  if (!file) {
-    conversionStatus("Choose an image to begin.");
-    return;
-  }
-  conversionStatus("Reading image locally…");
-  let decoded;
+
+async function prepareSealInput(file, approvedState = null) {
+  if (!file || busy) return;
+  showMode("seal");
+  const version = ++editVersion;
+  editor?.image.close();
+  editor = null;
+  sealCanvas.width = sealCanvas.height = 1;
+  selections = [];
+  dragStart = null;
+  savedFile = null;
+  $("check-sealed").hidden = $("seal-step-two").hidden = $("seal-step-three").hidden = true;
+  $("convert-privacy").checked = false;
+  syncConsent();
+  setEditorStatus("Opening " + file.name + "…");
+  let image;
   try {
-    if (file.size > GRD3_LIMITS.bytes)
-      throw new Error("Choose an image up to 256 MiB.");
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    if (token !== conversionVersion) return;
-    if(isGRD2(bytes)||/\.grd$/i.test(file.name)){await loadSealGrd(file,bytes,token,allowUnknown);return;}
-    const allowResize = $("convert-resize").checked;
-    const info = inspectConversionImage(bytes, { allowResize, large: true });
-    decoded = await createImageBitmap(new Blob([bytes], { type: info.mime }));
-    if (token !== conversionVersion) return;
-    if (
-      !decoded.width ||
-      !decoded.height ||
-      decoded.width > 16384 ||
-      decoded.height > 16384 ||
-      decoded.width * decoded.height > 50_000_000 ||
-      decoded.width * decoded.height !== info.width * info.height
-    )
-      throw new Error(
-        "Decoded image dimensions are unsupported. Export it to PNG and try again.",
-      );
-    const originalWidth = decoded.width,
-      originalHeight = decoded.height;
-    const fitted = fitConversionDimensions(originalWidth, originalHeight, { large: true });
-    const resized =
-      fitted.width !== originalWidth || fitted.height !== originalHeight;
-    if (resized && !allowResize)
-      throw new Error("Enable “Fit large photos” to convert this image here.");
-    const surface = document.createElement("canvas");
-    surface.width = fitted.width;
-    surface.height = fitted.height;
-    const context = surface.getContext("2d", { willReadFrequently: true });
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, surface.width, surface.height);
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
-    context.drawImage(decoded, 0, 0, surface.width, surface.height);
-    decoded.close();
-    const rgba = new Uint8Array(
-      context.getImageData(0, 0, surface.width, surface.height).data,
-    );
-    const preview = await new Promise((resolve) =>
-      surface.toBlob(resolve, "image/png"),
-    );
-    if (token !== conversionVersion) return;
-    if (!preview)
-      throw new Error("Could not prepare this image. Try a PNG or JPG export.");
-    conversionImage = {
-      rgba,
-      width: surface.width,
-      height: surface.height,
-      name: file.name,
-      sourceBytes: file.size,
-    };
-    await prepareSealPreview(surface);if(token!==conversionVersion)return;
-    conversionPreviewUrl = URL.createObjectURL(preview);
-    $("convert-image").src = conversionPreviewUrl;
-    $("convert-details").textContent =
-      `${file.name} · ${resized ? `Original ${originalWidth} × ${originalHeight} → GRD ${surface.width} × ${surface.height} · output limit 36 MP / 9,000 tiles` : `${surface.width} × ${surface.height} · original size`} · ${bytesLabel(file.size)}`;
-    $("convert-preview").hidden = false;
-    $("document-warning").hidden=!looksLikeDocument(originalWidth,originalHeight);syncSealConsent();
-    conversionStatus(resized?'Ready. Uses the resized preview.':'Ready to seal.');
+    if (file.size > GRD3_LIMITS.bytes) throw new Error("Choose a file up to 256 MiB.");
+    if (approvedState) {
+      if (approvedState !== checked || !approvedState.displayReport?.container) return;
+      const report = approvedState.displayReport;
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      if (version !== editVersion || approvedState !== checked) return;
+      if (image.width !== report.meta.width || image.height !== report.meta.height)
+        throw new Error("Decoded dimensions differ from the signed file.");
+      loadEditor(image, file, report.container);
+    } else {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (version !== editVersion) return;
+      if (isGRD2(bytes) || /^GRD1$/.test(String.fromCharCode(...bytes.subarray(0, 4))) || /\.grd$/i.test(file.name)) {
+        setEditorStatus("");
+        await openFile(file);
+        return;
+      }
+      const info = inspectConversionImage(bytes, { large: true });
+      image = await createImageBitmap(new Blob([bytes], { type: info.mime }));
+      if (version !== editVersion) return;
+      const fitted = fitConversionDimensions(image.width, image.height, { large: true });
+      if (fitted.width !== image.width || fitted.height !== image.height ||
+          image.width * image.height !== info.width * info.height)
+        throw new Error("Decoded dimensions exceed the image limits. Choose a smaller picture.");
+      loadEditor(image, file, null);
+    }
+    image = null; // The editor now owns the bitmap.
+    setEditorStatus(file.name + " is ready.");
   } catch (error) {
-    if (token === conversionVersion)
-      conversionStatus(
-        error.message ||
-          "This browser cannot decode that image. Try PNG or JPG.",
-        true,
-      );
+    if (version === editVersion) setEditorStatus(error.message, true);
   } finally {
-    decoded?.close?.();
+    image?.close();
   }
-};
-$("convert-input").onchange=()=>prepareSealInput($("convert-input").files[0]);
-function syncSealConsent(){$("convert-submit").disabled=!conversionImage||!$("convert-privacy").checked;}
-$("convert-privacy").onchange=syncSealConsent;
-syncSealConsent();
-$("convert-resize").onchange = () => $("convert-input").onchange();
-$("convert-form").onsubmit = async (event) => {
+}
+
+async function buildSeal(source, grid) {
+  let doc = source.doc;
+  if (!doc) {
+    const key = await crypto.subtle.generateKey("Ed25519", false, ["sign", "verify"]);
+    const publicKey = new Uint8Array(await crypto.subtle.exportKey("raw", key.publicKey));
+    const surface = document.createElement("canvas");
+    surface.width = source.width;
+    surface.height = source.height;
+    const context = surface.getContext("2d", { willReadFrequently: true });
+    context.drawImage(source.image, 0, 0);
+    const rgba = new Uint8Array(context.getImageData(0, 0, source.width, source.height).data.buffer);
+    doc = await sealRgba({
+      rgba, width: source.width, height: source.height, publicKey, purpose: "personal",
+      subTile: 16, visual: false, sign: bytes => crypto.subtle.sign("Ed25519", key.privateKey, bytes),
+    });
+  }
+
+  const rects = source.boxes.map(({ x, y, w, h }) => ({ x, y, width: w, height: h }));
+  if (!rects.length) return encodeGRD2(doc);
+  if (doc.manifest.subTile) return redactRects(doc, rects, { granularity: grid });
+  const indices = new Set(rects.flatMap(rect => tilesForRect(doc.manifest, rect)));
+  return redactGRD2(doc, [...indices]);
+}
+
+$("convert-form").onsubmit = async event => {
   event.preventDefault();
-  if ($('convert-submit').disabled || !$('convert-privacy').checked || !conversionImage) return;
-  const source=conversionImage,token=conversionVersion,viewerToken=operation,signingVersion=offlineSignerVersion,signer=unlockedSigner,existing=sealSourceDoc,unknownSource=sealUnknownApproved,areas=sealAreas.map(r=>({...r})),granularity=sealGrid(),saveOriginal=$('save-original').checked;
-  $('convert-submit').disabled=true;$('convert-input').disabled=true;$('convert-resize').disabled=true;$('convert-privacy').disabled=true;$('select-rectangle').disabled=true;$('save-original').disabled=true;
-  $('convert-form').setAttribute('aria-busy','true');conversionStatus('Sealing and checking on your device…');
-  try{
-    const key=existing?null:signer?{privateKey:signer.privateKey}:await crypto.subtle.generateKey('Ed25519',false,['sign','verify']);
-    const publicKey=existing?null:signer?signer.publicKey:new Uint8Array(await crypto.subtle.exportKey('raw',key.publicKey));
-    const doc=existing||await sealRgba({rgba:source.rgba,width:source.width,height:source.height,publicKey,purpose:signer?'asset':'personal',subTile:16,label:signer?signer.contact.name:'',sign:b=>crypto.subtle.sign('Ed25519',key.privateKey,b)});
-    const original=encodeGRD2(doc),bytes=areas.length?await redactRects(doc,areas,{granularity}):original;
-    const trust=await sessionTrust(),anchors=existing?trust.anchors:signer?[{public_key_hex:signer.contact.publicKey,name:signer.contact.name}]:TRUSTED;
-    const result=await verifyGRD2(bytes,anchors,trust.policy);
-    if(!result.regionVerified||!result.signature_valid||!(['GENUINE','VERIFIED WITH REDACTIONS','FULLY REDACTED','UNVERIFIED: SELF-SIGNED','DEMO'].includes(result.verdict)||existing&&unknownSource&&result.verdict==='UNTRUSTED SIGNER'&&result.canRevealUnknown))throw Error('The file did not pass its own check. Nothing was downloaded.');
-    if(token!==conversionVersion||viewerToken!==operation||signingVersion!==offlineSignerVersion)throw Error('Your file or signer changed. Check the selection and try again.');
-    download(bytes,'image.GRD','application/octet-stream');
-    if(saveOriginal&&areas.length)download(original,'private-original.GRD','application/octet-stream');
-    lastSealedFile=new File([bytes],'image.GRD');$('check-sealed').hidden=false;
-    conversionStatus('Saved image.GRD · '+bytesLabel(bytes.length)+'.');$('check-sealed').focus();
-  }catch(error){conversionStatus('Sealing failed: '+error.message,true);$('convert-status').tabIndex=-1;$('convert-status').focus();}
-  finally{$('convert-submit').disabled=!$('convert-privacy').checked;$('convert-input').disabled=false;$('convert-resize').disabled=false;$('convert-privacy').disabled=false;$('select-rectangle').disabled=false;$('save-original').disabled=false;$('convert-form').removeAttribute('aria-busy');}
-};
-
-$("copy-form").onsubmit = async event => {
-  event.preventDefault();const copyTrustVersion=trustImportVersion;
-  if ($("copy-submit").disabled) return;
-  const proofFile = $("copy-proof").files[0], imageFile = $("copy-image").files[0];
-  if (!proofFile || !imageFile) { $("copy-status").textContent = "Choose both the visual proof and image copy."; return; }
-  $("copy-submit").disabled = true; $("copy-proof").disabled = true; $("copy-image").disabled = true; $("copy-form").setAttribute("aria-busy", "true");
-  $("copy-status").classList.remove("borderline");
-  $("copy-status").textContent = "Checking signature, disclosures and visual block averages locally…";
+  if ($("convert-submit").disabled || busy || !editor?.boxes || !$("convert-privacy").checked) return;
+  const source = editor;
+  busy = true;
+  savedFile = null;
+  dragStart = null;
+  drawEditor(source.boxes, selections);
+  $("check-sealed").hidden = true;
+  $("convert-form").setAttribute("aria-busy", "true");
+  $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = true;
+  syncConsent();
+  setEditorStatus("Preparing and checking your .GRD…");
   try {
-    if (proofFile.size > 16*1024*1024 || imageFile.size > GRD3_LIMITS.bytes) throw new Error("Proof must be at most 16 MiB and the image at most 256 MiB.");
-    const r = await verifyVisual(new Uint8Array(await proofFile.arrayBuffer()), new Uint8Array(await imageFile.arrayBuffer()), ...(await sessionTrust()).args);
-    if(copyTrustVersion!==trustImportVersion || activeBundle && Date.parse(activeBundle.expires)<=Date.now()){ $("copy-status").textContent="Trust changed or expired during this check. Check the copy again.";return;}
-    const label = r.visualVerdict ?? r.verdict;
-    $("copy-status").classList.toggle("borderline", label === "BORDERLINE (decoder-dependent)");
-    $("copy-status").textContent = label + ". " + (r.trustVerdict && !r.trusted ? r.trustVerdict + ": signer identity is not verified. " : "") +
-      (r.worstError !== undefined ? "Largest block difference: " + r.worstError + " / 255. " : "") + r.guarantee +
-      (r.problems.length ? " " + r.problems.join(" ") : "");
-  } catch (error) { $("copy-status").textContent = "Copy check could not finish: " + error.message; }
-  finally { $("copy-submit").disabled = false; $("copy-proof").disabled = false; $("copy-image").disabled = false; $("copy-form").removeAttribute("aria-busy"); $("copy-status").focus(); }
-};
-
-async function sessionTrust(){
- const base=[...TRUSTED,...Array.from(personTrust.values()).filter(c=>!TRUSTED.some(k=>k.public_key_hex===c.public_key_hex))];
- if(TRUSTED._invalid)base._invalid=true;
- if(!activeBundle)return {anchors:base,policy:TRUST_POLICY,args:[base,TRUST_POLICY]};
- const r=await verifyTrustBundle(activeBundle.bytes,activeBundle.root,{previous:bundleStates.get(activeBundle.root)??null});
- const revoked=[...TRUST_POLICY.revoked,...r.policy.revoked],anchors=[...base.filter(k=>!r.keys.signers.some(s=>s.public_key_hex===k.public_key_hex)),...r.anchors];
- if(base._invalid)anchors._invalid=true;
- const merged={version:Math.max(TRUST_POLICY.version,r.policy.version),asOf:r.policy.asOf,revoked};
- return {anchors,policy:merged,args:[anchors,merged]};
-}
-function scheduleBundleExpiry(){
- clearTimeout(bundleExpiryTimer);if(!activeBundle)return;
- const remaining=Date.parse(activeBundle.expires)-Date.now();
- if(remaining<=0){trustImportVersion++;activeBundle=null;reset();$("copy-status").textContent="Imported trust expired. Check copies again with a current trust list.";$("trust-status").textContent='Imported trust bundle expired. Its signer approvals were cleared; load a current bundle and check the file again.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;return;}
- bundleExpiryTimer=setTimeout(scheduleBundleExpiry,Math.min(remaining,2147483647));
-}
-$("trust-form").onsubmit=async event=>{
- event.preventDefault();const bundleFile=$("trust-bundle").files[0],rootFile=$("trust-root").files[0];if(!bundleFile||!rootFile)return;
- const token=++trustImportVersion;$("trust-submit").disabled=true;$("trust-bundle").disabled=true;$("trust-root").disabled=true;
- try{
-  if(bundleFile.size>2*1024*1024||rootFile.size>4096)throw Error('Bundle or root file exceeds its size limit');
-  const root=publicKeyHexFromPem(await rootFile.text()),bytes=new Uint8Array(await bundleFile.arrayBuffer()),r=await verifyTrustBundle(bytes,root,{previous:bundleStates.get(root)??null});
-  if(token!==trustImportVersion)return;if(Date.parse(r.expires)<=Date.now())throw Error("Bundle expired during import");
-  activeBundle={root,bytes,expires:r.expires};bundleStates.set(root,r.state);reset();scheduleBundleExpiry();if(!activeBundle)return;
-  $("trust-status").textContent=`Loaded signed bundle sequence ${r.state.sequence} for this tab. Root fingerprint ${r.state.rootFingerprint}. Expires ${r.expires}. Choose the file again to check it with this trust list.`;$("trust-clear").hidden=false;$("active-trust-note").hidden=false;
- }catch(error){$("trust-status").textContent='Trust bundle rejected: '+error.message;}
- finally{$("trust-submit").disabled=false;$("trust-bundle").disabled=false;$("trust-root").disabled=false;}
-};
-$("trust-clear").onclick=()=>{trustImportVersion++;activeBundle=null;clearTimeout(bundleExpiryTimer);reset();$("trust-status").textContent='Imported trust cleared. Using the bundled snapshot. Session rollback history is retained until reload.';$("trust-clear").hidden=true;$("active-trust-note").hidden=true;};
-$("show-unknown").onclick=async()=>{
- const report=currentReport,container=currentContainer,token=operation;if(!report?.canRevealUnknown||report.verdict!=='UNTRUSTED SIGNER')return;
- $("show-unknown").disabled=true;
- try{
-  let displayReport={...report,container};
-  if(report.version===1){const trust=await sessionTrust();displayReport=await createVerifier(trust.anchors,trust.policy,{allowUnknownDisplay:true})(await file.arrayBuffer());if(!displayReport.canRevealUnknown)throw Error('The file no longer qualifies for unknown-signer display');}
-  const image=await decode(displayReport);if(token!==operation||report!==currentReport){image.close?.();return;}
-  bitmap=image;unknownApproved=true;renderResult(report);metadata(report);$("image-panel").hidden=false;
-  const scale=Math.min(1,1600/Math.max(image.width,image.height));canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
-  canvas.setAttribute('aria-label',`Unknown signer; hold to reveal. ${report.meta.width} by ${report.meta.height} pixels.`);setMode(true);queueDraw();clock=setInterval(queueDraw,1000);delete report.payload;
-  setStatus('Image shown by your request. Signer identity is still unknown.');
- }catch(error){if(token===operation)setStatus('Image could not be displayed: '+error.message);}
- finally{$("show-unknown").disabled=false;}
-};
-
-let activeMainMode='verify';
-function showGuardView(hash=location.hash,focus=true){
- const target=hash.replace(/^#/,'');
- const expert=['advanced','advanced-heading','advanced-tools','advanced-person','advanced-report','signer','viewing-options','offline-copy'].includes(target);
- const about=['about','about-heading','about-privacy','privacy-details'].includes(target);
- $('main-view').hidden=expert||about;$('advanced').hidden=!expert;$('about').hidden=!about;
- if(!expert&&!about){activeMainMode=target==='seal'||target==='convert'?'seal':'verify';const check=activeMainMode==='verify';$('inspection-panel').hidden=!check;$('convert').hidden=check;
-  for(const [id,selected] of [['tab-verify',check],['tab-seal',!check]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
- }
- for(const back of document.querySelectorAll('.back-link'))back.href=activeMainMode==='seal'?'#seal':'#check';
- document.querySelector('.skip').href=expert?'#advanced-heading':about?'#about-heading':activeMainMode==='verify'?'#workspace':'#convert';
- if(expert&&target!=='advanced'&&target!=='advanced-heading')revealAdvancedTool(target);
- for(const link of document.querySelectorAll('.header nav a')){if(link.getAttribute('href')===(expert?'#advanced':about?'#about':''))link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
- if(about&&['privacy-details','about-privacy'].includes(target))$('privacy-disclosure').open=true;
- if(focus){const heading=expert?$('advanced-heading'):about?$('about-heading'):$('main-heading');heading.focus();if(expert&&target!=='advanced'&&target!=='advanced-heading'||about&&['privacy-details','about-privacy'].includes(target)){const section=$(target==='about-privacy'?'privacy-details':target);if(section){const title=section.querySelector('h2')||section;title.tabIndex=-1;title.focus();section.scrollIntoView({block:'start',behavior:'instant'});}}}
-}
-function workspaceMode(mode){activeMainMode=mode;const hash=mode==='seal'?'#seal':'#check';if(location.hash!==hash)history.replaceState(null,'',hash);showGuardView(hash,false);}
-for(const [id,mode] of [['tab-verify','verify'],['tab-seal','seal']]){
- $(id).onclick=()=>workspaceMode(mode);
- $(id).onkeydown=event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'verify':event.key==='End'?'seal':mode==='verify'?'seal':'verify';workspaceMode(next);$(next==='verify'?'tab-verify':'tab-seal').focus();}};
-}
-window.addEventListener('hashchange',()=>showGuardView());
-showGuardView(location.hash,false);
-
-function revealAdvancedTool(target){
- const node=$(target)||$("tool-"+target);const panel=node?.matches('details.advanced-disclosure')?node:node?.querySelector('details.advanced-disclosure');
- if(!panel)return;for(const other of document.querySelectorAll('.advanced-disclosure'))other.open=other===panel;
-}
-for(const panel of document.querySelectorAll('.advanced-disclosure'))panel.querySelector('summary').addEventListener('click',()=>{if(!panel.open)for(const other of document.querySelectorAll('.advanced-disclosure'))if(other!==panel)other.open=false;});
-function syncSealExtras(){const on=$('save-original').checked;$('seal-extras-label').textContent=on?'More options · original copy enabled':'More options';document.querySelector('.seal-extras').classList.toggle('original-enabled',on);}
-$('save-original').addEventListener('change',syncSealExtras);
-function refreshSealSummary(){
- $('seal-signer-summary').textContent=sealSourceDoc?(sealUnknownApproved?'Original signer unknown · blackouts do not verify identity.':'Original signer kept · no signing key needed.'):unlockedSigner?unlockedSigner.contact.name+'’s key · recipients must trust it independently.':'One-time key · identity not verified.';
- $('seal-key-link').hidden=!!sealSourceDoc;syncSealExtras();
-}
-
-function canEditChecked(){return !!(currentInputFile&&currentContainer&&currentReport?.regionVerified&&currentReport.signature_valid&&(currentReport.viewable||unknownApproved&&currentReport.canRevealUnknown));}
-$('redact-checked').onclick=async()=>{
- if(!canEditChecked())return;
- const file=currentInputFile;workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;
- await prepareSealInput(file,true);
- if(conversionImage){$('seal-step-two').scrollIntoView({block:'start',behavior:'instant'});$('rect-numbers').querySelector('summary').focus({preventScroll:true});}
-};
-async function routeDroppedFile(file){
- const picture=/^image\//.test(file.type||'')||/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name);
- if(!$('convert').hidden||picture){workspaceMode('seal');const dt=new DataTransfer();dt.items.add(file);$('convert-input').files=dt.files;await prepareSealInput(file);}
- else await openFile(file);
-}
-$('convert').addEventListener('dragover',event=>{event.preventDefault();document.querySelector('.seal-upload').classList.add('over');});
-$('convert').addEventListener('dragleave',event=>{if(!$('convert').contains(event.relatedTarget))document.querySelector('.seal-upload').classList.remove('over');});
-$('convert').addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();document.querySelector('.seal-upload').classList.remove('over');const file=event.dataTransfer?.files[0];if(file)void routeDroppedFile(file);});
-
-// SPDX-License-Identifier: MIT
-let unlockedSigner=null,offlineSignerVersion=0,signerBusy=false,personTrustEpoch=0;
-const personTrust=new Map();
-function lockOfflineSigner(message='Signer locked. Unlock your saved key to sign again.') {
-  offlineSignerVersion++;unlockedSigner=null;
-  $('signer-active').hidden=true;$('signer-identity').textContent='';
-  $('seal-signer-summary').textContent='Signed with a one-time key, so people will see “Unknown signer”.';
-  $('signer-status').textContent=message;refreshSealSummary();
-}
-function activateOfflineSigner(signer) {
-  unlockedSigner=signer;$('signer-active').hidden=false;
-  $('signer-identity').textContent=signer.contact.name+' · SHA-256 '+signer.contact.fingerprint;
-  $('seal-signer-summary').textContent='Signed with '+signer.contact.name+'’s key. People must trust it before it shows as Genuine.';
-  $('signer-status').textContent='Signer unlocked for this page. Save your public signer file to share with recipients.';refreshSealSummary();
-}
-async function signerAction(event,kind) {
-  event.preventDefault();if(signerBusy)return;
-  const form=$(kind==='create'?'signer-create':'signer-unlock');
-  if(!form.reportValidity())return;
-  if(kind==='create'&&$('signer-password').value!==$('signer-confirm').value){$('signer-status').textContent='Passwords do not match. Repeat the same password.';$('signer-confirm').focus();return;}
-  signerBusy=true;lockOfflineSigner('Working locally…');const epoch=offlineSignerVersion;
-  $('signer-create-submit').disabled=true;$('signer-unlock-submit').disabled=true;form.setAttribute('aria-busy','true');
-  try {
-    let text,password;
-    if(kind==='create'){
-      password=$('signer-password').value;text=await createOfflineSigner($('signer-name').value,password);
-    }else{
-      const file=$('signer-file').files[0];if(!file||file.size>16384)throw Error('Choose a .guardkey file up to 16 KiB.');
-      text=await file.text();password=$('signer-unlock-password').value;
-    }
-    const signer=await unlockOfflineSigner(text,password);
-    if(epoch!==offlineSignerVersion)return;
-    const trust=await sessionTrust();
-    if((await checkRevocation(signer.publicKey,trust.policy)).revoked)throw Error('This key is revoked. Create a new signer.');
-    if(epoch!==offlineSignerVersion)return;
-    if(kind==='create')download(new TextEncoder().encode(text),'signer.guardkey','application/json');
-    activateOfflineSigner(signer);
-    if(kind==='create')$('signer-status').textContent='Encrypted key download requested. Keep the saved file and a backup; your password cannot be recovered. Signer unlocked for this page.';
-  }catch(error){if(epoch===offlineSignerVersion)$('signer-status').textContent=error.message;}
-  finally{
-    for(const id of ['signer-password','signer-confirm','signer-unlock-password'])$(id).value='';
-    signerBusy=false;$('signer-create-submit').disabled=false;$('signer-unlock-submit').disabled=false;form.removeAttribute('aria-busy');
+    const bytes = await buildSeal(source, Number($("rounding").value));
+    const report = await verifyGRD2(bytes);
+    if (!report.regionVerified || !report.signature_valid || report.verdict === "REVOKED KEY" ||
+        (source.boxes.length && report.hiddenPixelsCleared !== true))
+      throw new Error("The file failed its own check. Nothing was downloaded.");
+    savedFile = new File([bytes], "image.GRD", { type: "application/octet-stream" });
+    download(bytes, savedFile.name, savedFile.type);
+    setEditorStatus("Saved image.GRD.");
+    $("check-sealed").hidden = false;
+    if (activeMode === "seal") $("check-sealed").focus();
+  } catch (error) {
+    setEditorStatus(error.message, true);
+  } finally {
+    busy = false;
+    $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = false;
+    $("convert-form").removeAttribute("aria-busy");
+    syncConsent();
   }
-}
-$('signer-create').onsubmit=e=>signerAction(e,'create');
-$('signer-unlock').onsubmit=e=>signerAction(e,'unlock');
-$('signer-lock').onclick=()=>lockOfflineSigner();
-window.addEventListener('pagehide',()=>lockOfflineSigner());
-$('signer-public').onclick=()=>{if(unlockedSigner)download(new TextEncoder().encode(JSON.stringify(unlockedSigner.contact,null,2)),'public.guardsigner','application/json');};
-$('person-file').onchange=async()=>{
-  personTrustEpoch++;
-  $('person-fingerprint').value='';$('person-preview').textContent='';
-  const file=$('person-file').files[0];
-  try{if(!file||file.size>16384)throw Error('Choose a public signer file up to 16 KiB.');const c=await readSignerContact(await file.text());if($('person-file').files[0]!==file)return;$('person-preview').textContent='Claimed name: '+c.name+' · SHA-256 '+c.fingerprint;}
-  catch(error){$('person-preview').textContent=error.message;}
 };
-$('person-form').onsubmit=async event=>{
-  event.preventDefault();if($('person-submit').disabled||!$('person-form').reportValidity())return;
-  $('person-submit').disabled=true;
-  const epoch=++personTrustEpoch,trustEpoch=trustImportVersion;
-  try{
-    const file=$('person-file').files[0],confirmed=$('person-fingerprint').value.toLowerCase();
-    if(!file||file.size>16384)throw Error('Choose a public signer file up to 16 KiB.');
-    const c=await readSignerContact(await file.text());
-    if(c.fingerprint!==confirmed)throw Error('Fingerprint does not match. Check it independently with this person.');
-    const trust=await sessionTrust();
-    if((await checkRevocation(signerUnhex(c.publicKey),trust.policy)).revoked)throw Error('This key is revoked and cannot be trusted.');
-    if(epoch!==personTrustEpoch||trustEpoch!==trustImportVersion)throw Error('Trust changed during import. Check the file again.');
-    if(trust.anchors.some(k=>k.public_key_hex===c.publicKey))throw Error('This key is already trusted. Its existing identity stays unchanged.');
-    if(personTrust.size>=32)throw Error('This tab already trusts 32 people. Clear the list to start again.');
-    personTrust.set(c.publicKey,{public_key_hex:c.publicKey,name:c.name,owner:c.name,alg:'Ed25519',key_id:c.fingerprint.slice(0,16),fingerprint_sha256:c.fingerprint});trustImportVersion++;reset();
-    $('person-clear').hidden=false;$('person-trust-note').hidden=false;
-    $('person-status').textContent='Trusted '+c.name+' for this tab. Choose their .GRD file again. Reloading clears this trust.';
-  }catch(error){$('person-status').textContent=error.message;}
-  finally{$('person-submit').disabled=false;}
+
+$("redact-checked").onclick = () => {
+  const state = checked;
+  if (!state?.displayReport?.container || state.displayReport.verdict === "FULLY REDACTED" || busy) return;
+  $("convert-input").value = "";
+  void prepareSealInput(state.file, state);
 };
-$('person-clear').onclick=()=>{personTrustEpoch++;personTrust.clear();trustImportVersion++;reset();$('person-clear').hidden=true;$('person-trust-note').hidden=true;$('person-status').textContent='People cleared. Bundled signers and any signed trust bundle still apply.';};
+$("check-sealed").onclick = event => {
+  event.preventDefault();
+  if (savedFile) void openFile(savedFile);
+};
+
+for (const [id, handler] of [
+  ["file-input", openFile],
+  ["convert-input", prepareSealInput],
+]) $(id).onchange = event => {
+  const file = event.target.files[0];
+  event.target.value = "";
+  if (file) void handler(file);
+};
+
+window.addEventListener("dragover", event => {
+  if (!event.dataTransfer?.types.includes("Files")) return;
+  event.preventDefault();
+  const upload = document.querySelector(activeMode === "seal" ? "#convert-form .upload" : "#inspection-panel .upload");
+  upload.classList.add("over");
+});
+window.addEventListener("dragleave", event => {
+  if (!event.relatedTarget) document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+});
+window.addEventListener("drop", event => {
+  const file = event.dataTransfer?.files[0];
+  if (!file) return;
+  event.preventDefault();
+  document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+  if (/\.grd$/i.test(file.name) || (activeMode === "check" && !/^image\//.test(file.type)))
+    void openFile(file);
+  else void prepareSealInput(file);
+});
 
 })();</script>
-</body></html>
+</body>
+</html>

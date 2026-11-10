@@ -32,12 +32,17 @@ const redactable = (await readFile(new URL("src/redactable.js", root), "utf8"))
   .replace(/^export /gm, "");
 const hashWorker = (await readFile(new URL("src/hash-worker.js", root), "utf8")).replace(/^export /gm, "");
 const grd3 = (await readFile(new URL("src/grd3.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
-const visual = (await readFile(new URL("src/visual.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
+// The shared sealing module still supports legacy visual commitments for other
+// callers. Keep those primitives without bundling the visual proof tools.
+const visualSource = await readFile(new URL("src/visual.js", root), "utf8");
+const visual = ["visualFeatures", "visualSalt", "visualCommitment"].map(name => {
+  const pattern = new RegExp("^export ((?:async )?function " + name + "\\([^]*?^})", "m");
+  const match = visualSource.match(pattern);
+  if (!match) throw new Error("Missing shared visual primitive: " + name);
+  return match[1];
+}).join("\n");
 const subtiles = (await readFile(new URL("src/subtiles.js", root), "utf8")).replace(/^import[\s\S]*?;\n/gm, "").replace(/^export /gm, "");
-const bundle = (await readFile(new URL('src/trust-bundle.js',root),'utf8')).replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'');
-const resultCopy=(await readFile(new URL('src/result-copy.js',root),'utf8')).replace(/^export /gm,'');
-const offlineSigner=(await readFile(new URL('src/offline-signer.js',root),'utf8')).replace(/^export /gm,'');
-const signerUi=await readFile(new URL('src/signer-ui.js',root),'utf8');
+const geometry = (await readFile(new URL("src/pad-box.js", root), "utf8")).replace(/^export /gm, "");
 const app = (await readFile(new URL("src/app.js", root), "utf8")).replace(
   /^\/\/ SPDX[^\n]*\n/gm,
   "",
@@ -46,13 +51,13 @@ const converter = (await readFile(new URL("src/converter.js", root), "utf8"))
   .replace(/^import[^\n]*\n/gm, "")
   .replace(/^export /gm, "");
 const frameGuard =
-  "if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='Guard does not run inside embedded pages. Open the inspector directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open Guard';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}";
+  "if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='TileSeal does not run inside embedded pages. Open it directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open TileSeal';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}";
 html = html
   .replace("/*__STYLE__*/", () => css)
   .replace(
     "/*__SCRIPT__*/",
     () =>
-      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${bundle}\n${converter}\n${resultCopy}\n${offlineSigner}\n${app}\n${signerUi}\n})();`,
+      `(()=>{\n'use strict';\n${frameGuard}\n${trust}\n${core}\n${png}\n${hashWorker}\n${grd3}\n${visual}\n${subtiles}\n${redactable}\n${converter}\n${geometry}\n${app}\n})();`,
   );
 await Promise.all(
   ["index.html", "grd_viewer.html"].map((name) =>

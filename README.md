@@ -1,63 +1,14 @@
-# Guard / GRD Inspector — selective redaction
+# TileSeal
 
-## Convert, redact and verify
+TileSeal (repository: Guard) lets you black out parts of a picture, seal it as a `.GRD` file, and check the retained pixels later. Images are processed inside your browser.
 
-Use **Make a .GRD** in the built viewer to convert PNG, JPG, WebP, GIF or BMP locally. Preview, convert and download; the result opens below for redaction. Converted files are explicitly **UNVERIFIED: SELF-SIGNED**, not identity-trusted. This checkout accepts inputs up to 256 MiB / 50 megapixels; “Fit large photos” previews a copy within the GRD3 36-megapixel / 8,192-edge output limit. GRD2 remains bounded to 4.19 MP; larger outputs use binary GRD3. Lossless files can be substantially larger than JPEG originals. Unsupported formats need a PNG/JPG export first. See [conversion details](REDACTION.md#convert-an-image-in-the-browser).
+Open the standalone [index.html](index.html) in a current browser, or run `npm run dev` and open `http://127.0.0.1:4195/`. Choose a picture, drag or enter blackout areas, review the preview and download. The editor starts at 16 px rounding with width-class padding enabled. Use **Check a file** to inspect an existing GRD1, GRD2 or GRD3. GRD2 and GRD3 can be blacked out again without the signer key.
 
-[Experimental GRD2 specification](GRD_SPEC.md) · [Commands and trust boundaries](REDACTION.md)
+New browser files use a one-time key and show **UNVERIFIED: SELF-SIGNED**. **GENUINE** and **VERIFIED WITH REDACTIONS** require the verifier's configured signer trust. Unknown signer pictures require an explicit action before display. The result describes the signed file and its retained pixels.
 
-Mark private regions and export a copy whose **retained pixels** still match the signed original. No private key is needed to redact. Hidden regions are clearly marked and excluded from the authenticity claim. The built-in example and `examples/` assets are fictional **DEMO / NOT TRUSTED EVIDENCE**.
+Supported pictures are PNG, JPG, WebP, GIF and BMP, up to 256 MiB and within the GRD3 limits of 36 MP, 8,192 px per edge and 9,000 parent tiles. Larger pictures need resizing before selection. The browser chooses GRD2 or GRD3 based on the existing format limits. **Download plain picture** creates a PNG with the hidden pixels blacked out. Keep the GRD if you need to check the proof again.
 
-GRD2 is a new experimental canonical-JSON wire format, not a binary extension understood by existing GRD1 tools. GRD1 support is retained. Both versions check a bundled offline revoked-key snapshot; an old viewer cannot know newer revocations. An optional bridge exports a standard C2PA PNG with a custom GRD proof assertion, using the official CAI SDK and your exporter certificate. Standard tools recognise the PNG credentials; regional verification requires the Guard profile.
-
-No claim is made that this is the first open format or ready for legal evidence. The [C2PA specification](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html) already covers assertion redaction, regions and Merkle structures. This prototype needs independent cryptographic review before sensitive use.
-
-A single-file, dependency-free browser viewer for the `.GRD` format in the supplied `grd_viewer.html`. It verifies signed bytes against a pinned Ed25519 public key, then provides intentional image viewing and a downloadable verification report.
-
-**The original repository was empty.** This implementation starts from the supplied offline viewer, preserved in `reference/grd_viewer.original.html`. The original server, Convert, Check/copy-tracing service, Android app, private signing keys and Goose Bumps sample were not supplied. Their behaviour and the previously reported 9,118 mutation tests cannot be independently confirmed here.
-
-**Live viewer:** https://neervasa00000000.github.io/Guard/
-
-## Use
-
-Open `grd_viewer.html` in a current browser and choose or drop a `.GRD` file. It works offline with browser WebCrypto support for Ed25519. No file is uploaded. A browser without the required crypto support reports **UNSUPPORTED**, rather than asserting tampering.
-
-Or run locally:
-
-```sh
-npm run dev
-```
-
-Open http://127.0.0.1:4195/. The standalone viewer needs no installation. Use `npm ci` before builds/tests. Tested on Node 20.19 and 22; Python 3.13; Chrome 156. Python serves the local preview.
-
-## What changed
-
-- A responsive verification workspace: file intake, verdict, named checks and signed details.
-- Clear states for genuine, failed integrity/trust, invalid format, unsupported capabilities, oversized input and unreadable images.
-- Bounds-checked BigInt section offsets, exact contiguity, no duplicates, required sections, no trailing data, fixed signature entry and bounded metadata parsing.
-- Pinned signer identity remains mandatory. An embedded public key and a mathematically valid signature alone are insufficient.
-- File size is checked **before** reading (64 MiB). Images are limited to PNG/JPEG/WebP, 40 megapixels and 16,384 pixels per edge. Encoded dimensions are checked before decoding, then compared with decoded dimensions and signed metadata.
-- Replacing/cancelling a file invalidates stale async results. Old bitmaps and redraw timers are disposed.
-- Keyboard file selection, focus feedback, reduced motion, browser zoom and 44px controls. Reveal can be operated with Space/Enter and arrow keys.
-- Hide on window blur, tab switching and printing. Resuming restores hold-to-reveal, not full view.
-- Local JSON reports contain checks, metadata, hashes and the verification scope; no image/recovery bytes. Reports include signed metadata, so treat them as potentially personal documents.
-- The offline download is captured from the initial clean page, so it does not contain a previously opened file's metadata or image.
-- No clipboard overwrites, global copy shortcuts, zoom blocking, analytics, external fonts, runtime dependencies or service-worker cache.
-- The page CSP disallows network connections. Only explicit outbound navigation (such as opening the source link) leaves the viewer.
-
-## Verification scope
-
-**GENUINE** means that this viewer's cryptographic and image checks passed against its pinned signer list. It is not independent proof of authorship, ownership, legal rights, historical creation time or the safety of the depicted content. The viewer itself must come from a trusted source: changing the HTML can change its trust policy.
-
-Signed metadata is a signer claim. A timestamp section is integrity-checked as file bytes, but this viewer does **not** validate the timestamp authority signature, certificate chain or claimed time. The original viewer extracted a date-like string and labelled it trusted; that misleading claim was removed.
-
-Browser blur, session stamps, print styles and focus hiding are deterrents, not DRM. They cannot reliably block screenshots, extraction with developer tools or camera capture. This viewer does not assert that a watermark survives screenshots or edits. Copy tracing and edit localisation require the separate Check implementation, which is not included. No Hugging Face token is needed to host this offline viewer; that does not implement the original Convert or Check services.
-
-The added size/schema/image limits are stricter than the supplied viewer. Files outside those limits may be refused even if a different implementation accepts them. Exact server parity needs the original server and real compatibility fixtures.
-
-## Licence, privacy and issuer setup
-
-This implementation is released under the [MIT licence](LICENSE). Third-party dependencies retain their own licences. See [privacy and hosting details](PRIVACY.md) and [configuring your own issuer](SIGNERS.md). Disposable-key browser conversions use an empty public label and generic download name. An optional saved signer adds its name to signed files; recipients still need to trust its public key independently. Redaction exports are blackout-only; method labels are unsigned claims.
+See the [manual test plan and removal list](TILESEAL.md), [CLI guide](REDACTION.md), [format specification](GRD_SPEC.md), [privacy notice](PRIVACY.md) and [MIT licence](LICENSE).
 
 Exit 0 means GENUINE only. Other verdicts use the non-zero groups below; inspect the JSON verdict for the precise result. Treat any non-zero code as 'not proven genuine'.
 
@@ -100,74 +51,12 @@ node scripts/browser-fixtures.mjs
 python3 -m http.server 4196 --bind 127.0.0.1 --directory /tmp/guard-qa
 ```
 
-This creates a temporary QA viewer with an **ephemeral test trust anchor**, plus valid/tampered/unknown-key fixtures. Never publish that generated QA viewer. Production output retains only the original supplied public trust anchor. No private signing key is stored or shipped.
+This creates a temporary QA viewer with an **ephemeral test trust anchor**, plus valid/tampered/unknown-key fixtures. Never publish that generated QA viewer. Production output uses the bundled signer registry and revocation policy. No private signing key is stored or shipped.
 
 ## Source map
 
-- `src/verifier.js`: GRD1 parser, pinned trust and WebCrypto verification.
-- `src/app.js`: local file lifecycle, reports, safe image decoding and viewer controls.
-- `src/style.css` and `src/index.template.html`: visual system and accessible interface.
-- `scripts/build.mjs`: dependency-free standalone build.
-- `tests/`: generated fixtures and regression suite.
-- `reference/`: unchanged supplied viewer for compatibility investigation.
-
-Updating the trusted signer list requires a reviewed source change and rebuild. The UI cannot import keys or make an untrusted file genuine. Keep private signing keys outside this repository.
-
-## Plain image export and reproducibility
-
-The viewer offers **Download plain image** for verified, displayed GRD2 files, including demos and personal files. Untrusted signer images remain withheld in the viewer. The CLI can export intact GRD2 files from untrusted signers:
-
-```sh
-python3 grd.py export image.GRD --plain -o image.png
-python3 grd.py export image.GRD --plain --format jpeg --quality 95 -o image.jpg
-```
-
-Plain images have no Guard proof or overlay; hidden tiles remain black. Invalid sources are refused. Keep the `.GRD` to retain verification. New seals use the backward-compatible GRD2 profile 2.1, with a signed random asset ID and a creation time claimed by the signer. Older manifests still verify.
-
-See [REPRODUCE.md](REPRODUCE.md) for local tests and the distinction between local evidence and the external publication protocol. The [C2PA demo](examples/c2pa/run_demo.py) exercises the real SDK with ephemeral test certificates:
-
-```sh
-.venv-c2pa/bin/python examples/c2pa/run_demo.py
-```
-
-The bridge's `export` and `verify` commands are described in [REDACTION.md](REDACTION.md). A supplied test anchor establishes trust only under that test policy; mainstream C2PA trust requires an appropriately trusted certificate authority.
-
-## Upgrade profiles in this checkout
-
-These changes are currently local; do not assume the hosted site has this build. [UPGRADE_STATUS.md](UPGRADE_STATUS.md) distinguishes the completed first batch from later phases and missing external validation.
-
-- GRD3 supports up to 36,000,000 pixels, 8,192 pixels per edge, 9,000 parent tiles and 256 MiB. Exact verification streams 64-row bands. Browser hash workers are embedded locally in the standalone viewer.
-- New browser conversions seal a 16 px sub-tile grid. Redaction may round to 16, 32 or 64 px; files sealed with 8 px support that option too. Old 64 px files stay readable and cannot acquire finer openings without resealing. Hidden positions remain visible.
-- New seals include a signed visual feature layer. **Download visual proof** exports a `.grdp` sidecar for **Check a recompressed or resized copy**. Visual consistency checks low-resolution block averages and always leaves `genuine:false`. Trust status remains explicit. Candidate features use shared exact integer area mapping from native pixels. Near-threshold errors (7..11) return BORDERLINE with a warning and no positive consistency flag. Mean-preserving edits and some blurs can pass.
-- Partial sub-tile redactions cannot safely disclose their original whole-tile visual features. Their visual-proof button is withheld with an explanation. Choose whole 64 px redactions when a visual sidecar is needed; exact fine-redaction verification and plain PNG export still work.
-
-```sh
-python3 grd.py seal photo.png --key issuer.pem --sub-tile 16 -o photo.GRD
-python3 grd.py redact photo.GRD --rect 10,20,40,40 --granularity 16 -o hidden.GRD
-python3 grd.py export-proof photo.GRD -o photo.grdp
-python3 grd.py verify-visual photo.grdp copy.jpg --trusted-key issuer-public.pem
-```
-
-The CLI defaults to the legacy 64 px parent-only grid unless `--sub-tile` is supplied. `--format-version 2|3` chooses a container explicitly; otherwise size selects it. `--no-visual` creates an exact-only profile, including writable GRD2 profile 2.1 for compatibility. The browser remains entirely offline; the pinned `sharp` package is used only by the Node image-copy checker, not shipped as a browser dependency.
-
-See [GRD_SPEC.md](GRD_SPEC.md), [SECURITY_MODEL.md](SECURITY_MODEL.md), and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md). Reported prototype detection rates, research novelty and comparisons with ZK systems require their own reproduced evidence.
-
-Signed trust bundles can be loaded manually for the current tab through **Load trust bundle…**. The root public PEM must be verified independently. Imported trust is memory-only, expires, and is cleared on reload; rollback history covers the current session only. The production identity root is not provisioned. See the [CLI and API documentation](TRUST_BUNDLES.md). Native browser/Python cross-check instructions and measured limits are in [REPRODUCE.md](REPRODUCE.md) and [UPGRADE_RESULTS.md](UPGRADE_RESULTS.md).
-
-### Signer identity and recipient use (v4 local work)
-
-The viewer opens on **Check a file**. A chosen file replaces the drop zone with one verdict card. **Details** keeps the exact result and checks; **Advanced** holds trust, signer keys, copy comparison, reports and viewing options. **About** holds privacy, limits and the example. **Seal a picture** requires a privacy acknowledgement. Card/A4-like aspect ratios show a local heuristic warning; this is not OCR or a guarantee that private information was hidden.
-
-A known signer is shown as **Verified: {name}** only after the file checks succeed. A valid unknown signer stays amber and withheld by default. **Show image anyway (signer not verified)** enables a stamped hold-to-reveal preview and plain export without changing the verdict or trusting the key. Revoked keys stay blocked. These labels identify a key; they do not prove a photograph's scene, ownership or capture time.
-
-Our signing key fingerprint is `{NEER_FINGERPRINT}` (not yet supplied or pinned). Once configured, compare all 64 characters with the public registry at [guard-signers.json](https://neervasa00000000.github.io/Guard/.well-known/guard-signers.json). The viewer never fetches that file. The legacy key is now revoked at the repository owner's request; no replacement identity has been invented. Verify the Pages deployment against the v4 source revision before treating the hosted viewer as updated.
-
-Independent-review follow-up: the ownership-unconfirmed legacy record is labelled **Legacy viewer key (ownership unconfirmed)**, with its revocation retained. This record does not identify Neer. The intended name for a future, separately verified key remains **Neer**. Existing public-key labels require `pin-signer.mjs --public ... --name ... --rename` to change.
-
-The remaining banner titles use plain wording, while the exact verifier verdict remains visible in Technical details and JSON. A trusted redacted result still shows its configured signer in the signer line.
-
-Offline signing is available under **Advanced → Your signer key**. Create and save a password-encrypted key, then unlock it on later visits. Share only its public signer file. Recipients import it under **Advanced → Trust a person** after independently confirming the fingerprint; that trust lasts for this tab. See [SIGNERS.md](SIGNERS.md) for the format, privacy and revocation limits. No account or online signing service is involved.
-
-Sealing now has three steps: choose a picture (or a viewable GRD), black out optional areas by dragging or numbers, then consent and download. The default download is the checked, blacked-out file. Saving a full original requires the separate unchecked opt-in. Received GRDs retain their original signer without a private key; unsupported or withheld files stop and show their verification result. See [UX_STATUS.md](UX_STATUS.md) for measured targets, tests and screenshots.
-
-The local visual refinement and its desktop/mobile comparisons are documented in [UI_POLISH.md](UI_POLISH.md). It groups Advanced tools into individual disclosures and pairs the desktop editor with its download controls.
+- `src/app.js` handles file intake, the editor, signing and verification.
+- `src/pad-box.js` and `grd_geometry.py` implement matching blackout geometry.
+- `src/index.template.html`, `src/style.css` and `scripts/build.mjs` build the standalone page.
+- `tests/vectors/padding-vectors.json` is shared by the JavaScript and Python tests.
+- `REPRODUCE.md`, `UX_STATUS.md` and `UI_POLISH.md` include historical evidence for earlier Guard builds.

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Independent GRD1 verifier and GRD2 issuer/redactor. No private key is needed to redact."""
 import grd3_codec, grd_visual, grd_subtiles
+from grd_geometry import pad_box
 import argparse, base64, hashlib, io, json, os, re, struct, sys, zlib, math
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
@@ -406,11 +407,13 @@ def verify(data,trusted=None,policy=None,keys_path=ROOT/'src/trusted-keys.json')
  if len(data)>32*1024*1024 and not data.startswith(b'GRD1'):return signer_report(dict(verdict='LIMIT EXCEEDED',genuine=False,problems=['Input exceeds GRD2 32 MiB limit']),keys_path)
  return verify_v2(data,trusted,policy,keys_path) if data.startswith(b'GRD2\n') else verify_v1(data,trusted,policy,keys_path)
 
-def redact(data,rects,mode='black',granularity=64):
+def redact(data,rects,mode='black',granularity=64,*,pad_boxes=False,line_height=32):
  if mode!='black':raise ValueError('Only blackout exports are supported')
  r=verify_v2(data,include_pixels=True)
  if not r.get('regionVerified'):raise ValueError('Source proof does not verify: '+str(r['problems']))
  doc=r['_document'];m=doc['manifest']
+ if pad_boxes:
+  rects=[pad_box(rect,grid=granularity,img_w=m['width'],img_h=m['height'],line_height=line_height) for rect in rects]
  if 'subTile' in m:return grd_subtiles.redact(data,rects,granularity,sys.modules[__name__])
  if granularity!=64:raise ValueError('granularity finer than sealed sub-tile')
  rgb=bytearray(r['_rgb']);selected=set()
@@ -448,6 +451,8 @@ def main():
  s=sub.add_parser('seal');s.add_argument('input');s.add_argument('--key',required=True);s.add_argument('-o','--output',required=True);s.add_argument('--label',default='');s.add_argument('--sub-tile',type=int,choices=[8,16,32,64],default=64);s.add_argument('--format-version',type=int,choices=[2,3]);s.add_argument('--no-visual',action='store_true')
  v=sub.add_parser('verify');v.add_argument('input');v.add_argument('--trusted-key',action='append',default=[]);v.add_argument('--policy');v.add_argument('--trusted-keys');v.add_argument('--quiet',action='store_true')
  rd=sub.add_parser('redact');rd.add_argument('input');rd.add_argument('--rect',action='append',required=True);rd.add_argument('--mode',choices=['black'],default='black');rd.add_argument('--granularity',type=int,choices=[8,16,32,64],default=64);rd.add_argument('-o','--output',required=True)
+ rd.add_argument('--pad-boxes',action='store_true',help='Expand to 128 px width classes after grid rounding.')
+ rd.add_argument('--line-height',type=int,default=32,help='Minimum line height in pixels when using --pad-boxes (default: 32).')
  ex=sub.add_parser('export');ex.add_argument('input');ex.add_argument('--plain',action='store_true',required=True);ex.add_argument('--format',choices=['png','jpeg'],default='png');ex.add_argument('--quality',type=int,default=95);ex.add_argument('-o','--output',required=True)
  ep=sub.add_parser('export-proof');ep.add_argument('input');ep.add_argument('-o','--output',required=True)
  vv=sub.add_parser('verify-visual');vv.add_argument('input');vv.add_argument('image');vv.add_argument('--trusted-key',action='append',default=[]);vv.add_argument('--trusted-keys');vv.add_argument('--policy')
@@ -466,7 +471,10 @@ def main():
   elif args.command=='export':
    output=export_plain(data,args.format,args.quality)
    print('Plain image is no longer verifiable; keep the .GRD if you need proof.',file=sys.stderr)
-  elif args.command=='redact':output=redact(data,[tuple(map(int,r.split(','))) for r in args.rect],args.mode,args.granularity)
+  elif args.command=='redact':
+   if not 1<=args.line_height<=8192:raise ValueError('Line height must be 1–8192 px.')
+   output=redact(data,[tuple(map(int,r.split(','))) for r in args.rect],args.mode,args.granularity,
+                 pad_boxes=args.pad_boxes,line_height=args.line_height)
   else:
    keys_path=Path(args.trusted_keys) if args.trusted_keys else (ROOT/'src/trusted-keys.json')
    try:
