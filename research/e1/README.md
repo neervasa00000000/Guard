@@ -10,7 +10,7 @@ From the repository root, activate a virtual environment with the root `requirem
 bash scripts/reproduce.sh
 ```
 
-This recomputes clean A2 from the archived posterior case rows, checks the tracked CSV, and writes tables and plots to `out/`. The original feasible-set summary remains available alongside the corrected CSV. The input fetcher is a separate command in `scripts/fetch_data.py`.
+This recomputes clean A2 from the archived posterior case rows, checks the tracked CSV, and writes tables and plots to `out/`. The original feasible-set summary remains available alongside the corrected CSV. The input fetcher is a separate command in `scripts/fetch_data.py`. Versions, seeds, hashes, and the cells that cannot be rebuilt are in the top-level [Reproduce the paper](../../README.md#reproduce-the-paper) section. Claim-level files are in [EVIDENCE.md](../../EVIDENCE.md).
 
 ## Re-render the main sweep
 

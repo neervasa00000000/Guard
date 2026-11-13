@@ -35,4 +35,4 @@ The 99 units are 90 from five lists × six fonts × three sizes (12, 16, 24 px),
 
 ## Verification
 
-In a fresh Python 3.13.2 virtual environment with the root requirements installed, `pytest -q` passed and `bash scripts/reproduce.sh` exited successfully. The latter also prints the historical audit, including its unrelated open findings and the superseded feasible-set comparison.
+In a fresh Python 3.13.2 virtual environment with the root requirements installed, `pytest -q` passed and `bash scripts/reproduce.sh` exited successfully. That command runs `scripts/check_numbers.py`, which checks the manuscript numbers this tree can recompute. The earlier PDF transcript remains at `research/e1/mdpi_checks/number_audit/NUMBER_AUDIT.md` and is not replayed.
