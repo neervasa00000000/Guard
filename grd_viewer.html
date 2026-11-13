@@ -1,0 +1,2969 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Black out areas, seal a picture, or check a .GRD file on your device.">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>TileSeal</title>
+  <style>:root {
+  color-scheme: light;
+  --ink: #132b31;
+  --muted: #4e6369;
+  --accent: #155c50;
+  --accent-hover: #10483f;
+  --accent-soft: #e8f3ef;
+  --line: #d1dddb;
+  --control-line: #849a97;
+  --page: #f3f6f5;
+  --surface: #fff;
+  --radius: .875rem;
+  font: 100%/1.55 system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+a { color: var(--accent); text-underline-offset: .2em; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+html.framed body > *:not(.frame-warning) { display: none !important; }
+.frame-warning { margin: 1rem; }
+.skip { position: absolute; left: 1rem; top: -6rem; background: var(--surface); padding: .75rem; }
+.skip:focus { top: .5rem; z-index: 2; }
+
+.header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.header-inner, main { width: min(100% - 2rem, 80rem); margin-inline: auto; }
+.header-inner { min-height: 4rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding-block: .5rem; }
+.brand { display: flex; align-items: center; gap: .625rem; margin: 0; font-size: 1.25rem; letter-spacing: -.035em; }
+.brand svg, .privacy-badge svg { flex: none; }
+.about-link { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 600; font-size: .875rem; }
+main { padding: clamp(1.25rem, 4vw, 2.5rem) 0 3rem; }
+.intro { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: .75rem 1.5rem; margin-bottom: 1.25rem; }
+.intro h2 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.65rem); letter-spacing: -.05em; line-height: 1.12; }
+.intro p { margin: .4rem 0 0; color: var(--muted); }
+.privacy-badge { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .625rem; background: var(--accent-soft); border-radius: 2rem; color: var(--accent-hover); font-weight: 650; font-size: .825rem; }
+.tabs { display: inline-flex; flex-wrap: wrap; gap: .25rem; max-width: 100%; margin-bottom: 1rem; padding: .25rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--surface); }
+.tabs a { display: flex; align-items: center; min-height: 2.75rem; padding: .5rem .85rem; border-radius: .45rem; text-decoration: none; color: var(--ink); font-weight: 650; }
+.tabs a:hover { background: var(--accent-soft); }
+.tabs a[aria-current] { background: var(--ink); color: white; }
+.tabs a:focus-visible { outline-offset: 2px; }
+
+.workspace { display: grid; gap: 1rem; align-items: start; }
+.card { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1rem, 3vw, 1.5rem); }
+.upload { grid-column: 1 / -1; }
+h2 { margin: 0 0 .75rem; font-size: 1.2rem; line-height: 1.3; letter-spacing: -.02em; }
+p { margin: .6rem 0; }
+p:last-child { margin-bottom: 0; }
+p:empty, ul:empty { display: none; }
+.step { display: inline-grid; place-items: center; vertical-align: .1em; background: var(--accent-soft); color: var(--accent-hover); border-radius: 50%; width: 1.55rem; height: 1.55rem; margin-right: .55rem; font-size: .8rem; }
+.hint { color: var(--muted); font-size: .875rem; overflow-wrap: anywhere; }
+.warning { border-left: .25rem solid #876419; background: #fff8e4; padding: .75rem 1rem; border-radius: .25rem; }
+.error { color: #a22328; }
+label { display: block; font-weight: 600; }
+input, select, button { font: inherit; }
+input[type=file] { display: block; width: fit-content; max-width: 100%; margin-top: .55rem; color: var(--muted); font-size: .875rem; }
+input::file-selector-button, button, select, input[type=number] { min-height: 2.75rem; border: 1px solid var(--control-line); border-radius: .45rem; padding: .45rem .7rem; background: var(--surface); color: var(--ink); }
+button, input::file-selector-button, summary { cursor: pointer; font-weight: 650; }
+button:disabled { color: var(--muted); background: var(--page); border-color: var(--line); cursor: default; }
+.primary, input::file-selector-button { background: var(--accent); color: white; border-color: var(--accent); }
+.primary:enabled:hover, input:enabled::file-selector-button:hover { background: var(--accent-hover); }
+input::file-selector-button { margin-right: .65rem; }
+input:disabled::file-selector-button { background: var(--page); color: var(--muted); border-color: var(--line); cursor: default; }
+.secondary { background: var(--surface); color: var(--accent-hover); }
+.secondary:enabled:hover { background: var(--accent-soft); }
+.file-drop { padding: .9rem 1rem; border: 1px dashed var(--control-line); border-radius: .6rem; background: var(--page); }
+.upload.over .file-drop { background: var(--accent-soft); border-color: var(--accent); outline: 2px solid var(--accent); }
+.file-status { margin-top: .75rem; font-weight: 600; overflow-wrap: anywhere; }
+
+.editor-help { color: var(--muted); margin-top: 0; }
+.picture { display: grid; place-items: center; background: #e8eeec; border-radius: .55rem; overflow: hidden; }
+canvas { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; width: auto; height: auto; }
+#seal-canvas { cursor: crosshair; touch-action: none; }
+.preview-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .25rem .75rem; margin-top: .65rem; }
+.preview-meta p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.area-total { font-size: .875rem; font-weight: 650; }
+.area-chips, .actions { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: .75rem 0; }
+.area-chips li { display: flex; align-items: center; gap: .4rem; background: var(--accent-soft); padding-left: .65rem; border-radius: .45rem; font-size: .875rem; }
+.area-chips button { min-width: 2.75rem; border: 0; background: transparent; font-size: 1.15rem; }
+.area-chips button:hover { background: #d7eae3; }
+fieldset { min-width: 0; margin: 1rem 0 0; border: 0; padding: 0; }
+legend { font-weight: 700; margin-bottom: .35rem; }
+summary { padding: .65rem 0; min-height: 2.75rem; }
+#rect-numbers { padding-inline: .8rem; border: 1px solid var(--line); border-radius: .55rem; }
+.coordinates { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 5rem), 1fr)); gap: .65rem; align-items: end; padding-bottom: .8rem; }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: .9rem; margin-top: .75rem; }
+.settings-grid > div { border: 1px solid var(--line); background: var(--page); border-radius: .55rem; padding: .8rem; }
+.settings-grid .checkbox { padding: 0; font-weight: 600; }
+.settings-grid label[for=line-height] { margin-top: .8rem; }
+.checkbox { display: flex; align-items: start; gap: .55rem; font-weight: 500; padding-block: .65rem; }
+input[type=checkbox] { width: 1.15rem; height: 1.15rem; margin: .2rem 0 0; flex: none; accent-color: var(--accent); }
+select, input[type=number] { margin-top: .25rem; }
+input[type=number] { width: 100%; }
+#line-height { max-width: 7rem; }
+.finish { border-top: .25rem solid var(--accent); }
+#convert-submit { width: 100%; margin-top: .35rem; }
+#check-sealed { display: inline-flex; align-items: center; min-height: 2.75rem; margin-top: .35rem; }
+
+.verdict { --tone: #6d490e; --tone-bg: #fff7e5; border-inline-start: .25rem solid var(--tone); border-radius: .5rem; background: var(--tone-bg); padding: .9rem 1rem; }
+#result[data-tone=good] .verdict { --tone: #17623f; --tone-bg: #eaf5ed; }
+#result[data-tone=bad] .verdict { --tone: #a22328; --tone-bg: #fff0f0; }
+.verdict h2 { margin-bottom: .35rem; color: var(--tone); font-size: clamp(1.25rem, 3vw, 1.7rem); }
+.verdict p { margin: .35rem 0; }
+.verdict-code { display: inline-block; color: var(--tone); font: 700 .75rem/1.5 ui-monospace, monospace; letter-spacing: .04em; overflow-wrap: anywhere; }
+#image-panel, #show-unknown { margin-top: 1rem; }
+.about { margin-top: 1rem; padding-block: .25rem; color: var(--muted); font-size: .9rem; }
+.about summary { color: var(--ink); }
+.about[open] { padding-bottom: 1rem; }
+.about p { max-width: 76ch; }
+
+@media (min-width: 60rem) {
+  #convert-form { grid-template-columns: minmax(0, 1fr) 20rem; }
+  .finish { position: sticky; top: 1rem; }
+  #inspection-panel:has(#result:not([hidden])) { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
+  #inspection-panel:has(#result:not([hidden])) > .upload { grid-column: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
+}
+</style>
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to workspace</a>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="brand">
+        <svg aria-hidden="true" width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="9" fill="#132b31"/>
+          <path d="M10 10h6v6h-6zm0 10h6v6h-6zm10 0h6v6h-6z" fill="#b4e7d7"/>
+          <path d="m20 12 2 2 4-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        TileSeal
+      </h1>
+      <a class="about-link" href="#about">About TileSeal</a>
+    </div>
+  </header>
+  <main id="workspace" tabindex="-1">
+    <div class="intro">
+      <div>
+        <h2>Verifiable image redaction</h2>
+        <p>Black out private details and save a picture others can check.</p>
+      </div>
+      <span class="privacy-badge">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3.25" y="7" width="9.5" height="6.5" rx="1.25"/>
+          <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/>
+        </svg>
+        Files stay on your device
+      </span>
+    </div>
+    <nav class="tabs" aria-label="TileSeal tasks">
+      <a id="tab-seal" href="#seal" aria-current="page">Seal a picture</a>
+      <a id="tab-verify" href="#check">Check a file</a>
+    </nav>
+
+    <form id="convert-form" class="workspace" aria-label="Seal a picture">
+      <section class="card upload">
+        <h2><span class="step" aria-hidden="true">1</span>Choose a picture</h2>
+        <div class="file-drop">
+          <label for="convert-input">Choose a file or drop it here</label>
+          <input id="convert-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,.png,.jpg,.jpeg,.webp,.gif,.bmp,.grd,.GRD" aria-describedby="picture-formats convert-status">
+          <p id="picture-formats" class="hint">PNG, JPG, WebP, GIF, BMP or an existing .GRD</p>
+        </div>
+        <p id="convert-status" class="file-status" role="status"></p>
+      </section>
+
+      <section id="seal-step-two" class="card" hidden>
+        <h2><span class="step" aria-hidden="true">2</span>Black out areas</h2>
+        <p class="editor-help">Drag over anything you want to hide, or use <strong>Add an area by numbers</strong> below.</p>
+        <div class="picture"><canvas id="seal-canvas" aria-label="Picture with blackout preview"></canvas></div>
+        <div class="preview-meta">
+          <p id="convert-details" class="hint"></p>
+          <p id="blackout-area" class="area-total" role="status"></p>
+        </div>
+        <ul id="seal-area-list" class="area-chips" aria-label="Selected blackout areas"></ul>
+        <fieldset id="blackout-controls">
+          <legend>Blackout settings</legend>
+          <details id="rect-numbers">
+            <summary>Add an area by numbers</summary>
+            <div class="coordinates">
+              <label>X<input id="rect-x" type="number" min="0" step="1" value="0"></label>
+              <label>Y<input id="rect-y" type="number" min="0" step="1" value="0"></label>
+              <label>Width<input id="rect-width" type="number" min="1" step="1" value="64"></label>
+              <label>Height<input id="rect-height" type="number" min="1" step="1" value="32"></label>
+              <button id="select-rectangle" type="button" class="secondary">Add area</button>
+            </div>
+          </details>
+          <div class="settings-grid">
+            <div>
+              <label for="rounding">Box rounding</label>
+              <select id="rounding" aria-describedby="grid-help">
+                <option value="16">16 px (default)</option>
+                <option value="32">32 px</option>
+                <option value="64">64 px</option>
+              </select>
+              <p id="grid-help" class="hint"></p>
+            </div>
+            <div>
+              <label class="checkbox" for="pad-boxes">
+                <input id="pad-boxes" type="checkbox" checked aria-describedby="padding-help">
+                <span>Pad boxes <span class="hint">(recommended)</span></span>
+              </label>
+              <p id="padding-help" class="hint">Box dimensions stay visible. Padding widens boxes in 128 px steps to make text length harder to guess.</p>
+              <label for="line-height">Full text-line height (px)</label>
+              <input id="line-height" type="number" min="1" max="8192" step="1" value="32" aria-describedby="line-help">
+              <p id="line-help" class="hint">Use the line height in the original picture.</p>
+            </div>
+          </div>
+        </fieldset>
+        <ul id="seal-area-list" class="area-chips" aria-label="Selected blackout areas"></ul>
+        <p id="redaction-status" role="status"></p>
+      </section>
+
+      <section id="seal-step-three" class="card finish" hidden>
+        <h2><span class="step" aria-hidden="true">3</span><span id="finish-title">Seal and download</span></h2>
+        <p id="seal-signer-summary" class="hint"></p>
+        <label class="checkbox" for="convert-privacy">
+          <input id="convert-privacy" type="checkbox">
+          <span>I reviewed the preview for private details.</span>
+        </label>
+        <button id="convert-submit" class="primary" type="submit" disabled>Seal and download .GRD</button>
+        <a id="check-sealed" href="#check" hidden>Check this file</a>
+      </section>
+    </form>
+
+    <section id="inspection-panel" class="workspace" aria-label="Check a file" hidden>
+      <section class="card upload">
+        <h2>Check a file</h2>
+        <div class="file-drop">
+          <label for="file-input">Choose a .GRD file or drop it here</label>
+          <input id="file-input" type="file" accept=".grd,.GRD" aria-describedby="check-help">
+          <p id="check-help" class="hint">Use the original .GRD to check that the visible pixels match its seal.</p>
+        </div>
+        <p id="live-status" class="file-status" role="status"></p>
+      </section>
+      <section id="result" class="card" aria-labelledby="verdict-title" hidden>
+        <div class="verdict">
+          <h2 id="verdict-title" tabindex="-1" aria-describedby="verdict-code"></h2>
+          <p id="verdict-description"></p>
+          <p id="verdict-signer" class="hint"></p>
+          <p id="verdict-code" class="verdict-code"></p>
+        </div>
+        <button id="show-unknown" type="button" class="secondary" hidden>Show picture from unknown signer</button>
+        <p id="legacy-redaction-note" class="warning" hidden>GRD1 signs the whole picture. It cannot be blacked out without a new file from its signer.</p>
+        <div id="image-panel" hidden>
+          <div class="picture"><canvas id="canvas" aria-label="Checked picture"></canvas></div>
+          <div class="actions">
+            <button id="redact-checked" type="button" class="primary" hidden>Black out more areas</button>
+            <button id="download-plain" type="button" class="secondary">Download plain picture</button>
+          </div>
+          <p class="hint">A plain PNG has no .GRD proof. Keep the .GRD to check it again.</p>
+        </div>
+      </section>
+    </section>
+
+    <details id="about" class="card about">
+      <summary>About TileSeal</summary>
+      <p>TileSeal (repository: Guard)</p>
+      <p>Black out parts of a picture, seal it as a .GRD, and check later that the visible pixels match the seal. This site creates self-signed files. Verifying a signer's identity requires a trusted key configured in the verifier.</p>
+      <p>The editor rounds boxes outward at 16 px by default. Padding widens them in steps of 128 px to reduce clues about hidden text length. Box shape can still reveal information. The editor offers 16, 32 and 64 px rounding. The Python CLI also offers 8 px for compatible seals.</p>
+      <p>Download plain picture saves a PNG. Keep the .GRD to check its proof again.</p>
+      <p>IEEE Access manuscript in preparation. The manuscript cites <a href="https://github.com/neervasa00000000/Guard/commit/f8f2558a5f82bb99842781a0e3bc03fec39fd3c5">f8f2558</a>, which predates the browser padding control.</p>
+      <p><a href="PRIVACY.md">Privacy notice</a> · <a href="SECURITY_MODEL.md">Security model</a> · <a href="GRD_SPEC.md">Format specification</a> · <a href="LICENSE">MIT licence</a></p>
+      <p>Images and keys stay in this browser. The site is hosted on GitHub Pages. <a href="#privacy-details">Privacy details</a></p>
+      <p id="privacy-details">Effective 29 October 2026. GitHub processes requests to load the page under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>.</p>
+    </details>
+  </main>
+  <script>(()=>{
+'use strict';
+if(self!==top){document.documentElement.classList.add('framed');const w=document.createElement('p');w.className='frame-warning';w.textContent='TileSeal does not run inside embedded pages. Open it directly to check a file.';const l=document.createElement('a');l.className='frame-warning';l.textContent='Open TileSeal';l.href=location.href;l.target='_blank';l.rel='noopener noreferrer';document.body.replaceChildren(w,l);return;}
+const policy={
+  "version": 2,
+  "asOf": "2026-10-28T16:07:50Z",
+  "revoked": [
+    {
+      "fingerprint": "008c06e446c0e9836fa6987fa8c21c87f546cb9ae14ffc83f91b5ce8541fa233",
+      "reason": "Legacy signer ownership was not established; revoked at the repository owner’s request.",
+      "revokedAt": "2026-10-28T16:07:50Z"
+    }
+  ]
+}
+;
+const trustedData={
+  "version": 1,
+  "asOf": "2026-10-29T03:15:36Z",
+  "signers": [
+    {
+      "key_id": "008c06e446c0e983",
+      "public_key_hex": "97bb1a09fb958f21841c21dc2a400d87e333bcf1d1f7390525693319d1fce691",
+      "fingerprint_sha256": "008c06e446c0e9836fa6987fa8c21c87f546cb9ae14ffc83f91b5ce8541fa233",
+      "name": "Legacy viewer key (ownership unconfirmed)",
+      "alg": "Ed25519",
+      "revoked": true,
+      "revokedAt": "2026-10-28T16:07:50Z",
+      "reason": "Legacy signer ownership was not established; revoked at the repository owner\u2019s request."
+    }
+  ]
+}
+;
+// SPDX-License-Identifier: MIT
+
+const revokedFromKeys = (trustedData.signers || [])
+  .filter((s) => s.revoked)
+  .map((s) => ({
+    fingerprint: s.fingerprint_sha256,
+    reason: s.reason || "Revoked key",
+    revokedAt: s.revokedAt,
+  }));
+
+const TRUST_POLICY = Object.freeze({
+  ...policy,
+  revoked: Object.freeze([
+    ...policy.revoked.map((entry) => Object.freeze({ ...entry })),
+    ...revokedFromKeys.map((entry) => Object.freeze({ ...entry })),
+  ]),
+});
+function policyDate(value) {
+  return (
+    typeof value === "string" &&
+    !value.startsWith("0000") &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value) &&
+    Number.isFinite(Date.parse(value)) &&
+    new Date(value).toISOString() === value.replace("Z", ".000Z")
+  );
+}
+async function checkRevocation(publicKey, snapshot = TRUST_POLICY) {
+  if (
+    !snapshot ||
+    !Number.isSafeInteger(snapshot.version) ||
+    snapshot.version < 1 ||
+    !policyDate(snapshot.asOf) ||
+    !Array.isArray(snapshot.revoked) ||
+    snapshot.revoked.some(
+      (r) =>
+        !r ||
+        typeof r.fingerprint !== "string" ||
+        !/^[0-9a-f]{64}$/.test(r.fingerprint) ||
+        typeof r.reason !== "string" ||
+        !policyDate(r.revokedAt),
+    )
+  )
+    throw new Error("Invalid offline revocation policy.");
+  const digest = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", publicKey),
+    ),
+    fingerprint = Array.from(digest)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join(""),
+    entry = snapshot.revoked.find((r) => r.fingerprint === fingerprint);
+  return {
+    revoked: !!entry,
+    fingerprint,
+    reason: entry?.reason,
+    revokedAt: entry?.revokedAt,
+    policyVersion: snapshot.version,
+    asOf: snapshot.asOf,
+    scope: "Bundled offline snapshot only; newer revocations may be unknown.",
+  };
+}
+
+// SPDX-License-Identifier: MIT
+
+const EXIT_CODES = Object.freeze({
+ 'GENUINE':0,'TAMPERED':2,'VISUALLY CONSISTENT':5,'BORDERLINE (decoder-dependent)':7,'VISUALLY INCONSISTENT':2,'NOT A GRD':3,
+ 'CANNOT VERIFY':4,'UNSUPPORTED':4,'LIMIT EXCEEDED':4,'UNREADABLE':4,'VERIFIED WITH REDACTIONS':5,'FULLY REDACTED':5,
+ 'DEMO':5,'UNVERIFIED: SELF-SIGNED':5,'UNTRUSTED SIGNER':5,'REVOKED KEY':6,
+});
+function signerReport(r) {
+ r.fingerprint ??= r.revocation?.fingerprint ?? null;
+ const known=trustedData.signers?.find(s=>s.fingerprint_sha256===r.fingerprint);
+ r.signerDisplayName=r.signerName??known?.name??null;
+ r.signerStatus=({'REVOKED KEY':'revoked','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo','GENUINE':'trusted','VERIFIED WITH REDACTIONS':'trusted','FULLY REDACTED':'trusted'})[r.verdict]??'none';
+ if(r.signerStatus==='unknown'&&(!r.signature_valid||(r.version===1&&!r.canRevealUnknown)||(r.version>=2&&!r.regionVerified)))r.signerStatus='none';
+ if(r.visualVerdict&&r.trustVerdict&&r.signature_valid)r.signerStatus=({'TRUSTED':'trusted','UNTRUSTED SIGNER':'unknown','UNVERIFIED: SELF-SIGNED':'self','DEMO':'demo'})[r.trustVerdict]??'none';
+ if(r.signerStatus==='trusted'&&(r.personal||r.demo))r.signerStatus=r.personal?'self':'demo';
+ return r;
+}
+
+class IntegrityError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "IntegrityError";
+  }
+}
+
+function validateTrustedKeys(data) {
+  if (
+    !data ||
+    typeof data !== "object" ||
+    data.version !== 1 ||
+    typeof data.asOf !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(data.asOf) ||
+    !Number.isFinite(Date.parse(data.asOf)) ||
+    !Array.isArray(data.signers)
+  ) {
+    throw new Error("Trusted-keys file is invalid.");
+  }
+  for (const s of data.signers) {
+    if (
+      !s ||
+      typeof s !== "object" ||
+      typeof s.name !== "string" ||
+      s.name.length < 1 ||
+      s.name.length > 120 ||
+      s.alg !== "Ed25519" ||
+      typeof s.public_key_hex !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.public_key_hex) ||
+      typeof s.fingerprint_sha256 !== "string" ||
+      !/^[0-9a-f]{64}$/.test(s.fingerprint_sha256) ||
+      typeof s.key_id !== "string" ||
+      s.key_id !== s.fingerprint_sha256.slice(0, 16) ||
+      typeof s.revoked !== "boolean"
+    ) {
+      throw new Error("Trusted-keys file is invalid.");
+    }
+    if (s.revoked) {
+      if (
+        typeof s.revokedAt !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s.revokedAt) ||
+        !Number.isFinite(Date.parse(s.revokedAt)) ||
+        new Date(s.revokedAt).toISOString() !== s.revokedAt.replace("Z", ".000Z")
+      ) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    } else {
+      if (s.revokedAt !== null) {
+        throw new Error("Trusted-keys file is invalid.");
+      }
+    }
+  }
+  return true;
+}
+
+let defaultTrusted = [];
+let trustedKeysValid = true;
+try {
+  validateTrustedKeys(trustedData);
+  defaultTrusted = Object.freeze(
+    trustedData.signers
+      .filter((s) => !s.revoked)
+      .map((s) =>
+        Object.freeze({
+          key_id: s.key_id,
+          public_key_hex: s.public_key_hex,
+          fingerprint_sha256: s.fingerprint_sha256,
+          name: s.name,
+          owner: s.name,
+          alg: s.alg,
+        }),
+      ),
+  );
+} catch {
+  trustedKeysValid = false;
+  defaultTrusted = Object.freeze([]);
+  defaultTrusted._invalid = true;
+}
+
+const TRUSTED = defaultTrusted;
+
+// GRD1 compatibility: Ed25519 signs SHA-256(header + table + non-signature sections).
+// The embedded public key is never sufficient: it must match a pinned trust anchor.
+const LIMITS = Object.freeze({
+  fileBytes: 64 * 1024 * 1024,
+  metadataBytes: 256 * 1024,
+  imagePixels: 40_000_000,
+  dimension: 16384,
+});
+
+const NAMES = Object.freeze({
+  1: "Metadata",
+  2: "Image",
+  3: "Thumbnail",
+  4: "Recovery",
+  5: "Timestamp",
+  6: "Signing key",
+  7: "Signature",
+});
+const hex = (bytes) =>
+  Array.from(new Uint8Array(bytes))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+const sha = async (bytes) =>
+  hex(await crypto.subtle.digest("SHA-256", bytes));
+function canon(value) {
+  if (Array.isArray(value)) return "[" + value.map(canon).join(",") + "]";
+  if (value && typeof value === "object")
+    return (
+      "{" +
+      Object.keys(value)
+        .sort()
+        .map((k) => JSON.stringify(k) + ":" + canon(value[k]))
+      + "}"
+    );
+  return JSON.stringify(value);
+}
+function validTree(value, depth = 0) {
+  if (depth > 32) return false;
+  if (typeof value === "number" && !Number.isSafeInteger(value)) return false;
+  if (typeof value === "string") return value.isWellFormed();
+  if (value && typeof value === "object")
+    return (
+      Object.keys(value).every((k) => k.isWellFormed()) &&
+      Object.values(value).every((v) => validTree(v, depth + 1))
+    );
+  return true;
+}
+function createVerifier(anchors = TRUSTED, revocationPolicy = TRUST_POLICY, {allowUnknownDisplay=false}={}) {
+  if (anchors?._invalid || (!anchors && !trustedKeysValid)) {
+    return async function verifyGRD() {
+      return {
+        verdict: "CANNOT VERIFY",
+        genuine: false,
+        failed: [],
+        changed: [],
+        problems: ["Trusted-keys file is invalid."],
+        checks: [],
+        sections: [],
+        meta: null,
+        signature_valid: false,
+      };
+    };
+  }
+  const trusted = anchors.map((k) => ({ ...k }));
+  return async function verifyGRD(input) {
+    const r = {
+      verdict: "TAMPERED",
+      genuine: false,
+      failed: [],
+      changed: [],
+      problems: [],
+      checks: [],
+      sections: [],
+      meta: null,
+      signature_valid: false,
+    };
+    const issue = (message, part) => {
+      r.problems.push(message);
+      if (part && !r.failed.includes(part)) r.failed.push(part);
+    };
+    const check = (name, status, detail) =>
+      r.checks.push({ name, status, detail });
+    const finish = () => {
+      r.changed = [...r.failed];
+      return signerReport(r);
+    };
+    try {
+      if (anchors?._invalid) {
+        r.verdict = "CANNOT VERIFY";
+        issue("Trusted-keys file is invalid.");
+        return finish();
+      }
+      const d = input instanceof Uint8Array ? input : new Uint8Array(input);
+      r.byteLength = d.byteLength;
+      if (d.byteLength > LIMITS.fileBytes) {
+        r.verdict = "LIMIT EXCEEDED";
+        issue("This viewer accepts files up to 64 MiB.", "file size");
+        return finish();
+      }
+      if (
+        d.length < 10 ||
+        d[0] !== 71 ||
+        d[1] !== 82 ||
+        d[2] !== 68 ||
+        d[3] !== 49
+      ) {
+        r.verdict = "NOT A GRD";
+        issue("Not a GRD file: no GRD1 or GRD2 header.", "file header");
+        return finish();
+      }
+      const dv = new DataView(d.buffer, d.byteOffset, d.byteLength),
+        version = dv.getUint16(4, true),
+        flags = dv.getUint16(6, true),
+        count = dv.getUint16(8, true);
+      r.version = version;
+      if (version !== 1) {
+        r.verdict = "UNSUPPORTED";
+        issue(
+          "This viewer supports GRD version 1. The file declares version " +
+            version +
+            ".",
+          "file version",
+        );
+        return finish();
+      }
+      if (count < 4 || count > 7) {
+        issue("Invalid number of sections.", "file structure");
+        return finish();
+      }
+      const tableEnd = 10 + 50 * count;
+      if (tableEnd > d.length) {
+        issue("The file ends inside its section table.", "file length");
+        return finish();
+      }
+      const entries = [];
+      for (let i = 0; i < count; i++) {
+        const at = 10 + 50 * i,
+          type = dv.getUint16(at, true),
+          offset = dv.getBigUint64(at + 2, true),
+          length = dv.getBigUint64(at + 10, true);
+        if (!NAMES[type]) {
+          issue("Unknown section type " + type + ".", "file structure");
+          return finish();
+        }
+        if (
+          offset > BigInt(d.length) ||
+          length > BigInt(d.length) ||
+          offset + length > BigInt(d.length)
+        ) {
+          issue(
+            NAMES[type] + " exceeds the available file bytes.",
+            "file length",
+          );
+          return finish();
+        }
+        entries.push({
+          type,
+          offset: Number(offset),
+          length: Number(length),
+          hash: hex(d.subarray(at + 18, at + 50)),
+        });
+      }
+      const types = entries.map((e) => e.type);
+      if (
+        new Set(types).size !== types.length ||
+        ![1, 2, 6, 7].every((t) => types.includes(t)) ||
+        types.at(-1) !== 7
+      ) {
+        issue(
+          "Sections are duplicated, missing, or the signature is not last.",
+          "file structure",
+        );
+        return finish();
+      }
+      if (
+        Boolean(flags & 1) !== types.includes(5) ||
+        Boolean(flags & 2) !== types.includes(4) ||
+        flags & ~3
+      ) {
+        issue("Header flags do not match the section table.", "file structure");
+        return finish();
+      }
+      let expected = tableEnd;
+      for (const e of entries) {
+        if (e.offset !== expected) {
+          issue(
+            NAMES[e.type] + " has an overlapping or non-contiguous offset.",
+            "file structure",
+          );
+          return finish();
+        }
+        expected += e.length;
+      }
+      if (expected !== d.length) {
+        issue(
+          "There are " +
+            (d.length - expected) +
+            " extra bytes after the final section.",
+          "file length",
+        );
+        return finish();
+      }
+      const signature = entries.at(-1);
+      if (signature.length !== 64 || signature.hash !== "0".repeat(64)) {
+        issue(
+          "The signature entry must contain 64 bytes and a zero hash.",
+          "file structure",
+        );
+        return finish();
+      }
+      const byType = Object.fromEntries(
+        entries.map((e) => [e.type, d.subarray(e.offset, e.offset + e.length)]),
+      );
+      if (!byType[1].length || byType[1].length > LIMITS.metadataBytes) {
+        issue(
+          "Metadata must be non-empty and no larger than 256 KiB.",
+          "metadata",
+        );
+        return finish();
+      }
+      if (!byType[2].length || byType[6].length !== 40) {
+        issue(
+          "The image is empty or signing key is not 40 bytes.",
+          "file structure",
+        );
+        return finish();
+      }
+      check(
+        "File structure",
+        "pass",
+        count + " contiguous sections · no trailing bytes",
+      );
+      if (!globalThis.crypto?.subtle) {
+        r.verdict = "UNSUPPORTED";
+        issue(
+          "Cryptographic verification is unavailable. Open this file in a current browser in a secure context.",
+        );
+        return finish();
+      }
+      r.fileHash = await sha(d);
+      for (const e of entries) {
+        if (e.type === 7) continue;
+        const valid = (await sha(byType[e.type])) === e.hash;
+        r.sections.push({ ...e, name: NAMES[e.type], valid });
+        if (!valid)
+          issue(
+            NAMES[e.type] + " bytes do not match their signed hash.",
+            NAMES[e.type].toLowerCase(),
+          );
+      }
+      check(
+        "Section hashes",
+        r.sections.every((e) => e.valid) ? "pass" : "fail",
+        r.sections.filter((e) => e.valid).length +
+          " / " +
+          r.sections.length +
+          " matched",
+      );
+      const keyBytes = byType[6],
+        keyId = hex(keyBytes.subarray(0, 8)),
+        publicKey = keyBytes.subarray(8);
+      r.keyId = keyId;
+      r.fingerprint=await sha(publicKey);
+      r.signerName=trusted.find(k=>k.public_key_hex===hex(publicKey))?.name??trusted.find(k=>k.public_key_hex===hex(publicKey))?.owner;
+      r.revocation = await checkRevocation(publicKey, revocationPolicy);
+      if (r.revocation.revoked) {
+        r.verdict = "REVOKED KEY";
+        issue(
+          "Signing key is revoked: " + r.revocation.reason,
+          "revoked signer",
+        );
+        check(
+          "Offline revocation",
+          "fail",
+          "Revoked in policy v" + r.revocation.policyVersion,
+        );
+        return finish();
+      }
+      check(
+        "Offline revocation",
+        "pass",
+        "Not listed in bundled snapshot · " + r.revocation.asOf,
+      );
+      const keyIdentity = (await sha(publicKey)).slice(0, 16) === keyId;
+      const anchor = trusted.find(
+        (k) => k.key_id === keyId && k.public_key_hex === hex(publicKey),
+      );
+      if (anchor) {
+        r.signer = anchor.name ?? anchor.owner;
+        r.signerName = anchor.name ?? anchor.owner;
+        r.fingerprint = anchor.fingerprint_sha256 || hex(await crypto.subtle.digest("SHA-256", publicKey));
+      } else {
+        r.signer = "Untrusted signing key";
+        r.fingerprint = hex(await crypto.subtle.digest("SHA-256", publicKey));
+      }
+      if (!keyIdentity)
+        issue("Signing key ID does not match its public key.", "signing key");
+      if (!anchor) {
+        r.verdict = "UNTRUSTED SIGNER";
+        issue(
+          "This signing key is not in the viewer’s pinned trusted list.",
+          "untrusted signer",
+        );
+      }
+      check(
+        "Trusted signer",
+        anchor && keyIdentity ? "pass" : "fail",
+        anchor ? (anchor.name ?? anchor.owner) : ("Unknown key · " + keyId),
+      );
+      try {
+        const key = await crypto.subtle.importKey(
+          "raw",
+          publicKey,
+          { name: "Ed25519" },
+          false,
+          ["verify"],
+        );
+        r.signature_valid = await crypto.subtle.verify(
+          { name: "Ed25519" },
+          key,
+          byType[7],
+          await crypto.subtle.digest(
+            "SHA-256",
+            d.subarray(0, signature.offset),
+          ),
+        );
+      } catch (error) {
+        if (error.name === "NotSupportedError") {
+          r.verdict = "UNSUPPORTED";
+          issue(
+            "This browser cannot verify Ed25519 signatures. Try a current browser.",
+          );
+          return finish();
+        }
+        issue("The Ed25519 signature could not be read.", "signature");
+      }
+      if (!r.signature_valid)
+        issue(
+          "The signature does not verify against the signed file bytes.",
+          "signature",
+        );
+      check(
+        "Ed25519 signature",
+        r.signature_valid ? "pass" : "fail",
+        "Signature over the SHA-256 digest of the signed file prefix",
+      );
+      try {
+        const raw = new TextDecoder("utf-8", { fatal: true }).decode(byType[1]),
+          meta = JSON.parse(raw);
+        if (
+          !meta ||
+          Array.isArray(meta) ||
+          typeof meta !== "object" ||
+          !validTree(meta)
+        )
+          throw new Error(
+            "Metadata must be an object with bounded depth and finite, safely represented numbers.",
+          );
+        r.meta = meta;
+        if (canon(meta) !== raw)
+          issue(
+            "Metadata JSON must be canonical, without whitespace or duplicate keys.",
+            "metadata",
+          );
+        if (meta.asset_id !== (await sha(byType[2])).slice(0, 15))
+          issue(
+            "The signed metadata asset ID does not match the image section hash.",
+            "metadata",
+          );
+        if (meta.key_id !== keyId)
+          issue(
+            "The signed metadata key ID does not match the signing key section.",
+            "metadata",
+          );
+        const imageType = ["image/png", "image/jpeg", "image/webp"].includes(
+          meta.mime,
+        );
+        const dimensions =
+          Number.isSafeInteger(meta.width) &&
+          Number.isSafeInteger(meta.height) &&
+          meta.width > 0 &&
+          meta.height > 0 &&
+          meta.width <= LIMITS.dimension &&
+          meta.height <= LIMITS.dimension &&
+          meta.width * meta.height <= LIMITS.imagePixels;
+        if (!imageType || !dimensions) {
+          r.verdict = "UNSUPPORTED";
+          issue(
+            "The signed image must be PNG, JPEG or WebP, within 16,384 pixels per edge and 40 megapixels.",
+            "image format",
+          );
+        }
+      } catch (error) {
+        issue("Metadata is unreadable or unsafe: " + error.message, "metadata");
+      }
+      check(
+        "Metadata binding",
+        !r.failed.some((x) => ["metadata", "image"].includes(x)) && r.meta
+          ? "pass"
+          : "fail",
+        "Canonical JSON, matching asset ID and signer key",
+      );
+      if (byType[5]) r.timestampPresent = true;
+      if (!r.problems.length || (r.verdict==="UNTRUSTED SIGNER" && r.failed.length===1 && r.failed[0]==="untrusted signer")) {
+        try {
+          const [width, height] = encodedDimensions(byType[2], r.meta.mime);
+          if (width !== r.meta.width || height !== r.meta.height) {
+            issue(
+              "Encoded image dimensions differ from the signed metadata.",
+              "image",
+            );
+            check(
+              "Encoded image dimensions",
+              "fail",
+              "Image header and signed dimensions differ",
+            );
+          } else
+            check(
+              "Encoded image dimensions",
+              "pass",
+              width + " × " + height + " · matches signed metadata",
+            );
+        } catch (error) {
+          r.verdict = "UNREADABLE";
+          issue(error.message, "image format");
+          check("Encoded image header", "fail", error.message);
+        }
+      }
+      if (!r.problems.length) {
+        r.verdict = "GENUINE";
+        r.genuine = true;
+        r.payload = byType[2].slice();
+      }
+      if(r.verdict==='UNTRUSTED SIGNER'&&r.signature_valid&&r.failed.length===1&&r.failed[0]==='untrusted signer'){if(allowUnknownDisplay)r.payload=byType[2].slice();r.canRevealUnknown=true;}
+      return finish();
+    } catch (error) {
+      if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
+        r.verdict = "UNSUPPORTED";
+      } else if (
+        r.verdict === "LIMIT EXCEEDED" ||
+        r.verdict === "NOT A GRD" ||
+        r.verdict === "UNSUPPORTED" ||
+        r.verdict === "REVOKED KEY" ||
+        r.verdict === "UNREADABLE"
+      ) {
+        // keep verdict
+      } else if (error instanceof IntegrityError) {
+        r.verdict = "TAMPERED";
+      } else {
+        r.verdict = "CANNOT VERIFY";
+      }
+      issue("Verification stopped safely: " + error.message, "file structure");
+      return finish();
+    }
+  };
+}
+const verifyGRD = createVerifier(TRUSTED);
+
+function encodedDimensions(bytes, mime) {
+  const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    ascii = (at, n) => String.fromCharCode(...bytes.subarray(at, at + n));
+  if (
+    mime === "image/png" &&
+    bytes.length >= 24 &&
+    hex(bytes.subarray(0, 8)) === "89504e470d0a1a0a" &&
+    ascii(12, 4) === "IHDR"
+  )
+    return [v.getUint32(16), v.getUint32(20)];
+  if (mime === "image/jpeg" && bytes[0] === 255 && bytes[1] === 216) {
+    let i = 2;
+    while (i + 3 < bytes.length) {
+      if (bytes[i++] !== 255) break;
+      while (bytes[i] === 255) i++;
+      const marker = bytes[i++];
+      if (marker === 0xd9 || marker === 0xda) break;
+      if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+      const len = v.getUint16(i);
+      if (len < 2 || i + len > bytes.length) break;
+      if (
+        [
+          0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd,
+          0xce, 0xcf,
+        ].includes(marker) &&
+        len >= 7
+      )
+        return [v.getUint16(i + 5), v.getUint16(i + 3)];
+      i += len;
+    }
+  }
+  if (
+    mime === "image/webp" &&
+    bytes.length >= 30 &&
+    ascii(0, 4) === "RIFF" &&
+    ascii(8, 4) === "WEBP"
+  ) {
+    const kind = ascii(12, 4);
+    if (kind === "VP8X")
+      return [
+        1 + bytes[24] + bytes[25] * 256 + bytes[26] * 65536,
+        1 + bytes[27] + bytes[28] * 256 + bytes[29] * 65536,
+      ];
+    if (kind === "VP8 " && hex(bytes.subarray(23, 26)) === "9d012a")
+      return [v.getUint16(26, true) & 0x3fff, v.getUint16(28, true) & 0x3fff];
+    if (kind === "VP8L" && bytes[20] === 0x2f) {
+      const bits = v.getUint32(21, true);
+      return [(bits & 0x3fff) + 1, ((bits >>> 14) & 0x3fff) + 1];
+    }
+  }
+  throw new Error("Unsupported or invalid encoded image header.");
+}
+
+// SPDX-License-Identifier: MIT
+// GRD2 canonical image codec: 8-bit RGB, non-interlaced PNG with no ancillary chunks.
+// Uses native DEFLATE streams in current browsers and Node 22; no remote decoder.
+class PngFormatError extends Error {}
+const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+const PNG_CRC_TABLE = Uint32Array.from({length:256}, (_, value) => {
+  let c=value;for(let bit=0;bit<8;bit++)c=(c>>>1)^((c&1)?0xedb88320:0);return c>>>0;
+});
+function pngCrc(bytes) {
+  let c=0xffffffff;
+  for(let i=0;i<bytes.length;i++)c=(c>>>8)^PNG_CRC_TABLE[(c^bytes[i])&255];
+  return (c^0xffffffff)>>>0;
+}
+function pngJoin(arrays) {
+  const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
+  let offset = 0;
+  for (const a of arrays) {
+    out.set(a, offset);
+    offset += a.length;
+  }
+  return out;
+}
+function pngChunk(type, data) {
+  const name = new TextEncoder().encode(type),
+    out = new Uint8Array(12 + data.length),
+    view = new DataView(out.buffer);
+  view.setUint32(0, data.length);
+  out.set(name, 4);
+  out.set(data, 8);
+  view.setUint32(8 + data.length, pngCrc(out.subarray(4, 8 + data.length)));
+  return out;
+}
+async function pngStream(bytes, compress, limit) {
+  const stream = new Blob([bytes])
+      .stream()
+      .pipeThrough(
+        compress
+          ? new CompressionStream("deflate")
+          : new DecompressionStream("deflate"),
+      ),
+    reader = stream.getReader(),
+    parts = [];
+  let length = 0;
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      length += value.length;
+      if (length > limit) throw new PngFormatError("PNG decompression limit exceeded.");
+      parts.push(value);
+    }
+  } catch (error) {
+    if (error instanceof PngFormatError) throw error;
+    if (!compress && (error instanceof TypeError || ["Z_DATA_ERROR","Z_BUF_ERROR"].includes(error?.code) || error?.name === "DataError"))
+      throw new PngFormatError("Invalid PNG deflate stream: " + error.message);
+    throw error;
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  return pngJoin(parts);
+}
+async function encodeRgbPng(rgb, width, height) {
+  if (rgb.length !== width * height * 3 || width < 1 || height < 1 || width > 8192 || height > 8192 || width * height > 36_000_000)
+    throw new PngFormatError("Invalid RGB image dimensions or length.");
+  let y = 0;
+  const rows = new ReadableStream({ pull(controller) {
+    if (y === height) { controller.close(); return; }
+    const count = Math.min(64, height-y), bytes = new Uint8Array(count * (width*3+1));
+    for (let row=0;row<count;row++) bytes.set(rgb.subarray((y+row)*width*3,(y+row+1)*width*3),row*(width*3+1)+1);
+    y+=count;controller.enqueue(bytes);
+  }});
+  const hdr = new Uint8Array(13), view = new DataView(hdr.buffer);
+  view.setUint32(0,width);view.setUint32(4,height);hdr[8]=8;hdr[9]=2;
+  const parts=[PNG_SIGNATURE,pngChunk("IHDR",hdr)];
+  const reader=rows.pipeThrough(new CompressionStream("deflate")).getReader();
+  try { for (;;) { const {value,done}=await reader.read(); if(done)break; parts.push(pngChunk("IDAT",value)); } }
+  finally { await reader.cancel().catch(()=>{}); }
+  parts.push(pngChunk("IEND",new Uint8Array()));return pngJoin(parts);
+}
+async function decodeRgbPng(bytes, limits) {
+  if (limits) {
+    const {width,height}=rgbPngParts(bytes,limits), rgb=new Uint8Array(width*height*3);
+    for await (const band of decodeRgbPngBands(bytes,limits)) rgb.set(band.rgb,band.y*width*3);
+    return {rgb,width,height};
+  }
+  if (
+    !(bytes instanceof Uint8Array) ||
+    bytes.length < 45 ||
+    PNG_SIGNATURE.some((b, i) => bytes[i] !== b)
+  )
+    throw new PngFormatError("Not a GRD2 RGB PNG.");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    idats = [];
+  let offset = 8,
+    width,
+    height,
+    ended = false,
+    seenData = false;
+  while (offset + 12 <= bytes.length) {
+    const size = view.getUint32(offset),
+      end = offset + 12 + size;
+    if (end > bytes.length) throw new PngFormatError("Truncated PNG chunk.");
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8)),
+      data = bytes.subarray(offset + 8, end - 4);
+    if (pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4))
+      throw new PngFormatError("PNG checksum failed.");
+    if (type === "IHDR") {
+      if (offset !== 8 || size !== 13)
+        throw new PngFormatError("Invalid PNG header order.");
+      width = view.getUint32(offset + 8);
+      height = view.getUint32(offset + 12);
+      if (
+        width < 1 ||
+        height < 1 ||
+        width > 4096 ||
+        height > 4096 ||
+        width * height > 4_194_304 ||
+        data[8] !== 8 ||
+        data[9] !== 2 ||
+        data[10] ||
+        data[11] ||
+        data[12]
+      )
+        throw new PngFormatError("GRD2 needs bounded 8-bit RGB, non-interlaced PNG.");
+    } else if (type === "IDAT") {
+      if (!width || ended) throw new PngFormatError("Invalid PNG data order.");
+      idats.push(data);
+      seenData = true;
+    } else if (type === "IEND") {
+      if (size || !seenData || end !== bytes.length)
+        throw new PngFormatError("Invalid PNG end.");
+      ended = true;
+      offset = end;
+      break;
+    } else
+      throw new PngFormatError(
+        "GRD2 PNG contains unsupported ancillary or critical chunks: " + type,
+      );
+    offset = end;
+  }
+  if (!ended || !idats.length) throw new PngFormatError("Incomplete PNG.");
+  const stride = width * 3,
+    raw = await pngStream(pngJoin(idats), false, height * (stride + 1));
+  if (raw.length !== height * (stride + 1))
+    throw new PngFormatError("Wrong PNG pixel length.");
+  const rgb = new Uint8Array(width * height * 3);
+  const paeth = (a, b, c) => {
+    const p = a + b - c,
+      pa = Math.abs(p - a),
+      pb = Math.abs(p - b),
+      pc = Math.abs(p - c);
+    return pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+  };
+  for (let y = 0; y < height; y++) {
+    const filter = raw[y * (stride + 1)];
+    if (filter > 4) throw new PngFormatError("Unknown PNG filter.");
+    for (let x = 0; x < stride; x++) {
+      const at = y * stride + x,
+        a = x >= 3 ? rgb[at - 3] : 0,
+        b = y ? rgb[at - stride] : 0,
+        c = y && x >= 3 ? rgb[at - stride - 3] : 0;
+      const predict =
+        filter === 0
+          ? 0
+          : filter === 1
+            ? a
+            : filter === 2
+              ? b
+              : filter === 3
+                ? Math.floor((a + b) / 2)
+                : paeth(a, b, c);
+      rgb[at] = (raw[y * (stride + 1) + 1 + x] + predict) & 255;
+    }
+  }
+  return { rgb, width, height };
+}
+
+// Strict PNG framing is shared by the streaming verifier and full-image decoder.
+function rgbPngParts(bytes, { dimension = 4096, pixels = 4_194_304 } = {}) {
+  if (!(bytes instanceof Uint8Array) || bytes.length < 45 || PNG_SIGNATURE.some((b, i) => bytes[i] !== b))
+    throw new PngFormatError('Invalid RGB PNG signature.');
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), idats = [];
+  let offset = 8, width, height, ended = false, dataSeen = false;
+  while (offset + 12 <= bytes.length) {
+    const length = view.getUint32(offset), end = offset + length + 12;
+    if (end > bytes.length) throw new PngFormatError('Truncated PNG chunk.');
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    const data = bytes.subarray(offset + 8, end - 4);
+    if (pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4)) throw new PngFormatError('PNG checksum failed.');
+    if (type === 'IHDR') {
+      if (offset !== 8 || length !== 13) throw new PngFormatError('Invalid PNG header order.');
+      width = view.getUint32(offset + 8); height = view.getUint32(offset + 12);
+      if (!width || !height || width > dimension || height > dimension || width * height > pixels || data[8] !== 8 || data[9] !== 2 || data[10] || data[11] || data[12])
+        throw new PngFormatError('Unsupported PNG dimensions or pixel format.');
+    } else if (type === 'IDAT') {
+      if (!width || ended) throw new PngFormatError('PNG data before header.');
+      idats.push(data); dataSeen = true;
+    } else if (type === 'IEND') {
+      if (length || !dataSeen || end !== bytes.length) throw new PngFormatError('Invalid PNG end.');
+      ended = true; break;
+    } else throw new PngFormatError('Unexpected PNG chunk: ' + type);
+    offset = end;
+  }
+  if (!ended) throw new PngFormatError('Incomplete PNG.');
+  return { width, height, idats };
+}
+async function* decodeRgbPngBands(bytes, limits = { dimension: 8192, pixels: 36_000_000 }) {
+  const { width, height, idats } = rgbPngParts(bytes, limits), stride = width * 3;
+  let part = 0, offset = 0;
+  const packed = new ReadableStream({ pull(controller) {
+    while (part < idats.length && offset === idats[part].length) { part++; offset = 0; }
+    if (part === idats.length) { controller.close(); return; }
+    const end = Math.min(offset + 16_384, idats[part].length);
+    controller.enqueue(idats[part].subarray(offset, end)); offset = end;
+  }});
+  const reader = packed.pipeThrough(new DecompressionStream('deflate')).getReader();
+  let pending = new Uint8Array(), previous = new Uint8Array(stride), row = 0;
+  let band = new Uint8Array(Math.min(64, height) * stride), inBand = 0;
+  const paeth = (a, b, c) => { const p = a + b - c, x = Math.abs(p-a), y = Math.abs(p-b), z = Math.abs(p-c); return x <= y && x <= z ? a : y <= z ? b : c; };
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const raw = pngJoin([pending, value]); let at = 0;
+      while (raw.length - at >= stride + 1) {
+        if (row >= height) throw new PngFormatError('Extra decompressed PNG bytes.');
+        const filter = raw[at++]; if (filter > 4) throw new PngFormatError('Unknown PNG filter.');
+        const current = band.subarray(inBand * stride, (inBand + 1) * stride);
+        if (filter === 0) { current.set(raw.subarray(at,at+stride)); at += stride; }
+        else for (let x = 0; x < stride; x++) {
+          const a = x >= 3 ? current[x-3] : 0, b = previous[x], c = x >= 3 ? previous[x-3] : 0;
+          const prediction = filter === 0 ? 0 : filter === 1 ? a : filter === 2 ? b : filter === 3 ? Math.floor((a+b)/2) : paeth(a,b,c);
+          current[x] = (raw[at++] + prediction) & 255;
+        }
+        previous.set(current); row++; inBand++;
+        if (inBand === 64 || row === height) {
+          yield { y: row-inBand, width, height, rows: inBand, rgb: band };
+          inBand = 0; band = new Uint8Array(Math.min(64, height-row) * stride);
+        }
+      }
+      pending = raw.slice(at);
+    }
+    if (row !== height || pending.length) throw new PngFormatError('Wrong PNG pixel length.');
+  } catch (error) {
+    if (error instanceof PngFormatError) throw error;
+    if (error instanceof TypeError || ['Z_DATA_ERROR','Z_BUF_ERROR'].includes(error?.code) || error?.name === 'DataError') throw new PngFormatError('Invalid PNG deflate stream.');
+    throw error;
+  } finally { await reader.cancel().catch(() => {}); }
+}
+
+// SPDX-License-Identifier: MIT
+// Blob workers keep the downloadable viewer self-contained and network-free.
+function guardHashWorker() {
+  self.onmessage = async ({ data }) => {
+    try {
+      const hashes = [];
+      for (const bytes of data) {
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+        hashes.push(Array.from(digest, b => b.toString(16).padStart(2, '0')).join(''));
+      }
+      self.postMessage({ hashes });
+    } catch (error) { self.postMessage({ error: error.message }); }
+  };
+}
+function createTileHasher(count) {
+  const workers = [];
+  let url;
+  if (count > 1024 && typeof Worker === 'function') {
+    try {
+      url = URL.createObjectURL(new Blob(['(' + guardHashWorker.toString() + ')()'], { type: 'text/javascript' }));
+      for (let i = 0; i < Math.min(8, globalThis.navigator?.hardwareConcurrency || 2); i++) workers.push(new Worker(url));
+    } catch { for (const worker of workers) worker.terminate(); workers.length = 0; }
+  }
+  return {
+    workerCount: workers.length,
+    async hash(buffers) {
+      if (!workers.length) return Promise.all(buffers.map(async bytes => {
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+        return Array.from(digest, b => b.toString(16).padStart(2, '0')).join('');
+      }));
+      const groups = workers.map(() => []);
+      buffers.forEach((buffer, i) => groups[i % workers.length].push(buffer));
+      const results = await Promise.all(workers.map((worker, i) => new Promise((resolve, reject) => {
+        worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.hashes);
+        worker.onerror = event => reject(new Error(event.message || 'Tile hash worker failed.'));
+        worker.postMessage(groups[i], groups[i].map(buffer => buffer.buffer));
+      })));
+      return buffers.map((_, i) => results[i % workers.length][Math.floor(i / workers.length)]);
+    },
+    close() { for (const worker of workers) worker.terminate(); if (url) URL.revokeObjectURL(url); },
+  };
+}
+
+// SPDX-License-Identifier: MIT
+const GRD3_LIMITS = Object.freeze({ bytes: 256*1024*1024, dimension: 8192, pixels: 36_000_000, tiles: 9000 });
+function isGRD3(input) {
+  const b = input instanceof Uint8Array ? input : new Uint8Array(input);
+  return b[0] === 71 && b[1] === 82 && b[2] === 68 && b[3] === 51 && b[4] === 10;
+}
+function encodeGRD3(doc) {
+  validateManifest(doc.manifest);
+  if (doc.manifest.version !== 3) throw new IntegrityError('GRD3 requires a version 3 manifest.');
+  const manifest = new TextEncoder().encode(canon(doc.manifest)), signature = decodeBase64(doc.signature,64);
+  const png = doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image);
+  if (!Array.isArray(doc.tiles) || doc.tiles.length !== doc.manifest.commitments.length) throw new IntegrityError('Invalid GRD3 tile count.');
+  let recordBytes = 0;
+  for (const t of doc.tiles) {
+    if (doc.manifest.subTile) validateSubRecord(doc.manifest,t,t.index);
+    recordBytes += t.sub ? 3+t.sub.reduce((n,s)=>n+(s.salt?17:33),0) : (Object.hasOwn(t,'salt')||t.seed) ? 17 : 33;
+  }
+  const total = 5+4+manifest.length+64+4+recordBytes+8+png.length;
+  if (total > GRD3_LIMITS.bytes) throw new IntegrityError('GRD3 exceeds 256 MiB.');
+  const out = new Uint8Array(total), view = new DataView(out.buffer); let at=0;
+  out.set([71,82,68,51,10],at); at+=5; view.setUint32(at,manifest.length);at+=4;out.set(manifest,at);at+=manifest.length;out.set(signature,at);at+=64;
+  view.setUint32(at,doc.tiles.length);at+=4;
+  const putHex = value => { for(let j=0;j<value.length;j+=2)out[at++]=parseInt(value.slice(j,j+2),16); };
+  for (let i=0;i<doc.tiles.length;i++) {
+    const t=doc.tiles[i], retained=Object.hasOwn(t,'salt') || Object.hasOwn(t,'seed');
+    if (doc.manifest.subTile) validateSubRecord(doc.manifest,t,i);
+    if (t.sub) {
+      out[at++]=3;view.setUint16(at,t.sub.length);at+=2;
+      for(const s of t.sub){out[at++]=s.salt?0:1;putHex(s.salt??s.commitment);}
+      continue;
+    }
+    if (t.index!==i || Object.keys(t).length!==2) throw new IntegrityError('Invalid tile record.');
+    const value=retained?(t.salt??t.seed):t.commitment;
+    if (typeof value!=='string' || !(retained?/^[0-9a-f]{32}$/:/^[0-9a-f]{64}$/).test(value)) throw new IntegrityError('Invalid GRD3 record bytes.');
+    const method=doc.redactions.find(r=>r.index===i)?.method;
+    if (!retained && !['black','blur'].includes(method)) throw new IntegrityError('Missing GRD3 redaction method.');
+    out[at++]=retained?0:method==='black'?1:2;putHex(value);
+  }
+
+  view.setBigUint64(at,BigInt(png.length));at+=8;out.set(png,at);return out;
+}
+function decodeGRD3(input) {
+  const b=input instanceof Uint8Array?input:new Uint8Array(input);
+  if(b.length>GRD3_LIMITS.bytes)throw new IntegrityError('GRD3 exceeds 256 MiB.');
+  if(!isGRD3(b))throw new IntegrityError('Missing GRD3 header.');
+  const view=new DataView(b.buffer,b.byteOffset,b.byteLength);let at=5;
+  const need=n=>{if(!Number.isSafeInteger(n)||n<0||at+n>b.length)throw new IntegrityError('Truncated GRD3 section.');};
+  need(4);const length=view.getUint32(at);at+=4;if(length>2*1024*1024)throw new IntegrityError('Manifest length exceeds bound.');need(length);
+  let raw,m;
+  try{raw=new TextDecoder('utf-8',{fatal:true}).decode(b.subarray(at,at+length));m=JSON.parse(raw);}catch(error){if(error instanceof TypeError||error instanceof SyntaxError)throw new IntegrityError('Invalid GRD3 manifest encoding.');throw error;}
+  at+=length;const count=validateManifest(m);
+  if(m.version!==3||canon(m)!==raw)throw new IntegrityError('Noncanonical GRD3 manifest.');
+  need(68);const signature=base64(b.subarray(at,at+64));at+=64;const n=view.getUint32(at);at+=4;
+  if(n!==count)throw new IntegrityError('GRD3 tile count mismatch.');
+  const tiles=[],redactions=[];
+  const toHex=a=>Array.from(a,x=>x.toString(16).padStart(2,'0')).join('');
+  for(let index=0;index<n;index++){
+    need(1);const kind=b[at++];
+    if(kind===3 && m.subTile){
+      need(2);const count=view.getUint16(at);at+=2;if(count!==subTileCount(m,index))throw new IntegrityError('Wrong sub-record count.');
+      const sub=[];
+      for(let j=0;j<count;j++){
+        need(1);const k=b[at++];if(k>1)throw new IntegrityError('Invalid sub-record kind.');
+        const size=k?32:16;need(size);const value=toHex(b.subarray(at,at+size));at+=size;sub.push(k?{j,commitment:value}:{j,salt:value});
+      }
+      const t={index,sub};validateSubRecord(m,t,index);tiles.push(t);redactions.push({index,method:'black'});continue;
+    }
+    if(kind>2 || (m.subTile&&kind===2))throw new IntegrityError('Unknown GRD3 tile kind.');
+    const size=kind?32:16;need(size);const value=toHex(b.subarray(at,at+size));at+=size;
+    const t=kind?{index,commitment:value}:m.subTile?{index,seed:value}:{index,salt:value};
+    if(m.subTile)validateSubRecord(m,t,index);tiles.push(t);if(kind)redactions.push({index,method:kind===1?'black':'blur'});
+  }
+
+  need(8);const pngLength=view.getBigUint64(at);at+=8;
+  if(pngLength>BigInt(GRD3_LIMITS.bytes)||pngLength!==BigInt(b.length-at))throw new IntegrityError('Invalid GRD3 PNG length or trailing bytes.');
+  return {manifest:m,signature,tiles,redactions,image:b.subarray(at)};
+}
+async function verifyGRD3(input, anchors=TRUSTED, policy=TRUST_POLICY) {
+  const bytes=input instanceof Uint8Array?input:new Uint8Array(input);
+  const r={version:3,verdict:'TAMPERED',genuine:false,viewable:false,checks:[],sections:[],problems:[],failed:[],changed:[],hiddenPixelsCleared:true,signature_valid:false};
+  const ok=(name,detail)=>r.checks.push({name,status:'pass',detail});let hasher;
+  try {
+    if(bytes.length>GRD3_LIMITS.bytes){r.verdict='LIMIT EXCEEDED';throw new IntegrityError('GRD3 exceeds 256 MiB.');}
+    if(anchors?._invalid||TRUSTED?._invalid||!Array.isArray(anchors))throw new Error('Invalid local trust anchors.');
+    const doc=decodeGRD3(bytes),m=doc.manifest;
+    ok("Container structure",doc.tiles.length+" ordered parent records · binary lengths agree");
+    r.assetId=m.assetId;r.created=m.created;r.root=m.root;r.keyId=m.keyId;
+    const pk=Uint8Array.from(m.publicKey.match(/../g),x=>parseInt(x,16));
+    r.fingerprint=await sha(pk);r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
+    if(r.fingerprint!==m.keyId)throw new IntegrityError('Wrong signer fingerprint.');
+    r.revocation=await checkRevocation(pk,policy);
+    if(r.revocation.revoked){r.verdict='REVOKED KEY';throw new IntegrityError('Signing key is revoked.');}
+    ok('Offline revocation','Not listed in bundled snapshot · '+r.revocation.asOf);
+    const key=await crypto.subtle.importKey('raw',pk,'Ed25519',false,['verify']);
+    r.signature_valid=await crypto.subtle.verify('Ed25519',key,decodeBase64(doc.signature,64),await manifestDigest(m));
+    if(!r.signature_valid)throw new IntegrityError('Manifest signature is invalid.');
+    if(await merkleRoot(m.commitments)!==m.root)throw new IntegrityError('Signed root mismatch.');
+    ok('Signed manifest','Ed25519 · GRD3 domain · complete commitment vector');
+    const parts=rgbPngParts(doc.image,GRD3_LIMITS);
+    if(parts.width!==m.width||parts.height!==m.height)throw new IntegrityError('PNG dimensions differ from signed manifest.');
+    hasher=createTileHasher(m.subTile?0:doc.tiles.length);r.hashWorkers=hasher.workerCount;r.maxDecodedRows=64;
+    const prefix=new TextEncoder().encode('GRD-TILE');
+    for await(const band of decodeRgbPngBands(doc.image,GRD3_LIMITS)) {
+      const buffers=[],indices=[];
+      const first=Math.floor(band.y/64)*Math.ceil(m.width/64),end=first+Math.ceil(m.width/64);
+      for(let i=first;i<end;i++){
+        const t=doc.tiles[i],bounds=tileBounds(m,i),rgb=new Uint8Array(bounds.width*bounds.height*3);
+        for(let y=0;y<bounds.height;y++)rgb.set(band.rgb.subarray((y*m.width+bounds.x)*3,(y*m.width+bounds.x+bounds.width)*3),y*bounds.width*3);
+        if(m.subTile){await verifySubTile(m,t,i,rgb);continue;}
+        if(Object.hasOwn(t,'commitment')){
+          if(t.commitment!==m.commitments[i])throw new IntegrityError('Wrong commitment at tile '+i);
+          if(doc.redactions.find(e=>e.index===i).method==='black'){
+            if(rgb.some(x=>x!==0)){r.hiddenPixelsCleared=false;throw new IntegrityError('blackout incomplete (tile '+i+')');}
+          }else{r.hiddenPixelsCleared=false;r.problems.push('Legacy blur redaction (tile '+i+'): pixels not verified.');}
+        }else{
+          const message=new Uint8Array(prefix.length+4+16+rgb.length);message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,i);
+          message.set(Uint8Array.from(t.salt.match(/../g),x=>parseInt(x,16)),prefix.length+4);message.set(rgb,prefix.length+20);buffers.push(message);indices.push(i);
+        }
+      }
+      const hashes=await hasher.hash(buffers);
+      hashes.forEach((hash,j)=>{if(hash!==m.commitments[indices[j]])throw new IntegrityError('Non-redacted tile '+indices[j]+' was changed.');});
+    }
+    ok('Streaming tile commitments',doc.tiles.length+' tiles checked in 64-row bands');
+    r.fileHash=await sha(bytes);r.tilesTotal=doc.tiles.length;r.redactedTiles=doc.redactions.map(e=>e.index);r.tilesVisible=r.tilesTotal-r.redactedTiles.length;r.tileSize=64;
+    r.redactionMap=m.subTile?subRedactionMap(doc):doc.redactions.map(e=>({index:e.index,...tileBounds(m,e.index),claimedMethod:e.method,methodAttested:false}));
+    if(m.subTile){r.subTile=m.subTile;r.subTilesTotal=doc.tiles.reduce((n,t)=>n+subTileCount(m,t.index),0);r.subTilesVisible=doc.tiles.reduce((n,t)=>n+(t.seed?subTileCount(m,t.index):t.sub?t.sub.filter(s=>s.salt).length:0),0);}
+    r.regionVerified=true;r.redactionApproval='not_attested';r.container=doc;
+    r.meta={asset_id:m.assetId,created_utc:m.created,width:m.width,height:m.height,mime:'image/png',original_filename:m.label||undefined};
+    const anchor=anchors.find(k=>k.public_key_hex===m.publicKey);
+    r.demo=m.purpose==='demo';r.personal=m.purpose==='personal';r.trusted=!!anchor&&!r.demo&&!r.personal;r.signer=anchor?.name??anchor?.owner??'Untrusted signer';r.signerName=anchor?.name??anchor?.owner;r.fingerprint=m.keyId;
+    r.checks.push({name:'Signer trust',status:r.trusted?'pass':r.demo||r.personal?'info':'fail',detail:r.demo?'DEMO ONLY':r.personal?'SELF-SIGNED':r.signer});
+    if(!r.trusted&&!r.demo&&!r.personal){r.verdict='UNTRUSTED SIGNER';r.canRevealUnknown=true;}
+    else if(!doc.tiles.some(t=>t.salt||t.seed||t.sub?.some(s=>s.salt)))r.verdict='FULLY REDACTED';
+    else {r.verdict=r.demo?'DEMO':r.personal?'UNVERIFIED: SELF-SIGNED':r.redactedTiles.length?'VERIFIED WITH REDACTIONS':'GENUINE';r.genuine=r.verdict==='GENUINE';r.viewable=true;}
+    return signerReport(r);
+  }catch(error){
+    if(error.message?.startsWith("blackout incomplete"))r.hiddenPixelsCleared=false;
+    if(error.name==='ResourceLimitError')r.verdict='LIMIT EXCEEDED';
+    else if(!['LIMIT EXCEEDED','REVOKED KEY'].includes(r.verdict)){
+      if(error instanceof IntegrityError||error instanceof PngFormatError)r.verdict='TAMPERED';
+      else if(error.name==='NotSupportedError')r.verdict='UNSUPPORTED';
+      else{r.verdict='CANNOT VERIFY';r.verifierFault=true;}
+    }
+    r.problems.push(error.message);r.failed.push('GRD3 proof');r.changed=[...r.failed];return signerReport(r);
+  }finally{hasher?.close();}
+}
+
+function visualFeatures(rgb,width,height) {
+  if (!(rgb instanceof Uint8Array)||!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>64||height>64||rgb.length!==width*height*3)throw new IntegrityError('Invalid visual tile dimensions.');
+  const sums=new Uint32Array(96),counts=new Uint16Array(96);
+  const clamp=x=>Math.max(0,Math.min(255,x));
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    const at=(y*width+x)*3,r=rgb[at],g=rgb[at+1],b=rgb[at+2];
+    const l=(y>>>3)*8+(x>>>3),c=(y>>>4)*4+(x>>>4);
+    sums[l]+=Math.floor((299*r+587*g+114*b+500)/1000);counts[l]++;
+    sums[64+c]+=clamp(Math.floor((128000000-168736*r-331264*g+500000*b+500000)/1000000));counts[64+c]++;
+    sums[80+c]+=clamp(Math.floor((128000000+500000*r-418688*g-81312*b+500000)/1000000));counts[80+c]++;
+  }
+  return Uint8Array.from(sums,(sum,i)=>counts[i]?Math.floor((sum+Math.floor(counts[i]/2))/counts[i]):i<64?0:128);
+}
+async function visualSalt(salt) {
+  const bytes=Uint8Array.from(salt.match(/../g),x=>parseInt(x,16));
+  const key=await crypto.subtle.importKey('raw',bytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('GRD-VIS'))).subarray(0,16);
+}
+async function visualCommitment(index,salt,feature) {
+  const prefix=new TextEncoder().encode('GRD-VIS'),message=new Uint8Array(prefix.length+4+16+96);
+  message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,index);message.set(salt,prefix.length+4);message.set(feature,prefix.length+20);return sha(message);
+}
+// SPDX-License-Identifier: MIT
+function subTileBounds(m,index,j) {
+  const b=tileBounds(m,index),g=m.subTile,cols=Math.ceil(b.width/g),x=(j%cols)*g,y=Math.floor(j/cols)*g;
+  return {x:b.x+x,y:b.y+y,width:Math.min(g,b.width-x),height:Math.min(g,b.height-y)};
+}
+function subTileCount(m,index){const b=tileBounds(m,index);return Math.ceil(b.width/m.subTile)*Math.ceil(b.height/m.subTile);}
+async function subSalts(seed,count){
+ const key=await crypto.subtle.importKey('raw',Uint8Array.from(seed.match(/../g),x=>parseInt(x,16)),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ return Promise.all(Array.from({length:count},async(_,j)=>{const message=new Uint8Array([71,82,68,45,83,85,66,0,0]);new DataView(message.buffer).setUint16(7,j);return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',key,message)).subarray(0,16),b=>b.toString(16).padStart(2,'0')).join('');}));
+}
+async function subCommitment(index,j,salt,rgb){
+ const prefix=new TextEncoder().encode('GRD-SUBTILE'),message=new Uint8Array(prefix.length+4+2+16+rgb.length);message.set(prefix);const view=new DataView(message.buffer);view.setUint32(prefix.length,index);view.setUint16(prefix.length+4,j);message.set(Uint8Array.from(salt.match(/../g),x=>parseInt(x,16)),prefix.length+6);message.set(rgb,prefix.length+22);return sha(message);
+}
+async function subParentCommitment(index,commitments){
+ const prefix=new TextEncoder().encode('GRD-TILE2'),message=new Uint8Array(prefix.length+4+32*commitments.length);message.set(prefix);new DataView(message.buffer).setUint32(prefix.length,index);
+ commitments.forEach((c,j)=>message.set(Uint8Array.from(c.match(/../g),x=>parseInt(x,16)),prefix.length+4+j*32));return sha(message);
+}
+function subPixels(tile,m,index,j){
+ const b=tileBounds(m,index),s=subTileBounds(m,index,j),x=s.x-b.x,y=s.y-b.y,out=new Uint8Array(s.width*s.height*3);
+ for(let r=0;r<s.height;r++)out.set(tile.subarray(((y+r)*b.width+x)*3,((y+r)*b.width+x+s.width)*3),r*s.width*3);return out;
+}
+async function sealSubTile(m,index,seed,tile){
+ const salts=await subSalts(seed,subTileCount(m,index)),commitments=await Promise.all(salts.map((salt,j)=>subCommitment(index,j,salt,subPixels(tile,m,index,j))));
+ return {commitment:await subParentCommitment(index,commitments),salts,commitments};
+}
+function validateSubRecord(m,t,index){
+ const keys=Object.keys(t).sort().join(',');
+ if(t.index!==index)throw new IntegrityError('Wrong tile index.');
+ if(keys==='index,seed'){
+  if(typeof t.seed!=='string'||!/^[0-9a-f]{32}$/.test(t.seed))throw new IntegrityError('Invalid tile seed.');
+ }else if(keys==='commitment,index'){
+  if(typeof t.commitment!=='string'||!/^[0-9a-f]{64}$/.test(t.commitment))throw new IntegrityError('Invalid hidden tile commitment.');
+ }else if(keys==='index,sub'){
+  if(!Array.isArray(t.sub)||t.sub.length!==subTileCount(m,index))throw new IntegrityError('Wrong sub-record count.');
+  let hidden=0;
+  t.sub.forEach((s,j)=>{
+   if(!s||s.j!==j)throw new IntegrityError('Unordered sub-record.');
+   const k=Object.keys(s).sort().join(',');
+   if(k==='j,salt'){if(typeof s.salt!=='string'||!/^[0-9a-f]{32}$/.test(s.salt))throw new IntegrityError('Invalid sub-tile salt.');}
+   else if(k==='commitment,j'){if(typeof s.commitment!=='string'||!/^[0-9a-f]{64}$/.test(s.commitment))throw new IntegrityError('Invalid sub-tile commitment.');hidden++;}
+   else throw new IntegrityError('Invalid sub-record fields.');
+  });
+  if(!hidden||hidden===t.sub.length)throw new IntegrityError('Partial tile must contain both retained and hidden sub-tiles.');
+ }else throw new IntegrityError('Seed must be absent on a partially hidden tile.');
+}
+async function verifySubTile(m,t,index,tile){
+ validateSubRecord(m,t,index);
+ if(Object.hasOwn(t,'commitment')){
+  if(t.commitment!==m.commitments[index]||tile.some(x=>x!==0))throw new IntegrityError('blackout incomplete or wrong commitment (tile '+index+')');return;
+ }
+ if(t.seed){if((await sealSubTile(m,index,t.seed,tile)).commitment!==m.commitments[index])throw new IntegrityError('Non-redacted tile '+index+' changed.');return;}
+ const commitments=[];
+ for(const s of t.sub){
+  const pixels=subPixels(tile,m,index,s.j);
+  if(s.commitment){if(pixels.some(x=>x!==0))throw new IntegrityError('blackout incomplete (tile '+index+' sub '+s.j+')');commitments.push(s.commitment);}
+  else commitments.push(await subCommitment(index,s.j,s.salt,pixels));
+ }
+ if(await subParentCommitment(index,commitments)!==m.commitments[index])throw new IntegrityError('Retained disclosure changed (tile '+index+' sub proof).');
+}
+function subRedactionMap(doc){
+ const m=doc.manifest,out=[];
+ for(const t of doc.tiles){
+  if(t.commitment)out.push({index:t.index,...tileBounds(m,t.index),claimedMethod:'black',methodAttested:false});
+  else if(t.sub)for(const s of t.sub)if(s.commitment)out.push({index:t.index,subIndex:s.j,...subTileBounds(m,t.index,s.j),claimedMethod:'black',methodAttested:false});
+ }
+ return out;
+}
+async function redactRects(document,rects,{granularity=64}={}){
+ const m=document.manifest;
+ if(!m.subTile){if(granularity<64)throw new Error('granularity finer than sealed sub-tile');throw new Error('Use whole-tile redaction for this legacy file.');}
+ if(![8,16,32,64].includes(granularity)||granularity<m.subTile)throw new Error('granularity finer than sealed sub-tile');
+ if(!Array.isArray(rects)||!rects.length)throw new Error('Select at least one rectangle.');
+ const rounded=rects.map(rect=>{
+  const {x,y,width,height}=Array.isArray(rect)?{x:rect[0],y:rect[1],width:rect[2],height:rect[3]}:rect;
+  if(![x,y,width,height].every(Number.isFinite)||width<=0||height<=0)throw new Error('Invalid rectangle.');
+  return {x:Math.floor(x/granularity)*granularity,y:Math.floor(y/granularity)*granularity,right:Math.ceil((x+width)/granularity)*granularity,bottom:Math.ceil((y+height)/granularity)*granularity};
+ });
+ const r=await verifyGRD2(encodeGRD2(document),[]);if(!r.regionVerified)throw new Error('Cannot redact invalid source proof.');
+ const decoded=await decodeRgbPng(containerImage(document),m.version===3?GRD3_LIMITS:undefined),rgb=decoded.rgb,tiles=[];
+ let selected=false;
+ for(let i=0;i<document.tiles.length;i++){
+  const t=document.tiles[i];if(t.commitment){const b=tileBounds(m,i);if(rounded.some(rect=>b.x<rect.right&&b.x+b.width>rect.x&&b.y<rect.bottom&&b.y+b.height>rect.y))selected=true;tiles.push({...t});continue;}
+  const b=tileBounds(m,i),tile=new Uint8Array(b.width*b.height*3);
+  for(let row=0;row<b.height;row++)tile.set(rgb.subarray(((b.y+row)*m.width+b.x)*3,((b.y+row)*m.width+b.x+b.width)*3),row*b.width*3);
+  const material=t.seed?await sealSubTile(m,i,t.seed,tile):null;
+  const sub=material?material.salts.map((salt,j)=>({j,salt})):t.sub.map(s=>({...s}));
+  for(let j=0;j<sub.length;j++){
+   const cell=subTileBounds(m,i,j),hit=rounded.some(rect=>cell.x<rect.right&&cell.x+cell.width>rect.x&&cell.y<rect.bottom&&cell.y+cell.height>rect.y);
+   if(hit){selected=true;if(!sub[j].commitment)sub[j]={j,commitment:material?material.commitments[j]:await subCommitment(i,j,sub[j].salt,subPixels(tile,m,i,j))};}
+   if(sub[j].commitment)for(let row=0;row<cell.height;row++){const at=((cell.y+row)*m.width+cell.x)*3;rgb.fill(0,at,at+cell.width*3);}
+  }
+  const hidden=sub.filter(s=>s.commitment).length;
+  tiles.push(hidden===sub.length?{index:i,commitment:m.commitments[i]}:hidden?{index:i,sub}:t);
+ }
+ if(!selected)throw new Error('No image sub-tiles intersect the rectangles.');
+ const png=await encodeRgbPng(rgb,m.width,m.height),redactions=tiles.filter(t=>t.commitment||t.sub).map(t=>({index:t.index,method:'black'}));
+ return encodeGRD2({manifest:m,signature:document.signature,tiles,redactions,image:m.version===3?png:base64(png)});
+}
+
+// SPDX-License-Identifier: MIT
+
+class ProofError extends IntegrityError {}
+class ResourceLimitError extends IntegrityError { constructor(message) { super(message); this.name = "ResourceLimitError"; } }
+
+const TILE_LIMITS = Object.freeze({
+  bytes: 32 * 1024 * 1024,
+  pixels: 4_194_304,
+  dimension: 4096,
+  tiles: 1024,
+});
+const textEncoder = new TextEncoder();
+const MANIFEST_FIELDS = [
+  "format",
+  "version",
+  "width",
+  "height",
+  "tileSize",
+  "pixelFormat",
+  "root",
+  "commitments",
+  "publicKey",
+  "keyId",
+  "policy",
+  "purpose",
+  "label",
+];
+const unhex = (value) =>
+  Uint8Array.from(value.match(/../g), (v) => parseInt(v, 16));
+const joinBytes = (...arrays) => {
+  const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
+  let at = 0;
+  for (const a of arrays) {
+    out.set(a, at);
+    at += a.length;
+  }
+  return out;
+};
+function base64(bytes) {
+  let raw = "";
+  for (let i = 0; i < bytes.length; i += 32768)
+    raw += String.fromCharCode(...bytes.subarray(i, i + 32768));
+  return btoa(raw);
+}
+
+function isCanonicalBase64Shape(s) {
+  if (s.length % 4) return false;
+  const pad = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
+  for (let i = 0; i < s.length - pad; i++) {
+    const c = s.charCodeAt(i);
+    const ok =
+      (c >= 65 && c <= 90) ||
+      (c >= 97 && c <= 122) ||
+      (c >= 48 && c <= 57) ||
+      c === 43 ||
+      c === 47;
+    if (!ok) return false;
+  }
+  return true;
+}
+
+function decodeBase64(value, length) {
+  if (
+    typeof value !== "string" ||
+    value.length > Math.ceil(TILE_LIMITS.bytes / 3) * 4 ||
+    value.length % 4 ||
+    !isCanonicalBase64Shape(value)
+  )
+    throw new ProofError("Invalid base64 payload length or encoding.");
+  const raw = atob(value);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  if (
+    (length !== undefined && bytes.length !== length) ||
+    base64(bytes) !== value
+  )
+    throw new ProofError("Noncanonical base64 payload.");
+  return bytes;
+}
+const exactKeys = (value, keys) =>
+  value &&
+  typeof value === "object" &&
+  !Array.isArray(value) &&
+  Object.keys(value).length === keys.length &&
+  keys.every((k) => Object.hasOwn(value, k));
+const hashHex = (value) =>
+  typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+function isGRD2(input) {
+  const d = input instanceof Uint8Array ? input : new Uint8Array(input);
+  return isGRD3(d) || (
+    d[0] === 71 && d[1] === 82 && d[2] === 68 && d[3] === 50 && d[4] === 10
+  );
+}
+function tileBounds(m, index) {
+  const columns = Math.ceil(m.width / m.tileSize),
+    x = (index % columns) * m.tileSize,
+    y = Math.floor(index / columns) * m.tileSize;
+  return {
+    x,
+    y,
+    width: Math.min(m.tileSize, m.width - x),
+    height: Math.min(m.tileSize, m.height - y),
+  };
+}
+function validateManifest(m) {
+  const v3 = m?.version === 3, limits = v3 ? GRD3_LIMITS : TILE_LIMITS;
+  if (
+    !exactKeys(m, Object.hasOwn(m ?? {}, "profile") ? [...MANIFEST_FIELDS, "profile", "assetId", "created", ...(m.visual ? ["visual"] : []), ...(m.subTile ? ["subTile"] : [])] : MANIFEST_FIELDS) ||
+    m.format !== (v3 ? "GRD3" : "GRD2") ||
+    ![2, 3].includes(m.version) ||
+    m.pixelFormat !== "RGB8" ||
+    m.policy !== "tile-redaction-v1" ||
+    !["asset", "demo", "personal"].includes(m.purpose)
+  )
+    throw new ProofError("Unsupported GRD2 manifest or policy.");
+  if (m.subTile !== undefined && ![8,16,32].includes(m.subTile)) throw new ProofError("Invalid sealed sub-tile size.");
+  if (Object.hasOwn(m, "profile")) {
+    if (m.profile !== (v3 ? (m.subTile ? (m.visual ? "3.3" : "3.1") : (m.visual ? "3.2" : "3.0")) : (m.subTile ? (m.visual ? "2.4" : "2.2") : (m.visual ? "2.3" : "2.1")))) throw new ProofError("Unsupported manifest profile.");
+    decodeBase64(m.assetId, 16);
+    if (typeof m.created !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(m.created) ||
+        !Number.isFinite(Date.parse(m.created)) || m.created.startsWith("0000") ||
+        new Date(m.created).toISOString() !== m.created.replace("Z", ".000Z"))
+      throw new ProofError("Invalid signer-claimed creation time.");
+  }
+  if (Number.isInteger(m.width) && Number.isInteger(m.height) &&
+      (m.width > limits.dimension || m.height > limits.dimension ||
+       m.width * m.height > limits.pixels ||
+       Math.ceil(m.width / 64) * Math.ceil(m.height / 64) > limits.tiles))
+    throw new ResourceLimitError("GRD2 image or tile limit exceeded.");
+  if (
+    !Number.isInteger(m.width) ||
+    !Number.isInteger(m.height) ||
+    m.width < 1 ||
+    m.height < 1 ||
+    m.width > limits.dimension ||
+    m.height > limits.dimension ||
+    m.width * m.height > limits.pixels ||
+    m.tileSize !== 64
+  )
+    throw new ProofError("GRD2 needs a bounded RGB image and 64px tiles.");
+  if (
+    !hashHex(m.root) ||
+    !hashHex(m.publicKey) ||
+    !hashHex(m.keyId) ||
+    typeof m.label !== "string" ||
+    m.label.length > 120 ||
+    !m.label.isWellFormed()
+  )
+    throw new ProofError("Invalid GRD2 root, key or label.");
+  const count = Math.ceil(m.width / 64) * Math.ceil(m.height / 64);
+  if (m.visual && (!exactKeys(m.visual, ["version","tau","commitments"]) ||
+      m.visual.version !== "y8c16-v1" || m.visual.tau !== 9 || !Array.isArray(m.visual.commitments) ||
+      m.visual.commitments.length !== count || !m.visual.commitments.every(hashHex)))
+    throw new ProofError("Invalid signed visual layer.");
+  if (
+    count > limits.tiles ||
+    !Array.isArray(m.commitments) ||
+    m.commitments.length !== count ||
+    !m.commitments.every(hashHex)
+  )
+    throw new ProofError("Invalid signed tile commitments.");
+  return count;
+}
+async function tileCommitment(m, index, salt, rgb) {
+  void m;
+  const idx = new Uint8Array(4);
+  new DataView(idx.buffer).setUint32(0, index);
+  return sha(joinBytes(textEncoder.encode("GRD-TILE"), idx, unhex(salt), rgb));
+}
+// The signed full commitment vector provides security; the root is a compact
+// identifier and consistency check, reserved for future inclusion-proof profiles.
+async function merkleRoot(commitments) {
+  if (!commitments.length) throw new ProofError("Empty Merkle tree.");
+  let layer = await Promise.all(
+    commitments.map((c) => sha(joinBytes(new Uint8Array([0]), unhex(c)))),
+  );
+  while (layer.length > 1) {
+    const next = [];
+    for (let i = 0; i < layer.length; i += 2)
+      next.push(
+        await sha(
+          joinBytes(
+            new Uint8Array([1]),
+            unhex(layer[i]),
+            unhex(layer[i + 1] ?? layer[i]),
+          ),
+        ),
+      );
+    layer = next;
+  }
+  return layer[0];
+}
+async function manifestDigest(manifest) {
+  return crypto.subtle.digest(
+    "SHA-256",
+    joinBytes(
+      textEncoder.encode(manifest.version === 3 ? "GUARD-GRD3-MANIFEST-V1\0" : "GUARD-GRD2-MANIFEST-V1\0"),
+      textEncoder.encode(canon(manifest)),
+    ),
+  );
+}
+function encodeGRD2(document) {
+  if (document.manifest?.version === 3) return encodeGRD3(document);
+  const encoded = textEncoder.encode("GRD2\n" + canon(document));
+  if (encoded.length > TILE_LIMITS.bytes)
+    throw new Error("GRD2 exceeds 32 MiB.");
+  return encoded;
+}
+function tilePixels(rgb, m, index) {
+  const b = tileBounds(m, index),
+    out = new Uint8Array(b.width * b.height * 3);
+  for (let row = 0; row < b.height; row++)
+    out.set(
+      rgb.subarray(
+        ((b.y + row) * m.width + b.x) * 3,
+        ((b.y + row) * m.width + b.x + b.width) * 3,
+      ),
+      row * b.width * 3,
+    );
+  return out;
+}
+async function sealRgba({
+  rgba,
+  width,
+  height,
+  tileSize = 64,
+  publicKey,
+  sign,
+  purpose = "asset",
+  label = "",
+  subTile = 64,
+  visual = true,
+  version = width * height > TILE_LIMITS.pixels || Math.max(width, height) > TILE_LIMITS.dimension || Math.ceil(width/64)*Math.ceil(height/64) > TILE_LIMITS.tiles ? 3 : 2,
+}) {
+  if (
+    !(rgba instanceof Uint8Array) ||
+    rgba.length !== width * height * 4 ||
+    tileSize !== 64
+  )
+    throw new Error("Expected exact RGBA8 bytes and 64px tiles.");
+  const count = Math.ceil(width / 64) * Math.ceil(height / 64),
+    manifest = {
+      format: version === 3 ? "GRD3" : "GRD2",
+      version,
+      profile: version === 3 ? (subTile !== 64 ? (visual ? "3.3" : "3.1") : (visual ? "3.2" : "3.0")) : (subTile !== 64 ? (visual ? "2.4" : "2.2") : (visual ? "2.3" : "2.1")),
+      assetId: base64(crypto.getRandomValues(new Uint8Array(16))),
+      created: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+      width,
+      height,
+      tileSize,
+      pixelFormat: "RGB8",
+      root: "0".repeat(64),
+      commitments: Array(count).fill("0".repeat(64)),
+      publicKey: hex(publicKey),
+      keyId: await sha(publicKey),
+      policy: "tile-redaction-v1",
+      purpose,
+      label,
+    };
+  if (subTile !== 64) manifest.subTile = subTile;
+  if (visual) manifest.visual = {version:"y8c16-v1",tau:9,commitments:Array(count).fill("0".repeat(64))};
+  validateManifest(manifest);
+  const rgb = new Uint8Array(width * height * 3);
+  for (let i = 0; i < width * height; i++)
+    for (let c = 0; c < 3; c++)
+      rgb[i * 3 + c] = Math.floor(
+        (rgba[i * 4 + c] * rgba[i * 4 + 3] +
+          255 * (255 - rgba[i * 4 + 3]) +
+          127) /
+          255,
+      );
+  const tiles = [];
+  for (let index = 0; index < count; index++) {
+    const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+    manifest.commitments[index] = manifest.subTile ? (await sealSubTile(manifest,index,salt,tilePixels(rgb,manifest,index))).commitment : await tileCommitment(
+      manifest,
+      index,
+      salt,
+      tilePixels(rgb, manifest, index),
+    );
+    if (visual) {
+      const bounds = tileBounds(manifest,index);
+      manifest.visual.commitments[index] = await visualCommitment(index,await visualSalt(salt),visualFeatures(tilePixels(rgb,manifest,index),bounds.width,bounds.height));
+    }
+    tiles.push(manifest.subTile ? {index,seed:salt} : { index, salt });
+  }
+  manifest.root = await merkleRoot(manifest.commitments);
+  const signature = new Uint8Array(await sign(await manifestDigest(manifest)));
+  if (signature.length !== 64)
+    throw new Error("Expected an Ed25519 signature.");
+  return {
+    manifest,
+    signature: base64(signature),
+    image: version === 3 ? await encodeRgbPng(rgb, width, height) : base64(await encodeRgbPng(rgb, width, height)),
+    tiles,
+    redactions: [],
+  };
+}
+async function verifyGRD2(
+  input,
+  anchors = TRUSTED,
+  revocationPolicy = TRUST_POLICY,
+) {
+  if (isGRD3(input)) return verifyGRD3(input, anchors, revocationPolicy);
+  const r = {
+    version: 2,
+    verdict: "TAMPERED",
+    genuine: false,
+    viewable: false,
+    checks: [],
+    sections: [],
+    problems: [],
+    failed: [],
+    changed: [],
+    meta: null,
+    signature_valid: false,
+    hiddenPixelsCleared: true,
+  };
+  const check = (name, status, detail) =>
+    r.checks.push({ name, status: status ? "pass" : "fail", detail });
+  try {
+    if (anchors?._invalid || TRUSTED?._invalid) {
+      r.verdict = "CANNOT VERIFY";
+      r.verifierFault = true;
+      r.problems.push("Trusted-keys file is invalid.");
+      check("GRD2 verification", false, "Trusted-keys file is invalid.");
+      return signerReport(r);
+    }
+    const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+    r.byteLength = bytes.length;
+    if (bytes.length > TILE_LIMITS.bytes) {
+      r.verdict = "LIMIT EXCEEDED";
+      throw new ProofError("GRD2 is limited to 32 MiB.");
+    }
+    if (!isGRD2(bytes)) {
+      r.verdict = "NOT A GRD";
+      throw new ProofError("Missing GRD2 header.");
+    }
+    let raw;
+    try {
+      raw = new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(5));
+    } catch (e) {
+      if (!(e instanceof TypeError)) throw e;
+      throw new ProofError("Invalid UTF-8 in GRD2 container: " + e.message);
+    }
+    let doc;
+    try {
+      doc = JSON.parse(raw);
+    } catch (e) {
+      if (!(e instanceof SyntaxError)) throw e;
+      throw new ProofError("Invalid JSON in GRD2 container: " + e.message);
+    }
+    if (
+      !exactKeys(doc, ["manifest", "signature", "image", "tiles", "redactions"])
+    )
+      throw new ProofError("Unexpected container fields.");
+    const m = doc.manifest,
+      count = validateManifest(m);
+    if (
+      !Array.isArray(doc.tiles) ||
+      doc.tiles.length !== count ||
+      !Array.isArray(doc.redactions) ||
+      doc.redactions.length > count
+    )
+      throw new ProofError("Tile grid or redaction list is incomplete.");
+    const redacted = [];
+    for (let index = 0; index < count; index++) {
+      const t = doc.tiles[index];
+      if (m.subTile) {
+        if (!t || typeof t !== "object" || Array.isArray(t)) throw new ProofError("Invalid tile record.");
+        validateSubRecord(m,t,index);
+        if (Object.hasOwn(t,"commitment") || t.sub) redacted.push(index);
+      } else {
+      if (
+        !t ||
+        t.index !== index ||
+        !(
+          exactKeys(t, ["index", "salt"]) ||
+          exactKeys(t, ["index", "commitment"])
+        )
+      )
+        throw new ProofError(
+          "Tiles must be ordered, unique and have only permitted disclosure fields.",
+        );
+      if (Object.hasOwn(t, "commitment")) redacted.push(index);
+      }
+    }
+    for (let i = 0; i < doc.redactions.length; i++) {
+      const item = doc.redactions[i];
+      if (
+        !exactKeys(item, ["index", "method"]) ||
+        item.index !== redacted[i] ||
+        !["black", "blur"].includes(item.method)
+      )
+        throw new ProofError("REDACTIONS does not match the hidden tile set.");
+    }
+    if (doc.redactions.length !== redacted.length)
+      throw new ProofError("REDACTIONS does not match TILES.");
+    if (canon(doc) !== raw)
+      throw new ProofError(
+        "GRD2 must use canonical JSON without duplicate keys or extra bytes.",
+      );
+    check(
+      "Container structure",
+      true,
+      count + " ordered tiles · redaction records agree",
+    );
+    r.fileHash = await sha(bytes);
+    r.keyId = m.keyId;
+    r.root = m.root;
+    r.assetId = m.assetId;
+    r.created = m.created;
+    if (!m.assetId) r.problems.push("legacy manifest: no asset ID");
+    r.fingerprint=await sha(unhex(m.publicKey));r.signerName=anchors.find(k=>k.public_key_hex===m.publicKey)?.name??anchors.find(k=>k.public_key_hex===m.publicKey)?.owner;
+    if (r.fingerprint !== m.keyId)
+      throw new ProofError("Signer fingerprint does not match public key.");
+    r.revocation = await checkRevocation(unhex(m.publicKey), revocationPolicy);
+    if (r.revocation.revoked) {
+      r.verdict = "REVOKED KEY";
+      throw new ProofError("Signing key is revoked: " + r.revocation.reason);
+    }
+    check(
+      "Offline revocation",
+      true,
+      "Not listed in bundled snapshot · " + r.revocation.asOf,
+    );
+    const pk = await crypto.subtle.importKey(
+      "raw",
+      unhex(m.publicKey),
+      { name: "Ed25519" },
+      false,
+      ["verify"],
+    );
+    r.signature_valid = await crypto.subtle.verify(
+      { name: "Ed25519" },
+      pk,
+      decodeBase64(doc.signature, 64),
+      await manifestDigest(m),
+    );
+    check(
+      "Signed Merkle root",
+      r.signature_valid,
+      "Ed25519 · immutable manifest and tile commitments",
+    );
+    if (!r.signature_valid) throw new ProofError("Manifest signature is invalid.");
+    if ((await merkleRoot(m.commitments)) !== m.root)
+      throw new ProofError("Signed commitment vector and Merkle root disagree.");
+    const anchor = anchors.find((k) => k.public_key_hex === m.publicKey);
+    r.demo = m.purpose === "demo";
+    r.personal = m.purpose === "personal";
+    r.trusted = !!anchor && !r.demo && !r.personal;
+    r.signer = r.demo
+      ? "Demonstration signer (not an identity claim)"
+      : r.personal
+        ? "Self-signed personal file (identity not verified)"
+        : (anchor?.name ?? anchor?.owner ?? "Untrusted signer");
+    if (anchor) {
+      r.signerName = anchor.name ?? anchor.owner;
+      r.fingerprint = anchor.fingerprint_sha256 || m.keyId;
+    } else {
+      r.fingerprint = m.keyId;
+    }
+    check(
+      "Signer trust",
+      r.trusted,
+      r.demo ? "DEMO ONLY · identity not verified" : r.signer,
+    );
+    if (r.demo || r.personal) r.checks.at(-1).status = "info";
+    let decoded;
+    try {
+      decoded = await decodeRgbPng(decodeBase64(doc.image));
+    } catch (e) {
+      if (e instanceof PngFormatError) throw new ProofError(e.message);
+      throw e;
+    }
+    if (decoded.width !== m.width || decoded.height !== m.height)
+      throw new ProofError("PNG dimensions differ from the signed tile grid.");
+
+    for (const entry of doc.redactions) {
+      if (m.subTile && entry.method !== "black") throw new ProofError("Sub-tile files support blackout only.");
+      if (m.subTile && doc.tiles[entry.index].sub) continue;
+      if (entry.method === "blur") {
+        r.hiddenPixelsCleared = false;
+        r.problems.push("Legacy blur redaction (tile " + entry.index + "): replacement pixels are not verified.");
+        continue;
+      }
+      if (tilePixels(decoded.rgb, m, entry.index).some((byte) => byte !== 0)) {
+        r.hiddenPixelsCleared = false;
+        throw new ProofError("blackout incomplete (tile " + entry.index + ")");
+      }
+    }
+    if (redacted.length) check("Hidden pixels cleared", r.hiddenPixelsCleared,
+      r.hiddenPixelsCleared ? "Solid black pixels in hidden regions" : "Legacy blur may expose content");
+
+    const leaves = [];
+    for (let index = 0; index < count; index++) {
+      const t = doc.tiles[index];
+      if (m.subTile) {
+        await verifySubTile(m,t,index,tilePixels(decoded.rgb,m,index));
+        leaves.push(m.commitments[index]);
+        continue;
+      }
+      if (Object.hasOwn(t, "commitment")) {
+        if (!hashHex(t.commitment) || t.commitment !== m.commitments[index])
+          throw new ProofError(
+            "Redacted tile " + index + " has the wrong commitment.",
+          );
+        leaves.push(t.commitment);
+      } else {
+        if (typeof t.salt !== "string" || !/^[0-9a-f]{32}$/.test(t.salt))
+          throw new ProofError("Invalid salt at tile " + index + ".");
+        const actual = await tileCommitment(
+          m,
+          index,
+          t.salt,
+          tilePixels(decoded.rgb, m, index),
+        );
+        if (actual !== m.commitments[index])
+          throw new ProofError("Non-redacted tile " + index + " was changed.");
+        leaves.push(actual);
+      }
+    }
+    if ((await merkleRoot(leaves)) !== m.root)
+      throw new ProofError("Current tile disclosures do not match the signed root.");
+    check(
+      "Tile commitments",
+      true,
+      count -
+        redacted.length +
+        " retained tiles match · " +
+        redacted.length +
+        " redacted tiles excluded",
+    );
+    r.tilesTotal = count;
+    r.tilesVisible = count - redacted.length;
+    r.redactedTiles = redacted;
+    r.redactionMap = m.subTile ? subRedactionMap(doc) : redacted.map((index) => ({
+      index,
+      ...tileBounds(m, index),
+      claimedMethod: doc.redactions.find((x) => x.index === index).method,
+      methodAttested: false,
+    }));
+    r.redactionApproval = "not_attested";
+    r.tileSize = 64;
+    if (m.subTile) { r.subTile=m.subTile; r.subTilesTotal=doc.tiles.reduce((n,t)=>n+subTileCount(m,t.index),0); r.subTilesVisible=doc.tiles.reduce((n,t)=>n+(t.seed?subTileCount(m,t.index):t.sub?t.sub.filter(s=>s.salt).length:0),0); }
+    r.regionVerified = true;
+    r.meta = {
+      asset_id: m.assetId ?? m.root,
+      created_utc: m.created,
+      key_id: m.keyId,
+      width: m.width,
+      height: m.height,
+      mime: "image/raw-rgba",
+      original_filename: m.label || undefined,
+    };
+    if (!r.trusted && !r.demo && !r.personal) {
+      r.verdict = "UNTRUSTED SIGNER";
+      r.container=doc;r.canRevealUnknown=true;
+      r.problems.push(
+        "The pixels match this key’s root, but the key is not pinned as trusted. Image withheld.",
+      );
+      return signerReport(r);
+    }
+    if (!doc.tiles.some(t => t.salt || t.seed || t.sub?.some(s => s.salt))) {
+      r.verdict = "FULLY REDACTED";
+      r.problems.push(
+        "No original pixels remain to inspect. No visible content is being called genuine.",
+      );
+      return signerReport(r);
+    }
+    r.verdict = r.demo
+      ? "DEMO"
+      : r.personal
+        ? "UNVERIFIED: SELF-SIGNED"
+        : redacted.length
+          ? "VERIFIED WITH REDACTIONS"
+          : "GENUINE";
+    r.genuine = r.trusted && !redacted.length;
+    r.viewable = true;
+    const rgba = new Uint8Array(m.width * m.height * 4);
+    const rgb = decoded.rgb;
+    for (let i = 0; i < m.width * m.height; i++) {
+      const src = i * 3;
+      const dst = i * 4;
+      rgba[dst] = rgb[src];
+      rgba[dst + 1] = rgb[src + 1];
+      rgba[dst + 2] = rgb[src + 2];
+      rgba[dst + 3] = 255;
+    }
+    for (const b of r.redactionMap) {
+      for (let row = 0; row < b.height; row++)
+        for (let col = 0; col < b.width; col++)
+          rgba.set(
+            (row + col) % 20 < 3 ? [71, 82, 119, 255] : [27, 33, 49, 255],
+            ((b.y + row) * m.width + b.x + col) * 4,
+          );
+    }
+    r.imageRgba = rgba;
+    r.container = doc;
+    return signerReport(r);
+  } catch (error) {
+    if (error.message?.startsWith("blackout incomplete")) r.hiddenPixelsCleared = false;
+    if (error instanceof ResourceLimitError) {
+      r.verdict = "LIMIT EXCEEDED";
+    } else if (error.name === "NotSupportedError" || !globalThis.crypto?.subtle) {
+      r.verdict = "UNSUPPORTED";
+    } else if (
+      r.verdict === "LIMIT EXCEEDED" ||
+      r.verdict === "NOT A GRD" ||
+      r.verdict === "REVOKED KEY"
+    ) {
+      // Keep verdict
+    } else if (error instanceof IntegrityError) {
+      r.verdict = "TAMPERED";
+    } else {
+      r.verdict = "CANNOT VERIFY";
+      r.verifierFault = true;
+    }
+    r.problems.push(error.message);
+    r.failed.push("GRD2 proof");
+    r.changed = [...r.failed];
+    check("GRD2 verification", false, error.message);
+    return signerReport(r);
+  }
+}
+async function redactGRD2(document, indices, method = "black") {
+  if (document.manifest.subTile) {
+    if (!Array.isArray(indices) || !indices.length || indices.some(index => !Number.isInteger(index) || index < 0 || index >= document.tiles.length)) throw new Error("Invalid redaction index.");
+    if (method !== "black") throw new Error("Only blackout exports are supported.");
+    return redactRects(document,indices.map(index => tileBounds(document.manifest,index)),{granularity:64});
+  }
+  const m = document.manifest,
+    count = validateManifest(m),
+    selected = new Set(indices);
+  if (!selected.size || method !== "black")
+    throw new Error("Select tiles. Only blackout exports are supported.");
+  for (const index of selected)
+    if (!Number.isInteger(index) || index < 0 || index >= count)
+      throw new Error("Invalid redaction index.");
+  const result = await verifyGRD2(encodeGRD2(document), []);
+  if (!result.regionVerified)
+    throw new Error("Cannot redact an invalid source proof.");
+  const decoded = await decodeRgbPng(containerImage(document), document.manifest.version === 3 ? GRD3_LIMITS : undefined),
+    rgb = decoded.rgb,
+    tiles = [];
+  const hidden = new Set([
+    ...document.redactions.map((item) => item.index),
+    ...selected,
+  ]);
+  for (let index = 0; index < count; index++)
+    if (hidden.has(index)) {
+      const b = tileBounds(m, index);
+      for (let row = 0; row < b.height; row++)
+        rgb.fill(
+          0,
+          ((b.y + row) * m.width + b.x) * 3,
+          ((b.y + row) * m.width + b.x + b.width) * 3,
+        );
+      tiles.push({ index, commitment: m.commitments[index] });
+    } else tiles.push(document.tiles[index]);
+  const redactions = Array.from(hidden)
+    .sort((a, b) => a - b)
+    .map((index) => ({
+      index,
+      method: "black",
+    }));
+  return encodeGRD2({
+    manifest: m,
+    signature: document.signature,
+    image: m.version === 3 ? await encodeRgbPng(rgb, m.width, m.height) : base64(await encodeRgbPng(rgb, m.width, m.height)),
+    tiles,
+    redactions,
+  });
+}
+function tilesForRect(manifest, rect) {
+  const count = validateManifest(manifest),
+    out = [];
+  for (let index = 0; index < count; index++) {
+    const b = tileBounds(manifest, index);
+    if (
+      b.x < rect.x + rect.width &&
+      b.x + b.width > rect.x &&
+      b.y < rect.y + rect.height &&
+      b.y + b.height > rect.y
+    )
+      out.push(index);
+  }
+  return out;
+}
+function verificationReport(result) {
+  const { payload, imageRgba, container, ...evidence } = result;
+  void payload;
+  void imageRgba;
+  void container;
+  return evidence;
+}
+
+// Reverify the source; export decoded pixels, never the viewer overlay.
+async function exportPlainImage(container) {
+  const bytes = container instanceof Uint8Array || container instanceof ArrayBuffer
+    ? container : encodeGRD2(container);
+  const report = await verifyGRD2(bytes, []);
+  if (!report.regionVerified || report.verdict === "REVOKED KEY")
+    throw new Error("Cannot export an invalid source proof: " + report.verdict);
+  const doc = report.container ?? JSON.parse(new TextDecoder().decode(new Uint8Array(bytes).subarray(5)));
+  const { rgb, width, height } = await decodeRgbPng(containerImage(doc), doc.manifest.version === 3 ? GRD3_LIMITS : undefined);
+  const regions = doc.manifest.subTile ? subRedactionMap(doc) : doc.redactions.map(entry => tileBounds(doc.manifest,entry.index));
+  for (const b of regions) {
+    for (let row = 0; row < b.height; row++) {
+      const start = ((b.y + row) * width + b.x) * 3;
+      rgb.fill(0, start, start + b.width * 3);
+    }
+  }
+  return encodeRgbPng(rgb, width, height);
+}
+
+function containerImage(doc) { return doc.image instanceof Uint8Array ? doc.image : decodeBase64(doc.image); }
+
+// SPDX-License-Identifier: MIT
+
+// Inspect encoded dimensions before giving compressed bytes to an image decoder.
+function inspectConversionImage(bytes, { allowResize = false, large = false } = {}) {
+  if (
+    !(bytes instanceof Uint8Array) ||
+    !bytes.length ||
+    bytes.length > (large ? GRD3_LIMITS.bytes : TILE_LIMITS.bytes)
+  )
+    throw new Error(large ? "Choose an image up to 256 MiB." : "Choose an image up to 32 MiB.");
+  const ascii = (at, count) =>
+    String.fromCharCode(...bytes.subarray(at, at + count));
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let mime, width, height;
+  if (bytes[0] === 137 && ascii(1, 3) === "PNG") mime = "image/png";
+  else if (bytes[0] === 255 && bytes[1] === 216) mime = "image/jpeg";
+  else if (ascii(0, 4) === "RIFF" && ascii(8, 4) === "WEBP")
+    mime = "image/webp";
+  else if (["GIF87a", "GIF89a"].includes(ascii(0, 6)) && bytes.length >= 13) {
+    mime = "image/gif";
+    width = view.getUint16(6, true);
+    height = view.getUint16(8, true);
+  } else if (ascii(0, 2) === "BM" && bytes.length >= 26) {
+    mime = "image/bmp";
+    const dib = view.getUint32(14, true);
+    if (dib === 12) {
+      width = view.getUint16(18, true);
+      height = view.getUint16(20, true);
+    } else if (
+      [40, 52, 56, 108, 124].includes(dib) &&
+      bytes.length >= 14 + dib
+    ) {
+      width = view.getInt32(18, true);
+      height = Math.abs(view.getInt32(22, true));
+    }
+  } else
+    throw new Error(
+      "Use PNG, JPG, WebP, GIF or BMP. Export HEIC, AVIF, PDF and other files to PNG or JPG first.",
+    );
+  if (width === undefined && !["image/gif", "image/bmp"].includes(mime))
+    [width, height] = encodedDimensions(bytes, mime);
+  if (
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1 ||
+    width > 16384 ||
+    height > 16384 ||
+    width * height > 50_000_000
+  )
+    throw new Error(
+      "Choose a photo up to 50 megapixels and 16,384 pixels per edge. This image needs resizing before it can be safely opened here.",
+    );
+  const fitted = fitConversionDimensions(width, height, { large });
+  if (!allowResize && (fitted.width !== width || fitted.height !== height))
+    throw new Error(
+      large ? "This picture exceeds the GRD3 limit. Choose a smaller image (up to 36 MP, 8,192 px per edge and 9,000 tiles)."
+        : "This photo exceeds the GRD 4-megapixel output limit. Choose a smaller picture.",
+    );
+  return { mime, width, height };
+}
+
+function fitConversionDimensions(width, height, { large = false } = {}) {
+  const limits = large ? GRD3_LIMITS : TILE_LIMITS;
+  if (
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1
+  )
+    throw new Error("Invalid image dimensions.");
+  const fits = (w, h) =>
+    w <= limits.dimension &&
+    h <= limits.dimension &&
+    w * h <= limits.pixels &&
+    Math.ceil(w / 64) * Math.ceil(h / 64) <= limits.tiles;
+  if (fits(width, height)) return { width, height };
+  let low = 0,
+    high = 1;
+  for (let i = 0; i < 50; i++) {
+    const scale = (low + high) / 2,
+      w = Math.max(1, Math.floor(width * scale)),
+      h = Math.max(1, Math.floor(height * scale));
+    if (fits(w, h)) low = scale;
+    else high = scale;
+  }
+  return {
+    width: Math.max(1, Math.floor(width * low)),
+    height: Math.max(1, Math.floor(height * low)),
+  };
+}
+
+function looksLikeDocument(width,height) {
+ if(!Number.isFinite(width)||!Number.isFinite(height)||Math.min(width,height)<=0)return false;
+ const ratio=Math.max(width,height)/Math.min(width,height);
+ return [85.6/54,Math.SQRT2].some(target=>Math.abs(ratio/target-1)<=.04);
+}
+
+// SPDX-License-Identifier: MIT
+function snapAxis(start, size, limit, grid) {
+  if (!Number.isFinite(start) || !Number.isFinite(size) || start < 0 || start >= limit || size <= 0)
+    throw new RangeError("Enter an area inside the picture with a positive width and height.");
+  const left = Math.floor(start / grid) * grid;
+  const right = Math.ceil(Math.min(limit, start + size) / grid) * grid;
+  return [left, Math.min(limit, Math.max(left + grid, right))];
+}
+
+// Choose the closest centred, grid-aligned start that still covers both ends.
+// A partial edge tile can make an edge-clamped box slightly wider than its class.
+function growAxis([start, end], target, limit, grid) {
+  if (target >= limit) return [0, limit];
+  const low = Math.ceil(Math.max(0, end - target) / grid) * grid;
+  const high = Math.floor(Math.min(start, limit - target) / grid) * grid;
+  if (low > high) return [high, limit];
+  const centre = Math.floor((start + end - target) / (2 * grid) + 0.5) * grid;
+  const left = Math.max(low, Math.min(high, centre));
+  return [left, left + target];
+}
+
+function padBox({ x, y, w, h }, { grid, widthClass = 128, lineHeight = 32, imgW, imgH }) {
+  if (![grid, imgW, imgH].every(n => Number.isSafeInteger(n) && n > 0) ||
+      ![widthClass, lineHeight].every(n => Number.isSafeInteger(n) && n >= 0) ||
+      widthClass % grid !== 0)
+    throw new RangeError("Invalid grid, padding or image size.");
+  let horizontal = snapAxis(x, w, imgW, grid);
+  let vertical = snapAxis(y, h, imgH, grid);
+  if (widthClass) {
+    const width = Math.ceil((horizontal[1] - horizontal[0]) / widthClass) * widthClass;
+    horizontal = growAxis(horizontal, width, imgW, grid);
+  }
+  if (lineHeight > vertical[1] - vertical[0]) {
+    vertical = growAxis(vertical, Math.ceil(lineHeight / grid) * grid, imgH, grid);
+  }
+  return { x: horizontal[0], y: vertical[0], w: horizontal[1] - horizontal[0], h: vertical[1] - vertical[0] };
+}
+
+// Measure the union so overlapping selections are counted once.
+function boxUnionArea(boxes) {
+  const edges = [...new Set(boxes.flatMap(({ x, w }) => [x, x + w]))].sort((a, b) => a - b);
+  let area = 0;
+  for (let i = 1; i < edges.length; i++) {
+    const left = edges[i - 1], right = edges[i];
+    const rows = boxes.filter(b => b.x < right && b.x + b.w > left).sort((a, b) => a.y - b.y);
+    let covered = 0, bottom = 0;
+    for (const { y, h } of rows) {
+      covered += Math.max(0, y + h - Math.max(bottom, y));
+      bottom = Math.max(bottom, y + h);
+    }
+    area += (right - left) * covered;
+  }
+  return area;
+}
+
+// SPDX-License-Identifier: MIT
+// Presentation only. Technical verdicts, JSON and verification remain unchanged.
+function resultTitle(report) {
+  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return 'Genuine';
+  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return 'Genuine, with parts blacked out';
+  if(report.verdict==='FULLY REDACTED')return 'Everything is blacked out';
+  if(report.verdict==='UNTRUSTED SIGNER')return report.signerStatus==='unknown'?'Unknown signer':"Couldn't check this file";
+  return ({'UNVERIFIED: SELF-SIGNED':'Self-signed file',TAMPERED:'Changed',DEMO:'Example only','NOT A GRD':'Not a TileSeal .GRD file','REVOKED KEY':'Revoked signer'})[report.verdict]||"Couldn't check this file";
+}
+function resultDescription(report,areas=report.redactionMap?.length||0) {
+  const name=report.signerDisplayName||'the trusted signer';
+  if(report.verdict==='GENUINE'&&report.signerStatus==='trusted')return `This picture matches what ${name} signed. Nothing was changed.`;
+  if(report.verdict==='VERIFIED WITH REDACTIONS'&&report.signerStatus==='trusted')return `Everything you can see matches what ${name} signed. ${areas} ${areas===1?'area was':'areas were'} blacked out after signing.`;
+  if(report.verdict==='FULLY REDACTED')return 'The whole picture was blacked out after signing. No original pixels remain to inspect.';
+  if(report.verdict==='TAMPERED')return "This file failed its integrity checks. Don't rely on it.";
+  if(report.signerStatus==='unknown')return "The file is intact, but this device doesn't know who signed it. Anyone can make a file like this.";
+  if(report.verdict==='UNVERIFIED: SELF-SIGNED')return 'This file uses a self-signed key, so anyone could have made it.';
+  if(report.verdict==='DEMO')return 'This is a sample file. It does not come from a real signer.';
+  if(report.verdict==='REVOKED KEY')return "The key that signed this file has been withdrawn. Don't rely on it.";
+  if(report.verdict==='NOT A GRD')return 'Choose the original .GRD file from the sender.';
+  return "TileSeal couldn't finish the check. This is not a sign of tampering.";
+}
+function signerSummary(report) {
+  const fp=report.fingerprint||'';
+  if(report.signerStatus==='revoked')return `${report.revocation?.reason||'Key revoked'}, revoked ${report.revocation?.revokedAt||'date unavailable'}. The picture is not shown. Do not rely on this file.`;
+  if(report.signerStatus==='trusted'&&!report.personal&&!report.demo)return `Signed by ${report.signerDisplayName||'trusted key'} · trusted on this device`;
+  if(report.signerStatus==='unknown')return `Fingerprint ${fp}. Ask the sender to confirm it another way.`;
+  if(report.signerStatus==='self')return `Fingerprint ${fp}.`;
+  if(report.verdict==='TAMPERED')return 'The picture is not shown.';
+  if(['CANNOT VERIFY','UNSUPPORTED','LIMIT EXCEEDED','UNREADABLE'].includes(report.verdict))return 'Reason: '+(report.problems?.[0]||'The check could not finish.').slice(0,180);
+  return '';
+}
+
+const $ = id => document.getElementById(id);
+const sealCanvas = $("seal-canvas");
+const checkCanvas = $("canvas");
+const supportedGrids = [16, 32, 64];
+let checkVersion = 0, editVersion = 0;
+let checked = null, editor = null, savedFile = null;
+let selections = [], dragStart = null, busy = false;
+let activeMode = "seal";
+
+function showMode(mode, updateHash = true) {
+  activeMode = mode;
+  $("convert-form").hidden = mode !== "seal";
+  $("inspection-panel").hidden = mode !== "check";
+  for (const [id, task] of [["tab-seal", "seal"], ["tab-verify", "check"]]) {
+    if (task === mode) $(id).setAttribute("aria-current", "page");
+    else $(id).removeAttribute("aria-current");
+  }
+  if (updateHash) history.replaceState(null, "", "#" + mode);
+}
+
+function readHash() {
+  if (location.hash === "#about" || location.hash === "#privacy-details") {
+    $("about").open = true;
+    showMode(activeMode, false);
+  } else if (location.hash !== "#workspace") {
+    showMode(location.hash === "#check" ? "check" : "seal", false);
+  }
+}
+window.addEventListener("hashchange", readHash);
+readHash();
+
+function setEditorStatus(message, error = false) {
+  $("convert-status").textContent = message;
+  $("convert-status").classList.toggle("error", error);
+}
+
+function download(contents, name, type) {
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function verifyFile(bytes, allowUnknownDisplay = false) {
+  if (isGRD2(bytes)) return verifyGRD2(bytes);
+  return createVerifier(TRUSTED, TRUST_POLICY, { allowUnknownDisplay })(bytes);
+}
+
+async function pictureBlob(report) {
+  if (report.container) {
+    // A legacy blur is valid as a disclosure but may still expose hidden pixels.
+    const bytes = report.hiddenPixelsCleared === false
+      ? await exportPlainImage(report.container) : containerImage(report.container);
+    return new Blob([bytes], { type: "image/png" });
+  }
+  if (report.payload) return new Blob([report.payload], { type: report.meta.mime });
+  throw new Error("The picture is unavailable.");
+}
+
+function paint(canvas, image, width, height) {
+  const scale = Math.min(1, 1200 / Math.max(width, height));
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+  canvas.style.width = `min(100%, ${canvas.width}px, ${65 * canvas.width / canvas.height}vh)`;
+  const context = canvas.getContext("2d");
+  context.fillStyle = image ? "#fff" : "#000";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  if (image) context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return context;
+}
+
+async function revealChecked(state, report) {
+  let image;
+  try {
+    if (report.verdict !== "FULLY REDACTED")
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+    if (state !== checked) return;
+    const { width, height } = report.meta;
+    if (image && (image.width !== width || image.height !== height))
+      throw new Error("Decoded dimensions differ from the signed file.");
+    paint(checkCanvas, image, width, height);
+    state.displayReport = report;
+    $("show-unknown").hidden = true;
+    $("image-panel").hidden = false;
+    $("redact-checked").hidden = !report.container || report.verdict === "FULLY REDACTED";
+  } finally {
+    image?.close();
+  }
+}
+
+function renderCheck(report, file) {
+  $("verdict-title").textContent = resultTitle(report);
+  $("verdict-code").textContent = report.verdict;
+  $("verdict-description").textContent = report.verdict === "FULLY REDACTED"
+    ? "All areas are blacked out."
+    : report.regionVerified
+      ? report.redactionMap?.length
+        ? "The retained pixels match the signature. Hidden areas are solid black."
+        : "Every pixel matches the signature."
+      : report.genuine ? "The whole picture matches the signature."
+        : report.problems?.[0] ?? "The file could not be verified.";
+  const trusted = report.signerStatus === "trusted" && !report.demo && !report.personal;
+  $("verdict-signer").textContent = trusted && report.signerDisplayName
+    ? "Trusted signer: " + report.signerDisplayName
+    : report.signature_valid && ["self", "unknown", "demo"].includes(report.signerStatus)
+      ? "Signer identity is unverified." : "";
+  $("result").dataset.tone = trusted && (report.genuine || report.regionVerified) ? "good"
+    : ["TAMPERED", "REVOKED KEY"].includes(report.verdict) ? "bad" : "caution";
+  $("live-status").textContent = file.name;
+  $("legacy-redaction-note").hidden = report.version !== 1 || !report.signature_valid;
+  $("show-unknown").hidden = !report.canRevealUnknown;
+  $("show-unknown").disabled = false;
+  $("download-plain").disabled = false;
+  $("result").hidden = false;
+  $("verdict-title").focus();
+}
+
+async function openFile(file) {
+  showMode("check");
+  const version = ++checkVersion;
+  checked = null;
+  checkCanvas.width = checkCanvas.height = 1;
+  $("result").hidden = $("image-panel").hidden = true;
+  $("live-status").textContent = "Checking " + file.name + "…";
+  try {
+    const report = file.size > GRD3_LIMITS.bytes
+      ? { verdict: "LIMIT EXCEEDED", problems: ["Choose a .GRD file up to 256 MiB."] }
+      : await verifyFile(new Uint8Array(await file.arrayBuffer()));
+    if (version !== checkVersion) return;
+    const state = { file, report, displayReport: null };
+    checked = state;
+    renderCheck(report, file);
+    if (report.viewable || report.genuine || (report.verdict === "FULLY REDACTED" && report.regionVerified)) {
+      try {
+        await revealChecked(state, report);
+      } catch (error) {
+        if (state !== checked) return;
+        const unreadable = { verdict: "UNREADABLE", problems: [error.message] };
+        state.report = unreadable;
+        renderCheck(unreadable, file);
+      }
+    }
+  } catch (error) {
+    if (version !== checkVersion) return;
+    $("live-status").textContent = "Could not open the picture. " + error.message;
+  }
+}
+
+$("show-unknown").onclick = async () => {
+  const state = checked;
+  if (!state?.report.canRevealUnknown) return;
+  $("show-unknown").disabled = true;
+  try {
+    const report = state.report.version === 1
+      ? await verifyFile(new Uint8Array(await state.file.arrayBuffer()), true)
+      : state.report;
+    if (state !== checked || !report.canRevealUnknown) return;
+    await revealChecked(state, report);
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("show-unknown").disabled = false;
+  }
+};
+
+$("download-plain").onclick = async () => {
+  const state = checked, report = state?.displayReport;
+  if (!report) return;
+  $("download-plain").disabled = true;
+  try {
+    let png;
+    if (report.container) png = await exportPlainImage(report.container);
+    else if (report.verdict === "FULLY REDACTED") {
+      const { width, height } = report.meta;
+      png = await encodeRgbPng(new Uint8Array(width * height * 3), width, height);
+    } else {
+      const image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      try {
+        const surface = document.createElement("canvas");
+        surface.width = image.width;
+        surface.height = image.height;
+        surface.getContext("2d").drawImage(image, 0, 0);
+        png = await new Promise(resolve => surface.toBlob(resolve, "image/png"));
+      } finally {
+        image.close();
+      }
+    }
+    if (!png) throw new Error("Could not create the PNG.");
+    if (state === checked) download(png, "picture.png", "image/png");
+  } catch (error) {
+    if (state === checked) $("live-status").textContent = error.message;
+  } finally {
+    if (state === checked) $("download-plain").disabled = false;
+  }
+};
+
+function setGrid(minimum, received) {
+  const select = $("rounding");
+  for (const option of select.options) option.disabled = Number(option.value) < minimum;
+  select.value = String(supportedGrids.find(grid => grid >= minimum));
+  $("grid-help").textContent = received
+    ? `This file was sealed on a ${minimum}-pixel grid. Larger rounding only changes the blackout box.`
+    : "Pictures are sealed on a 16-pixel grid. Choosing 32 or 64 px only makes this black-out box bigger; it does not change how the picture was sealed.";
+}
+
+function paddingOptions() {
+  const enabled = $("pad-boxes").checked;
+  const lineHeight = enabled ? $("line-height").valueAsNumber : 0;
+  if (enabled && (!Number.isInteger(lineHeight) || lineHeight < 1 || lineHeight > 8192))
+    throw new Error("Enter a full text-line height from 1 to 8,192 px.");
+  return {
+    grid: Number($("rounding").value), widthClass: enabled ? 128 : 0,
+    lineHeight, imgW: editor.width, imgH: editor.height,
+  };
+}
+
+function drawEditor(boxes, original) {
+  const { preview, width, height } = editor;
+  const context = sealCanvas.getContext("2d");
+  context.drawImage(preview, 0, 0, sealCanvas.width, sealCanvas.height);
+  context.fillStyle = "#000";
+  const scaleX = sealCanvas.width / width, scaleY = sealCanvas.height / height;
+  for (const box of boxes)
+    context.fillRect(box.x * scaleX, box.y * scaleY, box.w * scaleX, box.h * scaleY);
+  const area = boxUnionArea(boxes), selected = boxUnionArea(original);
+  $("blackout-area").textContent = selected
+    ? `Blacked-out area: ${area.toLocaleString()} px² (${(area / selected).toLocaleString(undefined, { maximumFractionDigits: 2 })}× what you selected)`
+    : "Blacked-out area: 0 px²";
+}
+
+function invalidateReview() {
+  $("convert-privacy").checked = false;
+  $("check-sealed").hidden = true;
+  savedFile = null;
+}
+
+function syncConsent() {
+  $("convert-submit").disabled = busy || !editor || !editor.boxes
+    || !$("convert-privacy").checked || (!!editor.doc && !selections.length);
+}
+
+function renderAreas(focusIndex = null) {
+  if (!editor) return;
+  $("line-height").disabled = !$("pad-boxes").checked;
+  const list = $("seal-area-list");
+  list.replaceChildren();
+  try {
+    const options = paddingOptions();
+    editor.boxes = selections.map(box => padBox(box, options));
+    drawEditor(editor.boxes, selections);
+    for (const [index, box] of editor.boxes.entries()) {
+      const item = document.createElement("li");
+      item.textContent = `Area ${index + 1} · ${box.w} × ${box.h} px`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove area " + (index + 1));
+      remove.onclick = () => {
+        if (busy) return;
+        selections.splice(index, 1);
+        invalidateReview();
+        renderAreas(index);
+      };
+      item.append(remove);
+      list.append(item);
+    }
+    $("redaction-status").textContent = `Areas round up to a ${options.grid}-pixel grid.`;
+  } catch (error) {
+    editor.boxes = null;
+    // Keep the last valid blackout preview until the settings are corrected.
+    $("redaction-status").textContent = error.message;
+  }
+  if (focusIndex !== null) {
+    const buttons = list.querySelectorAll("button");
+    (buttons[Math.min(focusIndex, buttons.length - 1)] ?? $("select-rectangle")).focus();
+  }
+  syncConsent();
+}
+
+function addArea(rect) {
+  if (!editor || busy) return;
+  try {
+    if (selections.length >= 200) throw new Error("Use up to 200 blackout areas.");
+    padBox(rect, paddingOptions());
+    const { x, y, w, h } = rect;
+    selections.push({ x, y, w: Math.min(w, editor.width - x), h: Math.min(h, editor.height - y) });
+    invalidateReview();
+    renderAreas();
+  } catch (error) {
+    $("redaction-status").textContent = error.message;
+  }
+}
+
+function imagePoint(event) {
+  const rect = sealCanvas.getBoundingClientRect();
+  return {
+    x: Math.max(0, Math.min(editor.width, (event.clientX - rect.left) * editor.width / rect.width)),
+    y: Math.max(0, Math.min(editor.height, (event.clientY - rect.top) * editor.height / rect.height)),
+  };
+}
+
+function dragBox(event) {
+  const point = imagePoint(event);
+  const x = Math.min(editor.width - 1, Math.floor(Math.min(point.x, dragStart.x)));
+  const y = Math.min(editor.height - 1, Math.floor(Math.min(point.y, dragStart.y)));
+  return { x, y, w: Math.max(1, Math.ceil(Math.max(point.x, dragStart.x)) - x),
+    h: Math.max(1, Math.ceil(Math.max(point.y, dragStart.y)) - y) };
+}
+
+sealCanvas.addEventListener("pointerdown", event => {
+  if (!editor?.boxes || busy || dragStart || event.button !== 0) return;
+  dragStart = { ...imagePoint(event), pointerId: event.pointerId };
+  sealCanvas.setPointerCapture(event.pointerId);
+});
+sealCanvas.addEventListener("pointermove", event => {
+  if (!dragStart || dragStart.pointerId !== event.pointerId || !editor?.boxes || busy) return;
+  const rect = dragBox(event);
+  drawEditor([...editor.boxes, padBox(rect, paddingOptions())], [...selections, rect]);
+});
+sealCanvas.addEventListener("pointerup", event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  const rect = dragBox(event);
+  dragStart = null;
+  addArea(rect);
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
+});
+for (const type of ["pointercancel", "lostpointercapture"]) sealCanvas.addEventListener(type, event => {
+  if (dragStart?.pointerId !== event.pointerId) return;
+  dragStart = null;
+  if (editor?.boxes) drawEditor(editor.boxes, selections);
+});
+
+$("select-rectangle").onclick = () => {
+  const [x, y, w, h] = ["rect-x", "rect-y", "rect-width", "rect-height"].map(id => $(id).valueAsNumber);
+  addArea({ x, y, w, h });
+};
+for (const id of ["rounding", "pad-boxes", "line-height"]) $(id).addEventListener("input", () => {
+  invalidateReview();
+  renderAreas();
+});
+$("convert-privacy").onchange = syncConsent;
+
+function loadEditor(image, file, doc) {
+  const { width, height } = image;
+  const preview = document.createElement("canvas");
+  paint(preview, image, width, height);
+  paint(sealCanvas, preview, width, height);
+  editor = { width, height, preview, image, doc, boxes: [] };
+  setGrid(doc ? doc.manifest.subTile ?? 64 : 16, !!doc);
+  $("pad-boxes").checked = true;
+  $("line-height").value = "32";
+  $("finish-title").textContent = doc ? "Download the blacked-out copy" : "Seal and download";
+  $("convert-submit").textContent = doc ? "Download blacked-out .GRD" : "Seal and download .GRD";
+  $("seal-signer-summary").textContent = doc
+    ? "The original signature stays with the file. You can black out more areas without its key."
+    : "TileSeal creates a one-time key in this browser. The resulting file is self-signed.";
+  $("convert-details").textContent = `${file.name} · ${width} × ${height} px`;
+  $("seal-step-two").hidden = $("seal-step-three").hidden = false;
+  renderAreas();
+}
+
+async function prepareSealInput(file, approvedState = null) {
+  if (!file || busy) return;
+  showMode("seal");
+  const version = ++editVersion;
+  editor?.image.close();
+  editor = null;
+  sealCanvas.width = sealCanvas.height = 1;
+  selections = [];
+  dragStart = null;
+  savedFile = null;
+  $("check-sealed").hidden = $("seal-step-two").hidden = $("seal-step-three").hidden = true;
+  $("convert-privacy").checked = false;
+  syncConsent();
+  setEditorStatus("Opening " + file.name + "…");
+  let image;
+  try {
+    if (file.size > GRD3_LIMITS.bytes) throw new Error("Choose a file up to 256 MiB.");
+    if (approvedState) {
+      if (approvedState !== checked || !approvedState.displayReport?.container) return;
+      const report = approvedState.displayReport;
+      image = await createImageBitmap(await pictureBlob(report), { imageOrientation: "none" });
+      if (version !== editVersion || approvedState !== checked) return;
+      if (image.width !== report.meta.width || image.height !== report.meta.height)
+        throw new Error("Decoded dimensions differ from the signed file.");
+      loadEditor(image, file, report.container);
+    } else {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (version !== editVersion) return;
+      if (isGRD2(bytes) || /^GRD1$/.test(String.fromCharCode(...bytes.subarray(0, 4))) || /\.grd$/i.test(file.name)) {
+        setEditorStatus("");
+        await openFile(file);
+        return;
+      }
+      const info = inspectConversionImage(bytes, { large: true });
+      image = await createImageBitmap(new Blob([bytes], { type: info.mime }));
+      if (version !== editVersion) return;
+      const fitted = fitConversionDimensions(image.width, image.height, { large: true });
+      if (fitted.width !== image.width || fitted.height !== image.height ||
+          image.width * image.height !== info.width * info.height)
+        throw new Error("Decoded dimensions exceed the image limits. Choose a smaller picture.");
+      loadEditor(image, file, null);
+    }
+    image = null; // The editor now owns the bitmap.
+    setEditorStatus(file.name + " is ready.");
+  } catch (error) {
+    if (version === editVersion) setEditorStatus(error.message, true);
+  } finally {
+    image?.close();
+  }
+}
+
+async function buildSeal(source, grid) {
+  let doc = source.doc;
+  if (!doc) {
+    const key = await crypto.subtle.generateKey("Ed25519", false, ["sign", "verify"]);
+    const publicKey = new Uint8Array(await crypto.subtle.exportKey("raw", key.publicKey));
+    const surface = document.createElement("canvas");
+    surface.width = source.width;
+    surface.height = source.height;
+    const context = surface.getContext("2d", { willReadFrequently: true });
+    context.drawImage(source.image, 0, 0);
+    const rgba = new Uint8Array(context.getImageData(0, 0, source.width, source.height).data.buffer);
+    doc = await sealRgba({
+      rgba, width: source.width, height: source.height, publicKey, purpose: "personal",
+      subTile: 16, visual: false, sign: bytes => crypto.subtle.sign("Ed25519", key.privateKey, bytes),
+    });
+  }
+
+  const rects = source.boxes.map(({ x, y, w, h }) => ({ x, y, width: w, height: h }));
+  if (!rects.length) return encodeGRD2(doc);
+  if (doc.manifest.subTile) return redactRects(doc, rects, { granularity: grid });
+  const indices = new Set(rects.flatMap(rect => tilesForRect(doc.manifest, rect)));
+  return redactGRD2(doc, [...indices]);
+}
+
+$("convert-form").onsubmit = async event => {
+  event.preventDefault();
+  if ($("convert-submit").disabled || busy || !editor?.boxes || !$("convert-privacy").checked) return;
+  const source = editor;
+  busy = true;
+  savedFile = null;
+  dragStart = null;
+  drawEditor(source.boxes, selections);
+  $("check-sealed").hidden = true;
+  $("convert-form").setAttribute("aria-busy", "true");
+  $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = true;
+  syncConsent();
+  setEditorStatus("Preparing and checking your .GRD…");
+  try {
+    const bytes = await buildSeal(source, Number($("rounding").value));
+    const report = await verifyGRD2(bytes);
+    if (!report.regionVerified || !report.signature_valid || report.verdict === "REVOKED KEY" ||
+        (source.boxes.length && report.hiddenPixelsCleared !== true))
+      throw new Error("The file failed its own check. Nothing was downloaded.");
+    savedFile = new File([bytes], "image.GRD", { type: "application/octet-stream" });
+    download(bytes, savedFile.name, savedFile.type);
+    setEditorStatus("Saved image.GRD.");
+    $("check-sealed").hidden = false;
+    if (activeMode === "seal") $("check-sealed").focus();
+  } catch (error) {
+    setEditorStatus(error.message, true);
+  } finally {
+    busy = false;
+    $("blackout-controls").disabled = $("convert-input").disabled = $("convert-privacy").disabled = false;
+    $("convert-form").removeAttribute("aria-busy");
+    syncConsent();
+  }
+};
+
+$("redact-checked").onclick = () => {
+  const state = checked;
+  if (!state?.displayReport?.container || state.displayReport.verdict === "FULLY REDACTED" || busy) return;
+  $("convert-input").value = "";
+  void prepareSealInput(state.file, state);
+};
+$("check-sealed").onclick = event => {
+  event.preventDefault();
+  if (savedFile) void openFile(savedFile);
+};
+
+for (const [id, handler] of [
+  ["file-input", openFile],
+  ["convert-input", prepareSealInput],
+]) $(id).onchange = event => {
+  const file = event.target.files[0];
+  event.target.value = "";
+  if (file) void handler(file);
+};
+
+window.addEventListener("dragover", event => {
+  if (!event.dataTransfer?.types.includes("Files")) return;
+  event.preventDefault();
+  const upload = document.querySelector(activeMode === "seal" ? "#convert-form .upload" : "#inspection-panel .upload");
+  upload.classList.add("over");
+});
+window.addEventListener("dragleave", event => {
+  if (!event.relatedTarget) document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+});
+window.addEventListener("drop", event => {
+  const file = event.dataTransfer?.files[0];
+  if (!file) return;
+  event.preventDefault();
+  document.querySelectorAll(".upload.over").forEach(node => node.classList.remove("over"));
+  if (/\.grd$/i.test(file.name) || (activeMode === "check" && !/^image\//.test(file.type)))
+    void openFile(file);
+  else void prepareSealInput(file);
+});
+
+})();</script>
+</body>
+</html>

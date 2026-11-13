@@ -1,0 +1,6 @@
+# Used by hosts such as Cloudflare Pages. GitHub Pages does not apply this file.
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff

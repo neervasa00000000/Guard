@@ -23,6 +23,17 @@ That downloads the public inputs, checks their SHA-256 values, and writes `out/t
 .venv/bin/python -m pytest -q
 ```
 
+## Website
+
+The TileSeal page is `index.html`. Rebuild it after a change to `src/`, then open it:
+
+```sh
+node scripts/build.mjs
+python3 -m http.server 4195 --bind 127.0.0.1
+```
+
+Open http://127.0.0.1:4195/. Images and keys stay in the browser.
+
 ## Use TileSeal
 
 ```sh

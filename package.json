@@ -1,0 +1,19 @@
+{
+  "name": "tileseal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "dev": "python3 -m http.server 4195 --bind 127.0.0.1"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0",
+    "sharp": "0.35.5"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "axe-core": "4.14.0"
+  }
+}
