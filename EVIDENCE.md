@@ -1,6 +1,6 @@
 # Evidence for the printed manuscript
 
-The manuscript is `paper_v6_1_ieeeaccess.pdf`. Each section names the files in this tree, whether they are the archived result or only a summary, and the command that rebuilds the result. A rebuild that needs the external review kit uses that kit at the path recorded in [research/e1/review4/a3_start/RUN_INFO.md](research/e1/review4/a3_start/RUN_INFO.md). Those kit scripts are not in this repository. `scripts/check_numbers.py` recomputes the cells this tree can check.
+The printed IEEE file is `paper_v6_1_ieeeaccess.pdf`. The manuscript table checked by `scripts/check_numbers.py` is the A2 column `scripts/regenerate_tables.py` rebuilds from `research/e1/review4/pooled.csv`. That check does not read the IEEE text. Each section below names the files in this tree, whether they are the archived result or only a summary, and the command that rebuilds the result. A rebuild that needs the external review kit uses that kit at the path recorded in [research/e1/review4/a3_start/RUN_INFO.md](research/e1/review4/a3_start/RUN_INFO.md). Those kit scripts are not in this repository.
 
 ## Padding sweep
 

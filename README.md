@@ -11,7 +11,7 @@ python3 -m venv .venv
 
 ## Reproduce the paper
 
-The printed manuscript is `paper_v6_1_ieeeaccess.pdf` (SHA-256 `85b8a84f052bbdae861dbabf4eda718fb9d7bc8be8d62ee008f88db204006a6e`). Claim-level files and rebuild commands are in [EVIDENCE.md](EVIDENCE.md). `scripts/check_numbers.py` checks the numbers this tree can recompute. The earlier PDF transcript at `research/e1/mdpi_checks/number_audit/NUMBER_AUDIT.md` is historical and is not replayed.
+The printed manuscript is `paper_v6_1_ieeeaccess.pdf` (SHA-256 `85b8a84f052bbdae861dbabf4eda718fb9d7bc8be8d62ee008f88db204006a6e`). Claim-level files and rebuild commands are in [EVIDENCE.md](EVIDENCE.md). `scripts/check_numbers.py` checks this manuscript's A2 column against `research/e1/review4/pooled.csv`. It does not read the IEEE PDF. The earlier PDF transcript at `research/e1/mdpi_checks/number_audit/NUMBER_AUDIT.md` is historical and is not replayed.
 
 ### Versions
 
@@ -43,7 +43,7 @@ bash scripts/reproduce.sh
 
 Regenerated outputs from that command:
 
-- `e1f9847fb8457fed6f1564c1eee9b41e521d11b611aa59f540180260b64f822b` `out/tables/table_clean.md`
+- `2456d0af883168bbafc6277779c99a2c4d1fa8368893ae5d73074576ff117d1c` `out/tables/table_clean.md`
 - `ecc5c0395ed456c6470ee18ff77afc8ae5a4f846d4084c337beb4935ad8efe67` `out/figures/fig1_bits.png`
 - `5ff37ad746a220168447e41dbf71fd776332752843f5ee808a75d0fa47b65d0d` `out/figures/fig2_top10.png`
 - `0def3ae5cc74e7c5dd806e4311de8cccdeafc4b9497a43c0a3ec20a067802fc1` `out/figures/fig3_tradeoff.png`

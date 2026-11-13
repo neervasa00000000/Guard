@@ -13,6 +13,33 @@ OUT = ROOT / "out"
 TABLES = OUT / "tables"
 FIGS = OUT / "figures"
 CLEAN = ROOT / "results" / "paper" / "e1" / "pooled_clean_dict_grid_attacker.csv"
+POOLED = ROOT / "research" / "e1" / "review4" / "pooled.csv"
+POLICY_GRID = {"exact": 1, "square-8": 8, "square-16": 16, "square-32": 32, "square-64": 64}
+
+
+def a2_from_pooled(frame):
+    """Replace the A2 column with the size-pooled LAYOUT-BOX rows in pooled.csv."""
+    pooled = pd.read_csv(POOLED)
+    pooled = pooled[
+        (pooled.model == "LAYOUT-BOX")
+        & (pooled.attacker == "A2")
+        & (pooled.size_px.astype(str) == "all")
+        & (pooled.policy.isin(POLICY_GRID))
+    ]
+    out = frame.copy()
+    seen = set()
+    for row in pooled.itertuples(index=False):
+        grid = POLICY_GRID[row.policy]
+        mask = (out["dict"] == row.list) & (out.grid_px == grid) & (out.attacker == "A2")
+        if int(mask.sum()) != 1:
+            raise ValueError(f"A2 cell missing from the clean table: {row.list} {row.policy}")
+        out.loc[mask, ["top10", "bits_leaked", "over_median", "n"]] = [
+            row.top10, row.bits, row.median_overredaction, row.n]
+        seen.add((row.list, grid))
+    expected = {(r.dict, int(r.grid_px)) for r in out.itertuples(index=False) if r.attacker == "A2"}
+    if seen != expected:
+        raise ValueError(f"A2 cells not taken from pooled.csv: {sorted(expected - seen)}")
+    return out
 
 
 def write_clean_table(frame):
@@ -89,10 +116,13 @@ def main():
     if not CLEAN.exists():
         print("CLEAN POOL NOT FOUND")
         return 1
-    frame = pd.read_csv(CLEAN)
+    frame = a2_from_pooled(pd.read_csv(CLEAN))
     write_clean_table(frame)
     figures(frame)
     copy_reports()
+    named = frame.query("attacker == 'A2' and ((dict == 'surnames' and grid_px == 8) or (dict == 'words' and grid_px == 16))")
+    for row in named.itertuples(index=False):
+        print(f"A2 from {POOLED.relative_to(ROOT)}: {row.dict} {int(row.grid_px)} px {row.top10 * 100:.1f}/{row.bits_leaked:.2f}")
     print(f"Wrote {TABLES} and {FIGS}")
     return 0
 
