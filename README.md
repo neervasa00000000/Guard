@@ -2,7 +2,7 @@
 
 This repository is the artifact for Neer Vasa, *What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction* (MDPI *Computers*). The manuscript file is `manuscript/Vasa_MDPI_Computers_v8_5.docx`.
 
-TileSeal, the tool that seals an image and checks a tile-grid blackout, is in `tileseal/`, `src/`, and `index.html`. The paper command below does not build the website.
+TileSeal, the seal and padding code used by the study, is `tileseal/` together with `grd.py` and `grd_geometry.py`.
 
 ## Reproduce
 
@@ -38,7 +38,7 @@ The input map, including exploratory rows, is [EVIDENCE.md](EVIDENCE.md).
 ## Tests
 
 ```sh
-.venv/bin/python -m pytest -q tests/test_smoke_archives.py tests/test_padding.py tests/test_stored_a1_cell.py tests/test_release_product.py
+.venv/bin/python -m pytest -q tests/test_smoke_archives.py tests/test_stored_a1_cell.py
 ```
 
 The smoke test reads one archive header and the 1,000-name census head. It does not score the 3.4 million case rows.
