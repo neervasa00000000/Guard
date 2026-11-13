@@ -1,20 +1,20 @@
 cff-version: 1.2.0
 message: "Cite the paper and the software revision you used."
-title: "What the Black Box Reveals: Measuring Redaction-Geometry Leakage and the Tile-Snapping Trade-off in Images"
+title: "What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction"
 type: software
-version: "paper-release-v1"
+version: "1.1"
 authors:
   - given-names: Neer
     family-names: Vasa
 repository-code: "https://github.com/neervasa00000000/Guard"
-url: "https://neervasa00000000.github.io/Guard/"
 license: MIT
 doi: "PLACEHOLDER"
 preferred-citation:
   type: article
-  title: "What the Black Box Reveals: Measuring Redaction-Geometry Leakage and the Tile-Snapping Trade-off in Images"
+  title: "What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction"
   authors:
     - given-names: Neer
       family-names: Vasa
-  version: "paper-release-v1"
+  journal: "Computers"
+  version: "1.1"
   doi: "PLACEHOLDER"

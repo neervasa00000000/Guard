@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-STORED = ROOT / "research/e1/mdpi_checks/posterior_toy/real_comparison.csv"
+STORED = ROOT / "research/e1/data/real_comparison.csv"
 
 
 def test_stored_a1_exact_cell_has_200_matches():

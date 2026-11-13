@@ -1,10 +1,12 @@
+/data/
+/out/
 .venv/
 node_modules/
-data/
-out/
 __pycache__/
 .pytest_cache/
 *.pyc
 .DS_Store
 *.pem
 *.key
+.env
+.env.*

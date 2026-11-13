@@ -10,10 +10,9 @@ case "${1:-}" in
         ;;
 esac
 if [ "$#" -ne 0 ]; then
-    echo 'This entry point takes no arguments. See research/e1/README.md for smaller runs.' >&2
+    echo 'This entry point takes no arguments. It is not part of make all.' >&2
     exit 2
 fi
 export E1_N=2000
-"$PY" research/e1/scripts/e1_run.py
-"$PY" research/e1/scripts/e1_run_300dpi.py
-"$PY" research/e1/scripts/e1_analyze.py
+echo 'Full re-render needs Pillow 12.3.0 with RAQM, the six fonts, and the full Census CSV (E1_CENSUS).' >&2
+"$PY" research/e1/e1_run.py

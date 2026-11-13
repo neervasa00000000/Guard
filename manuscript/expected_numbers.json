@@ -1,0 +1,3014 @@
+{
+  "manuscript": "manuscript/Vasa_MDPI_Computers_v8_5.docx",
+  "journal": "MDPI Computers",
+  "title": "What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction",
+  "locked": true,
+  "numbers": [
+    {
+      "id": "table3.surnames.exact.bits_layout",
+      "expected": 6.66,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.exact.area",
+      "expected": 1.0,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.exact.bits_ink",
+      "expected": 7.41,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square16.bits_layout",
+      "expected": 2.19,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square16.area",
+      "expected": 2.45,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square64.bits_layout",
+      "expected": 0.67,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square64.area",
+      "expected": 10.04,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square64.bits_ink",
+      "expected": 0.68,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square128.bits_layout",
+      "expected": 0.33,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square128.area",
+      "expected": 28.64,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.square128.bits_ink",
+      "expected": 0.34,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid64.bits_layout",
+      "expected": 0.61,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid64.area",
+      "expected": 3.01,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid64.bits_ink",
+      "expected": 0.62,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid128.bits_layout",
+      "expected": 0.31,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid128.area",
+      "expected": 4.56,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.widthgrid128.bits_ink",
+      "expected": 0.31,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored128.bits_layout",
+      "expected": 0.26,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored128.area",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored128.bits_ink",
+      "expected": 0.97,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored192.bits_layout",
+      "expected": 0.19,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored192.area",
+      "expected": 5.03,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.inkanchored192.bits_ink",
+      "expected": 0.9,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored96.bits_layout",
+      "expected": 0.3,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored96.area",
+      "expected": 2.62,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored96.bits_ink",
+      "expected": 0.29,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored128.bits_layout",
+      "expected": 0.08,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored128.area",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored128.bits_ink",
+      "expected": 0.08,
+      "tol": 0.0051,
+      "source": "Table 3; Figure 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored192.bits_layout",
+      "expected": 0.005,
+      "tol": 0,
+      "source": "Table 3",
+      "rule": "lt",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored192.bits_ink",
+      "expected": 0.005,
+      "tol": 0,
+      "source": "Table 3",
+      "rule": "lt",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.surnames.penanchored192.area",
+      "expected": 5.03,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.exact.bits_layout",
+      "expected": 6.91,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.exact.area",
+      "expected": 1.0,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square16.bits_layout",
+      "expected": 2.63,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square16.area",
+      "expected": 2.84,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square64.bits_layout",
+      "expected": 0.92,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square64.area",
+      "expected": 13.93,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square128.bits_layout",
+      "expected": 0.48,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.square128.area",
+      "expected": 43.34,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.widthgrid64.bits_layout",
+      "expected": 0.83,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.widthgrid64.area",
+      "expected": 4.13,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.widthgrid128.bits_layout",
+      "expected": 0.44,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.widthgrid128.area",
+      "expected": 6.97,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.inkanchored128.bits_layout",
+      "expected": 0.24,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.inkanchored128.area",
+      "expected": 5.69,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.inkanchored192.bits_layout",
+      "expected": 0.18,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.inkanchored192.area",
+      "expected": 8.53,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored96.bits_layout",
+      "expected": 0.2,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored96.area",
+      "expected": 4.27,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored128.bits_layout",
+      "expected": 0.06,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored128.area",
+      "expected": 5.69,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored192.bits_layout",
+      "expected": 0.005,
+      "tol": 0,
+      "source": "Table 3",
+      "rule": "lt",
+      "status": "CHECK"
+    },
+    {
+      "id": "table3.words.penanchored192.area",
+      "expected": 8.53,
+      "tol": 0.0051,
+      "source": "Table 3",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.n",
+      "expected": 11351,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.median_w",
+      "expected": 228,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.median_h",
+      "expected": 49,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g1.widths",
+      "expected": 1433,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g1.h_width",
+      "expected": 9.35,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g1.h_wh",
+      "expected": 12.76,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g8.widths",
+      "expected": 279,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g8.h_width",
+      "expected": 6.58,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g8.h_wh",
+      "expected": 9.18,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g8.area",
+      "expected": 1.18,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g8.area_p90",
+      "expected": 1.33,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g16.widths",
+      "expected": 149,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g16.h_width",
+      "expected": 5.6,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g16.h_wh",
+      "expected": 7.53,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g16.area",
+      "expected": 1.4,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g16.area_p90",
+      "expected": 1.72,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g32.widths",
+      "expected": 79,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g32.h_width",
+      "expected": 4.62,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g32.h_wh",
+      "expected": 6.04,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g32.area",
+      "expected": 1.87,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g32.area_p90",
+      "expected": 2.62,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g64.widths",
+      "expected": 40,
+      "tol": 0,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g64.h_width",
+      "expected": 3.67,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g64.h_wh",
+      "expected": 4.79,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g64.area",
+      "expected": 2.95,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "table4.g64.area_p90",
+      "expected": 4.98,
+      "tol": 0.0051,
+      "source": "Table 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea1.cells",
+      "expected": 19,
+      "tol": 0,
+      "source": "Table A1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea1.units",
+      "expected": 99,
+      "tol": 0,
+      "source": "Table A1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea1.redactions",
+      "expected": 3762000,
+      "tol": 0,
+      "source": "Table A1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea1.result_rows",
+      "expected": 7652000,
+      "tol": 0,
+      "source": "Table A1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g1.A1.top10",
+      "expected": 50.2,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g1.A2.top10",
+      "expected": 49.0,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g1.A1.bits",
+      "expected": 6.66,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g1.A2.bits",
+      "expected": 6.54,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g1.area",
+      "expected": 1.0,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g8.A1.top10",
+      "expected": 21.2,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g8.A2.top10",
+      "expected": 17.6,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g8.A1.bits",
+      "expected": 3.3,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g8.A2.bits",
+      "expected": 2.63,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g8.area",
+      "expected": 1.6,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g16.A1.top10",
+      "expected": 14.9,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g16.A2.top10",
+      "expected": 12.2,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g16.A1.bits",
+      "expected": 2.19,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g16.A2.bits",
+      "expected": 1.54,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g16.area",
+      "expected": 2.45,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g32.A1.top10",
+      "expected": 10.7,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g32.A2.top10",
+      "expected": 9.0,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g32.A1.bits",
+      "expected": 1.28,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g32.A2.bits",
+      "expected": 0.75,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g32.area",
+      "expected": 4.38,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g64.A1.top10",
+      "expected": 8.2,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g64.A2.top10",
+      "expected": 7.1,
+      "tol": 0.051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g64.A1.bits",
+      "expected": 0.67,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g64.A2.bits",
+      "expected": 0.3,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.g64.area",
+      "expected": 10.04,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g1.A1.top10",
+      "expected": 79.7,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g1.A2.top10",
+      "expected": 79.0,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g1.A1.bits",
+      "expected": 6.91,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g1.A2.bits",
+      "expected": 6.83,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g1.area",
+      "expected": 1.0,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g8.A1.top10",
+      "expected": 50.4,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g8.A2.top10",
+      "expected": 44.8,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g8.A1.bits",
+      "expected": 3.82,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g8.A2.bits",
+      "expected": 3.19,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g8.area",
+      "expected": 1.78,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g16.A1.top10",
+      "expected": 39.4,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g16.A2.top10",
+      "expected": 34.6,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g16.A1.bits",
+      "expected": 2.63,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g16.A2.bits",
+      "expected": 1.97,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g16.area",
+      "expected": 2.84,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g32.A1.top10",
+      "expected": 31.9,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g32.A2.top10",
+      "expected": 28.6,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g32.A1.bits",
+      "expected": 1.65,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g32.A2.bits",
+      "expected": 1.07,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g32.area",
+      "expected": 5.49,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g64.A1.top10",
+      "expected": 28.0,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g64.A2.top10",
+      "expected": 25.8,
+      "tol": 0.051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g64.A1.bits",
+      "expected": 0.92,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g64.A2.bits",
+      "expected": 0.45,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.g64.area",
+      "expected": 13.93,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.nobox.top10",
+      "expected": 5.95,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.nobox.top10",
+      "expected": 23.8,
+      "tol": 0.0051,
+      "source": "Table A2; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.surnames.prior",
+      "expected": 12.88,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea2.words.prior",
+      "expected": 10.1,
+      "tol": 0.0051,
+      "source": "Table A2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.exact",
+      "expected": 63,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.g16",
+      "expected": 13,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.start",
+      "expected": 6,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.diff",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.ci_lo",
+      "expected": 2,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.ci_hi",
+      "expected": 12,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.area_start",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16c.area_64",
+      "expected": 17.64,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.exact",
+      "expected": 22,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.g16",
+      "expected": 10,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.start",
+      "expected": 6,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.diff",
+      "expected": 4,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.ci_lo",
+      "expected": 1,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.ci_hi",
+      "expected": 8,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.area_start",
+      "expected": 4.15,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo16s.area_64",
+      "expected": 15.66,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.exact",
+      "expected": 73,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.g16",
+      "expected": 21,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.start",
+      "expected": 8,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.diff",
+      "expected": 13,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.ci_lo",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.ci_hi",
+      "expected": 20,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.area_start",
+      "expected": 2.47,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24c.area_64",
+      "expected": 10.78,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.exact",
+      "expected": 34,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.g16",
+      "expected": 19,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.start",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.diff",
+      "expected": 12,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.ci_lo",
+      "expected": 6,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.ci_hi",
+      "expected": 19,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.area_start",
+      "expected": 2.67,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lo24s.area_64",
+      "expected": 11.49,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.exact",
+      "expected": 0,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.g16",
+      "expected": 12,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.start",
+      "expected": 6,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.diff",
+      "expected": 6,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.ci_lo",
+      "expected": 2,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.ci_hi",
+      "expected": 11,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.area_start",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.lopm.area_64",
+      "expected": 17.64,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.exact",
+      "expected": 52,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.g16",
+      "expected": 12,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.start",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.diff",
+      "expected": 5,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.ci_lo",
+      "expected": 1,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.ci_hi",
+      "expected": 10,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.area_start",
+      "expected": 3.66,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA1.area_64",
+      "expected": 20.42,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.exact",
+      "expected": 51,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.g16",
+      "expected": 10,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.start",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.diff",
+      "expected": 3,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.ci_lo",
+      "expected": 0,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.ci_hi",
+      "expected": 7,
+      "tol": 0,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.area_start",
+      "expected": 3.66,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea3.pA2.area_64",
+      "expected": 20.42,
+      "tol": 0.0051,
+      "source": "Table A3; Figure 6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.exact.prior",
+      "expected": 58.5,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.exact.lm",
+      "expected": 97.0,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.8.prior",
+      "expected": 7.5,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.8.lm",
+      "expected": 80.3,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.16.prior",
+      "expected": 3.5,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.16.lm",
+      "expected": 70.8,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.32.prior",
+      "expected": 0.8,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.32.lm",
+      "expected": 58.8,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.64.prior",
+      "expected": 0.0,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.dejavu.64.lm",
+      "expected": 49.8,
+      "tol": 0.051,
+      "source": "Table A4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.exact8.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.exact8.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.exact8.top10.delta",
+      "expected": 29.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.exact8.top10.ci_lo",
+      "expected": 28.5,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.exact8.top10.ci_hi",
+      "expected": 29.4,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g8g16.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g8g16.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g8g16.top10.delta",
+      "expected": 6.4,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g8g16.top10.ci_lo",
+      "expected": 6.1,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g8g16.top10.ci_hi",
+      "expected": 6.6,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g16g32.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g16g32.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g16g32.top10.delta",
+      "expected": 4.2,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g16g32.top10.ci_lo",
+      "expected": 4.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g16g32.top10.ci_hi",
+      "expected": 4.4,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g32g64.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g32g64.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g32g64.top10.delta",
+      "expected": 2.4,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g32g64.top10.ci_lo",
+      "expected": 2.3,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g32g64.top10.ci_hi",
+      "expected": 2.6,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64edge.top10.holm",
+      "expected": 9,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64edge.bits.holm",
+      "expected": 17,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64edge.top10.delta",
+      "expected": 1.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64edge.top10.ci_lo",
+      "expected": 0.8,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64edge.top10.ci_hi",
+      "expected": 1.1,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64start.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64start.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64start.top10.delta",
+      "expected": 2.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64start.top10.ci_lo",
+      "expected": 1.9,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.surnames.g64start.top10.ci_hi",
+      "expected": 2.2,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.exact8.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.exact8.top10.delta",
+      "expected": 29.3,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.exact8.top10.ci_lo",
+      "expected": 28.9,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.exact8.top10.ci_hi",
+      "expected": 29.8,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g8g16.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g8g16.top10.delta",
+      "expected": 11.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g8g16.top10.ci_lo",
+      "expected": 10.6,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g8g16.top10.ci_hi",
+      "expected": 11.3,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g16g32.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g16g32.top10.delta",
+      "expected": 7.5,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g16g32.top10.ci_lo",
+      "expected": 7.3,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g16g32.top10.ci_hi",
+      "expected": 7.8,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g32g64.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g32g64.top10.delta",
+      "expected": 3.9,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g32g64.top10.ci_lo",
+      "expected": 3.7,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g32g64.top10.ci_hi",
+      "expected": 4.1,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64edge.top10.holm",
+      "expected": 12,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64edge.top10.delta",
+      "expected": 2.2,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64edge.top10.ci_lo",
+      "expected": 2.0,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64edge.top10.ci_hi",
+      "expected": 2.4,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64start.top10.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64start.top10.delta",
+      "expected": 3.9,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64start.top10.ci_lo",
+      "expected": 3.7,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64start.top10.ci_hi",
+      "expected": 4.1,
+      "tol": 0.051,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.exact.top10",
+      "expected": 56.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.exact.bits",
+      "expected": 7.32,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.square-16.top10",
+      "expected": 15.8,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.square-16.bits",
+      "expected": 2.29,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.square-64.top10",
+      "expected": 9.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.square-64.bits",
+      "expected": 0.73,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.ink-anchored-128.top10",
+      "expected": 9.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.ink-anchored-128.bits",
+      "expected": 0.48,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.pen-anchored-128.top10",
+      "expected": 7.0,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.pen-anchored-128.bits",
+      "expected": 0.1,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.width-grid-64.top10",
+      "expected": 9.0,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSans.width-grid-64.bits",
+      "expected": 0.67,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.exact.top10",
+      "expected": 61.1,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.exact.bits",
+      "expected": 7.7,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.square-16.top10",
+      "expected": 15.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.square-16.bits",
+      "expected": 2.32,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.square-64.top10",
+      "expected": 7.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.square-64.bits",
+      "expected": 0.72,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.ink-anchored-128.top10",
+      "expected": 8.4,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.ink-anchored-128.bits",
+      "expected": 0.64,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.pen-anchored-128.top10",
+      "expected": 6.1,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.pen-anchored-128.bits",
+      "expected": 0.13,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.width-grid-64.top10",
+      "expected": 7.5,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.DejaVuSerif.width-grid-64.bits",
+      "expected": 0.66,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.exact.top10",
+      "expected": 30.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.exact.bits",
+      "expected": 4.58,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.square-16.top10",
+      "expected": 15.0,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.square-16.bits",
+      "expected": 2.3,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.square-64.top10",
+      "expected": 8.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.square-64.bits",
+      "expected": 0.72,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.ink-anchored-128.top10",
+      "expected": 6.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.ink-anchored-128.bits",
+      "expected": 0.15,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.pen-anchored-128.top10",
+      "expected": 6.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.pen-anchored-128.bits",
+      "expected": 0.15,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.width-grid-64.top10",
+      "expected": 8.0,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationMono.width-grid-64.bits",
+      "expected": 0.66,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.exact.top10",
+      "expected": 47.5,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.exact.bits",
+      "expected": 6.44,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.square-16.top10",
+      "expected": 13.9,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.square-16.bits",
+      "expected": 2.02,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.square-64.top10",
+      "expected": 8.0,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.square-64.bits",
+      "expected": 0.6,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.ink-anchored-128.top10",
+      "expected": 5.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.ink-anchored-128.bits",
+      "expected": 0.03,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.pen-anchored-128.top10",
+      "expected": 5.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.pen-anchored-128.bits",
+      "expected": 0.03,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.width-grid-64.top10",
+      "expected": 7.8,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSans.width-grid-64.bits",
+      "expected": 0.57,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.exact.top10",
+      "expected": 49.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.exact.bits",
+      "expected": 6.6,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.square-16.top10",
+      "expected": 13.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.square-16.bits",
+      "expected": 1.93,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.square-64.top10",
+      "expected": 8.1,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.square-64.bits",
+      "expected": 0.55,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.ink-anchored-128.top10",
+      "expected": 6.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.ink-anchored-128.bits",
+      "expected": 0.01,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.pen-anchored-128.top10",
+      "expected": 6.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.pen-anchored-128.bits",
+      "expected": 0.01,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.width-grid-64.top10",
+      "expected": 7.9,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.LiberationSerif.width-grid-64.bits",
+      "expected": 0.49,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.exact.top10",
+      "expected": 56.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.exact.bits",
+      "expected": 7.3,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.square-16.top10",
+      "expected": 15.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.square-16.bits",
+      "expected": 2.26,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.square-64.top10",
+      "expected": 8.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.square-64.bits",
+      "expected": 0.69,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.ink-anchored-128.top10",
+      "expected": 7.7,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.ink-anchored-128.bits",
+      "expected": 0.24,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.pen-anchored-128.top10",
+      "expected": 6.1,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.pen-anchored-128.bits",
+      "expected": 0.06,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.width-grid-64.top10",
+      "expected": 8.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.NotoSans.width-grid-64.bits",
+      "expected": 0.62,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.exact.top10",
+      "expected": 50.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.exact.bits",
+      "expected": 6.66,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.exact.area",
+      "expected": 1.0,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-16.top10",
+      "expected": 14.9,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-16.bits",
+      "expected": 2.19,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-16.area",
+      "expected": 2.45,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-64.top10",
+      "expected": 8.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-64.bits",
+      "expected": 0.67,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.square-64.area",
+      "expected": 10.04,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.ink-anchored-128.top10",
+      "expected": 7.3,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.ink-anchored-128.bits",
+      "expected": 0.26,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.ink-anchored-128.area",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.pen-anchored-128.top10",
+      "expected": 6.2,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.pen-anchored-128.bits",
+      "expected": 0.08,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.pen-anchored-128.area",
+      "expected": 3.36,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.width-grid-64.top10",
+      "expected": 8.1,
+      "tol": 0.051,
+      "source": "Table A6; Figure 1",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.width-grid-64.bits",
+      "expected": 0.61,
+      "tol": 0.0051,
+      "source": "Table A6; Figure 2",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea6.pooled.width-grid-64.area",
+      "expected": 3.01,
+      "tol": 0.0051,
+      "source": "Table A6",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4a.surnames.g16.k1.top10",
+      "expected": 11.5,
+      "tol": 0.051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4a.surnames.g16.k5.top10",
+      "expected": 22.0,
+      "tol": 0.051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4a.surnames.g16.k5.bits",
+      "expected": 3.3,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4a.pad.k1.top10",
+      "expected": 5.95,
+      "tol": 0.06,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4a.pad.k5.top10",
+      "expected": 5.95,
+      "tol": 0.06,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.unjittered.bits",
+      "expected": 0.285,
+      "tol": 0.00051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.jitter.k1.bits",
+      "expected": 0.36,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.jitter.k5.bits",
+      "expected": 0.64,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.font.k1.bits",
+      "expected": 0.22,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.font.k5.bits",
+      "expected": 0.69,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.font.changed",
+      "expected": 188,
+      "tol": 0,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig4b.class192.k5.bits",
+      "expected": 0.01,
+      "tol": 0.0051,
+      "source": "Figure 4",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig5.known.top10",
+      "expected": 48.6,
+      "tol": 0.051,
+      "source": "Figure 5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig5.font_unknown.top10",
+      "expected": 38.2,
+      "tol": 0.051,
+      "source": "Figure 5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "fig5.uniform.top10",
+      "expected": 5.7,
+      "tol": 0.051,
+      "source": "Figure 5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea4.liberation",
+      "source": "Table A4",
+      "status": "EXPLORATORY",
+      "reason": "Liberation Serif follow-up and the 179/400 sentence-alone count are in a4_reproduction.csv, which is not in the repository."
+    },
+    {
+      "id": "tablea4.padding_gain",
+      "source": "Table A4",
+      "status": "EXPLORATORY",
+      "reason": "The padding rerun and its 180/400 baseline are not in e1_a4_cases.csv.gz."
+    },
+    {
+      "id": "tablea5.earlier_holm",
+      "source": "Table A5",
+      "status": "EXPLORATORY",
+      "reason": "The number before the arrow is the earlier independent-proportion test. paired_tests.csv stores the paired Holm count only."
+    },
+    {
+      "id": "fig4b.edge_0.38_to_1.30",
+      "source": "Figure 4",
+      "status": "EXPLORATORY",
+      "reason": "results_summary.csv has no edge-aligned surname row that moves from 0.38 bits to 1.30 bits."
+    },
+    {
+      "id": "fig5.wordfreq_prior",
+      "source": "Figure 5; Section 4.5",
+      "status": "EXPLORATORY",
+      "reason": "s4_priors.csv is absent. test4 has a uniform prior, not the word-frequency or shuffled-census prior. 48.3%, 21.2% and 6.48 bits are not rebuilt."
+    },
+    {
+      "id": "fig5.recalibrated_31",
+      "source": "Figure 5",
+      "status": "EXPLORATORY",
+      "reason": "The form summary has Pillow-model exact hits of 0 and matched hits of 63. It has no 31/100 recalibrated cell."
+    },
+    {
+      "id": "own_height",
+      "source": "Section 5.3",
+      "status": "EXPLORATORY",
+      "reason": "The manuscript says the own-height variant is not reported. w1_pooled.csv is absent and no function keeps a box's own height."
+    },
+    {
+      "id": "form_pages",
+      "source": "Figure 6; Table A7",
+      "status": "EXPLORATORY",
+      "reason": "Form PDFs, scans and the LibreOffice profile are not in the repository. The score table is."
+    },
+    {
+      "id": "s2_rerender_file",
+      "source": "Figure 4",
+      "status": "EXPLORATORY",
+      "reason": "s2_rerender.csv is absent. The cited 188-of-2000 class changes are in results_summary.csv."
+    },
+    {
+      "id": "tablea5.words.exact8.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g8g16.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g16g32.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g32g64.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64edge.bits.holm",
+      "expected": 17,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    },
+    {
+      "id": "tablea5.words.g64start.bits.holm",
+      "expected": 18,
+      "tol": 0,
+      "source": "Table A5",
+      "rule": "abs",
+      "status": "CHECK"
+    }
+  ]
+}

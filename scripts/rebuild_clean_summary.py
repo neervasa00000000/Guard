@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULTS = ROOT / "results/paper/e1"
+RESULTS = ROOT / "research/e1/data"
 CASES = ROOT / "research/e1/cases/posterior"
 SUMMARY = RESULTS / "pooled_clean_dict_grid_attacker.csv"
 KEY = ["dict", "grid_px", "attacker"]
