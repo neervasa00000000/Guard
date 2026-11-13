@@ -1,0 +1,9 @@
+attacker,policy,n,replay_hits,archived_hits,delta_hits,reference
+A1,exact,100,52.0,52,0.0,"renderer2 RESULTS.md, T3 reference"
+A1,16px,100,12.0,12,0.0,"renderer2 RESULTS.md, T3 reference"
+A1,64px,100,8.0,8,0.0,"renderer2 RESULTS.md, T3 reference"
+A1,D2_bucket128,100,10.0,10,0.0,"renderer2 RESULTS.md, T3 reference"
+A2,exact,100,51.0,51.0,0.0,mock_a2_exact_cases.csv
+A2,16px,100,10.0,10.0,0.0,mock_a2_exact_cases.csv
+A2,64px,100,7.0,7.0,0.0,mock_a2_exact_cases.csv
+A2,D2_bucket128,100,7.0,,,Archived A2 padding reference absent

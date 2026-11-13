@@ -1,0 +1,42 @@
+Linux-6.12.76-linuxkit-aarch64-with-glibc2.41 3.12.16 (main, Nov  5 2026, 08:06:51) [GCC 12.2.0] NumPy 2.5.4 Pillow 12.3.0 {'raqm': '0.10.5', 'harfbuzz': '14.2.1', 'fribidi': '1.0.16', 'freetype2': '2.14.3'}
+Observation sample seed 20261118 T2 width seed 1
+Published sanity passed 2.831 2.423
+Compared T1 1 0 False None False 1 320
+Compared T1 1 0 True None False 1 320
+Compared T1 8 0 False None False 1 35
+Compared T1 8 0 True None False 1 184
+Compared T1 16 0 False None False 1 14
+Compared T1 16 0 True None False 1 140
+Compared T2 1 0 False None False 1 1088
+Compared T2 1 4 False None False 1 4124
+Compared T2 1 16 False None False 1 6528
+Compared T2 8 0 False None False 1 80
+Compared T2 8 4 False None False 1 88
+Compared T2 8 16 False None False 1 134
+Compared T2 16 0 False None False 1 24
+Compared T2 16 4 False None False 1 28
+Compared T2 16 16 False None False 1 38
+Compared T2 32 0 False None False 1 8
+Compared T2 32 4 False None False 1 10
+Compared T2 32 16 False None False 1 11
+Compared T2 64 0 False None False 1 3
+Compared T2 64 4 False None False 1 4
+Compared T2 64 16 False None False 1 5
+Compared T3 16 0 False None False 2 41
+Compared T3 16 0 False None False 3 77
+Compared T4 1 0 False 32 False 1 640
+Compared T4 1 0 True 32 False 1 640
+Compared T4 1 0 False 32 False 1 198
+Compared T4 1 0 True 32 False 1 512
+Compared T4 1 0 False 32 True 1 640
+Compared T4 1 0 True 32 True 1 640
+Compared T4 1 0 False 32 True 1 192
+Compared T4 1 0 True 32 True 1 192
+Compared T4 1 0 False 64 False 1 454
+Compared T4 1 0 True 64 False 1 640
+Compared T4 1 0 False 64 False 1 131
+Compared T4 1 0 True 64 False 1 320
+Compared T4 1 0 False 64 True 1 448
+Compared T4 1 0 True 64 True 1 448
+Compared T4 1 0 False 64 True 1 128
+Compared T4 1 0 True 64 True 1 128

@@ -1,0 +1,7 @@
+HEAD 7f3f73ad13a64d26ff617c2420ee9898e4041487
+BRANCH codex/e1-review4
+?? CURSOR_ONE_PROMPT.md
+?? CURSOR_RELEASE_PROMPT.md
+?? Rerun/
+?? research/e1/mdpi_checks/
+?? research/e1/review4/

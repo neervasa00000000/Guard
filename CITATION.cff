@@ -1,10 +1,20 @@
 cff-version: 1.2.0
-message: "Cite this software at the revision you used. The IEEE Access manuscript in preparation cites commit f8f2558 (paper-v5.7)."
-title: "TileSeal (repository: Guard)"
+message: "Cite the paper and the software revision you used."
+title: "What the Black Box Reveals: Measuring Redaction-Geometry Leakage and the Tile-Snapping Trade-off in Images"
 type: software
+version: "paper-release-v1"
 authors:
   - given-names: Neer
     family-names: Vasa
 repository-code: "https://github.com/neervasa00000000/Guard"
 url: "https://neervasa00000000.github.io/Guard/"
 license: MIT
+doi: "PLACEHOLDER"
+preferred-citation:
+  type: article
+  title: "What the Black Box Reveals: Measuring Redaction-Geometry Leakage and the Tile-Snapping Trade-off in Images"
+  authors:
+    - given-names: Neer
+      family-names: Vasa
+  version: "paper-release-v1"
+  doi: "PLACEHOLDER"

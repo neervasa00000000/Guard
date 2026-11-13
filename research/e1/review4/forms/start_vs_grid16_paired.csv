@@ -1,0 +1,11 @@
+renderer,size,condition,attacker,field,difference_points,ci_low,ci_high,n
+LibreOffice,16,clean,a_paper_renderer,surname,6.0,2.0,11.0,100
+LibreOffice,16,clean,b_lo_table,surname,7.0,2.0,12.0,100
+LibreOffice,16,scan,a_paper_renderer,surname,4.0,1.0,8.0,100
+LibreOffice,16,scan,b_lo_table,surname,4.0,1.0,8.0,100
+LibreOffice,24,clean,a_paper_renderer,surname,13.0,7.0,20.0,100
+LibreOffice,24,clean,b_lo_table,surname,13.0,7.0,20.0,100
+LibreOffice,24,scan,a_paper_renderer,surname,12.0,6.0,19.0,100
+LibreOffice,24,scan,b_lo_table,surname,12.0,6.0,19.0,100
+Pillow,16,clean,A1,surname,5.0,1.0,10.0,100
+Pillow,16,clean,A2,surname,3.0,0.0,7.0,100

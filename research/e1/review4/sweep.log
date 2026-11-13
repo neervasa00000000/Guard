@@ -1,0 +1,157 @@
+Archive SHA-256 e68e1928a60bb3e480bafcb7806af53ab90924888410257fa6414cdc1d3abf46
+DejaVuSans.ttf: OK
+DejaVuSerif.ttf: OK
+LiberationMono-Regular.ttf: OK
+LiberationSans-Regular.ttf: OK
+LiberationSerif-Regular.ttf: OK
+NotoSans-VariableFont_wdth,wght.ttf: OK
+DejaVuSans: 57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/DejaVuSans.ttf -> /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+DejaVuSerif: 8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/DejaVuSerif.ttf -> /usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf
+LiberationSans: bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationSans-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf
+LiberationSerif: 9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationSerif-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf
+NotoSans: 7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/NotoSans-VariableFont_wdth,wght.ttf -> /usr/share/fonts/truetype/sand-box/google/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf
+LiberationMono: 5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationMono-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf
+Python 3.12.16, NumPy 2.5.4, Pillow 12.3.0
+Linux-6.12.76-linuxkit-aarch64-with-glibc2.36, aarch64, 10 logical CPUs
+CPU model unavailable in guest
+{'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
+raqm True 0.10.5
+harfbuzz True 14.2.1
+fribidi True 1.0.8
+freetype2 True 2.14.3
+Installed DejaVuSans at /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf from /fonts/e1_fonts/DejaVuSans.ttf
+Installed DejaVuSerif at /usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf from /fonts/e1_fonts/DejaVuSerif.ttf
+Installed LiberationSans at /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf from /fonts/e1_fonts/LiberationSans-Regular.ttf
+Installed LiberationSerif at /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf from /fonts/e1_fonts/LiberationSerif-Regular.ttf
+Installed NotoSans at /usr/share/fonts/truetype/sand-box/google/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf from /fonts/e1_fonts/NotoSans-VariableFont_wdth,wght.ttf
+Installed LiberationMono at /usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf from /fonts/e1_fonts/LiberationMono-Regular.ttf
+surnames DejaVuSans 24 wall_s 509.68
+surnames DejaVuSerif 24 wall_s 511.23
+surnames DejaVuSerif 16 wall_s 538.87
+surnames DejaVuSans 16 wall_s 539.06
+Archive SHA-256 e68e1928a60bb3e480bafcb7806af53ab90924888410257fa6414cdc1d3abf46
+DejaVuSans.ttf: OK
+DejaVuSerif.ttf: OK
+LiberationMono-Regular.ttf: OK
+LiberationSans-Regular.ttf: OK
+LiberationSerif-Regular.ttf: OK
+NotoSans-VariableFont_wdth,wght.ttf: OK
+DejaVuSans: 57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/DejaVuSans.ttf -> /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+DejaVuSerif: 8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/DejaVuSerif.ttf -> /usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf
+LiberationSans: bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationSans-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf
+LiberationSerif: 9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationSerif-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf
+NotoSans: 7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/NotoSans-VariableFont_wdth,wght.ttf -> /usr/share/fonts/truetype/sand-box/google/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf
+LiberationMono: 5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2 /Users/neervasa/Desktop/UI UX/Guard/Rerun/e1_fonts/e1_fonts/LiberationMono-Regular.ttf -> /usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf
+Python 3.12.16, NumPy 2.5.4, Pillow 12.3.0
+Linux-6.12.76-linuxkit-aarch64-with-glibc2.36, aarch64, 10 logical CPUs
+CPU model unavailable in guest
+{'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
+raqm True 0.10.5
+harfbuzz True 14.2.1
+fribidi True 1.0.8
+freetype2 True 2.14.3
+Installed DejaVuSans at /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf from /fonts/e1_fonts/DejaVuSans.ttf
+Installed DejaVuSerif at /usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf from /fonts/e1_fonts/DejaVuSerif.ttf
+Installed LiberationSans at /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf from /fonts/e1_fonts/LiberationSans-Regular.ttf
+Installed LiberationSerif at /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf from /fonts/e1_fonts/LiberationSerif-Regular.ttf
+Installed NotoSans at /usr/share/fonts/truetype/sand-box/google/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf from /fonts/e1_fonts/NotoSans-VariableFont_wdth,wght.ttf
+Installed LiberationMono at /usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf from /fonts/e1_fonts/LiberationMono-Regular.ttf
+Verified grouped scoring against phase_exact on 500 cases
+surnames DejaVuSans 12 wall_s 29.94
+surnames DejaVuSans 16 wall_s 30.38
+surnames DejaVuSerif 12 wall_s 31.05
+surnames DejaVuSans 24 wall_s 32.69
+surnames DejaVuSerif 16 wall_s 32.77
+surnames DejaVuSerif 24 wall_s 34.47
+Direct vs grouped surnames_DejaVuSans_16.npz 84 max absolute difference 7.478462293875054e-13
+Direct vs grouped surnames_DejaVuSans_24.npz 84 max absolute difference 7.247535904753022e-13
+Direct vs grouped surnames_DejaVuSerif_16.npz 84 max absolute difference 7.336353746723034e-13
+Direct vs grouped surnames_DejaVuSerif_24.npz 84 max absolute difference 7.442935157087049e-13
+surnames LiberationSans 12 wall_s 28.8
+surnames LiberationSans 16 wall_s 30.07
+surnames LiberationSerif 12 wall_s 29.85
+surnames LiberationSans 24 wall_s 31.55
+surnames LiberationSerif 16 wall_s 30.53
+surnames LiberationSerif 24 wall_s 36.55
+surnames LiberationMono 16 wall_s 23.3
+surnames LiberationMono 12 wall_s 25.72
+surnames NotoSans 16 wall_s 34.79
+surnames LiberationMono 24 wall_s 28.43
+words DejaVuSans 12 wall_s 16.12
+surnames NotoSans 12 wall_s 44.46
+words DejaVuSans 16 wall_s 15.12
+surnames NotoSans 24 wall_s 49.53
+words DejaVuSans 24 wall_s 19.36
+words DejaVuSerif 12 wall_s 18.19
+words DejaVuSerif 16 wall_s 17.4
+words LiberationSans 12 wall_s 18.45
+words DejaVuSerif 24 wall_s 19.6
+words LiberationSans 16 wall_s 15.52
+words LiberationSans 24 wall_s 18.37
+words LiberationSerif 12 wall_s 17.17
+words LiberationSerif 16 wall_s 15.87
+words LiberationSerif 24 wall_s 18.9
+words NotoSans 12 wall_s 23.71
+words NotoSans 16 wall_s 19.99
+words LiberationMono 16 wall_s 13.85
+words LiberationMono 12 wall_s 15.2
+digits DejaVuSans 12 wall_s 7.13
+digits DejaVuSans 16 wall_s 7.66
+words LiberationMono 24 wall_s 16.44
+digits DejaVuSerif 12 wall_s 7.44
+digits DejaVuSans 24 wall_s 7.69
+words NotoSans 24 wall_s 25.29
+digits DejaVuSerif 16 wall_s 7.56
+digits DejaVuSerif 24 wall_s 8.11
+digits LiberationSans 12 wall_s 7.16
+digits LiberationSans 16 wall_s 7.47
+digits LiberationSans 24 wall_s 7.95
+digits LiberationSerif 12 wall_s 7.95
+digits LiberationSerif 16 wall_s 7.46
+digits LiberationSerif 24 wall_s 7.84
+digits NotoSans 12 wall_s 8.47
+digits LiberationMono 12 wall_s 6.78
+digits NotoSans 16 wall_s 8.44
+digits NotoSans 24 wall_s 8.32
+digits LiberationMono 16 wall_s 7.01
+digits LiberationMono 24 wall_s 6.95
+dates DejaVuSans 12 wall_s 41.35
+dates DejaVuSans 16 wall_s 44.76
+dates DejaVuSans 24 wall_s 46.07
+dates DejaVuSerif 12 wall_s 46.43
+dates DejaVuSerif 16 wall_s 45.93
+dates DejaVuSerif 24 wall_s 52.32
+dates LiberationSans 12 wall_s 46.18
+dates LiberationSerif 12 wall_s 49.39
+dates LiberationSans 16 wall_s 52.1
+dates LiberationSans 24 wall_s 52.24
+dates LiberationSerif 16 wall_s 51.81
+dates LiberationSerif 24 wall_s 57.39
+dates LiberationMono 12 wall_s 41.68
+dates LiberationMono 16 wall_s 44.13
+dates LiberationMono 24 wall_s 46.84
+dates NotoSans 12 wall_s 76.51
+dates NotoSans 16 wall_s 73.29
+dates NotoSans 24 wall_s 77.25
+emails DejaVuSans 12 wall_s 109.65
+emails DejaVuSans 16 wall_s 114.94
+emails DejaVuSerif 12 wall_s 119.18
+emails DejaVuSans 24 wall_s 126.59
+emails DejaVuSerif 16 wall_s 124.56
+emails DejaVuSerif 24 wall_s 139.16
+emails LiberationSans 12 wall_s 142.01
+emails LiberationSans 16 wall_s 148.89
+emails LiberationSerif 12 wall_s 152.39
+emails LiberationSans 24 wall_s 159.22
+emails LiberationSerif 16 wall_s 158.92
+emails LiberationSerif 24 wall_s 168.03
+emails LiberationMono 12 wall_s 119.97
+emails LiberationMono 16 wall_s 122.98
+emails NotoSans 12 wall_s 202.33
+emails LiberationMono 24 wall_s 126.28
+emails NotoSans 16 wall_s 201.93
+emails NotoSans 24 wall_s 201.94
+Sweep finished with 6 workers, wall_s=815.77
+research/e1/review4/run_sanity.sh: line 65: review/verification.log: No such file or directory
+
+The Python sweep completed and all 90 checkpoints were verified by report.log. The outer shell emitted an error after container completion because its script was edited during the invocation.

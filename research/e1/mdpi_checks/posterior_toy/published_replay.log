@@ -1,0 +1,11 @@
+toy: 8 strings, H(W)=2.831 bits, pen x uniform on 40..71, baseline known (A2/A3)
+A2 exact box (g=1)                 I(W;B)= 2.423  set-renorm bits= 2.410 (exact posterior: False)  count-likelihood bits= 2.423 (exact posterior: True)
+A2 4-px grid                       I(W;B)= 1.918  set-renorm bits= 1.877 (exact posterior: False)  count-likelihood bits= 1.918 (exact posterior: True)
+A2 8-px grid                       I(W;B)= 1.451  set-renorm bits= 1.306 (exact posterior: False)  count-likelihood bits= 1.451 (exact posterior: True)
+A2 16-px grid                      I(W;B)= 1.076  set-renorm bits= 0.821 (exact posterior: False)  count-likelihood bits= 1.076 (exact posterior: True)
+A3 two copies, 8-px grid           I(W;B)= 1.929  set-renorm bits= 1.892 (exact posterior: False)  count-likelihood bits= 1.929 (exact posterior: True)
+A3 three copies, 8-px grid         I(W;B)= 2.406  set-renorm bits= 2.388 (exact posterior: False)  count-likelihood bits= 2.406 (exact posterior: True)
+A2 128-px padding (g=1)            I(W;B)= 0.029  set-renorm bits=-0.000 (exact posterior: False)  count-likelihood bits= 0.029 (exact posterior: True)
+A2 128-px padding + 16-px grid     I(W;B)= 0.001  set-renorm bits= 0.000 (exact posterior: False)  count-likelihood bits= 0.001 (exact posterior: True)
+A2 exact box + jitter 0..2 (set only) I(W;B)= 2.383  set-renorm bits= 2.368 (exact posterior: False)
+RESULT: PASS - interval-count likelihood equals the enumerated posterior in every case

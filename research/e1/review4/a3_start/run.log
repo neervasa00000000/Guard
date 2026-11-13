@@ -1,0 +1,16 @@
+3.12.16 (main, Nov  5 2026, 08:06:51) [GCC 12.2.0] numpy 2.5.4 pandas 3.1.1 Pillow 12.3.0 raqm 0.10.5
+Table X edge padding known start 1 0.08 0.39137457898325684
+Table X edge padding known start 5 0.08 0.39137457898325684
+A3 replay and mandatory controls passed
+Sanity wall seconds 9.679728088000001
+Completed surnames DejaVuSans 16
+Completed surnames LiberationSerif 16
+Completed words DejaVuSans 16
+Completed words LiberationSerif 16
+Completed emails DejaVuSans 16
+Completed emails LiberationSerif 16
+Completed surnames DejaVuSans 24
+Completed surnames LiberationSerif 24
+Completed words DejaVuSans 24
+Completed words LiberationSerif 24
+Wall seconds 693.114722275

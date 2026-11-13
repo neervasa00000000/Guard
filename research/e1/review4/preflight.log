@@ -1,0 +1,15 @@
+4c88f470e98c2865f84287713240652fb192cf4cc6db85ce4f8605ee03fb6bf5  /private/tmp/tileseal-review4.EKJJXk/kit.tar.gz
+Python 3.13.2 | macOS-27.2-arm64-arm-64bit-Mach-O | logical CPUs 10
+Pillow 12.3.0 | FreeType 2.14.3 | RAQM False
+DejaVuSans: published path exists=False; expected SHA-256 57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e
+DejaVuSerif: published path exists=False; expected SHA-256 8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7
+LiberationSans: published path exists=False; expected SHA-256 bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3
+LiberationSerif: published path exists=False; expected SHA-256 9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4
+NotoSans: published path exists=False; expected SHA-256 7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97
+LiberationMono: published path exists=False; expected SHA-256 5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2
+Manifest and runtime checks wall_s=0.050
+No matching local font hashes were found. No reproduction or sweep processes started.
+
+The supplied font archive resolved the missing-font checks above. The Linux
+container passed the Pillow and RAQM checks. See sanity.log for the updated
+font receipts, runtime and published-cell comparison.

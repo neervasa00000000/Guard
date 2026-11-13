@@ -1,22 +1,9 @@
-.DS_Store
-node_modules/
-coverage/
-.venv*/
+.venv/
+data/
+out/
 __pycache__/
+.pytest_cache/
 *.pyc
+.DS_Store
 *.pem
 *.key
-
-keys-test-only/
-data/
-results/
-
-# Local, unsubmitted manuscript review copy.
-paper-v2-review/
-
-# Local reference brief; publish implementation and status documentation.
-/BUILD_PROMPTS_V4.md
-
-# Optional local copies of generated conformance cases.
-/conformance/files/grd2-oversized.GRD
-/conformance/files/grd2-large-4mp-noise.GRD
