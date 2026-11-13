@@ -12,10 +12,11 @@ python3 -m venv .venv
 ## Reproduce
 
 ```sh
+. .venv/bin/activate
 bash scripts/reproduce.sh
 ```
 
-That downloads the public inputs, checks their SHA-256 values, and writes `out/tables` and `out/figures` from `results/`.
+The offline run verifies the clean summary against archived per-target scores and writes `out/tables` and `out/figures`. See [the E1 harness](research/e1/README.md) for the full render and input setup.
 
 ## Tests
 

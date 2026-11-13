@@ -1,12 +1,15 @@
 #!/bin/sh
-# Fast path: fetch what can be checked, then rebuild tables from results/.
+# Rebuild the clean table from the released posterior rows without downloads.
 set -eu
 cd "$(dirname "$0")/.."
-if [ -x .venv/bin/python ]; then
-  PY=.venv/bin/python
-else
-  PY=python3
+PY=${PYTHON:-}
+if [ -z "$PY" ]; then
+    if [ -n "${VIRTUAL_ENV:-}" ] || [ ! -x .venv/bin/python ]; then
+        PY=python3
+    else
+        PY=.venv/bin/python
+    fi
 fi
-"$PY" scripts/fetch_data.py || echo "FETCH DID NOT MATCH EVERY RECEIPT"
+"$PY" scripts/rebuild_clean_summary.py --check
 "$PY" scripts/regenerate_tables.py
 "$PY" scripts/check_numbers.py

@@ -1,0 +1,10 @@
+{
+ "guard_sha": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
+ "checked": 392,
+ "matching": 392,
+ "verdicts": [
+  "DEMO"
+ ],
+ "seconds": 235,
+ "key": "fresh in-memory Ed25519, purpose=demo, discarded"
+}
