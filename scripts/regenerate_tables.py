@@ -409,6 +409,40 @@ def table_a7():
     write_md(OUT / "table_a7.md", "Table A7. Evidence inventory for this artifact", ["Item", "File", "Status"], rows)
 
 
+def experiment_v12():
+    """Rebuild the v1.2 table and plot without changing manuscript values."""
+    source = DATA / "v1_2" / "summary.csv"
+    if not source.is_file():
+        return
+    frame = pd.read_csv(source)
+    labels = {"square": "Square grid", "start-width-grid": "Start-anchored width-only grid",
+              "start-aligned": "Start-aligned padding", "field": "Fixed field box"}
+    rows = []
+    for row in frame.itertuples(index=False):
+        rows.append([row.size_px, labels[row.policy], row.width_px or "—", fmt(row.bits, 4),
+                     f"[{fmt(row.ci_low, 4)}, {fmt(row.ci_high, 4)}]", fmt(row.top10_pct, 2),
+                     fmt(row.median_area, 3), fmt(row.analytic_bits, 4) if pd.notna(row.analytic_bits) else "—"])
+    write_md(OUT / "v1_2.md", "v1.2. A1 on the first 1,000 Census surnames",
+             ["Size (px)", "Policy", "C/G (px)", "Bits", "95% target-bootstrap CI",
+              "Top-10 (%)", "Median area ratio", "Analytic H(k(W))"], rows)
+
+    from matplotlib.figure import Figure
+    figure = Figure(figsize=(7.2, 4.3), layout="constrained")
+    axis = figure.subplots()
+    curves = frame[(frame.policy == "start-aligned") & (frame.size_px != "all")]
+    for (size, curve), style in zip(curves.groupby("size_px", sort=True), ("o-", "s--", "^:")):
+        curve = curve.sort_values("width_px")
+        axis.plot(curve.width_px, curve.bits, style, label=f"{size} px")
+    axis.set_xlabel("Padding class C (px)")
+    axis.set_ylabel("Leakage (bits)")
+    axis.set_xticks(sorted(curves.width_px.unique()))
+    axis.legend(title="Text size", loc="upper right", frameon=False)
+    axis.spines[["top", "right"]].set_visible(False)
+    plot = ROOT / "out/figures/bits_vs_C.pdf"
+    plot.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(plot, metadata={"CreationDate": None, "ModDate": None})
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     pooled = pd.read_csv(POOLED)
@@ -423,6 +457,7 @@ def main():
     copies_and_jitter(pooled)
     attacker_and_extra()
     table_a7()
+    experiment_v12()
     with (OUT / "values.csv").open("w", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["id", "value"])

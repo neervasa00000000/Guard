@@ -27,3 +27,6 @@ The k = 1 row of the jitter condition is one jittered release (0.36 bits). The c
 | `s2_rerender.csv` | — | raw file absent; 188 of 2,000 is in `results_summary.csv` | — | EXPLORATORY |
 | Own-height cells (`w1_pooled.csv`) | — | not implemented; the manuscript says the variant is not reported | — | EXPLORATORY |
 | Form pages | — | PDFs and scans are not in the repository | — | EXPLORATORY |
+| v1.2 historical 128-px control | `scripts/run_v12.py` | Census 50,000, verified fonts and retained Noto Sans layout geometry | `research/e1/data/v1_2/paper_control.csv` | REPRODUCED |
+| v1.2 surname policy sweep and box equality | `scripts/run_v12.py` | First 1,000 Census surnames and paired target draws | `research/e1/data/v1_2/summary.csv`, `box_check.csv`, `field_widths.csv`, `research/e1/cases/v1_2/` | NEW |
+| v1.2 result table and padding-width plot | `scripts/regenerate_tables.py` | `research/e1/data/v1_2/summary.csv` | `out/tables/v1_2.md`, `out/figures/bits_vs_C.pdf` | NEW |
