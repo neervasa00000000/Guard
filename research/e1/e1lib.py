@@ -2,7 +2,7 @@
 """E1 full study: shared library (dictionaries, rendering, redaction-box model, attackers, metrics).
 
 Geometry model (validated against Guard grd.redact, see e1_validate_guard.py):
-  tight box   = ink bbox of the rendered string (Pillow getbbox, anchor 'ls', raqm layout) + PAD px each side,
+  tight box   = layout box from Pillow getbbox (anchor 'ls', RAQM) + 1 px on each side,
                 half-open [x0,x1) x [y0,y1)
   snapped box = (floor(x0/g)*g, ceil(x1/g)*g, floor(y0/g)*g, ceil(y1/g)*g); g=1 is an exact-pixel (non-Guard) tool.
 Attackers rank geometrically feasible dictionary entries by prior (possibilistic attacker, ties broken at random
