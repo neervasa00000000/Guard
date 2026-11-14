@@ -2,7 +2,7 @@
 """Rebuild manuscript tables from the archived CSVs.
 
 Numbers are computed here. manuscript/expected_numbers.json is the lock
-from Vasa_MDPI_Computers_v8_5.docx and is not read by this script.
+from Vasa_MDPI_Computers_v9_4.docx and is not read by this script.
 """
 import csv
 from pathlib import Path

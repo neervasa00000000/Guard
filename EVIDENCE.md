@@ -1,6 +1,6 @@
 # Evidence for the MDPI Computers manuscript
 
-The manuscript is `manuscript/Vasa_MDPI_Computers_v8_5.docx` (What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction). `scripts/check_numbers.py` compares `out/tables/values.csv` with `manuscript/expected_numbers.json`, which was transcribed from that file. It does not read an IEEE Access PDF.
+The manuscript is `manuscript/Vasa_MDPI_Computers_v9_4.docx` (What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction). `scripts/check_numbers.py` compares `out/tables/values.csv` with `manuscript/expected_numbers.json`, which was transcribed from that file. It does not read an IEEE Access PDF.
 
 The k = 1 row of the jitter condition is one jittered release (0.36 bits). The canonical unjittered start-aligned DejaVu Sans 24 px mask is 0.285 bits. Five jittered releases give 0.64 bits.
 
