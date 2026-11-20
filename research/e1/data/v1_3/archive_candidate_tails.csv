@@ -1,0 +1,13 @@
+source,font,size_px,scope,grid_px,status,n,target_pct_lt100,target_pct_lt10
+research/e1/data/results_cases.csv.gz,pooled,all,requested archive,1,unavailable,,,
+research/e1/data/results_cases.csv.gz,pooled,all,requested archive,16,unavailable,,,
+research/e1/data/results_cases.csv.gz,pooled,all,requested archive,64,unavailable,,,
+research/e1/cases/main-subset/surnames_DejaVuSans_16.csv.gz,DejaVuSans,16,available subset only,1,computed,2000,12.2,1.55
+research/e1/cases/main-subset/surnames_DejaVuSans_16.csv.gz,DejaVuSans,16,available subset only,16,computed,2000,0.3,0.05
+research/e1/cases/main-subset/surnames_DejaVuSans_16.csv.gz,DejaVuSans,16,available subset only,64,computed,2000,0.05,0.0
+research/e1/cases/main-subset/surnames_LiberationSerif_16.csv.gz,LiberationSerif,16,available subset only,1,computed,2000,2.9499999999999997,0.44999999999999996
+research/e1/cases/main-subset/surnames_LiberationSerif_16.csv.gz,LiberationSerif,16,available subset only,16,computed,2000,0.05,0.0
+research/e1/cases/main-subset/surnames_LiberationSerif_16.csv.gz,LiberationSerif,16,available subset only,64,computed,2000,0.0,0.0
+research/e1/cases/main-subset,two fonts,16,available subset only,1,computed,4000,7.575,1.0
+research/e1/cases/main-subset,two fonts,16,available subset only,16,computed,4000,0.17500000000000002,0.025
+research/e1/cases/main-subset,two fonts,16,available subset only,64,computed,4000,0.025,0.0

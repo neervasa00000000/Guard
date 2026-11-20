@@ -1,0 +1,17 @@
+{
+  "n_documents": 199,
+  "n_training_documents": 149,
+  "n_testing_documents": 50,
+  "missing_images": [],
+  "train_test_stem_overlap": [],
+  "image_modes": {
+    "L": 199
+  },
+  "label_counts": {
+    "other": 1214,
+    "question": 4343,
+    "answer": 3623,
+    "header": 563
+  },
+  "n_answer_entities": 3623
+}

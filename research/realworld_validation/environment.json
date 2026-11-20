@@ -1,0 +1,35 @@
+{
+  "python": "3.13.2",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "pillow": "13.0.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "matplotlib": "3.10.7",
+  "pymupdf": "2.1",
+  "reportlab": "5.1.0",
+  "pypdf": "7.1.0",
+  "tools": {
+    "soffice": null,
+    "pdftotext": null,
+    "pdftoppm": null,
+    "pdfinfo": null,
+    "gs": null,
+    "mutool": null,
+    "wkhtmltopdf": null
+  },
+  "fonts": {
+    "Times": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+    "Arial": "/System/Library/Fonts/Supplemental/Arial.ttf",
+    "Courier": "/System/Library/Fonts/Supplemental/Courier New.ttf",
+    "Georgia": "/System/Library/Fonts/Supplemental/Georgia.ttf"
+  },
+  "seed": 20261116,
+  "dpi": 144,
+  "edge_tolerance_px": 0.51,
+  "physical_scan": false,
+  "libreoffice": false,
+  "poppler": false,
+  "ghostscript": false,
+  "weasyprint": false
+}

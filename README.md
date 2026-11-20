@@ -1,6 +1,6 @@
 # What the Black Box Reveals
 
-This repository is the artifact for Neer Vasa, *What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction* (MDPI *Computers*). The manuscript file is `manuscript/Vasa_MDPI_Computers_v8_5.docx`.
+This repository is the artifact for Neer Vasa, *What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction* (MDPI *Computers*). The manuscript file is `manuscript/Vasa_MDPI_Computers_v9_4.docx`.
 
 TileSeal, the seal and padding code used by the study, is `tileseal/` together with `grd.py` and `grd_geometry.py`.
 
@@ -15,7 +15,9 @@ python3 -m venv .venv
 ./reproduce.sh
 ```
 
-`./reproduce.sh` runs `make all`: check the 25 case archives, rebuild the clean A2 summary from those archives, write Tables 3, 4 and A1–A7, draw Figures 1–6, then compare every locked number with the manuscript. It exits non-zero if any locked number disagrees. Items with no archive are printed as `EXPLORATORY` and do not by themselves fail the run.
+`./reproduce.sh` runs `make all`. `make all` re-aggregates the archived CSVs, writes Tables 3, 4 and A1–A7, draws Figures 1–6, then compares every locked number with the manuscript. It exits non-zero if any locked number disagrees. Items with no archive are printed as `EXPLORATORY` and do not by themselves fail the run.
+
+`scripts/run_v12.py` is the knowledge-matched re-run. `scripts/run_tail.py` is the per-person tail. `scripts/run_perturb.py` measures coordinate errors. `research/e1/scripts/a3_exact.py` is the A3 rescoring. None of these four is part of `make all`.
 
 There is no download and no model call on this path.
 

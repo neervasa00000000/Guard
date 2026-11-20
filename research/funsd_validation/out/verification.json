@@ -1,0 +1,146 @@
+{
+  "n_checks": 25,
+  "n_passed": 25,
+  "n_failed": 0,
+  "checks": [
+    {
+      "check": "attacker_inputs_hide_ground_truth",
+      "passed": true,
+      "detail": "forbidden columns present: []"
+    },
+    {
+      "check": "train_test_documents_disjoint",
+      "passed": true,
+      "detail": "overlap 0"
+    },
+    {
+      "check": "document_count",
+      "passed": true,
+      "detail": "{\"documents\": 199, \"training\": 149, \"testing\": 50}"
+    },
+    {
+      "check": "ground_truth_matches_annotations",
+      "passed": true,
+      "detail": "0 disagreements"
+    },
+    {
+      "check": "redaction_covers_annotation_ink",
+      "passed": true,
+      "detail": "0 coverage failures on test exact, square 16, square 64, and width 128"
+    },
+    {
+      "check": "saved_coverage_table_all_true",
+      "passed": true,
+      "detail": "saved covered fraction 1.0"
+    },
+    {
+      "check": "candidates_are_training_strings",
+      "passed": true,
+      "detail": "extra 0"
+    },
+    {
+      "check": "candidates_exclude_test_only_strings",
+      "passed": true,
+      "detail": "leaked test-only strings 0"
+    },
+    {
+      "check": "in_list_count",
+      "passed": true,
+      "detail": "recomputed 92 manifest 92"
+    },
+    {
+      "check": "length_model_refit",
+      "passed": true,
+      "detail": "intercept 4.430808 slope 7.517475 sigma 26.623371"
+    },
+    {
+      "check": "prior_is_training_frequency",
+      "passed": true,
+      "detail": "1687 candidates"
+    },
+    {
+      "check": "length_width_scores_reproduced",
+      "passed": true,
+      "detail": "hits match within 1e-8; entropy and truth gain match within 1e-5"
+    },
+    {
+      "check": "no_truth_gain_outside_candidate_list",
+      "passed": true,
+      "detail": "finite gains outside the list: 0"
+    },
+    {
+      "check": "no_box_entropy_reduction_is_zero",
+      "passed": true,
+      "detail": "no-box reduction is identically zero"
+    },
+    {
+      "check": "summary_matches_score_means",
+      "passed": true,
+      "detail": "top1 0.001709 top10 0.046724 bits 1.166376"
+    },
+    {
+      "check": "cluster_bootstrap_interval_reproduced",
+      "passed": true,
+      "detail": "recomputed [1.018957, 1.328367]"
+    },
+    {
+      "check": "median_area_recomputed",
+      "passed": true,
+      "detail": "square 16 median 2.381395"
+    },
+    {
+      "check": "start_aligned_matches_width_grid",
+      "passed": true,
+      "detail": "same rectangles and feasible widths under the annotation anchor"
+    },
+    {
+      "check": "realistic_attack_not_measured",
+      "passed": true,
+      "detail": "realistic regime stays unidentified"
+    },
+    {
+      "check": "fixed_field_not_measured",
+      "passed": true,
+      "detail": "field boxes were not invented"
+    },
+    {
+      "check": "matched_renderer_not_measured",
+      "passed": true,
+      "detail": "matched renderer was not run"
+    },
+    {
+      "check": "synthetic_rows_not_pooled",
+      "passed": true,
+      "detail": "11 reference rows, none marked comparable"
+    },
+    {
+      "check": "top1_field_changes_counted",
+      "passed": true,
+      "detail": "exact box changes top-1 on 0 of 585 test fields; top-10 changes on 6"
+    },
+    {
+      "check": "negative_truth_gain_retained",
+      "passed": true,
+      "detail": "5 in-list exact-box fields have negative truth information gain; it was not clipped to zero"
+    },
+    {
+      "check": "robust_scale_does_not_replace_primary",
+      "passed": true,
+      "detail": "MAD sigma 10.0673 stored as a labeled sensitivity"
+    }
+  ],
+  "eligible_fields": 2642,
+  "eligible_test_fields": 585,
+  "eligible_training_fields": 2057,
+  "coverage_failures": [],
+  "text_failures": [],
+  "contrasts": {
+    "exact_vs_nobox_top1_fields_changed": 0,
+    "exact_vs_nobox_top10_fields_changed": 6,
+    "exact_minus_nobox_top10": 0.007977207977264957,
+    "exact_minus_nobox_top10_ci": [
+      0.0022470148201855673,
+      0.01539556803734039
+    ]
+  }
+}

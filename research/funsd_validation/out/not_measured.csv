@@ -1,0 +1,4 @@
+"regime","policy","status","reason"
+"realistic_image_only","all","not_measured","No candidate distribution is supplied by the scan. Top-1, top-10, the no-box baseline, and bits are unidentified. Area ratios for the controlled rectangles are reported under the geometry rows."
+"fixed_field","field_box","not_measured","FUNSD annotates text rectangles, not the blank width of the form field. No field box was invented."
+"matched_renderer","all","not_measured","The original font, size, and renderer are not in the dataset, and the six study fonts are not installed here. A matched-renderer attack was not run."

@@ -1,0 +1,142 @@
+{
+  "seconds": 394.72484718,
+  "platform": "Linux-6.12.76-linuxkit-aarch64-with-glibc2.41",
+  "python": "3.12.16",
+  "pillow": "12.3.0",
+  "numpy": "2.5.4",
+  "census_sha256": "6b4933178060b4e5ac8dd9a611ec15472d35eab98fe9027474bc5ccc5b7a8708",
+  "renderer": {
+    "raqm": "0.10.5",
+    "harfbuzz": "14.2.1",
+    "fribidi": "1.0.16",
+    "freetype2": "2.14.3"
+  },
+  "target_seed": 20261029,
+  "bootstrap_seed": 20261114,
+  "bootstrap_resamples": 10000,
+  "sources": {
+    "DejaVuSans/12": {
+      "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "metrics": [
+        12,
+        3
+      ]
+    },
+    "DejaVuSans/16": {
+      "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "metrics": [
+        15,
+        4
+      ]
+    },
+    "DejaVuSans/24": {
+      "font_sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "metrics": [
+        23,
+        6
+      ]
+    },
+    "DejaVuSerif/12": {
+      "font_sha256": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
+      "metrics": [
+        12,
+        3
+      ]
+    },
+    "DejaVuSerif/16": {
+      "font_sha256": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
+      "metrics": [
+        15,
+        4
+      ]
+    },
+    "DejaVuSerif/24": {
+      "font_sha256": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
+      "metrics": [
+        23,
+        6
+      ]
+    },
+    "LiberationSans/12": {
+      "font_sha256": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
+      "metrics": [
+        11,
+        3
+      ]
+    },
+    "LiberationSans/16": {
+      "font_sha256": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
+      "metrics": [
+        15,
+        4
+      ]
+    },
+    "LiberationSans/24": {
+      "font_sha256": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
+      "metrics": [
+        22,
+        6
+      ]
+    },
+    "LiberationSerif/12": {
+      "font_sha256": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
+      "metrics": [
+        11,
+        3
+      ]
+    },
+    "LiberationSerif/16": {
+      "font_sha256": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
+      "metrics": [
+        15,
+        4
+      ]
+    },
+    "LiberationSerif/24": {
+      "font_sha256": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
+      "metrics": [
+        22,
+        6
+      ]
+    },
+    "NotoSans/12": {
+      "geometry_sha256": "76055dda072079f9d5bb2463c91a2d3cba517642aede6279d2b924ce8c6cbf33",
+      "score_sha256": "f7bb7e2625c75ab862f3857a80af9e8ebcf5a3c955087d30d66a0036b9328cc6",
+      "recovered_line_height": 19,
+      "line_vertical_origin": "relative proxy"
+    },
+    "NotoSans/16": {
+      "geometry_sha256": "661c55b7e01d68027da9559bcfe1a173bccb22cf08cff2f20925bc16acd729c7",
+      "score_sha256": "26f42fd4f713b060a19698fa2004359b35a296043c15aa39235df95c7b556b7c",
+      "recovered_line_height": 25,
+      "line_vertical_origin": "relative proxy"
+    },
+    "NotoSans/24": {
+      "geometry_sha256": "e82131faeb78f7883576f0cfa71a5257dbd0f3401d2587a6a4982af38bdea82f",
+      "score_sha256": "380f123015b667373c82c326f22d0d9543d448daea1c0bc02ff9e115e091c09d",
+      "recovered_line_height": 36,
+      "line_vertical_origin": "relative proxy"
+    },
+    "LiberationMono/12": {
+      "font_sha256": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2",
+      "metrics": [
+        10,
+        4
+      ]
+    },
+    "LiberationMono/16": {
+      "font_sha256": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2",
+      "metrics": [
+        14,
+        5
+      ]
+    },
+    "LiberationMono/24": {
+      "font_sha256": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2",
+      "metrics": [
+        20,
+        8
+      ]
+    }
+  }
+}

@@ -1,5 +1,20 @@
 /data/
 /out/
+
+# DocLayNet sample pages and zip indexes. The download script, license,
+# attribution, and manifest stay in the tree. Do not commit original pages.
+research/datasets/doclaynet/pages/
+research/datasets/doclaynet/cache/
+
+# DocLayNet pilot tables include original cell text. Keep them local.
+research/doclaynet_pilot/out/
+
+# Exploitability tables quote page text and target strings. Keep them local.
+research/realworld_exploitability/out/
+
+# Adaptive-readability examples are clipped page images.
+research/adaptive_readability/examples.pdf
+research/adaptive_readability/out/
 .venv/
 node_modules/
 __pycache__/
@@ -10,3 +25,151 @@ __pycache__/
 *.key
 .env
 .env.*
+
+# Artifact v1.3: regenerate synthetic PDFs and numeric catalog caches locally.
+/research/realworld_validation/data/
+
+# Artifact v1.3: generated research figures/page crops; figures await review.
+/research/realworld_validation/figures/
+/research/doclaynet_validation/results/**/figures/
+/research/doclaynet_validation/results/**/examples/*.png
+/research/funsd_validation/out/figures/*.png
+/research/funsd_validation/out/figures/*.pdf
+
+# Artifact v1.3: downloaded data, fonts, build trees, and local tool binaries.
+/research/doclaynet_validation/cache/
+/research/doclaynet_validation/bin/
+/research/realworld_e1_eval/data/
+/research/realworld_e1_eval/fonts/
+/research/realworld_e1_eval/build/
+/research/realworld_e1_eval/.prefix/
+/research/realworld_e1_eval/results/font_consistency/*.npy
+
+# Artifact v1.3: keep only the manuscript figure script and source CSV.
+/manuscript/figures/fig*.png
+/manuscript/figures/fig*.pdf
+/manuscript/figures/compare_clean.png
+
+# No page imagery or dataset archives/shards in realworld_validation.
+/research/realworld_validation/**/*.png
+/research/realworld_validation/**/*.jpg
+/research/realworld_validation/**/*.jpeg
+/research/realworld_validation/**/*.tif
+/research/realworld_validation/**/*.tiff
+/research/realworld_validation/**/*.bmp
+/research/realworld_validation/**/*.webp
+/research/realworld_validation/**/*.pdf
+/research/realworld_validation/**/*.zip
+/research/realworld_validation/**/*.tar
+/research/realworld_validation/**/*.tgz
+/research/realworld_validation/**/*.gz
+/research/realworld_validation/**/*.parquet
+/research/realworld_validation/**/*.arrow
+
+# No page imagery or dataset archives/shards in doclaynet_validation.
+/research/doclaynet_validation/**/*.png
+/research/doclaynet_validation/**/*.jpg
+/research/doclaynet_validation/**/*.jpeg
+/research/doclaynet_validation/**/*.tif
+/research/doclaynet_validation/**/*.tiff
+/research/doclaynet_validation/**/*.bmp
+/research/doclaynet_validation/**/*.webp
+/research/doclaynet_validation/**/*.pdf
+/research/doclaynet_validation/**/*.zip
+/research/doclaynet_validation/**/*.tar
+/research/doclaynet_validation/**/*.tgz
+/research/doclaynet_validation/**/*.gz
+/research/doclaynet_validation/**/*.parquet
+/research/doclaynet_validation/**/*.arrow
+
+# No page imagery or dataset archives/shards in funsd_validation.
+/research/funsd_validation/**/*.png
+/research/funsd_validation/**/*.jpg
+/research/funsd_validation/**/*.jpeg
+/research/funsd_validation/**/*.tif
+/research/funsd_validation/**/*.tiff
+/research/funsd_validation/**/*.bmp
+/research/funsd_validation/**/*.webp
+/research/funsd_validation/**/*.pdf
+/research/funsd_validation/**/*.zip
+/research/funsd_validation/**/*.tar
+/research/funsd_validation/**/*.tgz
+/research/funsd_validation/**/*.gz
+/research/funsd_validation/**/*.parquet
+/research/funsd_validation/**/*.arrow
+
+# No page imagery or dataset archives/shards in realworld_e1_eval.
+/research/realworld_e1_eval/**/*.png
+/research/realworld_e1_eval/**/*.jpg
+/research/realworld_e1_eval/**/*.jpeg
+/research/realworld_e1_eval/**/*.tif
+/research/realworld_e1_eval/**/*.tiff
+/research/realworld_e1_eval/**/*.bmp
+/research/realworld_e1_eval/**/*.webp
+/research/realworld_e1_eval/**/*.pdf
+/research/realworld_e1_eval/**/*.zip
+/research/realworld_e1_eval/**/*.tar
+/research/realworld_e1_eval/**/*.tgz
+/research/realworld_e1_eval/**/*.gz
+/research/realworld_e1_eval/**/*.parquet
+/research/realworld_e1_eval/**/*.arrow
+
+# Artifact v1.3: unrelated local work is outside this release.
+/dataset/
+/research/datasets/
+/research/doclaynet_pilot/
+/research/adaptive_readability/
+/research/real_world_privacy_audit/
+/research/realworld_exploitability/
+/manuscript/guard_v9_11*
+/research/e1/data/v1_2/check_start128.csv
+
+# Regenerated binary geometry is not distributed.
+*.npy
+
+# Original text-bearing results stay local; distribute *_notext.csv copies.
+/research/doclaynet_validation/results/README.md
+/research/doclaynet_validation/results/examples/NOTES.md
+/research/doclaynet_validation/results/false_accept.json
+/research/doclaynet_validation/results/pilot/CORRECTIONS.md
+/research/doclaynet_validation/results/pilot/README.md
+/research/doclaynet_validation/results/pilot/examples/NOTES.md
+/research/doclaynet_validation/results/pilot/false_accept.json
+/research/doclaynet_validation/results/pilot/region_log.csv
+/research/doclaynet_validation/results/pilot/results.csv
+/research/doclaynet_validation/results/pilot/true_accept.json
+/research/doclaynet_validation/results/pilot/validation_report.md
+/research/doclaynet_validation/results/region_log.csv
+/research/doclaynet_validation/results/results.csv
+/research/doclaynet_validation/results/true_accept.json
+/research/doclaynet_validation/results/validation_report.md
+/research/funsd_validation/docs/LIMITATIONS.md
+/research/funsd_validation/docs/MANUSCRIPT_SECTION.md
+/research/funsd_validation/docs/METHODOLOGY.md
+/research/funsd_validation/docs/PEER_REVIEW.md
+/research/funsd_validation/docs/REPRODUCIBILITY.md
+/research/funsd_validation/docs/RESULTS.md
+/research/funsd_validation/docs/STATISTICAL_ANALYSIS.md
+/research/funsd_validation/docs/VERIFICATION.md
+/research/funsd_validation/out/answer_entities.csv
+/research/funsd_validation/out/scores.csv
+/research/funsd_validation/out/training_candidates.csv
+/research/realworld_e1_eval/DEVIATIONS.md
+/research/realworld_e1_eval/FONT_CONSISTENCY.md
+/research/realworld_e1_eval/results/font_consistency/attacker_calibration.csv
+/research/realworld_e1_eval/results/font_consistency/attacker_per_token.csv
+/research/realworld_e1_eval/results/font_consistency/examples.csv
+/research/realworld_e1_eval/results/font_consistency/per_token.csv
+/research/realworld_e1_eval/results/per_token.csv
+/research/realworld_e1_eval/results/v2/calibration.csv
+/research/realworld_e1_eval/results/v2/per_token.csv
+
+# Approved, locally generated synthetic-page and numerical figures only.
+!/research/realworld_validation/figures/
+!/research/realworld_validation/figures/*.png
+
+# Figure 1 policy schematic: exclude outputs regardless of run directory.
+/fig_policies.pdf
+/fig_policies.svg
+/fig_policies.png
+/manuscript/figures/fig_policies.svg

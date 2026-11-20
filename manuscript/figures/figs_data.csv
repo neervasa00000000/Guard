@@ -1,0 +1,89 @@
+figure,panel,series,family,item,x,y,display,source
+fig2,ab,Exact box,exact,1,1.00,6.66,6.66,p.6 Fig 2 labels; Table A6 (Exact: bits A1 6.66; area 1.00x)
+fig2,ab,Square grid,square,8,1.60,3.30,3.30,p.6 Fig 2 labels; Table A6 (8 px)
+fig2,ab,Square grid,square,16,2.45,2.19,2.19,p.6 Fig 2 labels; Sec 5.1 text; Table A6 (16 px)
+fig2,ab,Square grid,square,32,4.38,1.28,1.28,p.6 Fig 2 labels; Table A6 (32 px)
+fig2,ab,Square grid,square,64,10.04,0.67,0.67,p.6 Fig 2 labels; Sec 5.1 text; Table A6 (64 px)
+fig2,ab,Square grid,square,128,28.64,0.33,0.33,p.6 Fig 2 labels (128 px)
+fig2,ab,Width-only grid,widthonly,16,1.86,1.97,1.97,p.6 Fig 2 labels
+fig2,ab,Width-only grid,widthonly,64,3.01,0.61,0.61,p.6 Fig 2 labels; Sec 5.1 text; Table A2 pooled
+fig2,ab,Width-only grid,widthonly,128,4.56,0.31,0.31,p.6 Fig 2 labels
+fig2,ab,Start-aligned padding,start,64,2.16,0.64,0.64,p.6 Fig 2 labels (C = 64)
+fig2,ab,Start-aligned padding,start,96,2.62,0.30,0.30,p.6 Fig 2 labels (C = 96)
+fig2,ab,Start-aligned padding,start,128,3.36,0.08,0.08,p.6 Fig 2 labels; Sec 5.1 text; Table A2 pooled (C = 128)
+fig2,ab,Start-aligned padding,start,192,5.03,0.0,<0.01,p.6 Fig 2 label '<0.01' (plotted at 0; printed only as an upper bound)
+fig2,ab,Edge-aligned padding (layout box),edge,128,3.36,0.26,0.26,p.6 Fig 2 labels; Sec 5.1 text
+fig2,ab,Edge-aligned padding (ink box),edge_ink,128,3.36,0.97,0.97,p.6 Fig 2 labels; Sec 5.1 text
+fig3,a,12 px text,start,64,64,0.200,0.200,Table A4 (Padding C = 64; 12 px)
+fig3,a,12 px text,start,96,96,0,0,Table A4 (C = 96; 12 px); Sec 5.2 first zero at C = 96
+fig3,a,12 px text,start,128,128,0,0,Table A4 (C = 128; 12 px)
+fig3,a,12 px text,start,192,192,0,0,Table A4 (C = 192; 12 px)
+fig3,a,16 px text,start,64,64,0.752,0.752,Table A4 (C = 64; 16 px)
+fig3,a,16 px text,start,96,96,0.040,0.040,Table A4 (C = 96; 16 px); Fig 3a note 0.04 bits
+fig3,a,16 px text,start,128,128,0,0,Table A4 (C = 128; 16 px); Sec 5.2 first zero at C = 128
+fig3,a,16 px text,start,192,192,0,0,Table A4 (C = 192; 16 px)
+fig3,a,24 px text,start,64,64,0.834,0.834,Table A4 (C = 64; 24 px)
+fig3,a,24 px text,start,96,96,0.758,0.758,Table A4 (C = 96; 24 px)
+fig3,a,24 px text,start,128,128,0.165,0.165,Table A4 (C = 128; 24 px)
+fig3,a,24 px text,start,160,160,0.002,0.002,p.7 Fig 3a annotation (24 px at C = 160: 0.002 bits)
+fig3,a,24 px text,start,192,192,0,0,Table A4 (C = 192; 24 px); Sec 5.2 first zero at C = 192
+fig3,a,Field box,field,all,,0,0,Table A4 (Fixed field box 0 at all sizes); Sec 5.2
+fig3,b,Smallest zero-leak C,field,12,,82,82,Sec 5.2 text (median ratio 0.82); Fig 3b label
+fig3,b,Smallest zero-leak C,field,16,,80,80,Sec 5.2 text (0.80); Fig 3b label
+fig3,b,Smallest zero-leak C,field,24,,80,80,Sec 5.2 text (0.80); Fig 3b label
+fig3,b,C = widest field width,field_light,12,,95,95,Sec 5.2 text (0.95); Fig 3b label
+fig3,b,C = widest field width,field_light,16,,95,95,Sec 5.2 text (0.95); Fig 3b label
+fig3,b,C = widest field width,field_light,24,,96,96,Sec 5.2 text (0.96); Fig 3b label
+fig4,a,16 px,start,DejaVu Sans,,0.002,0.002,p.8 Fig 4a label
+fig4,a,16 px,start,DejaVu Serif,,0.003,0.003,p.8 Fig 4a label
+fig4,a,16 px,start,Liberation Sans,,0.0,<0.001,p.8 Fig 4a label '<0.001' (plotted at 0; upper bound only)
+fig4,a,16 px,start,Liberation Serif,,0,0,p.8 Fig 4a label
+fig4,a,16 px,start,Liberation Mono,,0.003,0.003,p.8 Fig 4a label
+fig4,a,16 px,start,Noto Sans,,0.0,<0.001,p.8 Fig 4a label '<0.001' (plotted at 0; upper bound only)
+fig4,a,24 px,start,DejaVu Sans,,0.281,0.281,p.8 Fig 4a label
+fig4,a,24 px,start,DejaVu Serif,,0.370,0.370,p.8 Fig 4a label
+fig4,a,24 px,start,Liberation Sans,,0.085,0.085,p.8 Fig 4a label
+fig4,a,24 px,start,Liberation Serif,,0.023,0.023,p.8 Fig 4a label
+fig4,a,24 px,start,Liberation Mono,,0.428,0.428,p.8 Fig 4a label
+fig4,a,24 px,start,Noto Sans,,0.175,0.175,p.8 Fig 4a label
+fig4,b,16 px,start,DejaVu Sans,37 names; 0.013%,12.9,12.9,p.8 Fig 4b label
+fig4,b,16 px,start,DejaVu Serif,63 names; 0.025%,11.9,11.9,p.8 Fig 4b label
+fig4,b,16 px,start,Liberation Sans,1 name; 0.0003%,18.6,18.6,p.8 Fig 4b label; Sec 5.3 (18.60 bits; Table 3)
+fig4,b,16 px,start,Liberation Serif,no name in a wider class,,,p.8 Fig 4b label
+fig4,b,16 px,start,Liberation Mono,62 names; 0.025%,12.0,12.0,p.8 Fig 4b label
+fig4,b,16 px,start,Noto Sans,9 names; 0.0033%,14.9,14.9,p.8 Fig 4b label
+fig4,b,24 px,start,DejaVu Sans,"4,188 names; 4.9%",4.4,4.4,p.8 Fig 4b label
+fig4,b,24 px,start,DejaVu Serif,"5,555 names; 7.1%",3.8,3.8,p.8 Fig 4b label
+fig4,b,24 px,start,Liberation Sans,"1,351 names; 1.1%",6.6,6.6,p.8 Fig 4b label
+fig4,b,24 px,start,Liberation Serif,458 names; 0.23%,8.8,8.8,p.8 Fig 4b label; Table 3 (8.76 (458))
+fig4,b,24 px,start,Liberation Mono,"7,201 names; 8.7%",3.5,3.5,p.8 Fig 4b label
+fig4,b,24 px,start,Noto Sans,"2,713 names; 2.6%",5.3,5.3,p.8 Fig 4b label
+fig4,b,Prior entropy,ref,all,,12.88,12.88,Sec 3.2 / Sec 4 (surname prior 12.88 bits)
+fig5,a,16-px grid,square,1,1,11.5,11.5%,Sec 5.4 text (A3 top-10 11.5% with one copy)
+fig5,a,16-px grid,square,5,5,22.0,22.0%,Sec 5.4 text (22.0% with five copies)
+fig5,b,Same mask; 5 shifted copies,start,first,,0.00,0.00,p.9 Fig 5b label (0.00 -> 0.00)
+fig5,b,Same mask; 5 shifted copies,start,after,,0.00,0.00,p.9 Fig 5b label
+fig5,b,Pillow -> LibreOffice,start,first,,0.15,0.15,p.9 Fig 5b label (0.15 -> 0.16)
+fig5,b,Pillow -> LibreOffice,start,after,,0.16,0.16,p.9 Fig 5b label
+fig5,b,New text size,start,first,,0.08,0.08,p.9 Fig 5b label (0.08 -> 0.25)
+fig5,b,New text size,start,after,,0.25,0.25,p.9 Fig 5b label
+fig5,b,Jitter 0-16 px,start,first,,0.36,0.36,p.9 Fig 5b label (0.36 -> 0.64)
+fig5,b,Jitter 0-16 px,start,after,,0.64,0.64,p.9 Fig 5b label
+fig5,b,New font,start,first,,0.22,0.22,p.9 Fig 5b label (0.22 -> 0.69)
+fig5,b,New font,start,after,,0.69,0.69,p.9 Fig 5b label
+fig5,b,"Jitter, C = 192",start,first,,0.01,0.01,p.9 Fig 5b label (0.01 -> 0.01)
+fig5,b,"Jitter, C = 192",start,after,,0.01,0.01,p.9 Fig 5b label
+fig6,a,Exact box,exact,,,87.0,87.0%,p.11 Fig 6a label; Sec 5.6 text
+fig6,a,16-px grid,square,,,30.8,30.8%,p.11 Fig 6a label
+fig6,a,64-px grid,square,,,13.8,13.8%,p.11 Fig 6a label
+fig6,a,Width-only 64-px grid,widthonly,,,14.7,14.7%,p.11 Fig 6a label
+fig6,a,Start-aligned padding (C = 128),start,,,11.8,11.8%,p.11 Fig 6a label
+fig6,a,Field box,field,,,8.8,8.8%,p.11 Fig 6a label
+fig6,a,No box,ref,,,8.8,8.8%,p.11 Fig 6a label 'no box 8.8%'; Sec 5.6 text
+fig6,b,Exact box,exact,,,94.5,94.5%,p.11 Fig 6b label; Sec 5.6 text
+fig6,b,16-px grid,square,,,32.5,32.5%,p.11 Fig 6b label
+fig6,b,64-px grid,square,,,19.4,19.4%,p.11 Fig 6b label
+fig6,b,Width-only 64-px grid,widthonly,,,20.8,20.8%,p.11 Fig 6b label
+fig6,b,Start-aligned padding (C = 128),start,,,12.3,12.3%,p.11 Fig 6b label
+fig6,b,Field box,field,,,12.3,12.3%,p.11 Fig 6b label
+fig6,b,No box,ref,,,12.3,12.3%,p.11 Fig 6b label 'no box 12.3%'; Sec 5.6 text

@@ -1,0 +1,7 @@
+"split","width_definition","estimand","n","n_docs","spearman","ci_low","ci_high"
+"training","inclusive","descriptive rank correlation, not attack leakage",2057,145,"0.9606022177","0.9468596252","0.9706557803"
+"training","half_open_reading","descriptive rank correlation, not attack leakage",2057,145,"0.9606022177","0.9472301518","0.9718482426"
+"testing","inclusive","descriptive rank correlation, not attack leakage",585,46,"0.9526650385","0.9285396130","0.9661282156"
+"testing","half_open_reading","descriptive rank correlation, not attack leakage",585,46,"0.9526650385","0.9272942612","0.9660259735"
+"all_eligible","inclusive","descriptive rank correlation, not attack leakage",2642,191,"0.9588547865","0.9477721709","0.9681531343"
+"all_eligible","half_open_reading","descriptive rank correlation, not attack leakage",2642,191,"0.9588547865","0.9476284078","0.9679672943"
