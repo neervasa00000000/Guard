@@ -1,0 +1,16 @@
+{
+  "pages_selected": 18,
+  "result_rows": 1782,
+  "name_rejection_mean": 0.0,
+  "name_rejection_max": 0,
+  "true_accept_rate": 1.0,
+  "false_accept_trials": 45,
+  "false_accept_rate": 0.0,
+  "original_privacy_used": true,
+  "original_rows_withheld": 0,
+  "coverage_failures": [],
+  "qa_problems": [],
+  "duplicate_file_names": 0,
+  "png_files_on_disk": 81471,
+  "seconds": 41.418506145477295
+}

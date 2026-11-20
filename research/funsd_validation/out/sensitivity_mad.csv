@@ -1,0 +1,4 @@
+"scale","policy","sigma","top1","top10","entropy_reduction","truth_info_gain","note"
+"posthoc_mad_gaussian","exact",10.067296956601975,0.0017094017094017094,0.06282051282051282,2.4583874935817316,1.5628756944750208,"Computed after seeing that the protocol residual SD is several times the median absolute residual. Not a primary result."
+"posthoc_mad_gaussian","square_grid_64",10.067296956601975,0.0017094017094017094,0.04539411206077873,1.0084412144133368,0.6240999900891968,"Computed after seeing that the protocol residual SD is several times the median absolute residual. Not a primary result."
+"posthoc_mad_gaussian","width_grid_128",10.067296956601975,0.0017094017094017094,0.039316239316239315,0.7827655135863376,0.3175245942830983,"Computed after seeing that the protocol residual SD is several times the median absolute residual. Not a primary result."

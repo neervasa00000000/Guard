@@ -1,0 +1,3 @@
+subset,n,n_pages,tolerance_px,truth_in,truth_in_lo,truth_in_hi,hit1,hit1_lo,hit1_hi,hit10,hit10_lo,hit10_hi,nobox_hit10,nobox_hit10_lo,nobox_hit10_hi,bits,bits_lo,bits_hi
+all,66,20,21,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.6555488220369603,0.9442467360435279,2.1451334538895943
+likely names,6,4,21,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.4411734684374007,0.28906908335592574,2.2581941276978528

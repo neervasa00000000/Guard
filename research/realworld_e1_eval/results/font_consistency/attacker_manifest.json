@@ -1,0 +1,116 @@
+{
+  "total_calibration_tokens": 38214,
+  "doclaynet_calibration_tokens": 38081,
+  "mapped_font_calibration_tokens": 846,
+  "usable_calibration_tokens": 846,
+  "scored_total": 5311,
+  "mapped_font_scored": 66,
+  "usable_scored": 66,
+  "unknown_scored": 5245,
+  "calibration_tolerance_px": 21,
+  "calibration_truth_in": 0.9550827423167849,
+  "renderer": {
+    "pillow": "12.3.0",
+    "raqm_check": true,
+    "raqm": "0.10.5",
+    "harfbuzz": "14.2.1",
+    "fribidi": "1.0.16",
+    "freetype2": "2.14.3",
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]"
+  },
+  "font_mapping": "exact six regular names after removing PDF subset tag and leading slash; no style/family substitution",
+  "size_rule": "neighbour median embedded pt * metadata.coco_width / metadata.original_width; fractional Pillow size; horizontal scoring only",
+  "geometry": [
+    {
+      "font": "DejaVuSans",
+      "size_px": 13.781512605042018,
+      "file": "attacker_geometry_000.npy",
+      "sha256": "c6514491a828e78e8b49c7618aff14d38d0dc13a814d3c528bf904396c0229d3"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 15.504201680672269,
+      "file": "attacker_geometry_001.npy",
+      "sha256": "a9bfb4dc473d3677392ed34aeed338acb2441830256de0f4e957541a5a13e7c8"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 17.22689075630252,
+      "file": "attacker_geometry_002.npy",
+      "sha256": "b6adbbee30875f2fabcaf1258c0e51bfcc28cb0dc02fc3a47ee46997f1be46e7"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 18.949579831932773,
+      "file": "attacker_geometry_003.npy",
+      "sha256": "f3b44a453ca554f874de52a593d3c69cc8ce001637db0924219fc6329866c07c"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 20.672268907563026,
+      "file": "attacker_geometry_004.npy",
+      "sha256": "2d9b2376bb543d5c25dd8f1b0d474e960a04845137d3b11dc8d1a77106a353d7"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 22.394957983193276,
+      "file": "attacker_geometry_005.npy",
+      "sha256": "e291363d84cbf15843af12e88a56cfb635d585654eb3b0ea386a6304692cd4ee"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 25.840336134453782,
+      "file": "attacker_geometry_006.npy",
+      "sha256": "7dfd22347e514a84911c2fe62e792e020470dacee974ef05f1c2e9bd21c767d3"
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 27.563025210084035,
+      "file": "attacker_geometry_007.npy",
+      "sha256": "e76a28316e6be65a02b7cf77079ffb3ed152042c19eb15a811180001a94d3a1d"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 15.504201680672269,
+      "file": "attacker_geometry_008.npy",
+      "sha256": "c4927ad1d30cc3af1e1b76b7013adb7905853ab6298cfa1a54258636445aabb2"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 17.22689075630252,
+      "file": "attacker_geometry_009.npy",
+      "sha256": "dc67c048c220ab6c494f1ffabc15dcfdd1677213f2dc117c43fe3ae2ffe1326d"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 18.949579831932773,
+      "file": "attacker_geometry_010.npy",
+      "sha256": "8c4629aeccbb17875806ab11ab9067171ef26484cc5b75b83a55d3ac84189463"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 20.672268907563026,
+      "file": "attacker_geometry_011.npy",
+      "sha256": "7ee235df10adbe556905101c5cbd186b487b891c3b291c69d6b19cc61ee5d189"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 22.394957983193276,
+      "file": "attacker_geometry_012.npy",
+      "sha256": "42dc6ca236ae1be0a10b41e3cab4513a3b44c6db960a8d9457653948f31e070d"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 25.840336134453782,
+      "file": "attacker_geometry_013.npy",
+      "sha256": "754c56fa833c1ff620b84936efd91662bc54a6c9fac6263311a6ac75734b010e"
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 27.563025210084035,
+      "file": "attacker_geometry_014.npy",
+      "sha256": "b160d9e0e5fbf06e86dd88aaa289e83887e497958d8912632d66bfa34aae1763"
+    }
+  ],
+  "protected_inputs_unchanged": true
+}

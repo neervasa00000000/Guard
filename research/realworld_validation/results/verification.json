@@ -1,0 +1,8 @@
+{
+  "n_checks_failed": 0,
+  "failures": [],
+  "n_attack_rows": 19584,
+  "n_documents": 1200,
+  "median_edge_error_px": 0.0,
+  "max_edge_error_px": 0.0001068115234375
+}

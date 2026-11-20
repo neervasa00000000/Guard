@@ -1,0 +1,12 @@
+"dataset","subset","policy","label","n","top10_percent","bits_layout","median_area_ratio","knowledge","same_estimand_as_funsd"
+"synthetic_manuscript_table3","surnames","exact","Exact box",36000,"50.1972222222","6.6556889676","1.0000000000","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","square-16","Square grid, 16 px",36000,"14.8638888889","2.1880161423","2.4497607656","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","square-64","Square grid, 64 px",36000,"8.2416666667","0.6656020387","10.0392156863","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","square-128","Square grid, 128 px",36000,"7.0055555556","0.3332645341","28.6433566434","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","width-grid-64","Width-only grid, 64 px",36000,"8.0694444444","0.6111447182","3.0052173913","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","width-grid-128","Width-only grid, 128 px",36000,"6.9555555556","0.3057679615","4.5609195402","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","ink-anchored-128","Edge-aligned padding, 128 px",36000,"7.2805555556","0.2581174872","3.3580246914","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","ink-anchored-192","Edge-aligned padding, 192 px",36000,"7.0638888889","0.1880195066","5.0314465409","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","pen-anchored-96","Start-aligned padding, 96 px",36000,"6.9750000000","0.2989807426","2.6250000000","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","pen-anchored-128","Start-aligned padding, 128 px",36000,"6.2333333333","0.0785766711","3.3580246914","matched renderer, dictionary prior, synthetic template",False
+"synthetic_manuscript_table3","surnames","pen-anchored-192","Start-aligned padding, 192 px",36000,"5.9388888889","0.0010595839","5.0314465409","matched renderer, dictionary prior, synthetic template",False

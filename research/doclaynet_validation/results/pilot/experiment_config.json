@@ -1,0 +1,82 @@
+{
+  "stage": "pilot",
+  "seed": 20261118,
+  "bootstrap_draws": 10000,
+  "salt": "doclaynet-validation-pilot-v1",
+  "quotas": {
+    "evaluation": {
+      "financial_reports": 2,
+      "manuals": 2,
+      "laws_and_regulations": 2,
+      "scientific_articles": 2,
+      "patents": 2,
+      "government_tenders": 2
+    },
+    "calibration": {
+      "financial_reports": 1,
+      "manuals": 1,
+      "laws_and_regulations": 1,
+      "scientific_articles": 1,
+      "patents": 1,
+      "government_tenders": 1
+    }
+  },
+  "primary_size_px": 16,
+  "sensitivity_size_px": 12,
+  "font_sha256": {
+    "DejaVuSans": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+    "DejaVuSerif": "107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa",
+    "Arial": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9",
+    "Times": "f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3",
+    "Georgia": "4f54eb299fccea7f103edeb0d92437359bfd4441811d53222b82b335369f6218",
+    "Courier": "c886ca3172d8ce9189976992d145ec090500a4ff516ecb9d4df56b1a78336247"
+  },
+  "font_paths": {
+    "DejaVuSans": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
+    "DejaVuSerif": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf",
+    "Arial": "/System/Library/Fonts/Supplemental/Arial.ttf",
+    "Times": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+    "Georgia": "/System/Library/Fonts/Supplemental/Georgia.ttf",
+    "Courier": "/System/Library/Fonts/Supplemental/Courier New.ttf"
+  },
+  "study_dejavu_sha256_v12": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+  "surname_sha256": "432d61f3defa565d20d940069cd7890d7b367550713b157ef3c964f6faf8ef3e",
+  "candidate_n": 1000,
+  "coco_sha256": {
+    "train.json": "d33686f14d929a97a6a8b01351d36e78929300a328292b728a5b3089b47c38ca",
+    "val.json": "eacd2ba2a32e6c2ebe2dc5ea1545f405d8461c46bba53e0c35d9c54fba0bcef6",
+    "test.json": "37ccce8c7951dcfd9c7c832bbff5aee71cb59c032ed7021e125e6188e6ac4fe1"
+  },
+  "coco_pages": 80863,
+  "duplicate_file_names_dropped": 0,
+  "pages_opened": 18,
+  "dataset_version": "DocLayNet 1.0.0",
+  "dataset_license": "CDLA-Permissive-1.0",
+  "dataset_note": "Local DocLayNet_core has COCO layout boxes and PNGs. It has no PDF text layer and no DocLayNet extra JSON cells. Layout labels are not used as transcriptions.",
+  "ocr_coordinate_check": true,
+  "versions": {
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "numpy": "2.3.4",
+    "pandas": "2.3.3",
+    "pillow": "12.0.0",
+    "matplotlib": "3.10.8",
+    "pymupdf": "PyMuPDF 1.27.2.2: Python bindings for the MuPDF 1.27.2 library."
+  },
+  "policies": [
+    "exact",
+    "square16",
+    "square64",
+    "width64",
+    "start128",
+    "field"
+  ],
+  "redactor_requires": {
+    "exact": "glyph ink box",
+    "square16": "glyph ink box and the page grid",
+    "square64": "glyph ink box and the page grid",
+    "width64": "shared template start x_L and the shared font line",
+    "start128": "shared template start x_L and the shared font line",
+    "field": "bounded candidate list, shared template start x_L, and the shared font line"
+  }
+}

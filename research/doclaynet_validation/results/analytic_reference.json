@@ -1,0 +1,98 @@
+[
+  {
+    "size_px": 12,
+    "policy": "exact",
+    "analytic_bits": 6.670145321655557,
+    "analytic_top10": 0.9157078221004658,
+    "analytic_worst_pointwise": 11.75516120865989,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 12,
+    "policy": "square16",
+    "analytic_bits": 2.692939433994947,
+    "analytic_top10": 0.35590244619484884,
+    "analytic_worst_pointwise": 11.18142531858338,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 12,
+    "policy": "square64",
+    "analytic_bits": 0.9992296434843267,
+    "analytic_top10": 0.18577114893310603,
+    "analytic_worst_pointwise": 1.0479295818130039,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 12,
+    "policy": "width64",
+    "analytic_bits": 0.6240674584432473,
+    "analytic_top10": 0.17343904363410936,
+    "analytic_worst_pointwise": 2.682608934634425,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 12,
+    "policy": "start128",
+    "analytic_bits": 0.0,
+    "analytic_top10": 0.11967527080122813,
+    "analytic_worst_pointwise": -0.0,
+    "identical_boxes": 1
+  },
+  {
+    "size_px": 12,
+    "policy": "field",
+    "analytic_bits": 0.0,
+    "analytic_top10": 0.11967527080122813,
+    "analytic_worst_pointwise": -0.0,
+    "identical_boxes": 1
+  },
+  {
+    "size_px": 16,
+    "policy": "exact",
+    "analytic_bits": 6.91461083108987,
+    "analytic_top10": 0.9430515360596239,
+    "analytic_worst_pointwise": 11.75516120865989,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 16,
+    "policy": "square16",
+    "analytic_bits": 3.0799264879643573,
+    "analytic_top10": 0.4003603332218408,
+    "analytic_worst_pointwise": 10.078240047659063,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 16,
+    "policy": "square64",
+    "analytic_bits": 0.6041157170006516,
+    "analytic_top10": 0.15544575071287192,
+    "analytic_worst_pointwise": 7.668803258470356,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 16,
+    "policy": "width64",
+    "analytic_bits": 0.9813983376726344,
+    "analytic_top10": 0.18472211335050656,
+    "analytic_worst_pointwise": 1.251948336023792,
+    "identical_boxes": 0
+  },
+  {
+    "size_px": 16,
+    "policy": "start128",
+    "analytic_bits": 0.0,
+    "analytic_top10": 0.11967527080122813,
+    "analytic_worst_pointwise": -0.0,
+    "identical_boxes": 1
+  },
+  {
+    "size_px": 16,
+    "policy": "field",
+    "analytic_bits": 0.0,
+    "analytic_top10": 0.11967527080122813,
+    "analytic_worst_pointwise": -0.0,
+    "identical_boxes": 1
+  }
+]

@@ -1,0 +1,282 @@
+{
+  "seeds": {
+    "doclaynet_pages": {
+      "generator": "numpy.random.Generator",
+      "seed": 0,
+      "source": "results/doclaynet_page_ids.csv"
+    },
+    "calibration_pages": {
+      "generator": "numpy.random.Generator",
+      "seed": 0,
+      "rule": "uniform draw from unique pages not in the saved 2,000, page ids sorted, count = unique_pages * 20 // 100",
+      "unique_pages": 80863,
+      "held_out_pool": 78863,
+      "sampled_pages": 16172,
+      "overlap_with_scored": 0
+    },
+    "calibration_funsd_forms": {
+      "generator": "numpy.random.Generator",
+      "seed": 0,
+      "forms": [
+        "0000990274",
+        "0001123541",
+        "0001456787",
+        "0011906503",
+        "0030041455",
+        "0060036622",
+        "00920222",
+        "71190280",
+        "91315069_91315070",
+        "91356315"
+      ]
+    },
+    "bootstrap": {
+      "generator": "numpy.random.Generator",
+      "seed": 20261114,
+      "draws": 10000
+    }
+  },
+  "renderer": {
+    "pillow": "12.3.0",
+    "raqm_check": true,
+    "raqm": "0.10.5",
+    "harfbuzz": "14.2.1",
+    "fribidi": "1.0.16",
+    "freetype2": "2.14.3",
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]"
+  },
+  "numpy": "2.5.4",
+  "wordfreq": "3.1.1",
+  "wordfreq_list": "top_n_list('en', 5000)",
+  "geometry": {
+    "fresh_files": 15,
+    "fresh_matches": 15,
+    "fresh_match_rate": 1.0,
+    "files": 18,
+    "matches": 18,
+    "match_rate_including_retained_noto": 1.0,
+    "rows": [
+      {
+        "font": "DejaVuSans",
+        "size_px": 12,
+        "source": "rendered",
+        "digest": "fb458df54c0124e894b487a5793e4465a82a447873de87b3d667d0ab414f1b05",
+        "receipt": "fb458df54c0124e894b487a5793e4465a82a447873de87b3d667d0ab414f1b05",
+        "matched": true
+      },
+      {
+        "font": "DejaVuSans",
+        "size_px": 16,
+        "source": "rendered",
+        "digest": "b92bddacf1ee20690b47ef0e5b63a7827bad51ab68a219017149f664276e9cf3",
+        "receipt": "b92bddacf1ee20690b47ef0e5b63a7827bad51ab68a219017149f664276e9cf3",
+        "matched": true
+      },
+      {
+        "font": "DejaVuSans",
+        "size_px": 24,
+        "source": "rendered",
+        "digest": "976d9115daeeea4f6adb8bf2a698679663528d9b0d5bab2d5d4d3936b284f416",
+        "receipt": "976d9115daeeea4f6adb8bf2a698679663528d9b0d5bab2d5d4d3936b284f416",
+        "matched": true
+      },
+      {
+        "font": "DejaVuSerif",
+        "size_px": 12,
+        "source": "rendered",
+        "digest": "845156307380fb720326d4d049062afb4be5ccfbdc55b93959bfb4ef1de71d34",
+        "receipt": "845156307380fb720326d4d049062afb4be5ccfbdc55b93959bfb4ef1de71d34",
+        "matched": true
+      },
+      {
+        "font": "DejaVuSerif",
+        "size_px": 16,
+        "source": "rendered",
+        "digest": "eeded3e8b40cccdb278693a8a4001d41bfa5bc559079ae50fc80ee4227f8d845",
+        "receipt": "eeded3e8b40cccdb278693a8a4001d41bfa5bc559079ae50fc80ee4227f8d845",
+        "matched": true
+      },
+      {
+        "font": "DejaVuSerif",
+        "size_px": 24,
+        "source": "rendered",
+        "digest": "73eb68ee449293779d8f7fccb56d80f4be37b8553e616b0be3343db5e3ba44a5",
+        "receipt": "73eb68ee449293779d8f7fccb56d80f4be37b8553e616b0be3343db5e3ba44a5",
+        "matched": true
+      },
+      {
+        "font": "LiberationSans",
+        "size_px": 12,
+        "source": "rendered",
+        "digest": "1cdc753659add6a9efb79e9255971de7998c69b25dc31798b7d5607ba50eae0d",
+        "receipt": "1cdc753659add6a9efb79e9255971de7998c69b25dc31798b7d5607ba50eae0d",
+        "matched": true
+      },
+      {
+        "font": "LiberationSans",
+        "size_px": 16,
+        "source": "rendered",
+        "digest": "0d78d9d7e881fa089fc72c5ff7f817d1fa33785f0f33c9b80588d5fe0df8c63a",
+        "receipt": "0d78d9d7e881fa089fc72c5ff7f817d1fa33785f0f33c9b80588d5fe0df8c63a",
+        "matched": true
+      },
+      {
+        "font": "LiberationSans",
+        "size_px": 24,
+        "source": "rendered",
+        "digest": "4a5de1e156c501bf0e250c7d38276acb8d42b4cde8a9a12c4115ff6ba36cd656",
+        "receipt": "4a5de1e156c501bf0e250c7d38276acb8d42b4cde8a9a12c4115ff6ba36cd656",
+        "matched": true
+      },
+      {
+        "font": "LiberationSerif",
+        "size_px": 12,
+        "source": "rendered",
+        "digest": "5dcb1284e5cd082b29d2f3d180c2aba5d363cd5878556c297793571766b6d803",
+        "receipt": "5dcb1284e5cd082b29d2f3d180c2aba5d363cd5878556c297793571766b6d803",
+        "matched": true
+      },
+      {
+        "font": "LiberationSerif",
+        "size_px": 16,
+        "source": "rendered",
+        "digest": "c032965bbcb412a76aa65f6b862f4c15960f6aa33950adcb2595c54cffb625a1",
+        "receipt": "c032965bbcb412a76aa65f6b862f4c15960f6aa33950adcb2595c54cffb625a1",
+        "matched": true
+      },
+      {
+        "font": "LiberationSerif",
+        "size_px": 24,
+        "source": "rendered",
+        "digest": "15cc2dad3cc0d0f0c7d5b36dc62d74f6b14432f900f53844836f6c4ef951dcc3",
+        "receipt": "15cc2dad3cc0d0f0c7d5b36dc62d74f6b14432f900f53844836f6c4ef951dcc3",
+        "matched": true
+      },
+      {
+        "font": "LiberationMono",
+        "size_px": 12,
+        "source": "rendered",
+        "digest": "63ea60f2fc4641a6b5291b6d0b1756ca947fa53c7b70d50dd0b812dbbbfafe7f",
+        "receipt": "63ea60f2fc4641a6b5291b6d0b1756ca947fa53c7b70d50dd0b812dbbbfafe7f",
+        "matched": true
+      },
+      {
+        "font": "LiberationMono",
+        "size_px": 16,
+        "source": "rendered",
+        "digest": "dc582eda85a7ed42fe848e6d663f1a350e24431fcad7ae7af3f2e6e9012777e6",
+        "receipt": "dc582eda85a7ed42fe848e6d663f1a350e24431fcad7ae7af3f2e6e9012777e6",
+        "matched": true
+      },
+      {
+        "font": "LiberationMono",
+        "size_px": 24,
+        "source": "rendered",
+        "digest": "759628364ded8c4b2fb0a1315c934d33899ab1ef154062ca13fa250ee150105f",
+        "receipt": "759628364ded8c4b2fb0a1315c934d33899ab1ef154062ca13fa250ee150105f",
+        "matched": true
+      },
+      {
+        "font": "NotoSans",
+        "size_px": 12,
+        "source": "retained because the pinned Noto Sans file is not available",
+        "digest": "76055dda072079f9d5bb2463c91a2d3cba517642aede6279d2b924ce8c6cbf33",
+        "receipt": "76055dda072079f9d5bb2463c91a2d3cba517642aede6279d2b924ce8c6cbf33",
+        "matched": true
+      },
+      {
+        "font": "NotoSans",
+        "size_px": 16,
+        "source": "retained because the pinned Noto Sans file is not available",
+        "digest": "661c55b7e01d68027da9559bcfe1a173bccb22cf08cff2f20925bc16acd729c7",
+        "receipt": "661c55b7e01d68027da9559bcfe1a173bccb22cf08cff2f20925bc16acd729c7",
+        "matched": true
+      },
+      {
+        "font": "NotoSans",
+        "size_px": 24,
+        "source": "retained because the pinned Noto Sans file is not available",
+        "digest": "e82131faeb78f7883576f0cfa71a5257dbd0f3401d2587a6a4982af38bdea82f",
+        "receipt": "e82131faeb78f7883576f0cfa71a5257dbd0f3401d2587a6a4982af38bdea82f",
+        "matched": true
+      }
+    ]
+  },
+  "tolerance_px": 31,
+  "calibration_truth_in": 0.9514575809912598,
+  "calibration_by_dataset": {
+    "DocLayNet": {
+      "tokens": 38081,
+      "truth_in": 0.95128804390641
+    },
+    "FUNSD": {
+      "tokens": 133,
+      "truth_in": 1.0
+    }
+  },
+  "size_rule": "nearest of 12, 16, 24; ties to the smaller size; DocLayNet uses embedded font size when it is greater than 1, otherwise cell height; FUNSD uses box height",
+  "doclaynet_scored": {
+    "cells": 208717,
+    "cells_outside_page": 0,
+    "single_token_cells": 47494,
+    "qualifying_tokens": 5311,
+    "qualifying_pages": 1124,
+    "likely_names": 524
+  },
+  "doclaynet_calibration": {
+    "cells": 1639864,
+    "cells_outside_page": 0,
+    "single_token_cells": 339208,
+    "qualifying_tokens": 38081,
+    "qualifying_pages": 8968,
+    "likely_names": 4697
+  },
+  "funsd_scored": {
+    "sha256": "c31735649e4f441bcbb4fd0f379574f7520b42286e80b01d80b445649d54761f",
+    "url": "https://guillaumejaume.github.io/FUNSD/dataset.zip",
+    "members": 824,
+    "training_forms": 149,
+    "testing_forms": 50,
+    "forms_used": 50,
+    "answer_fields": 821,
+    "answer_words": 3365,
+    "qualifying_tokens": 760,
+    "qualifying_forms": 46,
+    "likely_names": 209,
+    "convention": "annotated integers are used as half-open edges; no zero-area word forced an inclusive reading",
+    "zero_area": 0,
+    "add_one": false
+  },
+  "funsd_calibration": {
+    "sha256": "c31735649e4f441bcbb4fd0f379574f7520b42286e80b01d80b445649d54761f",
+    "url": "https://guillaumejaume.github.io/FUNSD/dataset.zip",
+    "members": 824,
+    "training_forms": 149,
+    "testing_forms": 50,
+    "forms_used": 10,
+    "answer_fields": 158,
+    "answer_words": 740,
+    "qualifying_tokens": 133,
+    "qualifying_forms": 9,
+    "likely_names": 35,
+    "convention": "annotated integers are used as half-open edges; no zero-area word forced an inclusive reading",
+    "zero_area": 0,
+    "add_one": false
+  },
+  "download_failures": [],
+  "missing_members": [],
+  "exact_t0_truth_in": {
+    "DocLayNet|exact": "0.161739785351158",
+    "DocLayNet|grid-16": "0.7356430050837883",
+    "DocLayNet|grid-64": "0.9516098663151948",
+    "DocLayNet|start-aligned-128": "0.9823008849557522",
+    "DocLayNet|start-aligned-zero-leak": "0.9548107700997929",
+    "DocLayNet|field-1000": "1",
+    "FUNSD|exact": "0.3052631578947368",
+    "FUNSD|grid-16": "0.968421052631579",
+    "FUNSD|grid-64": "0.9986842105263158",
+    "FUNSD|start-aligned-128": "1",
+    "FUNSD|start-aligned-zero-leak": "1",
+    "FUNSD|field-1000": "1"
+  }
+}
