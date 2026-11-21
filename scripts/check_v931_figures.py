@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the supplied v9.31 figures with pinned fonts and enforce its checks."""
 from __future__ import annotations
-import argparse,contextlib,csv,hashlib,io,json,os,re,runpy,sys,urllib.request
+import argparse,contextlib,csv,hashlib,io,json,os,re,runpy,shlex,shutil,subprocess,sys,urllib.request
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 COMMIT='ce77773581f4d454f0fa985c073bb25c721bfcf5'
@@ -31,7 +31,12 @@ def main():
         url=f'https://raw.githubusercontent.com/adobe-fonts/source-sans/{COMMIT}/OTF/{filename}'
         if not path.exists():
             print('Downloading pinned figure font:',filename,flush=True)
-            with urllib.request.urlopen(url,timeout=45) as response:data=response.read()
+            if curl:=shutil.which('curl'):
+                # Use the OS trust store on macOS Python framework installs;
+                # TLS verification stays enabled and content is hash checked.
+                data=subprocess.check_output([curl,'--fail','--location','--silent','--show-error','--max-time','45',url])
+            else:
+                with urllib.request.urlopen(url,timeout=45) as response:data=response.read()
             if hashlib.sha256(data).hexdigest()!=expected:raise RuntimeError('Downloaded figure-font hash mismatch: '+filename)
             path.write_bytes(data)
         if sha(path)!=expected:raise RuntimeError('Figure-font hash mismatch: '+str(path))
@@ -58,7 +63,7 @@ def main():
     passed=(set(statuses)==set(FIGURES) and namespace['total']==0 and not bad and namespace['FONT']=='Source Sans Pro')
     outputs={p.name:sha(p) for name in FIGURES for p in [source.with_name(name+'.png')]}
     outputs['contact_v931.png']=sha(source.with_name('contact_v931.png'))
-    config=dict(status='passed' if passed else 'failed',command='make figures',randomness='none',
+    config=dict(status='passed' if passed else 'failed',command=shlex.join(['python3','scripts/check_v931_figures.py',*sys.argv[1:]]),randomness='none',
         python=sys.version,matplotlib=matplotlib.__version__,freetype=ft2font.__freetype_version__,
         font=namespace['FONT'],fonts=fonts,script_sha256=sha(source),figs_data_sha256=sha(data),
         checker_sha256=sha(Path(__file__)),total_problems=int(namespace['total']),
