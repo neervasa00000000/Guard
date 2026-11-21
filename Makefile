@@ -14,6 +14,7 @@ tables:
 
 figures:
 	$(PY) scripts/make_figures.py
+	$(PY) scripts/check_v931_figures.py
 
 check:
 	$(PY) scripts/check_numbers.py

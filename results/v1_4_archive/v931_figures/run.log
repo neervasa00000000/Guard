@@ -1,0 +1,8 @@
+font: Source Sans Pro
+fig2_leakage_area: OK
+fig3_same_knowledge: OK
+fig4_pointwise: OK
+fig5_realworld: OK
+figA1_releases: OK
+cross-check: 101 plotted values, 0 not found in figs_data.csv []
+TOTAL PROBLEMS: 0

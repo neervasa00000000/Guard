@@ -1,0 +1,36 @@
+WARNING: Source Sans Pro not found, using DejaVu Sans
+font: DejaVu Sans
+  [fig2_leakage_area] OVERLAP: '128 px' <-> 'layout box'
+  [fig2_leakage_area] CLIPPED: 'C = 192 (<0.01)'
+fig2_leakage_area: 2 problems
+  [fig3_same_knowledge] OVERLAP: '12-px text' <-> '16-px text'
+  [fig3_same_knowledge] OVERLAP: '16-px text' <-> '24-px text'
+  [fig3_same_knowledge] OVERLAP: 'LEGEND' <-> 'Smallest 0-bit C'
+  [fig3_same_knowledge] CLIPPED: 'Field-box area ÷ padded area (%)'
+fig3_same_knowledge: 4 problems
+  [fig4_pointwise] OVERLAP: '(a) Average over everyone' <-> '(b) A person in the wider class'
+  [fig4_pointwise] OVERLAP: '37 (0.013%)' <-> '4,188 (4.9%)'
+  [fig4_pointwise] OVERLAP: '63 (0.025%)' <-> '5,555 (7.1%)'
+  [fig4_pointwise] OVERLAP: '16 px: none' <-> '458 (0.23%)'
+  [fig4_pointwise] OVERLAP: '62 (0.025%)' <-> '7,201 (8.7%)'
+  [fig4_pointwise] OVERLAP: 'MARKER' <-> '4,188 (4.9%)'
+  [fig4_pointwise] OVERLAP: 'MARKER' <-> '5,555 (7.1%)'
+  [fig4_pointwise] OVERLAP: 'MARKER' <-> '7,201 (8.7%)'
+  [fig4_pointwise] CLIPPED: 'Liberation Sans'
+  [fig4_pointwise] CLIPPED: 'Liberation Serif'
+  [fig4_pointwise] CLIPPED: 'Liberation Mono'
+  [fig4_pointwise] CLIPPED: '1 name (0.0003%)'
+fig4_pointwise: 12 problems
+  [fig5_realworld] OVERLAP: '(a) PDF writers (816 pages)' <-> '(b) DocLayNet (954 names)'
+  [fig5_realworld] CLIPPED: 'Start-aligned padding, C = 128'
+  [fig5_realworld] CLIPPED: '(b) DocLayNet (954 names)'
+fig5_realworld: 3 problems
+  [figA1_releases] OVERLAP: '22.0%' <-> 'Same mask, 5 shifts'
+  [figA1_releases] OVERLAP: 'LEGEND' <-> '0.15 → 0.16'
+  [figA1_releases] CLIPPED: '0.22 → 0.69'
+figA1_releases: 3 problems
+cross-check: 101 plotted values, 0 not found in figs_data.csv []
+TOTAL PROBLEMS: 24
+/Users/neervasa/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/yk/qmv6qyvj2kl8fcf7q77ttcxr0000gn/T/matplotlib-vkjdwkge because there was an issue with the default path (/Users/neervasa/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Matplotlib is building the font cache; this may take a moment.

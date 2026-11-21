@@ -49,6 +49,7 @@ __pycache__/
 /manuscript/figures/fig*.png
 /manuscript/figures/fig*.pdf
 /manuscript/figures/compare_clean.png
+/manuscript/figures/contact_v931.png
 
 # No page imagery or dataset archives/shards in realworld_validation.
 /research/realworld_validation/**/*.png

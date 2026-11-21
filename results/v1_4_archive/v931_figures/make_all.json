@@ -1,0 +1,15 @@
+{
+  "returncode": 0,
+  "scope": "working tree integration: existing locked manuscript plus supplied v931 figures and all eight produced v1.4 summary tables",
+  "command": [
+    "make",
+    "all",
+    "PY=python"
+  ],
+  "summary": [
+    "cross-check: 101 plotted values, 0 not found in figs_data.csv []",
+    "TOTAL PROBLEMS: 0",
+    "SUMMARY\tPASS 369\tFAIL 0\tEXPLORATORY 9",
+    "V1_4 SUMMARY\tPASS 30830\tOVERALL FAIL 0\tcompleted summaries locked; remaining experiments incomplete"
+  ]
+}

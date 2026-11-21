@@ -17,11 +17,13 @@
     "81a94f4d3d09c8be8669faaa9a8c7f622e21d931",
     "c92b209a838649c205a1565b5f28c1973e049659"
   ],
-  "local_search": "Filename search across /Users/neervasa plus /Library/Fonts and /System/Library/Fonts; 352 matching font/script names; some folders denied by macOS privacy even after escalation. No v931 script found in accessible locations.",
-  "remote_figure_search": "GitHub connector fetch of manuscript/figures/make_figs_v931.py on the default branch returned 404; filename search returned no results.",
-  "git_head": "814545d3f6d4490956a2d7ac6123e5db9faf6a15",
+  "local_search": "Initial filename search across /Users/neervasa plus /Library/Fonts and /System/Library/Fonts; 352 matching font/script names; some folders denied by macOS privacy even after escalation. The user subsequently supplied the v931 script.",
+  "remote_figure_search": "Prior to user supplying the file, GitHub connector fetch on the default branch returned 404 and filename search returned no results.",
+  "v931_figure_checks_passed": true,
+  "v931_figure_check_config_sha256": "5736cb0e2b131e31a0fbb2ceb43131b09b78d10ed5c484d1aa8f9099cfc3860d",
+  "git_head": "9c3c27131f8b8907285bd82ff3e5903a59e5eab4",
   "protected_v13": "18cfe521088c90750ba6bc627fbd1bbe10072fab",
   "protected_tileseal": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
   "libreoffice_version": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
-  "source_sha256": "8f25aa95b86e1b70031d3193fbc4cd990336c72659d071be8bd0bb63715bf2fc"
+  "source_sha256": "7c3c36e63bca874a81900584497a3296e5d8a1d3ca8a3afcc3be5fb4062dc462"
 }

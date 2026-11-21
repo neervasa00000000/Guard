@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "command": "make figures",
+  "randomness": "none",
+  "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "matplotlib": "3.10.7",
+  "freetype": "2.6.1",
+  "font": "Source Sans Pro",
+  "fonts": [
+    {
+      "face": "Regular",
+      "sha256": "774614c463f3c9bd6a3707e59eeb7c85c0753267ba2fd5105f8751c54b74b102",
+      "url": "https://raw.githubusercontent.com/adobe-fonts/source-sans/ce77773581f4d454f0fa985c073bb25c721bfcf5/OTF/SourceSansPro-Regular.otf"
+    },
+    {
+      "face": "Bold",
+      "sha256": "294f0a2c1caa4c543ca67f5a88cc0474a471a247214b1fdde0257a018f596a84",
+      "url": "https://raw.githubusercontent.com/adobe-fonts/source-sans/ce77773581f4d454f0fa985c073bb25c721bfcf5/OTF/SourceSansPro-Bold.otf"
+    }
+  ],
+  "script_sha256": "d01d3ce5e600e164cce9a25b5c06ddce928788df14e2a433e9628163ed650ca0",
+  "figs_data_sha256": "b8b6202d6cfbd1cf79366facc5cdcc7905d83cb28b6a8fe83e4aa9e249f2555d",
+  "checker_sha256": "aca5fb96984da6a39e5e583d2918aaec994e6bca7b7afa8f0fa3aa8055803e2d",
+  "total_problems": 0,
+  "n_plotted_values": 101,
+  "n_values_not_in_csv": 0,
+  "outputs_png_sha256": {
+    "fig2_leakage_area.png": "b100c2a6e233f78ecc32f6796b08bce02c8b1bbf3cb9b9238214ca2cf41181ed",
+    "fig3_same_knowledge.png": "ca5168e7b0626f211e13cf7e7111638c399d66fa40e9f3a11212900d98e187c7",
+    "fig4_pointwise.png": "3fd67d40cfc1a80d7cc4c96dc1dec1ce1ecbad711272d17c5497d1a02eeb9bae",
+    "fig5_realworld.png": "f5f0e13d0f55d4e1128d50f95339ebd8cda12536173cad367cdfe80c0067d94a",
+    "figA1_releases.png": "f3418b3446a387d2394f669b7db475513b260526c2e6489cfdf255bf99b6d840",
+    "contact_v931.png": "3b21ff34d13e77c7f42e6788c2b5ad8c2c27d4d8d78b1d0d1182f10ee8a0f45b"
+  },
+  "provenance": "Supplied make_figs_v931.py is unchanged; fonts from official Adobe release 2.045R-ro/1.095R-it; no images or font binaries distributed."
+}
