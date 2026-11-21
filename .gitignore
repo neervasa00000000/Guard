@@ -177,3 +177,7 @@ __pycache__/
 
 # v4 derived numeric/token-hash rows are not raw dataset archives.
 !/research/realworld_e1_eval/results/v4_fontmatched/**/*.csv.gz
+
+# Keep supplied v9.31 package copies locally; canonical script is in manuscript/figures/.
+/make_figs_v931.py
+/make_figs_v931.zip

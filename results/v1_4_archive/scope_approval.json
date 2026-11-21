@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-21",
+  "timezone": "Australia/Melbourne",
+  "question": "For v1.4-artifact, should the documented LibreOffice reconstruction and new font-build check stand in for the missing historical reruns, with their limits stated explicitly, or should the release wait for the original kit and build manifest?",
+  "answer": "Use the documented new experiments",
+  "historical_replication_claimed": false,
+  "push_authorized": false
+}

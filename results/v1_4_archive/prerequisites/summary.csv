@@ -6,4 +6,4 @@ rerender_188_and_2,complete,"Original generator recovered read-only from Git com
 tileseal_392,complete,Original validator rerun with six pinned fonts and read-only f8f2558 checkout: 392/392 tile sets match; original target hashes and coordinates match historical per-redaction rows.
 alternative_font_builds_36_cells,complete_new_sensitivity_run,"Explicitly defined 6 fonts x 3 sizes x A1/A2, builds frozen before scoring: 2/36 cells shift +7.8 pp. Original build manifest remains unavailable; this does not verify historical build provenance."
 v931_figure_script,complete,User-supplied script installed unchanged; five figures checked with pinned Source Sans Pro; 0 layout problems; 0 plotted values missing from CSV.
-final_v14_release_check,blocked,Remaining experiment reproductions are incomplete; summary-number checks can cover only produced runs. Do not create v1.4-artifact.
+final_v14_release_check,complete_with_approved_limits,User accepted documented new experiments on 2026-11-21. Clean-clone make all and both independent validators passed; historical template/build provenance remains explicitly unverified. Tagging is permitted after final checks; no push.

@@ -3012,12 +3012,14 @@
     }
   ],
   "v1_4": {
-    "status": "completed summaries locked; remaining experiments incomplete",
+    "status": "complete with user-approved documented reconstructions; historical provenance limits retained",
     "absolute_tolerance": 1e-12,
     "unknown_values": "Blank/non-numeric cells preserved exactly; no unknown value replaced by a number.",
-    "pending_reproductions": [
-      "original LibreOffice mock-form end-to-end rerun",
-      "historical alternative-build provenance; the explicit new 36-cell sensitivity run is complete"
+    "pending_reproductions": [],
+    "scope_approval": "2026-11-21: Use the documented new experiments",
+    "historical_unverified": [
+      "Exact original LibreOffice template/full-page scan replication",
+      "Original alternative font-build identities and cell definition"
     ],
     "aggregates": [
       {
@@ -65749,8 +65751,8 @@
           ],
           [
             "final_v14_release_check",
-            "blocked",
-            "Remaining experiment reproductions are incomplete; summary-number checks can cover only produced runs. Do not create v1.4-artifact."
+            "complete_with_approved_limits",
+            "User accepted documented new experiments on 2026-11-21. Clean-clone make all and both independent validators passed; historical template/build provenance remains explicitly unverified. Tagging is permitted after final checks; no push."
           ]
         ],
         "n_numeric_values": 0

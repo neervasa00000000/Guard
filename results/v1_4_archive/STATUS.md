@@ -1,6 +1,6 @@
 # v1.4 run status
 
-Completed runs and checks are archived below. A fresh end-to-end LibreOffice reconstruction is complete; exact replication of the historical template is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. No final v1.4 tag or push has been made.
+Completed runs and checks are archived below. A fresh end-to-end LibreOffice reconstruction is complete; exact replication of the historical template is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. On 2026-11-21 the user accepted these documented new experiments for v1.4-artifact, retaining the historical provenance limits. Nothing has been pushed.
 
 | Work | Result |
 |---|---|
@@ -33,3 +33,5 @@ The independent new-run validator recomputed all reported new-run means and boot
 Detailed tables: ../../data/v1_6_email_digits/table_pooled.csv; ../../data/v1_5_anchor_margin/summary.csv; ../../research/area_eval/results/summary.csv. All rates in CSVs are fractions unless a column explicitly says pp or percent; bits and area ratios retain their own units.
 
 Fresh LibreOffice reconstruction and historical comparisons: mock_forms_reconstruction/README.md and summary.csv. The full-array validator recomputes every score, policy box, summary and 10000-draw interval from archived no-text candidate geometry. The original archived manuscript numbers are unchanged.
+
+Release verification: libreoffice_clean_clone/ records a clean-clone make all (46410 new checks and 369 baseline checks, zero mismatches), plus both independent raw-data validators (28960 and 532620 numeric checks). The final release scope acceptance is in scope_approval.json.

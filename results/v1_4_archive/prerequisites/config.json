@@ -1,5 +1,6 @@
 {
-  "status": "incomplete",
+  "status": "complete_with_approved_limits",
+  "scope_approval": "2026-11-21: Use the documented new experiments",
   "experiment_results": false,
   "seed": 20261121,
   "bootstrap_resamples": 10000,
@@ -23,9 +24,9 @@
   "remote_figure_search": "Prior to user supplying the file, GitHub connector fetch on the default branch returned 404 and filename search returned no results.",
   "v931_figure_checks_passed": true,
   "v931_figure_check_config_sha256": "f67ed9b8b39f8d87af3d3efdcb72b48f9d0ae6f42442985088b05b99fd9a15c3",
-  "git_head": "7dff0e6d6da9a2a67e2e22fe3f4f2057f12cef74",
+  "git_head": "66f2b50fb129d71ff217b7bc31e0b1e568f8bafc",
   "protected_v13": "18cfe521088c90750ba6bc627fbd1bbe10072fab",
   "protected_tileseal": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
   "libreoffice_version": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
-  "source_sha256": "f401ef37f56bd57f841d83c091e5df401728cb657244dd57c7309b5d47439743"
+  "source_sha256": "5534a517ddfc40dfbc24ef748e3ad7a1c343afae4983f172729f6ab8404f750c"
 }
