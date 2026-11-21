@@ -3,6 +3,6 @@ all_saved_doclaynet_targets,5311
 target_embedded_size_known,2267
 line_font_comparison_known,4829
 line_neighbour_size_and_font_known,2052
-eligible_with_local_font_identity_match,1012
-eligible_missing_local_font,1040
+eligible_with_local_font_identity_match,2012
+eligible_missing_local_font,40
 unknown_neighbour_size_or_font,3259

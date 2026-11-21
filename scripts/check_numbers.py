@@ -4,7 +4,7 @@ import csv
 import json
 import sys
 from pathlib import Path
-from v14_numbers import compare
+from v14_numbers import compare,compare_aggregate
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = ROOT / "manuscript" / "expected_numbers.json"
@@ -60,6 +60,11 @@ def main():
         numeric_passed+=count;failed+=len(errors)
         print(f"V1_4\t{source['path']}\tPASS {count}\tFAIL {len(errors)}")
         for error in errors[:20]:print('FAIL\tV1_4\t'+error)
+    for item in section.get('aggregates',[]):
+        count,errors=compare_aggregate(ROOT,item,section.get('absolute_tolerance',1e-12))
+        numeric_passed+=count;failed+=len(errors)
+        print(f"V1_4 AGGREGATE\t{item['id']}\tPASS {count}\tFAIL {len(errors)}")
+        for error in errors:print('FAIL\tV1_4\t'+error)
     if section:
         print(f"V1_4 SUMMARY\tPASS {numeric_passed}\tOVERALL FAIL {failed}\t{section['status']}")
     return 1 if failed else 0

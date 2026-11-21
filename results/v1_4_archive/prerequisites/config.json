@@ -6,7 +6,9 @@
   "command": ".venv/bin/python -B scripts/audit_v14_remaining.py",
   "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
   "pinned_noto_sha256": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
+  "pinned_noto_found": true,
   "font_sources": [
+    "https://raw.githubusercontent.com/LostRunes/pyq_app/307e168ae16c380d4357780b9573708e24b5db5a/NotoSans-VariableFont_wdth%2Cwght.ttf",
     "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf",
     "https://api.github.com/repos/google/fonts/commits?path=ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf&per_page=100",
     "https://raw.githubusercontent.com/notofonts/noto-fonts/main/unhinted/variable-ttf/NotoSans-VF.ttf"
@@ -21,9 +23,9 @@
   "remote_figure_search": "Prior to user supplying the file, GitHub connector fetch on the default branch returned 404 and filename search returned no results.",
   "v931_figure_checks_passed": true,
   "v931_figure_check_config_sha256": "f67ed9b8b39f8d87af3d3efdcb72b48f9d0ae6f42442985088b05b99fd9a15c3",
-  "git_head": "2dc81b68b6424128511132857eb40c907db58ba8",
+  "git_head": "1ca147c6ccf24ccfb5ef3ea54282dd9f4176d5e9",
   "protected_v13": "18cfe521088c90750ba6bc627fbd1bbe10072fab",
   "protected_tileseal": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
   "libreoffice_version": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
-  "source_sha256": "7c3c36e63bca874a81900584497a3296e5d8a1d3ca8a3afcc3be5fb4062dc462"
+  "source_sha256": "806f4a27f904217f30e2fc61c31a8e759e9421242ebf795db6df3da9c1089734"
 }

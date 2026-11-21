@@ -30,3 +30,14 @@ def compare(root,source,tolerance=1e-12):
             else:ok=type(g) is type(e) and g==e
             if not ok:errors.append(f'{source["path"]}: row {i}, {key}: got {g!r}, expected {e!r}')
     return passed,errors
+
+def compare_aggregate(root,spec,tolerance=1e-12):
+    """Check a cited count from rows, independently of a whole-table snapshot."""
+    with (Path(root)/spec['path']).open(newline='') as f:
+        rows=list(csv.DictReader(f))
+    rows=[r for r in rows if all(r[k]==str(v) for k,v in spec.get('where',{}).items())]
+    if spec['operation']=='sum':actual=sum(float(r[spec['column']]) for r in rows)
+    elif spec['operation']=='count':actual=len(rows)
+    else:raise ValueError(spec['operation'])
+    ok=math.isclose(actual,spec['expected'],rel_tol=0,abs_tol=tolerance)
+    return int(ok),[] if ok else [f"{spec['id']}: got {actual}, expected {spec['expected']}"]

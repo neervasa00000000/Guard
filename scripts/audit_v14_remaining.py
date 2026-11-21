@@ -26,19 +26,20 @@ def main():
         and proof.get('figs_data_sha256')==sha(figure.with_name('figs_data.csv')))
     # Do not assert missing outside the locations actually audited.
     rows=[
-      dict(item='email_digits_sweep',status='prerequisite_available' if available else 'blocked',reason='Fresh six-font rendering requires pinned Noto Sans; surname geometry cannot substitute for email/digit geometry.'),
-      dict(item='noto_fresh_rerender',status='prerequisite_available' if available else 'blocked',reason='No checked binary matches fonts.json; retained geometry is not a fresh render.'),
+      dict(item='email_digits_sweep',status='complete',reason='Fresh six-font sweep: 864000 target-policy rows, 432 summaries and 24 pooled rows; digit entropy remains explicitly unknown except constant-field zero.'),
+      dict(item='noto_fresh_rerender',status='complete',reason='Recovered exact pinned SHA-256; fresh 150000 full-list bounds match all three retained receipts, and 126000 target-policy scores reproduce v1.2.'),
       dict(item='mock_form_renderer_mismatch',status='not_run',reason='Repository has replayed geometry/hit CSVs, but no original LibreOffice mock-form document/PDF/scan input set or end-to-end form generator.'),
-      dict(item='rerender_188_and_2',status='not_run',reason='Archived counts exist, but the mixed-font rerender generator, same-target mapping and per-render settings needed to rerun those specific 2000 targets are absent from released code.'),
-      dict(item='tileseal_392',status='blocked' if not available else 'not_run',reason='e1_validate_guard.py requires all six pinned fonts via E.check_render_inputs; no replacement and no claimed 392-case rerun.'),
-      dict(item='alternative_font_builds_36_cells',status='not_run',reason='Original alternative-build manifest and 36-cell experiment harness are not in released code; do not choose different builds and label them a reproduction.'),
+      dict(item='rerender_188_and_2',status='complete',reason='Original generator recovered read-only from Git commit 733d48a; fresh six-font geometry and unchanged function reproduce 188/2000 and 2/2000, with hash-only per-target records.'),
+      dict(item='tileseal_392',status='complete',reason='Original validator rerun with six pinned fonts and read-only f8f2558 checkout: 392/392 tile sets match; original target hashes and coordinates match historical per-redaction rows.'),
+      dict(item='alternative_font_builds_36_cells',status='complete_new_sensitivity_run',reason='Explicitly defined 6 fonts x 3 sizes x A1/A2, builds frozen before scoring: 2/36 cells shift +7.8 pp. Original build manifest remains unavailable; this does not verify historical build provenance.'),
       dict(item='v931_figure_script',status='complete' if figure_ready else ('available' if figure.is_file() else 'blocked'),
            reason=('User-supplied script installed unchanged; five figures checked with pinned Source Sans Pro; '+str(proof.get('total_problems'))+' layout problems; '+str(proof.get('n_values_not_in_csv'))+' plotted values missing from CSV.') if figure_ready else 'Complete supplied script and passing figure-check record required.'),
       dict(item='final_v14_release_check',status='blocked',reason='Remaining experiment reproductions are incomplete; summary-number checks can cover only produced runs. Do not create v1.4-artifact.')]
     write(OUT/'summary.csv',rows)
     config=dict(status='incomplete',experiment_results=False,seed=20261121,bootstrap_resamples=10000,
       command='.venv/bin/python -B scripts/audit_v14_remaining.py',python=sys.version,
-      pinned_noto_sha256=EXPECTED,font_sources=[
+      pinned_noto_sha256=EXPECTED,pinned_noto_found=available,font_sources=[
+       'https://raw.githubusercontent.com/LostRunes/pyq_app/307e168ae16c380d4357780b9573708e24b5db5a/NotoSans-VariableFont_wdth%2Cwght.ttf',
        'https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf',
        'https://api.github.com/repos/google/fonts/commits?path=ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf&per_page=100',
        'https://raw.githubusercontent.com/notofonts/noto-fonts/main/unhinted/variable-ttf/NotoSans-VF.ttf'],
@@ -53,14 +54,14 @@ def main():
       source_sha256=sha(Path(__file__)))
     (OUT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
     text='# Remaining v1.4 prerequisite audit\n\nThis is an inventory, not an experimental rerun. No missing performance number is filled in. The anchor-margin experiment is complete at data/v1_5_anchor_margin; prior available-font and FUNSD-only OCR runs retain their documented limits.\n\n'
-    text+='The pinned Noto binary was not found among accessible local candidates or six official current/historical builds. Searches were limited by macOS privacy denials in some folders. The user subsequently supplied the v9.31 figure script; it is installed unchanged under manuscript/figures/. Its current check status is recorded below.\n\n'
+    text+='The exact pinned Noto binary has been recovered and all six study-font hashes pass. Fresh rerender, TileSeal, email/digit and expanded font-context runs are now archived. The user supplied the v9.31 figure script; it is installed unchanged under manuscript/figures/. Historical failed-search records are preserved as search history, not a current missing-font claim.\n\n'
     search=OUT/'local_font_hash_search.json'
     if search.is_file():
         info=json.loads(search.read_text())
         text+=f'The broader name-independent search hashed {info["fonts_hashed"]} local TTF/OTF files in accessible roots, including renamed fonts, and found {len(info["matching_files"])} pinned-hash matches. The earlier remote/local figure-script search is superseded by the user-supplied file.\n\n'
     text+='| Item | Status | Reason |\n|---|---|---|\n'
     text+='\n'.join(f'| {r["item"]} | {r["status"]} | {r["reason"]} |' for r in rows)+'\n\n'
-    text+='The user protocol says to stop when prerequisites are unavailable. Fresh six-font email/digit and archive experiments have not been represented as completed. LibreOffice is installed, but its availability alone does not supply the missing original mock forms. No new tag or push is authorized by this audit.\n'
+    text+='The original LibreOffice kit (kit.tar.gz, SHA-256 4c88f470e98c2865f84287713240652fb192cf4cc6db85ce4f8605ee03fb6bf5) is still missing. Accessible local archives, historical Git, Docker images/volumes and filename-only connected Drive searches did not supply its gen.py/measure.py/attack.py or original inputs. Existing per-form observations do not establish an end-to-end rerun. The user protocol requires reporting missing inputs, so no invented replacement run or final v1.4 tag is recorded. The new sensitivity run does not establish the lost historical alternative-build provenance. Nothing has been pushed.\n'
     legacy=OUT/'legacy_make_all.json'
     if legacy.is_file():
         check=json.loads(legacy.read_text())

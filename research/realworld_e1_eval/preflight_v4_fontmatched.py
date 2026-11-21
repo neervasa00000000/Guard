@@ -79,11 +79,19 @@ def main():
     roots.extend(p.expanduser().resolve() for p in args.font_dir)
     roots=sorted(set(p for p in roots if p.is_dir()))
     paths=sorted({p for root in roots for p in root.rglob('*')
-                  if p.is_file() and p.suffix.lower() in ['.ttf','.otf','.ttc','.otc']})
+                  if p.is_file() and p.suffix.lower() in ['.ttf','.otf','.ttc','.otc','.pfb']})
     names=defaultdict(list); files=[]; failures=[]
     for i,path in enumerate(paths):
         sha=digest(path)
         try:
+            if path.suffix.lower()=='.pfb':
+                from fontTools.t1Lib import T1Font
+                face=T1Font(str(path));face.parse()
+                identifiers=[face.font.get('FontName'),face.font.get('FontInfo',{}).get('FullName')]
+                for name in sorted({n.decode('latin1') if isinstance(n,bytes) else n for n in identifiers if n}):
+                    names[name].append(dict(path=str(path),face_index=0,sha256=sha))
+                files.append(dict(path=str(path),sha256=sha,n_faces=1))
+                continue
             container=TTCollection(path,lazy=True) if path.suffix.lower() in ['.ttc','.otc'] else None
             faces=container.fonts if container else [TTFont(path,lazy=True)]
             for index,face in enumerate(faces):

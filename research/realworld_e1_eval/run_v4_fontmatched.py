@@ -57,6 +57,12 @@ class Fonts:
         self.index=json.loads((OUT/'preflight/font_name_index.json').read_text())
         self.used={}
         self.selected={};self.faces={}
+    def study_key(self,name):
+        path=B.E.checked_font_path(name)
+        f=dict(path=str(path),face_index=0,sha256=digest(path))
+        if name=='NotoSans':f['variation']='Regular'
+        key=f['sha256']+':0';self.used[key]=f
+        return key
     def select(self,name):
         if identity(name) in self.selected:return self.selected[identity(name)]
         fs=self.index.get(identity(name),[])
@@ -75,6 +81,7 @@ class Fonts:
         f=self.used[key]
         face=ImageFont.truetype(f['path'],size,index=f['face_index'],
             layout_engine=ImageFont.Layout.RAQM if engine=='raqm' else ImageFont.Layout.BASIC)
+        if f.get('variation'):face.set_variation_by_name(f['variation'].encode())
         self.faces[cache]=face
         return face
 
@@ -188,7 +195,7 @@ class Geometry:
     def truth_bounds(self,key,size,engine,truth):
         if key.startswith('study:') and (key[6:],float(size)) in self.study:
             return self.study[(key[6:],float(size))][truth]
-        realkey=self.fonts.select(key[6:]) if key.startswith('study:') else key
+        realkey=self.fonts.study_key(key[6:]) if key.startswith('study:') else key
         return self.fonts.face(realkey,float(size),engine).getbbox(self.dictionary['full']['strings'][truth],anchor='ls')
     def bounds(self,key,size,engine):
         k=(key,float(size),engine)
@@ -196,7 +203,7 @@ class Geometry:
         if key.startswith('study:') and (key[6:],float(size)) in self.study:
             a=self.study[(key[6:],float(size))];source='receipt-matched archived study geometry'
         else:
-            realkey=self.fonts.select(key[6:]) if key.startswith('study:') else key
+            realkey=self.fonts.study_key(key[6:]) if key.startswith('study:') else key
             assert realkey is not None, ('Cannot render unavailable font',key,size)
             cachekey=sha(json.dumps([realkey,float(size).hex(),engine,self.dictionary['census_sha256']]))
             p=OUT/'cache'/(cachekey+'.npy')
@@ -215,7 +222,7 @@ class Geometry:
         if k not in self.features:
             if k in self.study:a=self.study[k][self.probes]
             else:
-                key=self.fonts.select(name);assert key
+                key=self.fonts.study_key(name)
                 face=self.fonts.face(key,float(size),'raqm')
                 strings=self.dictionary['full']['strings']
                 a=np.array([face.getbbox(strings[i],anchor='ls') for i in self.probes],dtype=np.int32)
@@ -227,7 +234,7 @@ class Geometry:
         obs=np.log(np.quantile(np.asarray(dimensions),self.quantiles,axis=0))
         best=None
         for name in B.E.FONTS:
-            sizes=sorted(set([12.,16.,24.]+([float(stored)] if name!='NotoSans' and stored>1 else [])))
+            sizes=sorted(set([12.,16.,24.]+([float(stored)] if stored>1 else [])))
             for size in sizes:
                 distance=float(np.mean((obs-self.feature(name,size))**2))
                 candidate=(distance,list(B.E.FONTS).index(name),size,name)
@@ -275,7 +282,7 @@ def main():
         font_known_size='median neighbour embedded pt * coco_width / original_width; exact fractional Pillow size',
         font_estimator='anonymous geometry only: minimum squared log-quantile distance of width/height at quantiles .1,.25,.5,.75,.9; 512 fixed prior-weighted Census probes, seed 20261121; no neighbour word identities, character lengths, font names or pixels',
         estimator_context='unique independent nonempty source text-cell boxes on geometric target line; target cell excluded; cells may span multiple words, so context widths need not follow the Census probe distribution',
-        estimator_sizes='12,16,24 px plus known neighbour size converted to page pixels for five available pinned fonts; Noto only at receipt-matched archived 12,16,24 because pinned binary is missing',
+        estimator_sizes='12,16,24 px plus known neighbour size converted to page pixels for all six pinned fonts; Noto binary recovered and SHA-256 verified',
         estimator_accuracy='strict predicted regular study identity equals neighbour modal font after PDF syntax removal; out-of-bank true identities count incorrect; target-font correctness also saved',
         policies=POLICIES,attackers=ATTACKERS,census_sha256=dictionary['census_sha256'],inputs_sha256=inputs,
         calibration='original saved v2 split; each non-generic attacker calibrated to smallest integer symmetric edge tolerance with >=95% exact truth-in on common usable calibration subset; FUNSD cannot provide font metadata',

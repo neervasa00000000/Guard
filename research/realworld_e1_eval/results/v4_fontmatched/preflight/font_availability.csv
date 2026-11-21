@@ -1,70 +1,70 @@
 font_identity,n_eligible_tokens,locally_available,matching_faces_json
 Helvetica,405,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Helvetica.ttc"", ""sha256"": ""658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3""}]"
-CMR10,310,0,[]
+CMR10,310,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr10.pfb"", ""sha256"": ""fdcede8794018df5f2b58f0905fb20a2b418ed8f67b73ee12445855dfbe5b1be""}]"
 Times-Roman,188,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
-CMR12,157,0,[]
-NimbusRomNo9L-Regu,139,0,[]
+CMR12,157,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr12.pfb"", ""sha256"": ""9b58bfa828b9553b7c8331cf26c45443b836f8aab62e820b40a5b65c8531dd42""}]"
+NimbusRomNo9L-Regu,139,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021003l.pfb"", ""sha256"": ""2ef9d47303d25f3c9553a43255dae8c39160e130ad5ed34444e39dee03d796a1""}]"
 Times New Roman,126,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Times New Roman.ttf"", ""sha256"": ""f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3""}]"
-CMR9,75,0,[]
+CMR9,75,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr9.pfb"", ""sha256"": ""ba5207eea69eaa9b598de2bd3d9aef27c4ff9831524400f70ff6a0dd3e36059b""}]"
 Courier,55,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Courier.ttc"", ""sha256"": ""76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec""}]"
-DejaVuSerif,43,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSerif.ttf"", ""sha256"": ""8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf"", ""sha256"": ""107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa""}]"
-FreeMono,37,0,[]
+DejaVuSerif,43,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf"", ""sha256"": ""107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSerif.ttf"", ""sha256"": ""8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSerif.ttf"", ""sha256"": ""8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif.ttf"", ""sha256"": ""42d1edeb7952f31b1f96d767ed7030b08a39e0c372b0071641518864e2bffb51""}]"
+FreeMono,37,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMono.ttf"", ""sha256"": ""9d6da248d9c7a6a384b9b4127c16fa1039fd5bacf62878515b3d9ed9ae2a171d""}]"
 Arial,34,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial.ttf"", ""sha256"": ""525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9""}]"
 Verdana,33,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Verdana.ttf"", ""sha256"": ""0da8c12f3e15d95585434d2cf294b3113a3e3fc84bf9ba9d64f2ef834ef4bd98""}]"
-FreeSerif,32,0,[]
-t1xtt,29,0,[]
+FreeSerif,32,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSerif.ttf"", ""sha256"": ""8597e587cb74f27a0ad0a9d59cefab1e83695a0a7968dadfdb630c1feff4392d""}]"
+t1xtt,29,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/t1xtt.pfb"", ""sha256"": ""6770cff4cccf84f3e7f1c462b33696ed7e525d0407f4e733162b4009c4de8585""}]"
 ArialMT,28,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial.ttf"", ""sha256"": ""525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9""}]"
-CMMI10,25,0,[]
-DejaVuSans,23,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSans.ttf"", ""sha256"": ""57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf"", ""sha256"": ""3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22""}]"
-NimbusMonL-Regu,22,0,[]
-SFRM1000,20,0,[]
-CMR8,19,0,[]
-CMMI12,18,0,[]
+CMMI10,25,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi10.pfb"", ""sha256"": ""e3661061e8aa474d6de5ffa916edceb0e3d8b998862018c147f0357fce00bcd7""}]"
+DejaVuSans,23,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf"", ""sha256"": ""3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSans.ttf"", ""sha256"": ""57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSans.ttf"", ""sha256"": ""57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans.ttf"", ""sha256"": ""7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954""}]"
+NimbusMonL-Regu,22,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022003l.pfb"", ""sha256"": ""8816758f882b18a97a2fcdd4e496b881cd7726b8612648cbfb1c9de2d9853029""}]"
+SFRM1000,20,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfrm1000.pfb"", ""sha256"": ""650a5428cc0729742dcf1935dba1f504e27bbb5ec5936aeaf5f4955909a0f540""}]"
+CMR8,19,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr8.pfb"", ""sha256"": ""8150cbfac5cfe53040327df171c3059f10730b32cabf2504b01713d639a11feb""}]"
+CMMI12,18,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi12.pfb"", ""sha256"": ""80fa6aa5f49d52e1f7e5120d053b32d463cd0392a68588ef17c0d1523fba7786""}]"
 Times-Bold,18,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
-DejaVuSansCondensed-Bold,17,0,[]
-NimbusRomNo9L-ReguItal,15,0,[]
-DejaVuSansCondensed,13,0,[]
-DejaVuSans-Bold,11,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf"", ""sha256"": ""b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167""}]"
-DejaVuSerif-Bold,10,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf"", ""sha256"": ""c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676""}]"
-CMTI12,9,0,[]
-FreeMonoBold,9,0,[]
-CMMI8,7,0,[]
+DejaVuSansCondensed-Bold,17,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed-Bold.ttf"", ""sha256"": ""38098d0b8edd8430a0f53fb2831b5d36037563a998a620d3c87a4d7591766d20""}]"
+NimbusRomNo9L-ReguItal,15,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021023l.pfb"", ""sha256"": ""f9a0c528b42d2ded2884e31cf1d225b81739ca9b17a0e7cb362fad404ce0aedf""}]"
+DejaVuSansCondensed,13,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed.ttf"", ""sha256"": ""8550cd5ca1acb65a8fc7877c46939cd0b4d909f8e7bc1e24716873d918c5e549""}]"
+DejaVuSans-Bold,11,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf"", ""sha256"": ""b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSans-Bold.ttf"", ""sha256"": ""a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans-Bold.ttf"", ""sha256"": ""e6476c1b80502924294eed40894c5b18e06c181444ca953e5334262df9c27724""}]"
+DejaVuSerif-Bold,10,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf"", ""sha256"": ""c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSerif-Bold.ttf"", ""sha256"": ""aac3f559445d23f0f567a243f91f3f6ad6cb4b5cafa1521a3479fffe0637f0bd""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif-Bold.ttf"", ""sha256"": ""c47b5527bcdc8dcf9ea8c77054454c5a884beaca2f44851a2a823ee639cbf07f""}]"
+CMTI12,9,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti12.pfb"", ""sha256"": ""4f343bda5844ca1782bbad5e6d4052519c2f4e6f1e3bfb1a3a514a280e2608c9""}]"
+FreeMonoBold,9,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMonoBold.ttf"", ""sha256"": ""ca6ec358232ac4ddecc394bac517865551cd45222fea0a4a257e8bfb76494d3d""}]"
+CMMI8,7,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi8.pfb"", ""sha256"": ""f396f52d9ed3498c15aa7e694baef74c0a11119624fcd6db66dad4ac76972cb0""}]"
 Courier-Bold,7,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Courier.ttc"", ""sha256"": ""76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec""}]"
-DejaVuSerif-BoldItalic,7,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf"", ""sha256"": ""d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181""}]"
-CMSY10,6,0,[]
+DejaVuSerif-BoldItalic,7,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf"", ""sha256"": ""d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif-BoldItalic.ttf"", ""sha256"": ""8d3dd3d31350309042ed226af82b34539bd773518e6107cb352712853ba80308""}]"
+CMSY10,6,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy10.pfb"", ""sha256"": ""62ee8cef552017551cd3e026a483e700730103eceaad959c87b7730017f59cff""}]"
 F6,6,0,[]
 "Times New Roman,Bold",6,0,[]
 TimesNewRomanPSMT,6,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Times New Roman.ttf"", ""sha256"": ""f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3""}]"
-CMBX10,5,0,[]
+CMBX10,5,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx10.pfb"", ""sha256"": ""ca41102968b817bf6e8b22fd6de205ca23bf5088218511cce0c8129e1577cb70""}]"
 Verdana-Italic,5,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Verdana Italic.ttf"", ""sha256"": ""a1149e84da9e5c0a9b4cad68b62542b8503cb16ed8d1d7efd2640b36ce202b44""}]"
 "Arial Narrow,Bold",4,0,[]
 Arial-BoldMT,4,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial Bold.ttf"", ""sha256"": ""d72db21f9242aedd6b917d8549ad5921766b24d5f8d0becfda2ff4c620b3c2e0""}]"
-CMMI7,4,0,[]
-CMR7,4,0,[]
-CMTI10,4,0,[]
+CMMI7,4,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi7.pfb"", ""sha256"": ""5b293a581ddb937b02559c3ce1a60184cc434295533204a2cd3864a6ad8a1f53""}]"
+CMR7,4,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr7.pfb"", ""sha256"": ""b37e8671820b0753c6e233eaa3230c6ab9cff04e6c4baee312d60ae261e5aba1""}]"
+CMTI10,4,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti10.pfb"", ""sha256"": ""b6f162e1549a649c7e9b2edfb77306f60e1b0da74547f33cba39ff6ba0bdd473""}]"
 Calibri,4,0,[]
 NotoSerif,4,0,[]
 Times-Italic,4,1,"[{""face_index"": 2, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
-CMMI6,3,0,[]
-CMSY7,3,0,[]
-CMSY8,3,0,[]
-CMTI9,3,0,[]
+CMMI6,3,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi6.pfb"", ""sha256"": ""c31dbaffb861162eadf3a7210bdf271b0dda577841aed4c0572069b0d52662b6""}]"
+CMSY7,3,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy7.pfb"", ""sha256"": ""583b65bd1857bffc2ab184fcb4aad4e70e12eb05c9ca9f1c58c9a00a86c8bccf""}]"
+CMSY8,3,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy8.pfb"", ""sha256"": ""2313392f0f4cd974d9da5fb54a52feae126059759edc04a4e47e33ea6027418b""}]"
+CMTI9,3,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti9.pfb"", ""sha256"": ""8eba22ca33c0bb7c77d634c3c017ce458580959bd865a2439638f2898ed3b95a""}]"
 Dcr10,3,0,[]
-SFRM0900,3,0,[]
-Cmmi10,2,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf"", ""sha256"": ""3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d""}]"
+SFRM0900,3,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfrm0900.pfb"", ""sha256"": ""6a3f330d545e05894601f1afef093c0d8f4efbdecafa8ab7e62104182f9715a8""}]"
+Cmmi10,2,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf"", ""sha256"": ""3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d""}]"
 MinionPro-Regular,2,0,[]
-SFTI1000,2,0,[]
+SFTI1000,2,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfti1000.pfb"", ""sha256"": ""b096aff08008502a67b55a7f55482ffe192f2630e8e579e91e7913de32251bc4""}]"
 TimesNewRoman,2,0,[]
-URWPalladioL-Roma,2,0,[]
+URWPalladioL-Roma,2,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/p052003l.pfb"", ""sha256"": ""1fa269c3d9f9cce83a3d032dc58122a7d514a79e6027c86858d8f1761d47d1f4""}]"
 Arial Narrow,1,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial Narrow.ttf"", ""sha256"": ""9e1d881c4e43b51868f5e235ea5a12c838e23cc8df6277df1a3c94e158999826""}]"
-CMBX8,1,0,[]
-CMBX9,1,0,[]
+CMBX8,1,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx8.pfb"", ""sha256"": ""fe99cd3dcadd182a24b86e593e56d2e900c992311218c43779f858ed6e1c3b31""}]"
+CMBX9,1,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx9.pfb"", ""sha256"": ""2636ee910f5f5e18a4aa40eee33d1097d91b2d9ac296e8b817b07c8ea2f0e99b""}]"
 Calibri-Bold,1,0,[]
 Century,1,0,[]
-FreeSansBold,1,0,[]
+FreeSansBold,1,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSansBold.ttf"", ""sha256"": ""553c21798fb59cac9a8f10eafc8cd4108ea4316e3921ae9d0a73aec02c190803""}]"
 Helvetica-Bold,1,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Helvetica.ttc"", ""sha256"": ""658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3""}]"
-NimbusMonL-Bold,1,0,[]
-NimbusRomNo9L-Medi,1,0,[]
+NimbusMonL-Bold,1,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022004l.pfb"", ""sha256"": ""115a5a2363a24f7afd4f2021763f62fdf0c034c133ec36d2b13b983f6e1e68df""}]"
+NimbusRomNo9L-Medi,1,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021004l.pfb"", ""sha256"": ""7f3f19f61452892a29d06af2836331ca78aed29390914d294f7a440d35927142""}]"
 RedHatText-Regular,1,0,[]
 SKODANext-Regular,1,0,[]
 "Times New Roman,Italic",1,0,[]

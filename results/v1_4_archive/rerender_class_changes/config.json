@@ -1,0 +1,33 @@
+{
+  "status": "complete",
+  "command": "research/realworld_e1_eval/.venv/bin/python -B scripts/run_archive_rerender.py",
+  "versions": {
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "numpy": "2.5.4",
+    "pillow": "12.3.0",
+    "raqm": "0.10.5",
+    "harfbuzz": "14.2.1",
+    "fribidi": "1.0.16",
+    "freetype2": "2.14.3",
+    "fonts": {
+      "DejaVuSans": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "DejaVuSerif": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
+      "LiberationSans": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
+      "LiberationSerif": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
+      "NotoSans": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
+      "LiberationMono": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2"
+    },
+    "census_sha256": "6b4933178060b4e5ac8dd9a611ec15472d35eab98fe9027474bc5ccc5b7a8708"
+  },
+  "target_seed": 20261029,
+  "release_seed": 20261120,
+  "bootstrap_seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "recovered_source_commit": "733d48a",
+  "source_sha256": "99370b19d99472e8f0c74001eea12b540ba5d06ef89a84c0c98736b392b80a40",
+  "wrapper_sha256": "d16dbe5766f4eb5210de9829652cc705d880ff96197190daac59e50f1ee7aebe",
+  "protocol": "Original font scenario, layout boxes, same 2000 surname targets, five of six fonts per target chosen by seeded permutation; original rerender function body unchanged",
+  "class_change": "Any difference among all five released classes; old_class/new_class are first/last, and the complete sequence is also archived",
+  "fresh_geometry": "All six 24px full-list geometries freshly rendered and numerically identical to retained bounds",
+  "elapsed_seconds": 9.335639041994
+}

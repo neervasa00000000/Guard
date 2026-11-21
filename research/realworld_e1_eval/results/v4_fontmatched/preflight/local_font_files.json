@@ -1850,6 +1850,196 @@
     "n_faces": 2
   },
   {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf",
+    "sha256": "b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf",
+    "sha256": "6edf0283160186af451cbee71e7b845f2e4cabf264bb992ce668c83c25465e6f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf",
+    "sha256": "ccdf74b350f11fd3dd5774de50e5e6346a1a5da1f5b7d5fb83590665e97a5213",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
+    "sha256": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf",
+    "sha256": "82099dcfba5aa868cdfc27451989525fe3292f737fb3c9e0328ce9cef59652f6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf",
+    "sha256": "baada9a5172fe20886251aff0433fc38461912d5daf07287e7bee56620a8da96",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf",
+    "sha256": "a69081c15c76c827e0a27a5a7f5c74b6135c843499955495ffa8c20d3a98288b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf",
+    "sha256": "28052813f7a709fc89f52d192dc995ef4f0fdc5c3d7b73a49d6849b1916d0cd0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf",
+    "sha256": "602ec86b8948cfcd956482fe64f94c36c867770149ef2f791d4613f443bcecb3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf",
+    "sha256": "c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf",
+    "sha256": "d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf",
+    "sha256": "3e7994fbc54fa10ce3352a42d548fadd7d9cadb69cb1109bc9d960f6dac57f04",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf",
+    "sha256": "107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf",
+    "sha256": "2914f32e47c777c27be5677afae7db4de79f9e45de6fc9097d9949c23c14f7d5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf",
+    "sha256": "167378031e2dddc6216d67819c9260e9a06ffc4c478e4e23cb98a6fd44b183c2",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf",
+    "sha256": "e8533dc7083fa346bda1933d60ea4a83b67d0945bceaf1b3541f82b4a0e2c6a0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf",
+    "sha256": "98788fd4ba48dfbb2bd026c0e20a247a8b06c7372879628b7a6bb0d5bb09736c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf",
+    "sha256": "6cfcb333d22b7c3c623bdfd40174f14c85c3d6731ca6166c1edc80140eae8527",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf",
+    "sha256": "5256f7e021335ac4854d180f0e8bf198964ec2fc820176276e16aabc6537bb57",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf",
+    "sha256": "5d106a5b78d1ffc30174553439b86257bfa45f088120cb3b4150a51dc4f9b60b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf",
+    "sha256": "a5bdb60e76c37f6c90aa2ce8b5cdf0043a85182fe0dbb61c086262bc7f7e2def",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf",
+    "sha256": "04cafda56881bf660865dab4e17e1cdc280be8d3cb50fae5eb8695d4de30f548",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf",
+    "sha256": "c18b87d60614a42baeb2a22d447e647fda7fb3a9940fef57dcbe51bd1b4a4b1b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf",
+    "sha256": "c8d76f8d4a129ac64250b983ed256af4769b9dd1bd3f874f85ba0bd49a407f4b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf",
+    "sha256": "fbdc553182f8ff5adc3bc16208aac27d1e0f69298ab40e3675d2c6ab0b5e8b5c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf",
+    "sha256": "7187b1ca8f2b65c76a325a5af5f345e5ad88a172d44d9b88be1d090f5429d22e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf",
+    "sha256": "d256c7ce99ddcc998ef12e369a5921b33e4d6ef24b402687e4c71ced06510f37",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf",
+    "sha256": "dde05cf95b586e1414dc19f18b2a5f3ba780cc4bbc05d0efb4825215b912da86",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf",
+    "sha256": "5c548a0a9b5b11233cbb11ed5054805767326f0c614a377c756541caae9fdf0d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf",
+    "sha256": "3140981eb03466a162484fcf8c81a525980cbafefd694810a84ec3b6ede4ba8d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf",
+    "sha256": "fec7710ee130043b400e9bbd0b221743157bb08a80d93655042522523ab95029",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf",
+    "sha256": "074497b50c43ea57597181591f9893d38fc12a87e95104f5657fc2481f61a23a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf",
+    "sha256": "af28f0c170723ac776a71bfa595aca09e98d15ae5c3d54ce19afd5619c96a905",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf",
+    "sha256": "3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf",
+    "sha256": "4dd9761b058c009db9b2145f55ee6617d093c273dd3d6c5b3e43ff6110fa9bf6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf",
+    "sha256": "7df91a83d05b2e471ec638cb0b435a360a3c792b09fc42a7da67e91f2e79115a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf",
+    "sha256": "bb226ed932f3f100cd0e52f5e4912ee553b41b69e7bfdb8d3854db0eb6605232",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf",
+    "sha256": "6211f09ae93599991afda970c24669dad1a77e253d915624fbf212f702f071d7",
+    "n_faces": 1
+  },
+  {
     "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSans.ttf",
     "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
     "n_faces": 1
@@ -1875,193 +2065,1453 @@
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf",
-    "sha256": "b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/NotoSans-VariableFont_wdth,wght.ttf",
+    "sha256": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf",
-    "sha256": "6edf0283160186af451cbee71e7b845f2e4cabf264bb992ce668c83c25465e6f",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfrm0900.pfb",
+    "sha256": "6a3f330d545e05894601f1afef093c0d8f4efbdecafa8ab7e62104182f9715a8",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf",
-    "sha256": "ccdf74b350f11fd3dd5774de50e5e6346a1a5da1f5b7d5fb83590665e97a5213",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfrm1000.pfb",
+    "sha256": "650a5428cc0729742dcf1935dba1f504e27bbb5ec5936aeaf5f4955909a0f540",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
-    "sha256": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/cm-super/sfti1000.pfb",
+    "sha256": "b096aff08008502a67b55a7f55482ffe192f2630e8e579e91e7913de32251bc4",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf",
-    "sha256": "82099dcfba5aa868cdfc27451989525fe3292f737fb3c9e0328ce9cef59652f6",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSans-Bold.ttf",
+    "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf",
-    "sha256": "baada9a5172fe20886251aff0433fc38461912d5daf07287e7bee56620a8da96",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSans.ttf",
+    "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf",
-    "sha256": "a69081c15c76c827e0a27a5a7f5c74b6135c843499955495ffa8c20d3a98288b",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSerif-Bold.ttf",
+    "sha256": "aac3f559445d23f0f567a243f91f3f6ad6cb4b5cafa1521a3479fffe0637f0bd",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf",
-    "sha256": "28052813f7a709fc89f52d192dc995ef4f0fdc5c3d7b73a49d6849b1916d0cd0",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-dejavu-core/DejaVuSerif.ttf",
+    "sha256": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf",
-    "sha256": "602ec86b8948cfcd956482fe64f94c36c867770149ef2f791d4613f443bcecb3",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationMono-Bold.ttf",
+    "sha256": "267ae0b63fc67980d11fc4cbb630de84d845c6bf350988ec56766baf98706b8b",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf",
-    "sha256": "c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationMono-BoldItalic.ttf",
+    "sha256": "c8f21356b3948b9ae2858b82a5514a8384c53847fde1f9ecd38cb6849582f864",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf",
-    "sha256": "d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationMono-Italic.ttf",
+    "sha256": "8d39f087bf0d103586624233981c048818e1d4bcb74e4c5ca96a34f6caed583d",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf",
-    "sha256": "3e7994fbc54fa10ce3352a42d548fadd7d9cadb69cb1109bc9d960f6dac57f04",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationMono-Regular.ttf",
+    "sha256": "a2e642d350acb1c5e368f375db8a4ef5a2f4ff2b79056d8c3be8bd8a7e9fcb44",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf",
-    "sha256": "107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSans-Bold.ttf",
+    "sha256": "361c61b82d575c5c35fd9157fda8b0194bcfcd0d88ea8521a4fb5dd53d33dddc",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf",
-    "sha256": "2914f32e47c777c27be5677afae7db4de79f9e45de6fc9097d9949c23c14f7d5",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSans-BoldItalic.ttf",
+    "sha256": "a224075ac17495ad0a3af3bc0a419ac0704a8b3fd1095456201fb9b095fc281d",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf",
-    "sha256": "167378031e2dddc6216d67819c9260e9a06ffc4c478e4e23cb98a6fd44b183c2",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSans-Italic.ttf",
+    "sha256": "832b4406dbef23628800d3aaad21048534ac84d7e3ad955be83b8172ed8ef512",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf",
-    "sha256": "e8533dc7083fa346bda1933d60ea4a83b67d0945bceaf1b3541f82b4a0e2c6a0",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSans-Regular.ttf",
+    "sha256": "f8ace1f892b2bd9dc1792ba7f097fa7588f84fed48321480e04de5390828221f",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf",
-    "sha256": "98788fd4ba48dfbb2bd026c0e20a247a8b06c7372879628b7a6bb0d5bb09736c",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSansNarrow-Bold.ttf",
+    "sha256": "f77fe6ca01c8b043b99743fad34954c53d625263c076aa844c5a5dbf568743ab",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf",
-    "sha256": "6cfcb333d22b7c3c623bdfd40174f14c85c3d6731ca6166c1edc80140eae8527",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSansNarrow-BoldItalic.ttf",
+    "sha256": "822ef9cfc11f1409f27611f8d128d67105da5ea616f4010b2ab9af76413bda7e",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf",
-    "sha256": "5256f7e021335ac4854d180f0e8bf198964ec2fc820176276e16aabc6537bb57",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSansNarrow-Italic.ttf",
+    "sha256": "a48c86c13c247fbcf3cdbe9bed3e5abcfa6e91a8f61f3ae190a5893885266e59",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf",
-    "sha256": "5d106a5b78d1ffc30174553439b86257bfa45f088120cb3b4150a51dc4f9b60b",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSansNarrow-Regular.ttf",
+    "sha256": "ab9719545aeb24156c462601f92bf4897130beaac59ad79bea7da264bce69b19",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf",
-    "sha256": "a5bdb60e76c37f6c90aa2ce8b5cdf0043a85182fe0dbb61c086262bc7f7e2def",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSerif-Bold.ttf",
+    "sha256": "af228b9de767e5162168e433351b3d0e086648219c6c12ed888fba0bda3694d5",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf",
-    "sha256": "04cafda56881bf660865dab4e17e1cdc280be8d3cb50fae5eb8695d4de30f548",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSerif-BoldItalic.ttf",
+    "sha256": "19c8cef87d61197323b0501d0f8676669489658f23417ca661de18d85755af06",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf",
-    "sha256": "c18b87d60614a42baeb2a22d447e647fda7fb3a9940fef57dcbe51bd1b4a4b1b",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSerif-Italic.ttf",
+    "sha256": "ccd19036f8e8599e920345105df8d21eb27a66b700ac23968fb14d70259ddb1e",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf",
-    "sha256": "c8d76f8d4a129ac64250b983ed256af4769b9dd1bd3f874f85ba0bd49a407f4b",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSerif-Regular.ttf",
+    "sha256": "1c9c77c2cd0f3c2d2aeef53ea50a4d5d3d684ac73a431d7c70d7864887d194a3",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf",
-    "sha256": "fbdc553182f8ff5adc3bc16208aac27d1e0f69298ab40e3675d2c6ab0b5e8b5c",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationMono-Bold.ttf",
+    "sha256": "ddce09ee3483b2d5faf61f0baba8592e76e0ac6dd4ab36683e5334c288bf5eef",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf",
-    "sha256": "7187b1ca8f2b65c76a325a5af5f345e5ad88a172d44d9b88be1d090f5429d22e",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationMono-BoldItalic.ttf",
+    "sha256": "2ec6f3e5bd9b24c7fb04c229a1ee64f600e4072c03a041c96c2d62974c2ede2c",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf",
-    "sha256": "d256c7ce99ddcc998ef12e369a5921b33e4d6ef24b402687e4c71ced06510f37",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationMono-Italic.ttf",
+    "sha256": "016743fc425a1b61eb349c72c02f3da6a1349d1da7a5d9aded27321397eed955",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf",
-    "sha256": "dde05cf95b586e1414dc19f18b2a5f3ba780cc4bbc05d0efb4825215b912da86",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationMono-Regular.ttf",
+    "sha256": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf",
-    "sha256": "5c548a0a9b5b11233cbb11ed5054805767326f0c614a377c756541caae9fdf0d",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSans-Bold.ttf",
+    "sha256": "1b5f2da6f4cadce4c05b9ecebe3a6fcd374eb95ae443605e799f4c3287978939",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf",
-    "sha256": "3140981eb03466a162484fcf8c81a525980cbafefd694810a84ec3b6ede4ba8d",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSans-BoldItalic.ttf",
+    "sha256": "352e9dc2be89f210dbd3c0fd5dfaf97135de70e0beb5f22378601861462493a7",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf",
-    "sha256": "fec7710ee130043b400e9bbd0b221743157bb08a80d93655042522523ab95029",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSans-Italic.ttf",
+    "sha256": "93ff5260834141b6f9d8f2b846d427f3a5dc492dbdce8ebdad406e38a38f34bb",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf",
-    "sha256": "074497b50c43ea57597181591f9893d38fc12a87e95104f5657fc2481f61a23a",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSans-Regular.ttf",
+    "sha256": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf",
-    "sha256": "af28f0c170723ac776a71bfa595aca09e98d15ae5c3d54ce19afd5619c96a905",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSerif-Bold.ttf",
+    "sha256": "443a4dbd694b6e4689925947b456e0532e10b19c90fa32eb39ea6c2cd9db9ebd",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf",
-    "sha256": "3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSerif-BoldItalic.ttf",
+    "sha256": "4b2635d2ec4d992373dcae577c742a98ecfd841ffc1b8a103b5f10db163dbc7a",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf",
-    "sha256": "4dd9761b058c009db9b2145f55ee6617d093c273dd3d6c5b3e43ff6110fa9bf6",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSerif-Italic.ttf",
+    "sha256": "de18fe26337e03241952dca46398d5b66f3c5738d080bfd284f66e67b926f597",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf",
-    "sha256": "7df91a83d05b2e471ec638cb0b435a360a3c792b09fc42a7da67e91f2e79115a",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/fonts-liberation-2/LiberationSerif-Regular.ttf",
+    "sha256": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf",
-    "sha256": "bb226ed932f3f100cd0e52f5e4912ee553b41b69e7bfdb8d3854db0eb6605232",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmb10.pfb",
+    "sha256": "c0e21c2df152dd0cf922626f4fced88fdb8cf3dddf856f4464e447af98b5b902",
     "n_faces": 1
   },
   {
-    "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf",
-    "sha256": "6211f09ae93599991afda970c24669dad1a77e253d915624fbf212f702f071d7",
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy10.pfb",
+    "sha256": "dd42853a466c1c38ca940375ce49bb18ea336299344a80dab4fa0faf145d19db",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy5.pfb",
+    "sha256": "65be796f0db8c0d0b29859a28332aaf0861b931ad25a4c0ef94cbc03d6c44b81",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy6.pfb",
+    "sha256": "7767d3ee98b8ebf33e3636aa2542a5d0c8a1b019255a06f21c039a938445dd07",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy7.pfb",
+    "sha256": "643914e3072b41564a8e39fbeaa7b9c9c795d71841ce749194c5df2e5bd440d0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy8.pfb",
+    "sha256": "d16c68314f9c9405fb936a9c54a6f0b5777b7772718a02d98628f93a40b68e10",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbsy9.pfb",
+    "sha256": "a274b78189512361e4a724251d00c7c8e33cc242adbe46ca8fbaed18dace8ca0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx10.pfb",
+    "sha256": "ca41102968b817bf6e8b22fd6de205ca23bf5088218511cce0c8129e1577cb70",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx12.pfb",
+    "sha256": "c838238f31d86a9f198873dfaf501601a4fc966845b9c59e7dc251c4e85d1f1f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx5.pfb",
+    "sha256": "4e99bb2f3ebe368073de2685562f5adf7f43358de406f0d2b4b601ef5f7a566c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx6.pfb",
+    "sha256": "1ceb3ea37367394e911a94e4d4b7d5ab3dcefcf19c0c607568951c57385ee394",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx7.pfb",
+    "sha256": "5e6cd2a9ac9933dd764c41fcfc5097bf1cb3bf1f697438eb4c344b9510630974",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx8.pfb",
+    "sha256": "fe99cd3dcadd182a24b86e593e56d2e900c992311218c43779f858ed6e1c3b31",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbx9.pfb",
+    "sha256": "2636ee910f5f5e18a4aa40eee33d1097d91b2d9ac296e8b817b07c8ea2f0e99b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbxsl10.pfb",
+    "sha256": "cee22864c667c9e06b2b0155a5bd792bbdbaf26d2fd777013caa9afb84f65196",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmbxti10.pfb",
+    "sha256": "ee8b854bae6ffd48b5d935ca5f19804faf7b78ac5f83cd4a6efd7da7c4f6c757",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmcsc10.pfb",
+    "sha256": "06c64598f2ff53539677835e26630083d32abd5258d7e4fa029d742ba213d2f5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmcsc8.pfb",
+    "sha256": "0c51e5a2a8d60c9d77aa082e98551a264460ac2b542610756772279b45da0333",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmcsc9.pfb",
+    "sha256": "62d2f21199d118087af7fc85203f953ab694eeef51957b7afb98de055f96c484",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmdunh10.pfb",
+    "sha256": "b0061b33db8ec21e8b9c720343faf876cce080555cfcc69551a4cb3e8dd1ea37",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmex10.pfb",
+    "sha256": "791b31aa1db8608d0144b3a40fc0fe53383a60f6b00d0e8fd9f06ac4a11df8cb",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmex7.pfb",
+    "sha256": "df327fc28dc3ce615dc91399f335ec2e1e646e34929936be16836875d5ffaf54",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmex8.pfb",
+    "sha256": "778a2aaea4bf9d19ce2a7342864fa2696c07770c86d36a62e2ef799ad0724b05",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmex9.pfb",
+    "sha256": "b7aacad3b24221cf6ccfedb08708444a00ded5d3f24c5cff79dcc4450d65ab16",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmff10.pfb",
+    "sha256": "715d8b9fda1550b368583bb25cd1593d611ec95a67c53020a117b612cbb1a1e9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmfi10.pfb",
+    "sha256": "401a372cff0b354afadc5674b8b6836da7c42ec6e8b5f875cba1bfa51676c2c4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmfib8.pfb",
+    "sha256": "584b0ea7ae22fdd9a2ffc524ec7cac08ac83d3fa6c49bec27db76bfbbcda72b3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cminch.pfb",
+    "sha256": "a56a8e5af93dada659d80eef4a06a170e0617f9016f86fa709e94e07484fc11c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmitt10.pfb",
+    "sha256": "3f2478a72dd208e15491869d806694854d4f700de103363f398a32043b761087",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi10.pfb",
+    "sha256": "e3661061e8aa474d6de5ffa916edceb0e3d8b998862018c147f0357fce00bcd7",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi12.pfb",
+    "sha256": "80fa6aa5f49d52e1f7e5120d053b32d463cd0392a68588ef17c0d1523fba7786",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi5.pfb",
+    "sha256": "35048e58e53f4aa53025069c1d0de33a16d8d4c111bfa329669e6456ec0a967b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi6.pfb",
+    "sha256": "c31dbaffb861162eadf3a7210bdf271b0dda577841aed4c0572069b0d52662b6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi7.pfb",
+    "sha256": "5b293a581ddb937b02559c3ce1a60184cc434295533204a2cd3864a6ad8a1f53",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi8.pfb",
+    "sha256": "f396f52d9ed3498c15aa7e694baef74c0a11119624fcd6db66dad4ac76972cb0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmi9.pfb",
+    "sha256": "c7d9ebe6b8313e0eeee8f9ed4d4e7069c74cfa9d9b64295f0f487e4662281a62",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib10.pfb",
+    "sha256": "6cecc91b2c53569dc3c8ce12211e2252e80eb5d8709f1f1ddae67cb31c96f6a4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib5.pfb",
+    "sha256": "8e6ae2dc30a733de40ae65fc83466226027a67419c00f8287d78c9e470b56e1c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib6.pfb",
+    "sha256": "73a26cbc9db541823dee42dac89446b6d3b7e95f6f5cd20dda121b5e3dcc94f4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib7.pfb",
+    "sha256": "a549852af2f5fc02fdd64b0b40ddec91936f61630f130e0e7be8ebc809463cc8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib8.pfb",
+    "sha256": "46125aef54fc4ff14c8a8e1a9d3a5bb2a50bad681fb483e3ca314fbf39e5eb38",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmmib9.pfb",
+    "sha256": "8a8113f5c8d05a96a398001fbf616fbc62fffc42dc53dfc97a286a64fb0078d7",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr10.pfb",
+    "sha256": "fdcede8794018df5f2b58f0905fb20a2b418ed8f67b73ee12445855dfbe5b1be",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr12.pfb",
+    "sha256": "9b58bfa828b9553b7c8331cf26c45443b836f8aab62e820b40a5b65c8531dd42",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr17.pfb",
+    "sha256": "465827b4702e12f7deea159c8084753ffc27998963de516e490bd7bd5bed41dd",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr5.pfb",
+    "sha256": "84d38aac226b5274baca7a292e2039f5284a35d8a2ae31074a475fad87da310b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr6.pfb",
+    "sha256": "9fe20cb9ef24a0f4c74d38a65d4eee5cff3165f3b8600407ceba396aeb2b7617",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr7.pfb",
+    "sha256": "b37e8671820b0753c6e233eaa3230c6ab9cff04e6c4baee312d60ae261e5aba1",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr8.pfb",
+    "sha256": "8150cbfac5cfe53040327df171c3059f10730b32cabf2504b01713d639a11feb",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmr9.pfb",
+    "sha256": "ba5207eea69eaa9b598de2bd3d9aef27c4ff9831524400f70ff6a0dd3e36059b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsl10.pfb",
+    "sha256": "2f7889c542b515c31c533f278b20aeee3cc963d1dff8bf6f83d5710c91890823",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsl12.pfb",
+    "sha256": "bc7215c2cf8cc530352cb7b9d4b81230fc8ec462606d032e4af443ea5f8aa106",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsl8.pfb",
+    "sha256": "09d1f8ba4a43177ccddcbb8eba8ac8974eabfd4b861837e761d07ac3f62d93b1",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsl9.pfb",
+    "sha256": "8b72fc7d1cb67471c1d739077d08ea94674bf0a9875b9b2b1cac39e3082e8c44",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsltt10.pfb",
+    "sha256": "e2fb64ccb390ca467c6b42c43d79eab19083bbf67e15a0810ff282f7bcd31859",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmss10.pfb",
+    "sha256": "c9071fd676395df32520c3d906f2829898ea735f66c40a40578dec3c0ac51738",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmss12.pfb",
+    "sha256": "f64255358fe4e6cd89066d08371a60efc33ae0c475854e87b8d0a49a47c29d41",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmss17.pfb",
+    "sha256": "dfb6edd9d0cbbc24d19df1878ed00cbd756b65df683cb6274025eed96f73053d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmss8.pfb",
+    "sha256": "7f5744c7caf27c407888cadae84be6cd7c05f34cf2c5df385b8f69fa349a3feb",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmss9.pfb",
+    "sha256": "abf756f5c0c4fd2edf9b3811e3a4182f5d2ba7723b6ffaeb98237e026661a2fc",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssbx10.pfb",
+    "sha256": "9648958f2a77e1d3b5aa003852d1f38fec099d662bb06afba297fda3d4eba8ad",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssdc10.pfb",
+    "sha256": "54430f90a8d0e9dc4dec411c7d8422ef6e71e6ae657511879a7c4bdb6b0f2a2c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssi10.pfb",
+    "sha256": "331ae5d760afd4ea9cd08b8b2529ac4c1bce761a532211f9336030941be02b8d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssi12.pfb",
+    "sha256": "6f090883e30a15d688165e8481ea7fc0a4c1663ae89ce505226aed19af6f649a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssi17.pfb",
+    "sha256": "9920404d1a60689fb498b15739adc0a423cf4486ac06ac70c4d47202f7e82dda",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssi8.pfb",
+    "sha256": "be3b4c8a485e5dbc1aa7287ff6d575ba578526c80e7e4be2f5f36ad9d7cb5a84",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssi9.pfb",
+    "sha256": "0fc2eaf7e91014eaea0c69f3ca623183953eab674792876e1c7f4abc976ba0b0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssq8.pfb",
+    "sha256": "33ef7002f714deb02973e736bf036e390641a5f01c428c0872ef58cb0aed7773",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmssqi8.pfb",
+    "sha256": "c52415b041cd9f34b620a8bccf25651dd3a91190e454c9ec84c85cdd8fe7a459",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy10.pfb",
+    "sha256": "62ee8cef552017551cd3e026a483e700730103eceaad959c87b7730017f59cff",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy5.pfb",
+    "sha256": "46da57e5a06866efa9a20f3dd350811b5d3279a5ae789af63e530f1f570e3c7f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy6.pfb",
+    "sha256": "73eed8a83a07d8ef04d240da22bce1fd3646074f46179e3677f4f42a542f20b6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy7.pfb",
+    "sha256": "583b65bd1857bffc2ab184fcb4aad4e70e12eb05c9ca9f1c58c9a00a86c8bccf",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy8.pfb",
+    "sha256": "2313392f0f4cd974d9da5fb54a52feae126059759edc04a4e47e33ea6027418b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmsy9.pfb",
+    "sha256": "8049871d56d74fe3f8f2375afbb1e59b149bf6835027b4a101051cfca1c1a779",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtcsc10.pfb",
+    "sha256": "f1835964507385f4cb9b3234d4a73e4c696077e81d17f701fbeffb2ac4039f68",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtex10.pfb",
+    "sha256": "0bd2d03c2659882706817b0110d7afbb02928b7a65b799ff48831be0173eeffb",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtex8.pfb",
+    "sha256": "bd1d1cd8121b70c5780caf61694cbf206635cdecd5a16c2890ce2a64808f764f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtex9.pfb",
+    "sha256": "2c216bb0a7f7141dd3a91c51cc68d01158d8febdff39adaaab9778040a92d04c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti10.pfb",
+    "sha256": "b6f162e1549a649c7e9b2edfb77306f60e1b0da74547f33cba39ff6ba0bdd473",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti12.pfb",
+    "sha256": "4f343bda5844ca1782bbad5e6d4052519c2f4e6f1e3bfb1a3a514a280e2608c9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti7.pfb",
+    "sha256": "b95ecd4cecaba5f0466633ab32e57c26b10eee0466dbcd8f00f2e2275f948f3d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti8.pfb",
+    "sha256": "3f4a293229674c404e223566b807d0e6198762016e731fb286488e30019e21c0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmti9.pfb",
+    "sha256": "8eba22ca33c0bb7c77d634c3c017ce458580959bd865a2439638f2898ed3b95a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtt10.pfb",
+    "sha256": "d6bdecc0378f3cd16683d1ac348bdbc4ccde9a552e87b53fe9e2de5cfc7aa61d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtt12.pfb",
+    "sha256": "cc6ac592f4045f6726b0cd5cbb1f623a44fe5af2559b967d5ad32470e49cb1c6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtt8.pfb",
+    "sha256": "b0230533515d47ce911c053be37ffb37aa29b114105c5fbb985ea95e8c221143",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmtt9.pfb",
+    "sha256": "b16a3e758b3da3aca15e1748fb89ad3552acd648666015628c90d06f32ba3f8d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmu10.pfb",
+    "sha256": "d060c704dcf359b57d03bad8684169c41922a1f674eaa23f4589d59061a42dda",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/cmvtt10.pfb",
+    "sha256": "1752f4b13e4e38da7c5f8aa497c92a102cc883cb80a6655989bffed5366773e2",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/euex10.pfb",
+    "sha256": "a93b3c5d1e64c2305c1648de7c7b4903c55b5a59a816e37222e8ec8c418cc605",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/euex7.pfb",
+    "sha256": "6cc1d0b9cb1ccb286c4b904c685d466714c6c707e0c2d3b709a40126d89aadee",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/euex8.pfb",
+    "sha256": "e0ff48e411d1166c19fbfd1812831c6ad4c03ebf00ed398570c41dce2871fc7d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/euex9.pfb",
+    "sha256": "78ab9725c311f27ea8f062c567c5e6981d3eec38b3dd0d50114abc6e48cc9390",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufb10.pfb",
+    "sha256": "bfefdbbb7b989c456b764683fe874625cd9f0496240f94b3be3dfe51bac5c729",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufb5.pfb",
+    "sha256": "c9e5b3b89d55f56b31476973b4d73df3554de8b582acf452789cc9f3c67467af",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufb7.pfb",
+    "sha256": "99ffbd8ad82e058588d7c8c188c8c594332e782c0287e1a59a3c01d64837c945",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufm10.pfb",
+    "sha256": "0d4adc0d8d6b3fd993fe138b6863126d7122cd1ae180d0a19eca0759bf7d0975",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufm5.pfb",
+    "sha256": "5e9e9e208ecdc198f68f87785ef84fccf3ab93291c7ead0a9ea1b1d6107983ee",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eufm7.pfb",
+    "sha256": "8c5202802ed024ad905ab81b34a882c9473acf9e9ab7a717bcee3f0f57e985f2",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurb10.pfb",
+    "sha256": "2aa1cd6768ce9159f7704593b58e4e24c846cea7d789242266aee31d1e74b900",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurb5.pfb",
+    "sha256": "a07f6be2bb5d49c76286752071c26024b6216ade35a405d969079f10d5835dc5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurb7.pfb",
+    "sha256": "f216d91301c9f2f32082ffa8c64c36c8aa2c1eb15da4bf9dc1697a24e8557311",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurm10.pfb",
+    "sha256": "988a860101f4b64cc0ca6e9b7b065db1b316e78da5d1838c89524bf098e4aec6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurm5.pfb",
+    "sha256": "5cb5143825f985edc442eb71038f001ef5076c33702fba67484cfa5da118a7ef",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eurm7.pfb",
+    "sha256": "df9a5603b3d8777ca91530bb8cb771b0ca84f5b464a29fb4ab65d9b98149c9f3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusb10.pfb",
+    "sha256": "8e7bea692077eec638eb2ecf56672c47fdd94221e6de84898669a9b37091a252",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusb5.pfb",
+    "sha256": "e797448356d3b2d974ff842b78cb3ea18acbefae3a5c843deea2b5f58d6dd907",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusb7.pfb",
+    "sha256": "753b67c595e2efa3617d82fd4349ef077540035eacc20f374a28fdd2b7b2b716",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusm10.pfb",
+    "sha256": "eb4a18f8f72bef82051509701331e459cd547c573b74430401cb699812a66a59",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusm5.pfb",
+    "sha256": "24bd2076bba1f5d46c49a180879ed8bd026c0ca64d510fc524336439536458bc",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/eusm7.pfb",
+    "sha256": "71d135350b292822e5b5d96cf3dd07c9da3fa3e88a0b298b42110e9f98b9c536",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy10.pfb",
+    "sha256": "356a161e9561788b35f4b6f9798d64bb30546d0a05b2b40fb52d44648a41e16f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy5.pfb",
+    "sha256": "de3f4799c0974b79584177889603f42324c56ec7d3026699aca04fefb3ebb823",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy6.pfb",
+    "sha256": "a463a287c13451540d0b4eb33b9aeecfba2c4116c3c75f76d2157fa86472839d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy7.pfb",
+    "sha256": "5128d9b2192ac2f775d2705d3b0a92ae32155663b46938b43ffc8c63ee523c43",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy8.pfb",
+    "sha256": "937c940c795701af5f66a4685d6796751256d944b707a4f19068a151a5e5e040",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasy9.pfb",
+    "sha256": "6d7a37ed30c6b40484a641f22fdec374380655d1049274fc2ccd99f6839960da",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lasyb10.pfb",
+    "sha256": "c723dd7262d13bf92dba4b25743536f7a0409fdb9495982eb40bf1bc5e202614",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lcircle1.pfb",
+    "sha256": "503d59829700006b46d6ddf4f90b045ee7f08350f89544b302e7d73711c4b68f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lcirclew.pfb",
+    "sha256": "2f735239d6813c97f93d1d9fce4068f2f08b8033cf435db69c3d33c02fdce646",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lcmss8.pfb",
+    "sha256": "92c3a9300cb216c7d3f71add907a5c980425dfefa63ddb9de51c28c330495387",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lcmssb8.pfb",
+    "sha256": "9de3ab3b55e1f7f6783fe8b26e691cc32c1afa9a0d37b43ab97fe42569575250",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/lcmssi8.pfb",
+    "sha256": "d39f7bc081598287edf506ef7795796793a66d2e16330020b315d8583c3806d7",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/line10.pfb",
+    "sha256": "8bed0f3db560ddcd98fb1a1e9d58aed3ab2aef553c4364a32841b51ee5dc84a7",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/linew10.pfb",
+    "sha256": "415d63b2859d9dc7ba7e4c83a5e73463d059cfdb03bd3a8f509c211cdb166315",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam10.pfb",
+    "sha256": "f2e3b470b988a46272125e917531690d3c4d03ac7238f112b07337f972a537fa",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam5.pfb",
+    "sha256": "a7a1893c3e1af52a1bc02cb2cff4a0acfd2aa7ced13d4a6ce797afc68c9f506f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam6.pfb",
+    "sha256": "8d5cc8c553da80c87067ee5584e2de1f3eee3dd823e2cd5be817f69cedc8e8ed",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam7.pfb",
+    "sha256": "c96c9138119d9879757ad8c1ecb2cc25b0cac303ba3ee13d25d117fdbc71d2f3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam8.pfb",
+    "sha256": "9c0956406ad185fea51a094bb9c4d036401a948b06bed67e8d61aad2e8d17586",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msam9.pfb",
+    "sha256": "828f69e69e19bbd0b76246edccb191d5d8205d6bd82992b093b4951bde353d78",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm10.pfb",
+    "sha256": "d2121de7e7c14490a2d352e3b62e62882d6c300235464bfa577e6055696e6e62",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm5.pfb",
+    "sha256": "4504066336bdfacd4a5ef1abfe80b8447ed712057ec6f66962eab31eb43a93de",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm6.pfb",
+    "sha256": "96d919a84d99d45f8a406132fe153758194eb8264dba0b169368db15ddf7ee24",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm7.pfb",
+    "sha256": "bd86d36def0f2d226cf773a195a88f88e424759f3ddaaf654de2ae670906734e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm8.pfb",
+    "sha256": "ee1361545cd3987b633d793c157cb72a14527fb16deaf5d8495b78529b919902",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/msbm9.pfb",
+    "sha256": "b36d2f8b3dc63370f34d257e3393929f574bcb6ba7ff40358d471019dd0fbc00",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/wncyb10.pfb",
+    "sha256": "6f3120c7ae6c6477cc3963ccbf0421537faaddf47b3bca57fa8b04e8e6c10cba",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/wncyi10.pfb",
+    "sha256": "4593709f6165d1987cfa665de5a643d46720f931f8ea4778849eb5bbd5d9863f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/wncyr10.pfb",
+    "sha256": "bd4fcf73c8a1d1abbc10473e0186e2c7e519588dc05dab6998f49f04df1fce0f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/wncysc10.pfb",
+    "sha256": "7f933c74f42e449d69afe9d3c75b5d3a80c2091877ea4ece64c43e23d531f68f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-amsfonts/wncyss10.pfb",
+    "sha256": "fd738acbee98be96e137a4ee138871e439c6b30434783288357210f1341cbe14",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuMathTeXGyre.ttf",
+    "sha256": "40da67c0b6b03076504fbda4bf3e7b4f20b35999c98063019a3392fe9b1294fe",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans-Bold.ttf",
+    "sha256": "e6476c1b80502924294eed40894c5b18e06c181444ca953e5334262df9c27724",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans-BoldOblique.ttf",
+    "sha256": "eb436dca0c2594b73d8b603b892e374fdfd8d885d25ffb4f18df4c4c0b49e50f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans-ExtraLight.ttf",
+    "sha256": "6cb0746a1f68d176bebe83752cee35ebdf726cb1a1e88a01fc038ddf76de9ea8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans-Oblique.ttf",
+    "sha256": "4af75fa16ee6d3ad43e1ecec41862c24954af26a55c6bb1ebb27bd486a50f5f4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSans.ttf",
+    "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed-Bold.ttf",
+    "sha256": "38098d0b8edd8430a0f53fb2831b5d36037563a998a620d3c87a4d7591766d20",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed-BoldOblique.ttf",
+    "sha256": "43f9fd6b77edf174553cf94857c77c63de7ddb0c6751fd1390e73223518e128f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed-Oblique.ttf",
+    "sha256": "dc3526fa25fae4278c4e34b47d4c049b6923421c70921032a0db11bfe9c1b0cf",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansCondensed.ttf",
+    "sha256": "8550cd5ca1acb65a8fc7877c46939cd0b4d909f8e7bc1e24716873d918c5e549",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansMono-Bold.ttf",
+    "sha256": "bce60f1b4421acd9ea51ba6623d7024ecbe6817a953e3654df62a5e6bdf8f769",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansMono-BoldOblique.ttf",
+    "sha256": "91713a71d550bba22c2a6b2bb2a9ad8f9a159e12e4e9f0a5b2677998ba21213e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansMono-Oblique.ttf",
+    "sha256": "742097840c541870e8d6dc5c9b37bb1ceeea6c0dedd1d475faf903ef9df734b0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSansMono.ttf",
+    "sha256": "b4a6c3e4faab8773f4ff761d56451646409f29abedd68f05d38c2df667d3c582",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif-Bold.ttf",
+    "sha256": "c47b5527bcdc8dcf9ea8c77054454c5a884beaca2f44851a2a823ee639cbf07f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif-BoldItalic.ttf",
+    "sha256": "8d3dd3d31350309042ed226af82b34539bd773518e6107cb352712853ba80308",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif-Italic.ttf",
+    "sha256": "2e39b1d50f90b933b00c7bb54a96afd3f86419b3d717c7cf202e36f2d4973e47",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerif.ttf",
+    "sha256": "42d1edeb7952f31b1f96d767ed7030b08a39e0c372b0071641518864e2bffb51",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerifCondensed-Bold.ttf",
+    "sha256": "e09aa87c60c3e8de7f4e6c7bfeec8fd9489b6cd975e3033259bca3d6009aed18",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerifCondensed-BoldItalic.ttf",
+    "sha256": "4cfc5a3700c72413f51c4bb54f09617401a0a63eccb9ff577713e20afa047fa5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerifCondensed-Italic.ttf",
+    "sha256": "dfe5bf5336d62ca71de419cccf7fd18ab19a57245dc392891ee76347129807e1",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-dejavu/DejaVuSerifCondensed.ttf",
+    "sha256": "685dcdfb8daf32a453d3426a4eb8d881c72146ddd999229354fb757511357995",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMono.ttf",
+    "sha256": "9d6da248d9c7a6a384b9b4127c16fa1039fd5bacf62878515b3d9ed9ae2a171d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMonoBold.ttf",
+    "sha256": "ca6ec358232ac4ddecc394bac517865551cd45222fea0a4a257e8bfb76494d3d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMonoBoldOblique.ttf",
+    "sha256": "c2d1a7ea829296c1a625054f0b8cb3abe55219abfbfefdd89e788ba46ba81418",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeMonoOblique.ttf",
+    "sha256": "8b018898ac3fa2831edf1c182b077791acd6f2de398a0921dabadeee8a3b4660",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSans.ttf",
+    "sha256": "4c5e0a8b8d7242ef21bfebf37830003c874ead023c246f6ea1ac48aa8a05eca9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSansBold.ttf",
+    "sha256": "553c21798fb59cac9a8f10eafc8cd4108ea4316e3921ae9d0a73aec02c190803",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSansBoldOblique.ttf",
+    "sha256": "b335dcf252d884a6f512f6e7e742a01323bc5cb8343d91b6162a856a8a7a568e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSansOblique.ttf",
+    "sha256": "26a7e96119fb6c6946f5e5e0a415c921d8be0984abf69d957d403ad9926d79e5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSerif.ttf",
+    "sha256": "8597e587cb74f27a0ad0a9d59cefab1e83695a0a7968dadfdb630c1feff4392d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSerifBold.ttf",
+    "sha256": "1cd9aee0dcd02a58534fe3a26277b38da0bcd533119605a3ed81c35eb4ff3e88",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSerifBoldItalic.ttf",
+    "sha256": "f5da86ded674bfe542436517f6893c8d890407184ced12a41ab36f3cd4ad5e64",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-freefont/FreeSerifItalic.ttf",
+    "sha256": "54ff3be638017667f356afd0a85bda8ad07d8cd6b51ac8e0746f90f287a5bfa4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxb.pfb",
+    "sha256": "b214eda331ac189c8f00bd13d0f59733bfb08aa7b78137747855f8c312f70302",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxbi.pfb",
+    "sha256": "2d29bbb60c833bf4f4b81b02f0bf287879fcb1f6bdac339c05f5eebbc095021a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxbss.pfb",
+    "sha256": "8389c8cc7f41a616a4b7554cf687355f5ce324d83a8c47f7b43346268296faff",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxi.pfb",
+    "sha256": "2ce59b1b14894fef7b022d0e7ecf2c34563fb154deb4caa9bd6b38db69c096cd",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxr.pfb",
+    "sha256": "e4b4347563e207035363e04e7d3332d6311e3b45c1a39ebd67a71e235727ec94",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtcxss.pfb",
+    "sha256": "246bd6cf14346286b219e5c7e8267cb979b52da20f358894425f20c1453aef4c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxb.pfb",
+    "sha256": "0e4dcec06a5282d0ba1366ed3dd5453cac785b7714eae6f33a4602d2758a8e59",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxbi.pfb",
+    "sha256": "3cc7c4e048fc4b0de162b9f68114c55605b0c8e7b5fda6885311d32ec40341a5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxbmi.pfb",
+    "sha256": "0d9d7a890938ce18eb31f430ddd46a114fcd6c677bdc82762faf4627ec5aa537",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxbsc.pfb",
+    "sha256": "81b03722c2551b70db02f004a54bb3917c45fb996c9f05f8e1a1c10f89277fa0",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxbss.pfb",
+    "sha256": "0b4ad150853455dfbff05fdd23eb5c771bdc1627bee87236105dc2b70f20d1ad",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxbsssc.pfb",
+    "sha256": "6342aa54bbf297d61e3bbd01283128a87bfd0df42a15cbc17b6f5262f41e14f9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxi.pfb",
+    "sha256": "145b7e89719d44d854af9ebc596d4f53af153ca07910425513ed7b349c40e7ff",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxmi.pfb",
+    "sha256": "e68cf9094547fe00f6242a9dcbb78ecba9dc63e07556062f4dad80443fca1fb1",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxr.pfb",
+    "sha256": "39a577dc7730904d65f60719f33985c958191c83370967087200c1b0048491a5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxsc.pfb",
+    "sha256": "b93169fe0538561fdc54f7a5722bd3470483c60bd62b8f54799bc6eadaa5c2dc",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxss.pfb",
+    "sha256": "2ba0c333f8a59a2a6a24eac6c61d829abe99ee2a7e36157310557b41a5b60b36",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/rtxsssc.pfb",
+    "sha256": "72ee5afea225f8aa434efa82eb78b2d743c35fcd46054d57115c291949276e11",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/t1xbtt.pfb",
+    "sha256": "b890d55ff4b317c3d9103af8736adbf7de2b1f4bbfcbe12331958fa4ea50526f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/t1xbttsc.pfb",
+    "sha256": "b9de58cf2caae904dc28f5952124d0b17f18e653071ab04a528941ec07be0999",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/t1xtt.pfb",
+    "sha256": "6770cff4cccf84f3e7f1c462b33696ed7e525d0407f4e733162b4009c4de8585",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/t1xttsc.pfb",
+    "sha256": "d7b88cac196fc2d4a9ec909465ae315d370f093711bce7f89df21b819575b804",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/tcxbtt.pfb",
+    "sha256": "3992bec208d694325c108652f00628ff56acbd0c65ebf659ea43d3e7e9744dea",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/tcxtt.pfb",
+    "sha256": "70587eb2092a5d97fc14fdc38c443ecb576baf7099f065b33014e39ba96689c6",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbex.pfb",
+    "sha256": "84c382a5d85a3d6a1efc097213ea3166dd63d4a7f1014f77cb24c5f29d538e64",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbexa.pfb",
+    "sha256": "7ace1054b71d2c9a85b6b92be88a6b44b968f71dee8c936ebaf80ea54fe4718d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbmia.pfb",
+    "sha256": "25c921b33de8ff61588102b8c9280cc30e121bc0da4ce71f202e591a8b9bf2ca",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbsy.pfb",
+    "sha256": "26fce0e249116180c655046dfcedde8eff87c8fd39d91871568ebdc0429342f4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbsya.pfb",
+    "sha256": "3ca88239564911f6bbe334277a9506b19311cf17ef625f41032dfa9e4f4801b8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbsyb.pfb",
+    "sha256": "bfec97df00b3315ddd1b406dd5beda13a9f32224ef309335174494cd25edf1a9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbsyc.pfb",
+    "sha256": "375f3d05751f0a54de28291cc0c1dc51b9c5b78a3f5edc9f467c410cf0558453",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbtt.pfb",
+    "sha256": "de755816817ea497ee2a0fb0275edc909632f8f009dc3392a162c13de569425f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txbttsc.pfb",
+    "sha256": "417bafe7aa36bae7951daf035f46e9d6fbb69a430aa69381f3421e5637c99d53",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txex.pfb",
+    "sha256": "4179a81b810d25141e517c0f286c8c0b491f4e5106506995a4ba080592d74fed",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txexa.pfb",
+    "sha256": "71e218c7d9809ef4b860cefc659dc0f8d0fab515abcb58f4e3b34864070d0939",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txmia.pfb",
+    "sha256": "e0677019f5c93176203241af7d81062a207f910432ecd74a91fa429ee2716208",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txsy.pfb",
+    "sha256": "2f85658e47126547ac5efbe9fc3d1f3818c7fd2c46e1caff3fa8adf6a21b31e3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txsya.pfb",
+    "sha256": "4f346a40c4c8a9572d5176d80f8501860f9eda2d9c036891c258f41462cec59a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txsyb.pfb",
+    "sha256": "fbb895bc89567ca493490f6f5bc7ed367e5abdf95d96da6a6316b60d5f8f6d27",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txsyc.pfb",
+    "sha256": "daba10834af8bf5dcb3c6b03e919daf61e6ba74c3ef71aa3c74f80dc3945ec5e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txtt.pfb",
+    "sha256": "4baeb5fd743b6ca5079b3dd01bd26d703cad9e573e3df42bb01ca0a86ab24af8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-txfonts/txttsc.pfb",
+    "sha256": "6a28d352aef93b0ef3b93b62956aa9d4f23fa0b7a6da3ae2440ca94c9035dc26",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/a010013l.pfb",
+    "sha256": "443b90aedd8cb6ee4166437b24d51c7b46a6ce60564910f00664c5c7a9f405e8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/a010015l.pfb",
+    "sha256": "9a93e4efece0bd91aab95f553f30ffb6d5a72e364566e6bc05d6c2fe634c471a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/a010033l.pfb",
+    "sha256": "9d42fb992d17449e10812d12cdbda225186170ba6aee791d71bf17df5b1e3138",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/a010035l.pfb",
+    "sha256": "aaa813e40638f164d0bc39df608247a62ac0433ee01702286911ec3d87e7a491",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/b018012l.pfb",
+    "sha256": "77898454fcf5a5226107caa4f032c98144c6f95e544f7d568207f0f683e9def5",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/b018015l.pfb",
+    "sha256": "4b743e4fde6068212099f2e66045c9584c0c969f891252d14a61b06fba831dba",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/b018032l.pfb",
+    "sha256": "3d2632c5d818e01817030b1d8d52ccadb5f1b1241dfc50099bc4b4179c08737f",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/b018035l.pfb",
+    "sha256": "2fdb17b2c73ecc2b7a2228ea3e6605e0bca561da0528b97733fdb0639869f487",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/c059013l.pfb",
+    "sha256": "b28fb9a7df64c496ed834f38ab5ef7b4741f8dc6977b06b9f97721841eb3ec43",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/c059016l.pfb",
+    "sha256": "02c98be2c553f9fa46a584f30c182be0d56fc5a6a2a3f70b0a06ddac6b50f624",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/c059033l.pfb",
+    "sha256": "b57348e25cb8c86416e77cf455539ef94479b638400e60ef89c5cb7656b9f2c3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/c059036l.pfb",
+    "sha256": "c02ebd9626a3de7a216a6b4227f34787c11e9bc7ed951a55fe37b3eb3a959206",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/d050000l.pfb",
+    "sha256": "1ed716566691399aaee420b07fb18ce0affbd883091862c68184997a8d6f1a7a",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019003l.pfb",
+    "sha256": "d89a0769709568f00ec6b4ed380d006d78ca20378ad1d8a7cfe7065c17c7fd12",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019004l.pfb",
+    "sha256": "a7a8cf4b173b410fff6d8f006ace207322bc52183bf219d2ce996cab8a14000c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019023l.pfb",
+    "sha256": "9b73948cd5e431033f7e74d470b027d55b12e39f5089dbab3eb7226b5ed2e46b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019024l.pfb",
+    "sha256": "e58b4c3d3ed978534c3d34a30677c25680f5ad931fb0c3d4f53726aabfe5c956",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019043l.pfb",
+    "sha256": "b4fba13909a937b7eab7309eb5c11cfe4f85622b8ef58c286985aacf7ac1664c",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019044l.pfb",
+    "sha256": "3e94dd14a6e795e54d9cfeef14d5e134513ad075e068381ed53856bc45cbe186",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019063l.pfb",
+    "sha256": "4eb87a23cffe7e16f1ffb3a6888f60648485501c463c6b8e5ede4064ff512e6b",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n019064l.pfb",
+    "sha256": "884dc72a4b7ee8fd7045da42c694e4028740deeb3fb9bef432b9463492e528a8",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021003l.pfb",
+    "sha256": "2ef9d47303d25f3c9553a43255dae8c39160e130ad5ed34444e39dee03d796a1",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021004l.pfb",
+    "sha256": "7f3f19f61452892a29d06af2836331ca78aed29390914d294f7a440d35927142",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021023l.pfb",
+    "sha256": "f9a0c528b42d2ded2884e31cf1d225b81739ca9b17a0e7cb362fad404ce0aedf",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n021024l.pfb",
+    "sha256": "21d029fda4757908be702f42811199eac11ce5886c0acfddd574df4545b1e7a9",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022003l.pfb",
+    "sha256": "8816758f882b18a97a2fcdd4e496b881cd7726b8612648cbfb1c9de2d9853029",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022004l.pfb",
+    "sha256": "115a5a2363a24f7afd4f2021763f62fdf0c034c133ec36d2b13b983f6e1e68df",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022023l.pfb",
+    "sha256": "5ffe8060bb3e9e3456835076c46d29dfd4f233b7ca753bbb71f512df741cb118",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/n022024l.pfb",
+    "sha256": "4f3a93f5db9bc1eff72e3ae198fd34f3c19c7f44e44cd107d4da5f9433e394ba",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/p052003l.pfb",
+    "sha256": "1fa269c3d9f9cce83a3d032dc58122a7d514a79e6027c86858d8f1761d47d1f4",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/p052004l.pfb",
+    "sha256": "763886de629c882c76e3b5f26702664984ca4219067a6edd60b1d098c53d01f3",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/p052023l.pfb",
+    "sha256": "47495953f98b3c05f123d4dfdd331e2db6884e61df76b05a5e085ac3910951cb",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/p052024l.pfb",
+    "sha256": "0d67a25494d47b5454fe20632980ff8b8952670a31c1ae97ec9e9092bcbe697d",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/s050000l.pfb",
+    "sha256": "2038021a7b6330936fea8562232b48796968fc913c1fd952d29e23bb1fdc891e",
+    "n_faces": 1
+  },
+  {
+    "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/context/guard-context-urw/z003034l.pfb",
+    "sha256": "12a874c6c20887d5a64c569ebd58f02907a63c36906485ec376dc6223f859f01",
     "n_faces": 1
   }
 ]
