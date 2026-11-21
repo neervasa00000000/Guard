@@ -1,6 +1,6 @@
 # v1.4 run status
 
-Completed runs and checks are archived below. A fresh end-to-end LibreOffice reconstruction is complete; exact replication of the historical template is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. On 2026-11-21 the user accepted these documented new experiments for v1.4-artifact, retaining the historical provenance limits. Nothing has been pushed.
+Completed runs and checks are archived below. A fresh end-to-end LibreOffice reconstruction is complete; exact replication of the historical template is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. On 2026-11-21 the user accepted these documented new experiments for v1.4-artifact, retaining the historical provenance limits. Branch `exp-v1.4` and tag `v1.4-artifact` (commit 162567c) were pushed to origin; `v1.3-artifact` and TileSeal `f8f2558` were not moved.
 
 | Work | Result |
 |---|---|

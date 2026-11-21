@@ -65752,7 +65752,7 @@
           [
             "final_v14_release_check",
             "complete_with_approved_limits",
-            "User accepted documented new experiments on 2026-11-21. Clean-clone make all and both independent validators passed; historical template/build provenance remains explicitly unverified. Tagging is permitted after final checks; no push."
+            "User accepted documented new experiments on 2026-11-21. Clean-clone make all and both independent validators passed; historical template/build provenance remains explicitly unverified. Tagged and pushed v1.4-artifact / exp-v1.4 on 2026-11-21; v1.3-artifact and f8f2558 untouched."
           ]
         ],
         "n_numeric_values": 0
