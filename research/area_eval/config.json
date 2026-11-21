@@ -1,0 +1,34 @@
+{
+  "status": "blocked_preflight",
+  "experiment_started": false,
+  "bootstrap_seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "bootstrap_unit": "page",
+  "planned_tesseract_psm": 6,
+  "policies": [
+    "exact",
+    "grid-16",
+    "grid-64",
+    "start-aligned-128",
+    "field"
+  ],
+  "class_width_px": 128,
+  "source_results_sha256": "1bc74f5406efc8fa6203e9e2b06cb476f851fadc34509370f9863d602cdc8b8f",
+  "preflight_code_sha256": "220c5f2213ccc687dee1b392f68a0eafac36c0467f669c7842b25f2072146627",
+  "doclaynet_requested_targets": 954,
+  "doclaynet_targeted_pages": 500,
+  "doclaynet_existing_count_methods": {
+    "ocr_proportional_split_estimate": 954
+  },
+  "doclaynet_word_box_granularity_unknown_pages": 387,
+  "tesseract_path": null,
+  "tesseract_version": null,
+  "tesseract_language_data_sha256": null,
+  "word_box_definition": "individual ground-truth word rectangle; do not split multiline/multiword cell rectangles or treat OCR estimates as ground truth",
+  "blockers": [
+    "Tesseract executable not available in PATH; OCR/version/language-data validation cannot run",
+    "Ground-truth word boxes for the DocLayNet insertion pages are not provided by the existing layout-region cache; multiword extracted cells and previous OCR proportional splits are not ground-truth word boxes"
+  ],
+  "document_text_uploaded": false,
+  "no_metrics_produced": "No redactions or OCR were run; preflight_summary.csv is an input/capability inventory, not summary.csv of the requested experiment"
+}

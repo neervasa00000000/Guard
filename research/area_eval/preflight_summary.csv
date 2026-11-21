@@ -1,0 +1,8 @@
+item,count
+DocLayNet saved insertion targets,954
+DocLayNet distinct targeted pages,500
+Targeted pages with local extra text-cell JSON,113
+Audited pages with explicit word-box structure,0
+Pages with unknown word-box structure because JSON is unavailable,387
+FUNSD test annotations present,50
+FUNSD annotated word boxes,8973

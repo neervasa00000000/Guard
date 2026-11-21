@@ -1,0 +1,167 @@
+{
+  "inputs_sha256": {
+    "research/realworld_e1_eval/results/v2/per_token_notext.csv": "0314b849627e4ea8fe472d7c32950d1db836ae273bf4ce11ac8784659ed6dff4",
+    "research/realworld_e1_eval/results/v2/calibration_notext.csv": "f2f131fb5bc53a7f3c6c495cf0ba7f8d5b5ee78907dc7013657ed9539b4e7a3b",
+    "research/realworld_e1_eval/results/v2/calibration_pages.json": "943d6d9768b9eb785fd945d72b031ec92a4f74544b8a82367ea88fa975c75893",
+    "research/realworld_e1_eval/results/font_consistency/per_token_notext.csv": "3420db0e6783a426587cc6e28cba518618778512ef01390235d0da2e802b6d0f",
+    "research/realworld_e1_eval/results/v4_fontmatched/preflight/font_name_index.json": "469dec92970a7a0ce93743ddac810f2a7db68686ba9c5e85ad59435b355c7757",
+    "research/realworld_e1_eval/run_v4_fontmatched.py": "f581f514e2622234a165e0c8a5370becd7f08cf1f957914afbbf8edcf00218b8"
+  },
+  "fonts": {
+    "c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf",
+      "sha256": "c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676"
+    },
+    "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSerif.ttf",
+      "sha256": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7"
+    },
+    "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSans.ttf",
+      "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+    },
+    "b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf",
+      "sha256": "b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167"
+    },
+    "f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+      "sha256": "f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3"
+    },
+    "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Helvetica.ttc",
+      "sha256": "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3"
+    },
+    "d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf",
+      "sha256": "d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181"
+    },
+    "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Arial.ttf",
+      "sha256": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+    },
+    "9e1d881c4e43b51868f5e235ea5a12c838e23cc8df6277df1a3c94e158999826:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Arial Narrow.ttf",
+      "sha256": "9e1d881c4e43b51868f5e235ea5a12c838e23cc8df6277df1a3c94e158999826"
+    },
+    "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Times.ttc",
+      "sha256": "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727"
+    },
+    "d72db21f9242aedd6b917d8549ad5921766b24d5f8d0becfda2ff4c620b3c2e0:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+      "sha256": "d72db21f9242aedd6b917d8549ad5921766b24d5f8d0becfda2ff4c620b3c2e0"
+    },
+    "0da8c12f3e15d95585434d2cf294b3113a3e3fc84bf9ba9d64f2ef834ef4bd98:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Verdana.ttf",
+      "sha256": "0da8c12f3e15d95585434d2cf294b3113a3e3fc84bf9ba9d64f2ef834ef4bd98"
+    },
+    "a1149e84da9e5c0a9b4cad68b62542b8503cb16ed8d1d7efd2640b36ce202b44:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Verdana Italic.ttf",
+      "sha256": "a1149e84da9e5c0a9b4cad68b62542b8503cb16ed8d1d7efd2640b36ce202b44"
+    },
+    "480f66b66430bdfa6e9a2199e4bf8f79d915221e60d58e7a32b4ff50645de2e0:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Verdana Bold.ttf",
+      "sha256": "480f66b66430bdfa6e9a2199e4bf8f79d915221e60d58e7a32b4ff50645de2e0"
+    },
+    "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727:1": {
+      "face_index": 1,
+      "path": "/System/Library/Fonts/Times.ttc",
+      "sha256": "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727"
+    },
+    "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Courier.ttc",
+      "sha256": "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec"
+    },
+    "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec:1": {
+      "face_index": 1,
+      "path": "/System/Library/Fonts/Courier.ttc",
+      "sha256": "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec"
+    },
+    "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727:2": {
+      "face_index": 2,
+      "path": "/System/Library/Fonts/Times.ttc",
+      "sha256": "79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727"
+    },
+    "3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf",
+      "sha256": "3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d"
+    },
+    "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3:1": {
+      "face_index": 1,
+      "path": "/System/Library/Fonts/Helvetica.ttc",
+      "sha256": "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3"
+    },
+    "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3:2": {
+      "face_index": 2,
+      "path": "/System/Library/Fonts/Helvetica.ttc",
+      "sha256": "658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3"
+    },
+    "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec:2": {
+      "face_index": 2,
+      "path": "/System/Library/Fonts/Courier.ttc",
+      "sha256": "76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec"
+    },
+    "ce1d2f1ab89db45f9796100eee960f5702a40e84c225c2b48c3ec3e81d153f98:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Arial Italic.ttf",
+      "sha256": "ce1d2f1ab89db45f9796100eee960f5702a40e84c225c2b48c3ec3e81d153f98"
+    },
+    "709d5848799239f0c51c0544c471c8d02bcbf9f2bcdc49702ebca1691a4c760e:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Wingdings.ttf",
+      "sha256": "709d5848799239f0c51c0544c471c8d02bcbf9f2bcdc49702ebca1691a4c760e"
+    },
+    "ccdf74b350f11fd3dd5774de50e5e6346a1a5da1f5b7d5fb83590665e97a5213:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf",
+      "sha256": "ccdf74b350f11fd3dd5774de50e5e6346a1a5da1f5b7d5fb83590665e97a5213"
+    },
+    "3e7994fbc54fa10ce3352a42d548fadd7d9cadb69cb1109bc9d960f6dac57f04:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf",
+      "sha256": "3e7994fbc54fa10ce3352a42d548fadd7d9cadb69cb1109bc9d960f6dac57f04"
+    },
+    "602ec86b8948cfcd956482fe64f94c36c867770149ef2f791d4613f443bcecb3:0": {
+      "face_index": 0,
+      "path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf",
+      "sha256": "602ec86b8948cfcd956482fe64f94c36c867770149ef2f791d4613f443bcecb3"
+    },
+    "50f5b1f27b7d34621090e437e8b1dd4510a22d2823fc876b3286bed327b64bbb:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf",
+      "sha256": "50f5b1f27b7d34621090e437e8b1dd4510a22d2823fc876b3286bed327b64bbb"
+    },
+    "fcf34b330033e26c06e9bd466bea5a3e4b2f39272972275369beb7d8b257ed57:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Arial Narrow Bold.ttf",
+      "sha256": "fcf34b330033e26c06e9bd466bea5a3e4b2f39272972275369beb7d8b257ed57"
+    },
+    "500df4e46b554ae7d646e8727952fd8c7e60e94423481f6b82325cfddba2ee6a:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Courier New Bold.ttf",
+      "sha256": "500df4e46b554ae7d646e8727952fd8c7e60e94423481f6b82325cfddba2ee6a"
+    },
+    "7bb99c3a67697fbce15ab66d806d9a2151432ce1dab2eaba4156e1251da486c0:0": {
+      "face_index": 0,
+      "path": "/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf",
+      "sha256": "7bb99c3a67697fbce15ab66d806d9a2151432ce1dab2eaba4156e1251da486c0"
+    }
+  }
+}

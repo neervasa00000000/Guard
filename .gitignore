@@ -173,3 +173,6 @@ __pycache__/
 /fig_policies.svg
 /fig_policies.png
 /manuscript/figures/fig_policies.svg
+
+# v4 derived numeric/token-hash rows are not raw dataset archives.
+!/research/realworld_e1_eval/results/v4_fontmatched/**/*.csv.gz

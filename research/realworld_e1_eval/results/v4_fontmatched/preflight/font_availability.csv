@@ -1,0 +1,75 @@
+font_identity,n_eligible_tokens,locally_available,matching_faces_json
+Helvetica,405,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Helvetica.ttc"", ""sha256"": ""658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3""}]"
+CMR10,310,0,[]
+Times-Roman,188,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
+CMR12,157,0,[]
+NimbusRomNo9L-Regu,139,0,[]
+Times New Roman,126,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Times New Roman.ttf"", ""sha256"": ""f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3""}]"
+CMR9,75,0,[]
+Courier,55,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Courier.ttc"", ""sha256"": ""76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec""}]"
+DejaVuSerif,43,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSerif.ttf"", ""sha256"": ""8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf"", ""sha256"": ""107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa""}]"
+FreeMono,37,0,[]
+Arial,34,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial.ttf"", ""sha256"": ""525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9""}]"
+Verdana,33,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Verdana.ttf"", ""sha256"": ""0da8c12f3e15d95585434d2cf294b3113a3e3fc84bf9ba9d64f2ef834ef4bd98""}]"
+FreeSerif,32,0,[]
+t1xtt,29,0,[]
+ArialMT,28,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial.ttf"", ""sha256"": ""525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9""}]"
+CMMI10,25,0,[]
+DejaVuSans,23,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts/DejaVuSans.ttf"", ""sha256"": ""57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e""}, {""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf"", ""sha256"": ""3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22""}]"
+NimbusMonL-Regu,22,0,[]
+SFRM1000,20,0,[]
+CMR8,19,0,[]
+CMMI12,18,0,[]
+Times-Bold,18,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
+DejaVuSansCondensed-Bold,17,0,[]
+NimbusRomNo9L-ReguItal,15,0,[]
+DejaVuSansCondensed,13,0,[]
+DejaVuSans-Bold,11,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf"", ""sha256"": ""b184b89e3c1075f22f6b71575b6fc20d4972b3cfd3b23322ca6fd596dcaef167""}]"
+DejaVuSerif-Bold,10,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf"", ""sha256"": ""c3753f2ed6bc673f15846dc45addbeb3b9c872f32fb18fd53a21f1bef1ed7676""}]"
+CMTI12,9,0,[]
+FreeMonoBold,9,0,[]
+CMMI8,7,0,[]
+Courier-Bold,7,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Courier.ttc"", ""sha256"": ""76cdad2ba4e8774223ed6184f530570261f9f7fb9beb5c68368e09234c0273ec""}]"
+DejaVuSerif-BoldItalic,7,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf"", ""sha256"": ""d93efec7a9d2e826768d1a2ee95b95870e15e29599a84f3484af1de1cec2e181""}]"
+CMSY10,6,0,[]
+F6,6,0,[]
+"Times New Roman,Bold",6,0,[]
+TimesNewRomanPSMT,6,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Times New Roman.ttf"", ""sha256"": ""f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3""}]"
+CMBX10,5,0,[]
+Verdana-Italic,5,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Verdana Italic.ttf"", ""sha256"": ""a1149e84da9e5c0a9b4cad68b62542b8503cb16ed8d1d7efd2640b36ce202b44""}]"
+"Arial Narrow,Bold",4,0,[]
+Arial-BoldMT,4,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial Bold.ttf"", ""sha256"": ""d72db21f9242aedd6b917d8549ad5921766b24d5f8d0becfda2ff4c620b3c2e0""}]"
+CMMI7,4,0,[]
+CMR7,4,0,[]
+CMTI10,4,0,[]
+Calibri,4,0,[]
+NotoSerif,4,0,[]
+Times-Italic,4,1,"[{""face_index"": 2, ""path"": ""/System/Library/Fonts/Times.ttc"", ""sha256"": ""79d8f1b02824796dda7234574826455c6cc62e898b2728c834859baad3332727""}]"
+CMMI6,3,0,[]
+CMSY7,3,0,[]
+CMSY8,3,0,[]
+CMTI9,3,0,[]
+Dcr10,3,0,[]
+SFRM0900,3,0,[]
+Cmmi10,2,1,"[{""face_index"": 0, ""path"": ""/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf"", ""sha256"": ""3092965b8811fd6a6765799664845181fc1dd1330b937f915808c485d316234d""}]"
+MinionPro-Regular,2,0,[]
+SFTI1000,2,0,[]
+TimesNewRoman,2,0,[]
+URWPalladioL-Roma,2,0,[]
+Arial Narrow,1,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Arial Narrow.ttf"", ""sha256"": ""9e1d881c4e43b51868f5e235ea5a12c838e23cc8df6277df1a3c94e158999826""}]"
+CMBX8,1,0,[]
+CMBX9,1,0,[]
+Calibri-Bold,1,0,[]
+Century,1,0,[]
+FreeSansBold,1,0,[]
+Helvetica-Bold,1,1,"[{""face_index"": 1, ""path"": ""/System/Library/Fonts/Helvetica.ttc"", ""sha256"": ""658718d77497145281cb0ec45ff2fe7c6e18062b2a38f837d0d792d9be3a9ba3""}]"
+NimbusMonL-Bold,1,0,[]
+NimbusRomNo9L-Medi,1,0,[]
+RedHatText-Regular,1,0,[]
+SKODANext-Regular,1,0,[]
+"Times New Roman,Italic",1,0,[]
+UbuntuMono-Regular,1,0,[]
+Verdana-Bold,1,1,"[{""face_index"": 0, ""path"": ""/System/Library/Fonts/Supplemental/Verdana Bold.ttf"", ""sha256"": ""480f66b66430bdfa6e9a2199e4bf8f79d915221e60d58e7a32b4ff50645de2e0""}]"
+ZUGNimbusSans-Light,1,0,[]
+roman bold,1,0,[]
+뤠쓼,1,0,[]
