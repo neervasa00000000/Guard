@@ -1,6 +1,6 @@
 # v1.4 run status
 
-Completed runs and checks are archived below. The original LibreOffice end-to-end rerun is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. No final v1.4 tag or push has been made.
+Completed runs and checks are archived below. A fresh end-to-end LibreOffice reconstruction is complete; exact replication of the historical template is still blocked by its missing kit; the historical alternative-font-build provenance remains unverified. The new explicit 36-cell sensitivity experiment is complete. No final v1.4 tag or push has been made.
 
 | Work | Result |
 |---|---|
@@ -13,7 +13,7 @@ Completed runs and checks are archived below. The original LibreOffice end-to-en
 | TileSeal | 392/392 predicted tile sets match actual sealed tile sets and original archived cases. |
 | Font-build sensitivity | 2/36 cells shift at least 4 pp; both +7.8 pp. Historical build identities unknown. |
 | Figures | Five v9.31 figures: zero layout problems and zero missing plotted values. |
-| LibreOffice end-to-end | Not run: original kit and generator missing; no replay relabelled as fresh. |
+| LibreOffice reconstruction | Fresh LibreOffice 25.2.3.2: 200 form pages, 200000 candidate geometries, 7200 per-form rows, 72 summaries. Historical differences are explicit; original template still unavailable. |
 
 ## New font-build sensitivity
 
@@ -31,3 +31,5 @@ Expanded attacker results: ../../research/realworld_e1_eval/results/v4_fontmatch
 The independent new-run validator recomputed all reported new-run means and bootstrap intervals from raw no-text rows (532,620 numeric comparisons). See new_runs_validation.json. The v4 validator independently checked points, pairing, source hashes, original generic scores and minimal 95% calibration tolerances.
 
 Detailed tables: ../../data/v1_6_email_digits/table_pooled.csv; ../../data/v1_5_anchor_margin/summary.csv; ../../research/area_eval/results/summary.csv. All rates in CSVs are fractions unless a column explicitly says pp or percent; bits and area ratios retain their own units.
+
+Fresh LibreOffice reconstruction and historical comparisons: mock_forms_reconstruction/README.md and summary.csv. The full-array validator recomputes every score, policy box, summary and 10000-draw interval from archived no-text candidate geometry. The original archived manuscript numbers are unchanged.

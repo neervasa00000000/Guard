@@ -1,4 +1,8 @@
-# Area/OCR evaluation: prerequisite check only
+# Area/OCR evaluation
+
+The completed, approved FUNSD-only evaluation is documented in [results/README.md](results/README.md), with config, per-target rows, summary tables and an independent repeat check. The preflight below is historical: local Tesseract was subsequently installed. Exact DocLayNet word-level ground truth remains unavailable; OCR proportional splits were not substituted.
+
+## Historical DocLayNet prerequisite check
 
 No area/concealment/OCR performance table was generated. See config.json for blockers. The existing DocLayNet cache contains layout blocks. Extra text cells may contain multiple words, and the old neighbour-word figures are labelled OCR proportional-split estimates. Those cannot be relabelled as exact ground-truth word rectangles for any-overlap or 50%-area measurements. Tesseract must also be available with a fixed version, mode and hashed language data before OCR runs.
 
