@@ -1,0 +1,447 @@
+python scripts/verify_inputs.py
+PASS	followup/d1_cases.csv.gz
+PASS	followup/d2jit_cases.csv.gz
+PASS	followup/e1_a4_cases.csv.gz
+PASS	followup/test4_cases.csv.gz
+PASS	main-subset/surnames_DejaVuSans_16.csv.gz
+PASS	main-subset/surnames_DejaVuSans_16_targets.csv.gz
+PASS	main-subset/surnames_LiberationSerif_16.csv.gz
+PASS	main-subset/surnames_LiberationSerif_16_targets.csv.gz
+PASS	main-subset/words_DejaVuSans_16.csv.gz
+PASS	main-subset/words_DejaVuSans_16_targets.csv.gz
+PASS	main-subset/words_LiberationSerif_16.csv.gz
+PASS	main-subset/words_LiberationSerif_16_targets.csv.gz
+PASS	posterior/a3_cases.csv.gz
+PASS	posterior/d2jit16_cases.csv.gz
+PASS	posterior/phase_cases.csv.gz
+PASS	posterior/phase_cases_42.csv.gz
+PASS	posterior/phase_cases_digits.csv.gz
+PASS	posterior/stress_cases.csv.gz
+PASS	posterior/test4_exact_cases.csv.gz
+PASS	stress/emails_DejaVuSans_16.csv.gz
+PASS	stress/emails_LiberationSerif_16.csv.gz
+PASS	stress/surnames_DejaVuSans_24.csv.gz
+PASS	stress/surnames_LiberationSerif_24.csv.gz
+PASS	stress/words_DejaVuSans_24.csv.gz
+PASS	stress/words_LiberationSerif_24.csv.gz
+PASS	3408000 case records
+PASS	1000 census surnames, file order, first SMITH
+python scripts/rebuild_clean_summary.py --check
+Clean summary verified: surnames 16 px A2 12.2% / 1.54 bits
+python scripts/regenerate_tables.py
+Matplotlib is building the font cache; this may take a moment.
+Wrote 490 values to /private/tmp/guard-v14-clean-56d1a8031b4c/out/tables
+python scripts/make_figures.py
+Wrote /private/tmp/guard-v14-clean-56d1a8031b4c/out/figures
+python scripts/check_v931_figures.py
+Downloading pinned figure font: SourceSansPro-Regular.otf
+Downloading pinned figure font: SourceSansPro-Bold.otf
+font: Source Sans Pro
+fig2_leakage_area: OK
+fig3_same_knowledge: OK
+fig4_pointwise: OK
+fig5_realworld: OK
+figA1_releases: OK
+cross-check: 101 plotted values, 0 not found in figs_data.csv []
+TOTAL PROBLEMS: 0
+python scripts/check_numbers.py
+PASS	Table 3; Figure 2	table3.surnames.exact.bits_layout	got 6.65569, expected 6.66 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.exact.area	got 1, expected 1.0 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.exact.bits_ink	got 7.40748, expected 7.41 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square16.bits_layout	got 2.18802, expected 2.19 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square16.area	got 2.44976, expected 2.45 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square64.bits_layout	got 0.665602, expected 0.67 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square64.area	got 10.0392, expected 10.04 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.square64.bits_ink	got 0.675039, expected 0.68 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square128.bits_layout	got 0.333265, expected 0.33 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.square128.area	got 28.6434, expected 28.64 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.square128.bits_ink	got 0.337202, expected 0.34 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.widthgrid64.bits_layout	got 0.611145, expected 0.61 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.widthgrid64.area	got 3.00522, expected 3.01 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.widthgrid64.bits_ink	got 0.620565, expected 0.62 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.widthgrid128.bits_layout	got 0.305768, expected 0.31 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.widthgrid128.area	got 4.56092, expected 4.56 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.widthgrid128.bits_ink	got 0.309704, expected 0.31 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.inkanchored128.bits_layout	got 0.258117, expected 0.26 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.inkanchored128.area	got 3.35802, expected 3.36 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.inkanchored128.bits_ink	got 0.967424, expected 0.97 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.inkanchored192.bits_layout	got 0.18802, expected 0.19 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.inkanchored192.area	got 5.03145, expected 5.03 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.inkanchored192.bits_ink	got 0.903252, expected 0.9 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.penanchored96.bits_layout	got 0.298981, expected 0.3 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.penanchored96.area	got 2.625, expected 2.62 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.penanchored96.bits_ink	got 0.293867, expected 0.29 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.penanchored128.bits_layout	got 0.0785767, expected 0.08 ± 0.0051
+PASS	Table 3; Figure 2	table3.surnames.penanchored128.area	got 3.35802, expected 3.36 ± 0.0051
+PASS	Table 3; Figure 3	table3.surnames.penanchored128.bits_ink	got 0.0750574, expected 0.08 ± 0.0051
+PASS	Table 3	table3.surnames.penanchored192.bits_layout	got 0.00105958, expected < 0.005
+PASS	Table 3	table3.surnames.penanchored192.bits_ink	got 0.00106027, expected < 0.005
+PASS	Table 3	table3.surnames.penanchored192.area	got 5.03145, expected 5.03 ± 0.0051
+PASS	Table 3	table3.words.exact.bits_layout	got 6.91094, expected 6.91 ± 0.0051
+PASS	Table 3	table3.words.exact.area	got 1, expected 1.0 ± 0.0051
+PASS	Table 3	table3.words.square16.bits_layout	got 2.62692, expected 2.63 ± 0.0051
+PASS	Table 3	table3.words.square16.area	got 2.84444, expected 2.84 ± 0.0051
+PASS	Table 3	table3.words.square64.bits_layout	got 0.915523, expected 0.92 ± 0.0051
+PASS	Table 3	table3.words.square64.area	got 13.932, expected 13.93 ± 0.0051
+PASS	Table 3	table3.words.square128.bits_layout	got 0.479775, expected 0.48 ± 0.0051
+PASS	Table 3	table3.words.square128.area	got 43.3439, expected 43.34 ± 0.0051
+PASS	Table 3	table3.words.widthgrid64.bits_layout	got 0.833897, expected 0.83 ± 0.0051
+PASS	Table 3	table3.words.widthgrid64.area	got 4.12903, expected 4.13 ± 0.0051
+PASS	Table 3	table3.words.widthgrid128.bits_layout	got 0.438219, expected 0.44 ± 0.0051
+PASS	Table 3	table3.words.widthgrid128.area	got 6.96915, expected 6.97 ± 0.0051
+PASS	Table 3	table3.words.inkanchored128.bits_layout	got 0.239888, expected 0.24 ± 0.0051
+PASS	Table 3	table3.words.inkanchored128.area	got 5.68889, expected 5.69 ± 0.0051
+PASS	Table 3	table3.words.inkanchored192.bits_layout	got 0.182459, expected 0.18 ± 0.0051
+PASS	Table 3	table3.words.inkanchored192.area	got 8.53333, expected 8.53 ± 0.0051
+PASS	Table 3	table3.words.penanchored96.bits_layout	got 0.20215, expected 0.2 ± 0.0051
+PASS	Table 3	table3.words.penanchored96.area	got 4.26667, expected 4.27 ± 0.0051
+PASS	Table 3	table3.words.penanchored128.bits_layout	got 0.0612206, expected 0.06 ± 0.0051
+PASS	Table 3	table3.words.penanchored128.area	got 5.68889, expected 5.69 ± 0.0051
+PASS	Table 3	table3.words.penanchored192.bits_layout	got 0.000983559, expected < 0.005
+PASS	Table 3	table3.words.penanchored192.area	got 8.53333, expected 8.53 ± 0.0051
+PASS	Table 4	table4.n	got 11351, expected 11351 ± 0.0
+PASS	Table 4	table4.median_w	got 228, expected 228 ± 0.0
+PASS	Table 4	table4.median_h	got 49, expected 49 ± 0.0
+PASS	Table 4	table4.g1.widths	got 1433, expected 1433 ± 0.0
+PASS	Table 4	table4.g1.h_width	got 9.35362, expected 9.35 ± 0.0051
+PASS	Table 4	table4.g1.h_wh	got 12.7601, expected 12.76 ± 0.0051
+PASS	Table 4	table4.g8.widths	got 279, expected 279 ± 0.0
+PASS	Table 4	table4.g8.h_width	got 6.58378, expected 6.58 ± 0.0051
+PASS	Table 4	table4.g8.h_wh	got 9.17956, expected 9.18 ± 0.0051
+PASS	Table 4	table4.g8.area	got 1.18154, expected 1.18 ± 0.0051
+PASS	Table 4	table4.g8.area_p90	got 1.32812, expected 1.33 ± 0.0051
+PASS	Table 4	table4.g16.widths	got 149, expected 149 ± 0.0
+PASS	Table 4	table4.g16.h_width	got 5.60288, expected 5.6 ± 0.0051
+PASS	Table 4	table4.g16.h_wh	got 7.53164, expected 7.53 ± 0.0051
+PASS	Table 4	table4.g16.area	got 1.40407, expected 1.4 ± 0.0051
+PASS	Table 4	table4.g16.area_p90	got 1.72226, expected 1.72 ± 0.0051
+PASS	Table 4	table4.g32.widths	got 79, expected 79 ± 0.0
+PASS	Table 4	table4.g32.h_width	got 4.62444, expected 4.62 ± 0.0051
+PASS	Table 4	table4.g32.h_wh	got 6.03576, expected 6.04 ± 0.0051
+PASS	Table 4	table4.g32.area	got 1.8679, expected 1.87 ± 0.0051
+PASS	Table 4	table4.g32.area_p90	got 2.61818, expected 2.62 ± 0.0051
+PASS	Table 4	table4.g64.widths	got 40, expected 40 ± 0.0
+PASS	Table 4	table4.g64.h_width	got 3.66841, expected 3.67 ± 0.0051
+PASS	Table 4	table4.g64.h_wh	got 4.79328, expected 4.79 ± 0.0051
+PASS	Table 4	table4.g64.area	got 2.94968, expected 2.95 ± 0.0051
+PASS	Table 4	table4.g64.area_p90	got 4.9754, expected 4.98 ± 0.0051
+PASS	Table A1	tablea1.cells	got 19, expected 19 ± 0.0
+PASS	Table A1	tablea1.units	got 99, expected 99 ± 0.0
+PASS	Table A1	tablea1.redactions	got 3.762e+06, expected 3762000 ± 0.0
+PASS	Table A1	tablea1.result_rows	got 7.652e+06, expected 7652000 ± 0.0
+PASS	Table A2; Figure 1	tablea2.surnames.g1.A1.top10	got 50.1972, expected 50.2 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g1.A2.top10	got 49.0139, expected 49.0 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g1.A1.bits	got 6.65569, expected 6.66 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g1.A2.bits	got 6.54003, expected 6.54 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g1.area	got 1, expected 1.0 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g8.A1.top10	got 21.2306, expected 21.2 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g8.A2.top10	got 17.5806, expected 17.6 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g8.A1.bits	got 3.29956, expected 3.3 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g8.A2.bits	got 2.63055, expected 2.63 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g8.area	got 1.5971, expected 1.6 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g16.A1.top10	got 14.8639, expected 14.9 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g16.A2.top10	got 12.1667, expected 12.2 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g16.A1.bits	got 2.18802, expected 2.19 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g16.A2.bits	got 1.53575, expected 1.54 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g16.area	got 2.4498, expected 2.45 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g32.A1.top10	got 10.6667, expected 10.7 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g32.A2.top10	got 9.03056, expected 9.0 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g32.A1.bits	got 1.27654, expected 1.28 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g32.A2.bits	got 0.745606, expected 0.75 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g32.area	got 4.3761, expected 4.38 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g64.A1.top10	got 8.24167, expected 8.2 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g64.A2.top10	got 7.14444, expected 7.1 ± 0.051
+PASS	Table A2; Figure 1	tablea2.surnames.g64.A1.bits	got 0.665602, expected 0.67 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g64.A2.bits	got 0.30171, expected 0.3 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.g64.area	got 10.0392, expected 10.04 ± 0.0051
+PASS	Table A2	tablea2.words.g1.A1.top10	got 79.7081, expected 79.7 ± 0.051
+PASS	Table A2	tablea2.words.g1.A2.top10	got 79.0451, expected 79.0 ± 0.051
+PASS	Table A2	tablea2.words.g1.A1.bits	got 6.91094, expected 6.91 ± 0.0051
+PASS	Table A2	tablea2.words.g1.A2.bits	got 6.83314, expected 6.83 ± 0.0051
+PASS	Table A2	tablea2.words.g1.area	got 1, expected 1.0 ± 0.0051
+PASS	Table A2	tablea2.words.g8.A1.top10	got 50.3808, expected 50.4 ± 0.051
+PASS	Table A2	tablea2.words.g8.A2.top10	got 44.7875, expected 44.8 ± 0.051
+PASS	Table A2	tablea2.words.g8.A1.bits	got 3.82372, expected 3.82 ± 0.0051
+PASS	Table A2	tablea2.words.g8.A2.bits	got 3.19127, expected 3.19 ± 0.0051
+PASS	Table A2	tablea2.words.g8.area	got 1.7778, expected 1.78 ± 0.0051
+PASS	Table A2	tablea2.words.g16.A1.top10	got 39.4231, expected 39.4 ± 0.051
+PASS	Table A2	tablea2.words.g16.A2.top10	got 34.5537, expected 34.6 ± 0.051
+PASS	Table A2	tablea2.words.g16.A1.bits	got 2.62691, expected 2.63 ± 0.0051
+PASS	Table A2	tablea2.words.g16.A2.bits	got 1.97009, expected 1.97 ± 0.0051
+PASS	Table A2	tablea2.words.g16.area	got 2.8444, expected 2.84 ± 0.0051
+PASS	Table A2	tablea2.words.g32.A1.top10	got 31.8926, expected 31.9 ± 0.051
+PASS	Table A2	tablea2.words.g32.A2.top10	got 28.6222, expected 28.6 ± 0.051
+PASS	Table A2	tablea2.words.g32.A1.bits	got 1.64579, expected 1.65 ± 0.0051
+PASS	Table A2	tablea2.words.g32.A2.bits	got 1.07255, expected 1.07 ± 0.0051
+PASS	Table A2	tablea2.words.g32.area	got 5.4857, expected 5.49 ± 0.0051
+PASS	Table A2	tablea2.words.g64.A1.top10	got 28.0134, expected 28.0 ± 0.051
+PASS	Table A2	tablea2.words.g64.A2.top10	got 25.7708, expected 25.8 ± 0.051
+PASS	Table A2	tablea2.words.g64.A1.bits	got 0.915522, expected 0.92 ± 0.0051
+PASS	Table A2	tablea2.words.g64.A2.bits	got 0.451882, expected 0.45 ± 0.0051
+PASS	Table A2	tablea2.words.g64.area	got 13.932, expected 13.93 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.surnames.nobox.top10	got 5.94524, expected 5.95 ± 0.0051
+PASS	Table A2; Figure 1	tablea2.words.nobox.top10	got 23.7952, expected 23.8 ± 0.0051
+PASS	Table A2	tablea2.surnames.prior	got 12.8785, expected 12.88 ± 0.0051
+PASS	Table A2	tablea2.words.prior	got 10.0991, expected 10.1 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo16c.exact	got 63, expected 63 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.g16	got 13, expected 13 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.start	got 6, expected 6 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.diff	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.ci_lo	got 2, expected 2 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.ci_hi	got 12, expected 12 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16c.area_start	got 3.3621, expected 3.36 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo16c.area_64	got 17.6362, expected 17.64 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo16s.exact	got 22, expected 22 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.g16	got 10, expected 10 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.start	got 6, expected 6 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.diff	got 4, expected 4 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.ci_lo	got 1, expected 1 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.ci_hi	got 8, expected 8 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo16s.area_start	got 4.15141, expected 4.15 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo16s.area_64	got 15.6573, expected 15.66 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo24c.exact	got 73, expected 73 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.g16	got 21, expected 21 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.start	got 8, expected 8 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.diff	got 13, expected 13 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.ci_lo	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.ci_hi	got 20, expected 20 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24c.area_start	got 2.46614, expected 2.47 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo24c.area_64	got 10.7789, expected 10.78 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo24s.exact	got 34, expected 34 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.g16	got 19, expected 19 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.start	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.diff	got 12, expected 12 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.ci_lo	got 6, expected 6 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.ci_hi	got 19, expected 19 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lo24s.area_start	got 2.66874, expected 2.67 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lo24s.area_64	got 11.4935, expected 11.49 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lopm.exact	got 0, expected 0 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.g16	got 12, expected 12 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.start	got 6, expected 6 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.diff	got 6, expected 6 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.ci_lo	got 2, expected 2 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.ci_hi	got 11, expected 11 ± 0.0
+PASS	Table A3; Figure 6	tablea3.lopm.area_start	got 3.3621, expected 3.36 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.lopm.area_64	got 17.6362, expected 17.64 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.pA1.exact	got 52, expected 52 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.g16	got 12, expected 12 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.start	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.diff	got 5, expected 5 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.ci_lo	got 1, expected 1 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.ci_hi	got 10, expected 10 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA1.area_start	got 3.66466, expected 3.66 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.pA1.area_64	got 20.4166, expected 20.42 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.pA2.exact	got 51, expected 51 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.g16	got 10, expected 10 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.start	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.diff	got 3, expected 3 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.ci_lo	got 0, expected 0 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.ci_hi	got 7, expected 7 ± 0.0
+PASS	Table A3; Figure 6	tablea3.pA2.area_start	got 3.66466, expected 3.66 ± 0.0051
+PASS	Table A3; Figure 6	tablea3.pA2.area_64	got 20.4166, expected 20.42 ± 0.0051
+PASS	Table A4	tablea4.dejavu.exact.prior	got 58.5, expected 58.5 ± 0.051
+PASS	Table A4	tablea4.dejavu.exact.lm	got 97, expected 97.0 ± 0.051
+PASS	Table A4	tablea4.dejavu.8.prior	got 7.5, expected 7.5 ± 0.051
+PASS	Table A4	tablea4.dejavu.8.lm	got 80.25, expected 80.3 ± 0.051
+PASS	Table A4	tablea4.dejavu.16.prior	got 3.5, expected 3.5 ± 0.051
+PASS	Table A4	tablea4.dejavu.16.lm	got 70.75, expected 70.8 ± 0.051
+PASS	Table A4	tablea4.dejavu.32.prior	got 0.75, expected 0.8 ± 0.051
+PASS	Table A4	tablea4.dejavu.32.lm	got 58.75, expected 58.8 ± 0.051
+PASS	Table A4	tablea4.dejavu.64.prior	got 0, expected 0.0 ± 0.051
+PASS	Table A4	tablea4.dejavu.64.lm	got 49.75, expected 49.8 ± 0.051
+PASS	Table A5	tablea5.surnames.exact8.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.exact8.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.exact8.top10.delta	got 28.9667, expected 29.0 ± 0.051
+PASS	Table A5	tablea5.surnames.exact8.top10.ci_lo	got 28.4917, expected 28.5 ± 0.051
+PASS	Table A5	tablea5.surnames.exact8.top10.ci_hi	got 29.4306, expected 29.4 ± 0.051
+PASS	Table A5	tablea5.surnames.g8g16.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g8g16.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g8g16.top10.delta	got 6.36667, expected 6.4 ± 0.051
+PASS	Table A5	tablea5.surnames.g8g16.top10.ci_lo	got 6.11389, expected 6.1 ± 0.051
+PASS	Table A5	tablea5.surnames.g8g16.top10.ci_hi	got 6.61944, expected 6.6 ± 0.051
+PASS	Table A5	tablea5.surnames.g16g32.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g16g32.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g16g32.top10.delta	got 4.19722, expected 4.2 ± 0.051
+PASS	Table A5	tablea5.surnames.g16g32.top10.ci_lo	got 3.99167, expected 4.0 ± 0.051
+PASS	Table A5	tablea5.surnames.g16g32.top10.ci_hi	got 4.40556, expected 4.4 ± 0.051
+PASS	Table A5	tablea5.surnames.g32g64.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g32g64.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g32g64.top10.delta	got 2.425, expected 2.4 ± 0.051
+PASS	Table A5	tablea5.surnames.g32g64.top10.ci_lo	got 2.26667, expected 2.3 ± 0.051
+PASS	Table A5	tablea5.surnames.g32g64.top10.ci_hi	got 2.58333, expected 2.6 ± 0.051
+PASS	Table A5	tablea5.surnames.g64edge.top10.holm	got 9, expected 9 ± 0.0
+PASS	Table A5	tablea5.surnames.g64edge.bits.holm	got 17, expected 17 ± 0.0
+PASS	Table A5	tablea5.surnames.g64edge.top10.delta	got 0.961111, expected 1.0 ± 0.051
+PASS	Table A5	tablea5.surnames.g64edge.top10.ci_lo	got 0.797222, expected 0.8 ± 0.051
+PASS	Table A5	tablea5.surnames.g64edge.top10.ci_hi	got 1.12778, expected 1.1 ± 0.051
+PASS	Table A5	tablea5.surnames.g64start.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g64start.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.surnames.g64start.top10.delta	got 2.00833, expected 2.0 ± 0.051
+PASS	Table A5	tablea5.surnames.g64start.top10.ci_lo	got 1.85833, expected 1.9 ± 0.051
+PASS	Table A5	tablea5.surnames.g64start.top10.ci_hi	got 2.16111, expected 2.2 ± 0.051
+PASS	Table A5	tablea5.words.exact8.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.exact8.top10.delta	got 29.3273, expected 29.3 ± 0.051
+PASS	Table A5	tablea5.words.exact8.top10.ci_lo	got 28.8583, expected 28.9 ± 0.051
+PASS	Table A5	tablea5.words.exact8.top10.ci_hi	got 29.7961, expected 29.8 ± 0.051
+PASS	Table A5	tablea5.words.g8g16.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g8g16.top10.delta	got 10.9576, expected 11.0 ± 0.051
+PASS	Table A5	tablea5.words.g8g16.top10.ci_lo	got 10.6424, expected 10.6 ± 0.051
+PASS	Table A5	tablea5.words.g8g16.top10.ci_hi	got 11.2792, expected 11.3 ± 0.051
+PASS	Table A5	tablea5.words.g16g32.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g16g32.top10.delta	got 7.53056, expected 7.5 ± 0.051
+PASS	Table A5	tablea5.words.g16g32.top10.ci_lo	got 7.25925, expected 7.3 ± 0.051
+PASS	Table A5	tablea5.words.g16g32.top10.ci_hi	got 7.79447, expected 7.8 ± 0.051
+PASS	Table A5	tablea5.words.g32g64.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g32g64.top10.delta	got 3.87917, expected 3.9 ± 0.051
+PASS	Table A5	tablea5.words.g32g64.top10.ci_lo	got 3.67778, expected 3.7 ± 0.051
+PASS	Table A5	tablea5.words.g32g64.top10.ci_hi	got 4.07824, expected 4.1 ± 0.051
+PASS	Table A5	tablea5.words.g64edge.top10.holm	got 12, expected 12 ± 0.0
+PASS	Table A5	tablea5.words.g64edge.top10.delta	got 2.18565, expected 2.2 ± 0.051
+PASS	Table A5	tablea5.words.g64edge.top10.ci_lo	got 1.95787, expected 2.0 ± 0.051
+PASS	Table A5	tablea5.words.g64edge.top10.ci_hi	got 2.41435, expected 2.4 ± 0.051
+PASS	Table A5	tablea5.words.g64start.top10.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g64start.top10.delta	got 3.9412, expected 3.9 ± 0.051
+PASS	Table A5	tablea5.words.g64start.top10.ci_lo	got 3.73935, expected 3.7 ± 0.051
+PASS	Table A5	tablea5.words.g64start.top10.ci_hi	got 4.14399, expected 4.1 ± 0.051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.exact.top10	got 56.6833, expected 56.7 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.exact.bits	got 7.32313, expected 7.32 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.square-16.top10	got 15.8333, expected 15.8 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.square-16.bits	got 2.29405, expected 2.29 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.square-64.top10	got 9.16667, expected 9.2 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.square-64.bits	got 0.725461, expected 0.73 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.ink-anchored-128.top10	got 9.33333, expected 9.3 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.ink-anchored-128.bits	got 0.484706, expected 0.48 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.pen-anchored-128.top10	got 6.98333, expected 7.0 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.pen-anchored-128.bits	got 0.0953599, expected 0.1 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSans.width-grid-64.top10	got 8.98333, expected 9.0 ± 0.051
+PASS	Table A6	tablea6.DejaVuSans.width-grid-64.bits	got 0.669805, expected 0.67 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.exact.top10	got 61.0667, expected 61.1 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.exact.bits	got 7.69815, expected 7.7 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.square-16.top10	got 15.15, expected 15.2 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.square-16.bits	got 2.32314, expected 2.32 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.square-64.top10	got 7.68333, expected 7.7 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.square-64.bits	got 0.715992, expected 0.72 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.ink-anchored-128.top10	got 8.4, expected 8.4 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.ink-anchored-128.bits	got 0.641898, expected 0.64 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.pen-anchored-128.top10	got 6.05, expected 6.1 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.pen-anchored-128.bits	got 0.129381, expected 0.13 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.DejaVuSerif.width-grid-64.top10	got 7.51667, expected 7.5 ± 0.051
+PASS	Table A6	tablea6.DejaVuSerif.width-grid-64.bits	got 0.658066, expected 0.66 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.exact.top10	got 30.15, expected 30.2 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.exact.bits	got 4.57594, expected 4.58 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.square-16.top10	got 14.95, expected 15.0 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.square-16.bits	got 2.29742, expected 2.3 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.square-64.top10	got 8.25, expected 8.3 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.square-64.bits	got 0.716249, expected 0.72 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.ink-anchored-128.top10	got 6.3, expected 6.3 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.ink-anchored-128.bits	got 0.149104, expected 0.15 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.pen-anchored-128.top10	got 6.3, expected 6.3 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.pen-anchored-128.bits	got 0.149104, expected 0.15 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationMono.width-grid-64.top10	got 8.01667, expected 8.0 ± 0.051
+PASS	Table A6	tablea6.LiberationMono.width-grid-64.bits	got 0.655667, expected 0.66 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.exact.top10	got 47.4667, expected 47.5 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.exact.bits	got 6.44273, expected 6.44 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.square-16.top10	got 13.9, expected 13.9 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.square-16.bits	got 2.02345, expected 2.02 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.square-64.top10	got 7.95, expected 8.0 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.square-64.bits	got 0.602982, expected 0.6 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.ink-anchored-128.top10	got 5.7, expected 5.7 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.ink-anchored-128.bits	got 0.0288057, expected 0.03 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.pen-anchored-128.top10	got 5.7, expected 5.7 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.pen-anchored-128.bits	got 0.0288057, expected 0.03 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSans.width-grid-64.top10	got 7.83333, expected 7.8 ± 0.051
+PASS	Table A6	tablea6.LiberationSans.width-grid-64.bits	got 0.565264, expected 0.57 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.exact.top10	got 49.6667, expected 49.7 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.exact.bits	got 6.59764, expected 6.6 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.square-16.top10	got 13.6667, expected 13.7 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.square-16.bits	got 1.92739, expected 1.93 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.square-64.top10	got 8.06667, expected 8.1 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.square-64.bits	got 0.545746, expected 0.55 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.ink-anchored-128.top10	got 6.26667, expected 6.3 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.ink-anchored-128.bits	got 0.00893078, expected 0.01 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.pen-anchored-128.top10	got 6.26667, expected 6.3 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.pen-anchored-128.bits	got 0.00893078, expected 0.01 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.LiberationSerif.width-grid-64.top10	got 7.86667, expected 7.9 ± 0.051
+PASS	Table A6	tablea6.LiberationSerif.width-grid-64.bits	got 0.494158, expected 0.49 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.exact.top10	got 56.15, expected 56.2 ± 0.051
+PASS	Table A6	tablea6.NotoSans.exact.bits	got 7.29655, expected 7.3 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.square-16.top10	got 15.6833, expected 15.7 ± 0.051
+PASS	Table A6	tablea6.NotoSans.square-16.bits	got 2.26265, expected 2.26 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.square-64.top10	got 8.33333, expected 8.3 ± 0.051
+PASS	Table A6	tablea6.NotoSans.square-64.bits	got 0.687182, expected 0.69 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.ink-anchored-128.top10	got 7.68333, expected 7.7 ± 0.051
+PASS	Table A6	tablea6.NotoSans.ink-anchored-128.bits	got 0.235259, expected 0.24 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.pen-anchored-128.top10	got 6.1, expected 6.1 ± 0.051
+PASS	Table A6	tablea6.NotoSans.pen-anchored-128.bits	got 0.0598785, expected 0.06 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.NotoSans.width-grid-64.top10	got 8.2, expected 8.2 ± 0.051
+PASS	Table A6	tablea6.NotoSans.width-grid-64.bits	got 0.623909, expected 0.62 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.exact.top10	got 50.1972, expected 50.2 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.exact.bits	got 6.65569, expected 6.66 ± 0.0051
+PASS	Table A6	tablea6.pooled.exact.area	got 1, expected 1.0 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.square-16.top10	got 14.8639, expected 14.9 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.square-16.bits	got 2.18802, expected 2.19 ± 0.0051
+PASS	Table A6	tablea6.pooled.square-16.area	got 2.44976, expected 2.45 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.square-64.top10	got 8.24167, expected 8.2 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.square-64.bits	got 0.665602, expected 0.67 ± 0.0051
+PASS	Table A6	tablea6.pooled.square-64.area	got 10.0392, expected 10.04 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.ink-anchored-128.top10	got 7.28056, expected 7.3 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.ink-anchored-128.bits	got 0.258117, expected 0.26 ± 0.0051
+PASS	Table A6	tablea6.pooled.ink-anchored-128.area	got 3.35802, expected 3.36 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.pen-anchored-128.top10	got 6.23333, expected 6.2 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.pen-anchored-128.bits	got 0.0785767, expected 0.08 ± 0.0051
+PASS	Table A6	tablea6.pooled.pen-anchored-128.area	got 3.35802, expected 3.36 ± 0.0051
+PASS	Table A6; Figure 1	tablea6.pooled.width-grid-64.top10	got 8.06944, expected 8.1 ± 0.051
+PASS	Table A6; Figure 2	tablea6.pooled.width-grid-64.bits	got 0.611145, expected 0.61 ± 0.0051
+PASS	Table A6	tablea6.pooled.width-grid-64.area	got 3.00522, expected 3.01 ± 0.0051
+PASS	Figure 4	fig4a.surnames.g16.k1.top10	got 11.525, expected 11.5 ± 0.051
+PASS	Figure 4	fig4a.surnames.g16.k5.top10	got 22, expected 22.0 ± 0.051
+PASS	Figure 4	fig4a.surnames.g16.k5.bits	got 3.29765, expected 3.3 ± 0.0051
+PASS	Figure 4	fig4a.pad.k1.top10	got 5.9, expected 5.95 ± 0.06
+PASS	Figure 4	fig4a.pad.k5.top10	got 5.9, expected 5.95 ± 0.06
+PASS	Figure 4	fig4b.unjittered.bits	got 0.285245, expected 0.285 ± 0.00051
+PASS	Figure 4	fig4b.jitter.k1.bits	got 0.357191, expected 0.36 ± 0.0051
+PASS	Figure 4	fig4b.jitter.k5.bits	got 0.638399, expected 0.64 ± 0.0051
+PASS	Figure 4	fig4b.font.k1.bits	got 0.218811, expected 0.22 ± 0.0051
+PASS	Figure 4	fig4b.font.k5.bits	got 0.689892, expected 0.69 ± 0.0051
+PASS	Figure 4	fig4b.font.changed	got 188, expected 188 ± 0.0
+PASS	Figure 4	fig4b.class192.k5.bits	got 0.00980393, expected 0.01 ± 0.0051
+PASS	Figure 5	fig5.known.top10	got 48.6, expected 48.6 ± 0.051
+PASS	Figure 5	fig5.font_unknown.top10	got 38.1667, expected 38.2 ± 0.051
+PASS	Figure 5	fig5.uniform.top10	got 5.66305, expected 5.7 ± 0.051
+EXPLORATORY	Table A4	tablea4.liberation	Liberation Serif follow-up and the 179/400 sentence-alone count are in a4_reproduction.csv, which is not in the repository.
+EXPLORATORY	Table A4	tablea4.padding_gain	The padding rerun and its 180/400 baseline are not in e1_a4_cases.csv.gz.
+EXPLORATORY	Table A5	tablea5.earlier_holm	The number before the arrow is the earlier independent-proportion test. paired_tests.csv stores the paired Holm count only.
+EXPLORATORY	Figure 4	fig4b.edge_0.38_to_1.30	results_summary.csv has no edge-aligned surname row that moves from 0.38 bits to 1.30 bits.
+EXPLORATORY	Figure 5; Section 4.5	fig5.wordfreq_prior	s4_priors.csv is absent. test4 has a uniform prior, not the word-frequency or shuffled-census prior. 48.3%, 21.2% and 6.48 bits are not rebuilt.
+EXPLORATORY	Figure 5	fig5.recalibrated_31	The form summary has Pillow-model exact hits of 0 and matched hits of 63. It has no 31/100 recalibrated cell.
+EXPLORATORY	Section 5.3	own_height	The manuscript says the own-height variant is not reported. w1_pooled.csv is absent and no function keeps a box's own height.
+EXPLORATORY	Figure 6; Table A7	form_pages	Form PDFs, scans and the LibreOffice profile are not in the repository. The score table is.
+EXPLORATORY	Figure 4	s2_rerender_file	s2_rerender.csv is absent. The cited 188-of-2000 class changes are in results_summary.csv.
+PASS	Table A5	tablea5.words.exact8.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g8g16.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g16g32.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g32g64.bits.holm	got 18, expected 18 ± 0.0
+PASS	Table A5	tablea5.words.g64edge.bits.holm	got 17, expected 17 ± 0.0
+PASS	Table A5	tablea5.words.g64start.bits.holm	got 18, expected 18 ± 0.0
+SUMMARY	PASS 369	FAIL 0	EXPLORATORY 9
+V1_4	data/v1_5_anchor_margin/summary.csv	PASS 30240	FAIL 0
+V1_4	data/v1_6_email_digits/summary.csv	PASS 11304	FAIL 0
+V1_4	data/v1_6_email_digits/table_pooled.csv	PASS 580	FAIL 0
+V1_4	research/area_eval/preflight_summary.csv	PASS 7	FAIL 0
+V1_4	research/area_eval/results/area_reference_summary.csv	PASS 25	FAIL 0
+V1_4	research/area_eval/results/summary.csv	PASS 170	FAIL 0
+V1_4	research/realworld_e1_eval/results/v4_fontmatched/preflight/summary.csv	PASS 7	FAIL 0
+V1_4	research/realworld_e1_eval/results/v4_fontmatched/summary.csv	PASS 366	FAIL 0
+V1_4	results/v1_4_archive/font_builds/summary.csv	PASS 972	FAIL 0
+V1_4	results/v1_4_archive/noto_rerender/geometry_checks.csv	PASS 9	FAIL 0
+V1_4	results/v1_4_archive/noto_rerender/summary.csv	PASS 1134	FAIL 0
+V1_4	results/v1_4_archive/prerequisites/summary.csv	PASS 0	FAIL 0
+V1_4	results/v1_4_archive/rerender_class_changes/summary.csv	PASS 56	FAIL 0
+V1_4	results/v1_4_archive/tileseal/summary.csv	PASS 20	FAIL 0
+V1_4	results/v1_4_archive/v931_figures/summary.csv	PASS 15	FAIL 0
+V1_4 AGGREGATE	rerender_C128_changed_targets	PASS 1	FAIL 0
+V1_4 AGGREGATE	rerender_C192_changed_targets	PASS 1	FAIL 0
+V1_4 AGGREGATE	tileseal_matching_redactions	PASS 1	FAIL 0
+V1_4 AGGREGATE	new_sensitivity_cell_count	PASS 1	FAIL 0
+V1_4 AGGREGATE	new_sensitivity_cells_shift_at_least_4pp	PASS 1	FAIL 0
+V1_4 SUMMARY	PASS 44910	OVERALL FAIL 0	completed summaries locked; remaining experiments incomplete
