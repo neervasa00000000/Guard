@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "n_summary_rows": 2160,
+  "n_class_rows": 15216,
+  "m0_checks": 432,
+  "error_model_checks": 5400,
+  "summary_sha256": "abe5fe29d83b21a609f8cb94e98a6be748282bbbb4988630228b6d5eeb6a6bed",
+  "raw_class_aggregates_match": true,
+  "source_hashes_match": true,
+  "validator_sha256": "bf1a032b31789608bef3b1ce11e986f47d80272ea38d9f3bc101fd5e244d40f8",
+  "command": ".venv/bin/python -B scripts/validate_anchor_margin.py"
+}

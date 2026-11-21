@@ -1,0 +1,27 @@
+{
+  "status": "incomplete",
+  "experiment_results": false,
+  "seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "command": ".venv/bin/python -B scripts/audit_v14_remaining.py",
+  "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "pinned_noto_sha256": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
+  "font_sources": [
+    "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf",
+    "https://api.github.com/repos/google/fonts/commits?path=ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf&per_page=100",
+    "https://raw.githubusercontent.com/notofonts/noto-fonts/main/unhinted/variable-ttf/NotoSans-VF.ttf"
+  ],
+  "google_fonts_commits_checked": [
+    "ab3683d56ecc64a4d3eee573f7671791e0eb077b",
+    "62c17bc045b0f8317386c1c55464125bbb7a96ef",
+    "81a94f4d3d09c8be8669faaa9a8c7f622e21d931",
+    "c92b209a838649c205a1565b5f28c1973e049659"
+  ],
+  "local_search": "Filename search across /Users/neervasa plus /Library/Fonts and /System/Library/Fonts; 352 matching font/script names; some folders denied by macOS privacy even after escalation. No v931 script found in accessible locations.",
+  "remote_figure_search": "GitHub connector fetch of manuscript/figures/make_figs_v931.py on the default branch returned 404; filename search returned no results.",
+  "git_head": "814545d3f6d4490956a2d7ac6123e5db9faf6a15",
+  "protected_v13": "18cfe521088c90750ba6bc627fbd1bbe10072fab",
+  "protected_tileseal": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
+  "libreoffice_version": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
+  "source_sha256": "8f25aa95b86e1b70031d3193fbc4cd990336c72659d071be8bd0bb63715bf2fc"
+}

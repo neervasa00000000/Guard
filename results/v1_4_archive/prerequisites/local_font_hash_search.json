@@ -1,0 +1,14 @@
+{
+  "searched_roots": [
+    "/Users/neervasa/Desktop",
+    "/Users/neervasa/.cache",
+    "/Users/neervasa/Library/Fonts",
+    "/Library/Fonts",
+    "/System/Library/Fonts"
+  ],
+  "fonts_hashed": 2352,
+  "matching_files": [],
+  "search_error_lines": 0,
+  "expected_sha256": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
+  "scope": "All TTF/OTF names in accessible roots, including renamed files; unavailable private folders are not claimed searched."
+}

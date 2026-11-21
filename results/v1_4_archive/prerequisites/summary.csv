@@ -1,0 +1,9 @@
+item,status,reason
+email_digits_sweep,blocked,Fresh six-font rendering requires pinned Noto Sans; surname geometry cannot substitute for email/digit geometry.
+noto_fresh_rerender,blocked,No checked binary matches fonts.json; retained geometry is not a fresh render.
+mock_form_renderer_mismatch,not_run,"Repository has replayed geometry/hit CSVs, but no original LibreOffice mock-form document/PDF/scan input set or end-to-end form generator."
+rerender_188_and_2,not_run,"Archived counts exist, but the mixed-font rerender generator, same-target mapping and per-render settings needed to rerun those specific 2000 targets are absent from released code."
+tileseal_392,blocked,e1_validate_guard.py requires all six pinned fonts via E.check_render_inputs; no replacement and no claimed 392-case rerun.
+alternative_font_builds_36_cells,not_run,Original alternative-build manifest and 36-cell experiment harness are not in released code; do not choose different builds and label them a reproduction.
+v931_figure_script,blocked,"User-supplied make_figs_v931.py absent from repository, accessible filename search, Git history and attached Python files."
+final_v14_release_check,blocked,New experiment coverage and v931 figure checks are incomplete; current expected_numbers.json has no v1_4 section. Do not create v1.4-artifact.

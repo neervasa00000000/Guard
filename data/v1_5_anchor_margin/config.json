@@ -1,0 +1,240 @@
+{
+  "status": "complete",
+  "n_surnames": 50000,
+  "margins_px": [
+    0,
+    2,
+    4,
+    8,
+    16
+  ],
+  "C_px": [
+    64,
+    96,
+    128,
+    192,
+    256
+  ],
+  "field_C_px": 0,
+  "template_errors": {
+    "clean": [
+      0
+    ],
+    "start_uniform_-2_2": [
+      -2,
+      -1,
+      0,
+      1,
+      2
+    ],
+    "start_uniform_-4_4": [
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "class_width_pm8": [
+      -8,
+      8
+    ]
+  },
+  "enumeration": "Exact full-list prior-weighted channel enumeration; no sampling uncertainty or bootstrap intervals",
+  "seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "bootstrap_executed": false,
+  "start_anchor": "same global list anchor x_L as run_tail.py, minus margin m; m=0 is exactly the archived policy",
+  "start_error": "anchor shifts by uniform e; visible anchor reveals e; report conditional channel averaged over e",
+  "width_error": "C is replaced by C-8 or C+8 with equal probability; only released width observed; marginalize latent delta as run_perturb.py",
+  "singleton_count": "expected number of singleton output classes across visible start-error states; may be fractional",
+  "max_class_mass": "sum of original priors of names compatible with the worst pointwise output; output_probability separately records likelihood-weighted output mass; stochastic-width pointwise bits=log2(likelihood/output_probability)",
+  "areas": "prior-weighted left-continuous quantiles over all names and error draws; requested box is layout bounds plus PAD on all sides; full-line height from archived v1_2 metrics",
+  "extra_area_vs_m0": "prior/error-weighted mean of (painted_area_m - painted_area_0)/painted_area_0, paired on name and error state",
+  "field": "one full-50000-name field per font-size, anchor x_L-m+e, common right edge max padded right; width errors do not change the field",
+  "numpy": "2.5.4",
+  "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "census_sha256": "6b4933178060b4e5ac8dd9a611ec15472d35eab98fe9027474bc5ccc5b7a8708",
+  "geometry": [
+    {
+      "font": "DejaVuSans",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_DejaVuSans_12.pkl",
+      "sha256": "9470a12e4e0fea2eb4035da3310ed18c03f165ce0db9682c79187e26ef407055",
+      "geometry_receipt": "fb458df54c0124e894b487a5793e4465a82a447873de87b3d667d0ab414f1b05",
+      "anchor_m0": -2,
+      "line_height_px": 17
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_DejaVuSans_16.pkl",
+      "sha256": "2313409666a5126234fe1cce9476f09983f6b4e3e502594a35d5cbe0efac12f9",
+      "geometry_receipt": "b92bddacf1ee20690b47ef0e5b63a7827bad51ab68a219017149f664276e9cf3",
+      "anchor_m0": -2,
+      "line_height_px": 21
+    },
+    {
+      "font": "DejaVuSans",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_DejaVuSans_24.pkl",
+      "sha256": "72d56fe16737007c907333cd43d1ab5aa6c6b0a0f1174cad86440aab2b5e32eb",
+      "geometry_receipt": "976d9115daeeea4f6adb8bf2a698679663528d9b0d5bab2d5d4d3936b284f416",
+      "anchor_m0": -3,
+      "line_height_px": 31
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_DejaVuSerif_12.pkl",
+      "sha256": "a1d362d8aa22983e1973738aa44f1c56a1f30162e40bc7c2e3fe58fbd5d042b0",
+      "geometry_receipt": "845156307380fb720326d4d049062afb4be5ccfbdc55b93959bfb4ef1de71d34",
+      "anchor_m0": -3,
+      "line_height_px": 17
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_DejaVuSerif_16.pkl",
+      "sha256": "69a86fb10867c8caa39265ef537e540eb28de8834be3cb0edd88bda798df4389",
+      "geometry_receipt": "eeded3e8b40cccdb278693a8a4001d41bfa5bc559079ae50fc80ee4227f8d845",
+      "anchor_m0": -3,
+      "line_height_px": 21
+    },
+    {
+      "font": "DejaVuSerif",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_DejaVuSerif_24.pkl",
+      "sha256": "1a6c1eaff20e18fd7f37e411fb56636ef650998b8111dd492c3a9365d0017cb7",
+      "geometry_receipt": "73eb68ee449293779d8f7fccb56d80f4be37b8553e616b0be3343db5e3ba44a5",
+      "anchor_m0": -4,
+      "line_height_px": 31
+    },
+    {
+      "font": "LiberationSans",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_LiberationSans_12.pkl",
+      "sha256": "e12a2fa6ada267db9188a4e7c1435e57d141dda182e4801961f30ae8c8f7b47e",
+      "geometry_receipt": "1cdc753659add6a9efb79e9255971de7998c69b25dc31798b7d5607ba50eae0d",
+      "anchor_m0": -1,
+      "line_height_px": 16
+    },
+    {
+      "font": "LiberationSans",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_LiberationSans_16.pkl",
+      "sha256": "9268c61d4dfba6ef5e80aef23d7e20c0849a2a9eb4303324b917805df8668700",
+      "geometry_receipt": "0d78d9d7e881fa089fc72c5ff7f817d1fa33785f0f33c9b80588d5fe0df8c63a",
+      "anchor_m0": -1,
+      "line_height_px": 21
+    },
+    {
+      "font": "LiberationSans",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_LiberationSans_24.pkl",
+      "sha256": "55997c9d188a37f8bc9b29d4fe4c40462e4e0ddd45adc96bb0ffee79a9cd4554",
+      "geometry_receipt": "4a5de1e156c501bf0e250c7d38276acb8d42b4cde8a9a12c4115ff6ba36cd656",
+      "anchor_m0": -1,
+      "line_height_px": 30
+    },
+    {
+      "font": "LiberationSerif",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_LiberationSerif_12.pkl",
+      "sha256": "6a8ca6f276d3dd18619b595e48b6a976bfa927cd154fb70aa4ff5f8cf7d1d842",
+      "geometry_receipt": "5dcb1284e5cd082b29d2f3d180c2aba5d363cd5878556c297793571766b6d803",
+      "anchor_m0": -1,
+      "line_height_px": 16
+    },
+    {
+      "font": "LiberationSerif",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_LiberationSerif_16.pkl",
+      "sha256": "bf926ada1977db411a64c75a8c5eff60742b64e1ec71ff015f5c51dd027379c8",
+      "geometry_receipt": "c032965bbcb412a76aa65f6b862f4c15960f6aa33950adcb2595c54cffb625a1",
+      "anchor_m0": -1,
+      "line_height_px": 21
+    },
+    {
+      "font": "LiberationSerif",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_LiberationSerif_24.pkl",
+      "sha256": "d1e543b1578b2d2f3906028181ebf94d4ea79b405719daad3de094eed2badcdb",
+      "geometry_receipt": "15cc2dad3cc0d0f0c7d5b36dc62d74f6b14432f900f53844836f6c4ef951dcc3",
+      "anchor_m0": -1,
+      "line_height_px": 30
+    },
+    {
+      "font": "NotoSans",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_NotoSans_12.pkl",
+      "sha256": "0ed9eb2add62cd605e1b43853194af0b62432d03e2799c73bc1ffd4aa941187a",
+      "geometry_receipt": "76055dda072079f9d5bb2463c91a2d3cba517642aede6279d2b924ce8c6cbf33",
+      "anchor_m0": -3,
+      "line_height_px": 19
+    },
+    {
+      "font": "NotoSans",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_NotoSans_16.pkl",
+      "sha256": "26c59f5719834d3b2a2ae5e98c0572ab5bc7a7ea09fb41dd9ce92c5411dba52b",
+      "geometry_receipt": "661c55b7e01d68027da9559bcfe1a173bccb22cf08cff2f20925bc16acd729c7",
+      "anchor_m0": -2,
+      "line_height_px": 25
+    },
+    {
+      "font": "NotoSans",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_NotoSans_24.pkl",
+      "sha256": "e9eea8ec51a4f02b8c478fb56e236c3d8e39ca17de1fdfc845c75eeff6d4c651",
+      "geometry_receipt": "e82131faeb78f7883576f0cfa71a5257dbd0f3401d2587a6a4982af38bdea82f",
+      "anchor_m0": -3,
+      "line_height_px": 36
+    },
+    {
+      "font": "LiberationMono",
+      "size_px": 12,
+      "path": "out/retained-geom/geom_surnames_LiberationMono_12.pkl",
+      "sha256": "f2197753b9a3d2af850de1ea30743cc80921f50ddd97ec7ecbeebd7711076cff",
+      "geometry_receipt": "63ea60f2fc4641a6b5291b6d0b1756ca947fa53c7b70d50dd0b812dbbbfafe7f",
+      "anchor_m0": -1,
+      "line_height_px": 16
+    },
+    {
+      "font": "LiberationMono",
+      "size_px": 16,
+      "path": "out/retained-geom/geom_surnames_LiberationMono_16.pkl",
+      "sha256": "ad8c4b75fe4dee17b688eaf370474b9863d7d53613ddd26f890ef9bdbe2a6fca",
+      "geometry_receipt": "dc582eda85a7ed42fe848e6d663f1a350e24431fcad7ae7af3f2e6e9012777e6",
+      "anchor_m0": -1,
+      "line_height_px": 21
+    },
+    {
+      "font": "LiberationMono",
+      "size_px": 24,
+      "path": "out/retained-geom/geom_surnames_LiberationMono_24.pkl",
+      "sha256": "9792e67de4820f741020ec174c8c96c56f898a10c4ad4a0e9c4ec9b271a35ab8",
+      "geometry_receipt": "759628364ded8c4b2fb0a1315c934d33899ab1ef154062ca13fa250ee150105f",
+      "anchor_m0": -1,
+      "line_height_px": 30
+    }
+  ],
+  "source_sha256": {
+    "scripts/run_anchor_margin.py": "0f7ca4a69361c5ec7fce3a5cc361248795df4483e1ba442c9369e8256bbeec48",
+    "scripts/run_tail.py": "99ec3e5257b72c6aa4ee7ac0c4b68a3a4f9bb8da97cc3b0fe88e32f0d0646180",
+    "scripts/run_perturb.py": "96e7c63a61590d06b913b8ab8cabbacb6360c46368c2bac2ffff7b0250b0430e",
+    "research/e1/policies.py": "7eb6adec4b49c1cd839114b984db9c64b504044865ff07df9e6e5476db0f5ebd",
+    "research/e1/data/v1_2/run.json": "729266baf9c0536b40a6bdad4406e6c5641efd69af342fa049f50203bcc03c5d",
+    "research/e1/data/v1_3/tail_summary.csv": "5eec351a9e235f97caeb269ed962e1097361460c12e566ce5d2cbe7281ba52dc",
+    "research/e1/data/v1_3/tail_per_class.csv": "35810bf8c8e394bfa49cd27ec43d2b9b292ca56ca81d7946b69b9f29a4a427b2"
+  },
+  "command": ".venv/bin/python -B scripts/run_anchor_margin.py",
+  "n_summary_rows": 2160,
+  "n_class_rows": 15216,
+  "m0_summary_checks": 432,
+  "m0_class_checks_pass": true,
+  "existing_error_model_checks": 5400
+}

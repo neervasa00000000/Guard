@@ -1,0 +1,17 @@
+{
+  "scope": "existing locked manuscript checks only; not complete v1.4 validation",
+  "clone_commit": "814545d3f6d4490956a2d7ac6123e5db9faf6a15",
+  "clean_before": true,
+  "returncode": 0,
+  "command": [
+    "make",
+    "all",
+    "PY=python"
+  ],
+  "python_bin_on_PATH": "/Users/neervasa/Desktop/UI UX/Guard/.venv/bin",
+  "clone_path": "/private/tmp/guard-v14-baseline-0sxva8mb/repo",
+  "output_summary": [
+    "SUMMARY\tPASS 369\tFAIL 0\tEXPLORATORY 9"
+  ],
+  "initial_invocation_error": "An earlier invocation with an unquoted absolute PY path failed before running any target; corrected by virtualenv PATH."
+}
