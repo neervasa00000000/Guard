@@ -1,0 +1,25 @@
+{
+  "clone_commit": "5359cf7d0a75ae0a4b6a5d62bcc2e9cfe652d0de",
+  "returncode": 0,
+  "clean_before": true,
+  "empty_font_cache_before": true,
+  "command": [
+    "make",
+    "all",
+    "PY=python"
+  ],
+  "python_bin_on_PATH": "/Users/neervasa/Desktop/UI UX/Guard/.venv/bin",
+  "clone_path": "/private/tmp/guard-v931-clean-oyha4olp/repo",
+  "downloaded_fonts": [
+    "Downloading pinned figure font: SourceSansPro-Regular.otf",
+    "Downloading pinned figure font: SourceSansPro-Bold.otf"
+  ],
+  "summary": [
+    "cross-check: 101 plotted values, 0 not found in figs_data.csv []",
+    "TOTAL PROBLEMS: 0",
+    "SUMMARY\tPASS 369\tFAIL 0\tEXPLORATORY 9",
+    "V1_4 SUMMARY\tPASS 30830\tOVERALL FAIL 0\tcompleted summaries locked; remaining experiments incomplete"
+  ],
+  "git_status_after": "",
+  "limitations": "Remaining unrun experiments are not validated by this build; no release tag created."
+}
