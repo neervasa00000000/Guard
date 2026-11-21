@@ -1,0 +1,6 @@
+policy,n_paired_test_targets,archived_nominal_median,new_nominal_median,new_clipped_median,nominal_median_matches,clipped_median_matches_nominal,n_clipping_differences
+exact,760,1.0,1.0,1.0,True,True,0
+grid-16,760,2.8444444444444446,2.8444444444444446,2.8444444444444446,True,True,0
+grid-64,760,13.407528641571195,13.407528641571195,13.407528641571195,True,True,1
+start-aligned-128,760,5.022200615783504,5.022200615783504,5.019607843137255,True,False,4
+field-1000,158,2.8468468468468466,2.8468468468468466,2.8468468468468466,True,True,1

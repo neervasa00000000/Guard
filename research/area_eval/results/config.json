@@ -1,0 +1,163 @@
+{
+  "status": "complete",
+  "gt_source": "FUNSD only: no matching born-digital source PDFs for the 500 DocLayNet evaluation pages were available locally",
+  "doclaynet": {
+    "evaluation_pages": 500,
+    "inserted_targets": 954,
+    "matching_source_pdfs": 0,
+    "coverage_threshold": 0.95,
+    "coverage_checks_executed": 0,
+    "pages_passing": 0,
+    "coverage_unknown_missing_pdf": 500,
+    "searched_roots": [
+      "dataset",
+      "research/datasets/doclaynet/pages"
+    ],
+    "source_results_sha256": "1bc74f5406efc8fa6203e9e2b06cb476f851fadc34509370f9863d602cdc8b8f"
+  },
+  "bootstrap_seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "bootstrap_unit": "page",
+  "tesseract_path": "/opt/homebrew/bin/tesseract",
+  "tesseract_version": "tesseract 5.5.4\n leptonica-1.87.0\n  libgif 6.1.3 : libjpeg 8d (libjpeg-turbo 3.2.0) : libpng 1.6.59 : libtiff 4.7.2 : zlib 1.2.12 : libwebp 1.6.0 : libopenjp2 2.5.4\n Found NEON\n Found libarchive 3.8.11 zlib/1.2.12 liblzma/5.8.4 bz2lib/1.0.8 liblz4/1.11.1 libzstd/1.5.7 expat/expat_2.7.4 CommonCrypto/system libb2/system\n Found libcurl/8.7.1 SecureTransport (LibreSSL/3.3.6) zlib/1.2.12 nghttp2/1.69.0\n",
+  "tesseract_binary_sha256": "f8fb33c200730d1e78624df1be72805b74f486f46127d14382633fc51c1c7c41",
+  "eng_traineddata_path": "/opt/homebrew/share/tessdata/eng.traineddata",
+  "eng_traineddata_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+  "versions": {
+    "numpy": "2.5.4",
+    "Pillow": "13.0.0",
+    "pandas": "3.1.1",
+    "pytesseract": "0.3.13"
+  },
+  "tesseract_settings": "--oem 1 --psm 3",
+  "tesseract_language": "eng",
+  "TESSDATA_PREFIX": "/opt/homebrew/share/tessdata/",
+  "OMP_THREAD_LIMIT": 1,
+  "OMP_NUM_THREADS": 1,
+  "image_transport": "uncompressed temporary local TIFF; pixels/mode preserved; DPI metadata unset for baseline and every policy; no invented DPI",
+  "normalization": "Unicode NFKC and strip boundary whitespace; case-insensitive uses Unicode casefold; punctuation retained",
+  "matching": "one-to-one descending-IoU greedy geometry-only matching, IoU>=0.5; ties by annotation order then OCR output order; no text-assisted matching",
+  "target_selection": "existing run_v2.collect_funsd_tokens on all 149 training and 50 test forms, all surname-list answer words, no likely-name filter; every target redacted independently",
+  "ground_truth": "all nonempty FUNSD annotated word entries, all entity labels; existing funsd_real.inclusive_to_half_open, clipped to image; exact target word excluded from utility denominators",
+  "gt_quality": {
+    "clipped_gt_rectangles": 3,
+    "multiword_text_in_one_annotation": 62,
+    "blank_word_annotations": 890
+  },
+  "n_forms": 199,
+  "n_forms_with_targets": 192,
+  "n_forms_skipped": 7,
+  "n_targets": 2649,
+  "field_policy": "existing Table A9 first-1000 DejaVuSans surrogate field at nearest 12/16/24px word-height proxy; only truths within first 1000; not an annotated native FUNSD field",
+  "field_geometry": {
+    "12": {
+      "font": "DejaVuSans",
+      "size_px": 12,
+      "n_candidates": 1000,
+      "x_l": -2,
+      "max_padded_right_first1000": 77,
+      "source_geometry_sha256": "9470a12e4e0fea2eb4035da3310ed18c03f165ce0db9682c79187e26ef407055",
+      "receipt_sha256": "fb458df54c0124e894b487a5793e4465a82a447873de87b3d667d0ab414f1b05"
+    },
+    "16": {
+      "font": "DejaVuSans",
+      "size_px": 16,
+      "n_candidates": 1000,
+      "x_l": -2,
+      "max_padded_right_first1000": 103,
+      "source_geometry_sha256": "2313409666a5126234fe1cce9476f09983f6b4e3e502594a35d5cbe0efac12f9",
+      "receipt_sha256": "b92bddacf1ee20690b47ef0e5b63a7827bad51ab68a219017149f664276e9cf3"
+    },
+    "24": {
+      "font": "DejaVuSans",
+      "size_px": 24,
+      "n_candidates": 1000,
+      "x_l": -3,
+      "max_padded_right_first1000": 154,
+      "source_geometry_sha256": "72d56fe16737007c907333cd43d1ab5aa6c6b0a0f1174cad86440aab2b5e32eb",
+      "receipt_sha256": "976d9115daeeea4f6adb8bf2a698679663528d9b0d5bab2d5d4d3936b284f416"
+    }
+  },
+  "area_ratio": "actual clipped rectangle pixels / clipped exact requested rectangle pixels; nominal un-clipped ratio additionally saved for archive comparison",
+  "baseline": "unredacted OCR evaluated on the identical visible non-target word subset for each mask; full-page baseline also saved",
+  "aggregation": "pooled word-observation ratios over separate target redactions; resample complete pages with all their redactions; per_page.csv has one target-policy row; per_page_aggregate.csv supplies page-policy totals",
+  "units": {
+    "words_covered50_pct": "percent",
+    "words_covered_any_pct": "percent",
+    "ocr_word_acc": "fraction",
+    "ocr_word_acc_ci": "case-insensitive fraction (not confidence interval)",
+    "ocr_drop_points": "percentage points"
+  },
+  "workers": 8,
+  "force_ocr": false,
+  "source_script_sha256": "61f4fbaa78f7c19ed958c181c999e04b4b1c46321ee1390816308abb97394914",
+  "policy_source_sha256": "7d7ec3b1f9fd0a2e4b3c464f01dfc12182ebf60ef3a4ba842797a06c1833de3a",
+  "selection_source_sha256": "a79c6a23e9fcc5479d621a65ed428b0c6a88d2eea109adb46fcd800bfc77db7d",
+  "funsd_helpers_sha256": "8c70d3aeb070f9b0402ce004be9761d4fb00f8a666e6461f4715221a080a31a4",
+  "import_adapter": "only unused import of unreleased DocLayNet download_sample omitted in memory; all selected function bodies unchanged",
+  "census_sha256": "6b4933178060b4e5ac8dd9a611ec15472d35eab98fe9027474bc5ccc5b7a8708",
+  "source_funsd_zip_sha256": "c31735649e4f441bcbb4fd0f379574f7520b42286e80b01d80b445649d54761f",
+  "policies": [
+    "exact",
+    "grid-16",
+    "grid-64",
+    "start-aligned-128",
+    "field-1000"
+  ],
+  "command": ".venv/bin/python -B research/area_eval/run_area_eval.py --workers 8",
+  "n_redactions": 11069,
+  "n_unique_ocr_jobs": 10971,
+  "n_baseline_jobs": 192,
+  "field_targets": 473,
+  "paired_policy_boxes_checked_before_ocr": 3198,
+  "fresh_ocr_jobs": 10971,
+  "cache_hits": 0,
+  "repeated_ocr_output_differences": 0,
+  "sanity_exact_words_per_redaction": 0.0,
+  "sanity_grid64_words_per_redaction": 4.246508116270291,
+  "archived_box_comparisons": 3198,
+  "archived_box_mismatches": 0,
+  "archived_nominal_ratio_mismatches": 0,
+  "archived_ratio_differences_due_to_image_clipping": 6,
+  "commands": [
+    ".venv/bin/python -B research/area_eval/run_area_eval.py --workers 8",
+    ".venv/bin/python -B research/area_eval/run_area_eval.py --workers 8 --force-ocr --out research/area_eval/.repeat",
+    ".venv/bin/python -B research/area_eval/validate_area_eval.py"
+  ],
+  "install_commands": [
+    "NONINTERACTIVE=1 HOMEBREW_NO_SUDO=1 HOMEBREW_NO_ANALYTICS=1 /bin/bash /private/tmp/guard-homebrew-install.sh",
+    "HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1 /opt/homebrew/bin/brew install tesseract",
+    ".venv/bin/python -m pip install pytesseract"
+  ],
+  "homebrew_installer_url": "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh",
+  "homebrew_installer_sha256": "8fd2f1a5287a7c2e3d7362924c677edcc04c5a0e16448c77132d056bc88cf1ed",
+  "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "field_geometry_file_sha256": "865d65410fc3e86c97058da75788d4adcd7ae91dd6cbe3c9dc156a821ff254f7",
+  "import_adapter_sha256": "e87e9c6768565815b9f30135be626ad7760eaf049093056e25cebd083b75e5c6",
+  "archived_helper_sha256": {
+    "research/e1/e1lib.py": "ef7114da7689da26c859ac5e7af3a3d4c18494c0dc13df8931e80aad69c4a48f",
+    "research/e1/policies.py": "7eb6adec4b49c1cd839114b984db9c64b504044865ff07df9e6e5476db0f5ebd"
+  },
+  "packaging_version": "26.3",
+  "validation_script_sha256": "cf8392340b91c92a3b2a99353a99bc97d6f455f5ebd5ba4cfd6f2b0218bb8a0b",
+  "reproducibility": {
+    "passed": true,
+    "summary_byte_identical": true,
+    "summary_sha256_first": "d4313aef2d313d51e126db947513459f91e845b934956e8c4f562be0b8c8ec6b",
+    "summary_sha256_repeat": "d4313aef2d313d51e126db947513459f91e845b934956e8c4f562be0b8c8ec6b",
+    "per_page_byte_identical": true,
+    "first_fresh_ocr_jobs": 10971,
+    "first_cache_hits": 0,
+    "repeated_fresh_ocr_jobs": 10971,
+    "repeat_cache_hits": 0,
+    "repeated_ocr_output_differences": 0,
+    "paired_archive_boxes": 3198,
+    "archive_box_mismatches": 0,
+    "archive_nominal_area_mismatches": 0,
+    "n_clipping_differences": 6,
+    "exact_words_covered_per_redaction": 0.0,
+    "grid64_words_covered_per_redaction": 4.246508116270291,
+    "all_metrics_and_CIs_recomputed": true,
+    "gt_source": "FUNSD only: no matching born-digital source PDFs for the 500 DocLayNet evaluation pages were available locally"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "summary_byte_identical": true,
+  "summary_sha256_first": "d4313aef2d313d51e126db947513459f91e845b934956e8c4f562be0b8c8ec6b",
+  "summary_sha256_repeat": "d4313aef2d313d51e126db947513459f91e845b934956e8c4f562be0b8c8ec6b",
+  "per_page_byte_identical": true,
+  "first_fresh_ocr_jobs": 10971,
+  "first_cache_hits": 0,
+  "repeated_fresh_ocr_jobs": 10971,
+  "repeat_cache_hits": 0,
+  "repeated_ocr_output_differences": 0,
+  "paired_archive_boxes": 3198,
+  "archive_box_mismatches": 0,
+  "archive_nominal_area_mismatches": 0,
+  "n_clipping_differences": 6,
+  "exact_words_covered_per_redaction": 0.0,
+  "grid64_words_covered_per_redaction": 4.246508116270291,
+  "all_metrics_and_CIs_recomputed": true,
+  "gt_source": "FUNSD only: no matching born-digital source PDFs for the 500 DocLayNet evaluation pages were available locally"
+}

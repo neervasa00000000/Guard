@@ -1,0 +1,29 @@
+{
+  "12": {
+    "font": "DejaVuSans",
+    "size_px": 12,
+    "n_candidates": 1000,
+    "x_l": -2,
+    "max_padded_right_first1000": 77,
+    "source_geometry_sha256": "9470a12e4e0fea2eb4035da3310ed18c03f165ce0db9682c79187e26ef407055",
+    "receipt_sha256": "fb458df54c0124e894b487a5793e4465a82a447873de87b3d667d0ab414f1b05"
+  },
+  "16": {
+    "font": "DejaVuSans",
+    "size_px": 16,
+    "n_candidates": 1000,
+    "x_l": -2,
+    "max_padded_right_first1000": 103,
+    "source_geometry_sha256": "2313409666a5126234fe1cce9476f09983f6b4e3e502594a35d5cbe0efac12f9",
+    "receipt_sha256": "b92bddacf1ee20690b47ef0e5b63a7827bad51ab68a219017149f664276e9cf3"
+  },
+  "24": {
+    "font": "DejaVuSans",
+    "size_px": 24,
+    "n_candidates": 1000,
+    "x_l": -3,
+    "max_padded_right_first1000": 154,
+    "source_geometry_sha256": "72d56fe16737007c907333cd43d1ab5aa6c6b0a0f1174cad86440aab2b5e32eb",
+    "receipt_sha256": "976d9115daeeea4f6adb8bf2a698679663528d9b0d5bab2d5d4d3936b284f416"
+  }
+}

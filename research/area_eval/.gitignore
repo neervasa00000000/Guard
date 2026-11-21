@@ -1,0 +1,10 @@
+.cache/
+.repeat/
+__pycache__/
+*.pyc
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.pdf
