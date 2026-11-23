@@ -1,4 +1,7 @@
-/data/
+# Downloaded third-party inputs stay local; derived sweep data below remain tracked.
+/data/census/
+/data/gutenberg/
+/data/models/
 /out/
 
 # DocLayNet sample pages and zip indexes. The download script, license,

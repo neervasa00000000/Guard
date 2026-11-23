@@ -1,11 +1,11 @@
 {
- "manuscript": "submitted manuscript (guard_v9_37.docx)",
+ "manuscript": "submitted manuscript (Vasa_JCP_manuscript.docx)",
  "journal": "Journal of Cybersecurity and Privacy (MDPI)",
  "title": "How Much Does a Redaction Box Reveal? Geometry Leakage and Over-Redaction Under Matched-Renderer Attacks",
- "archive": "tag v1.6-artifact (same data as v1.4-artifact, commit 162567c2cfa0b6eaf35339b35f106aa9bca606bb)",
+ "archive": "tag v1.6-artifact (retained archived data unchanged from v1.4-artifact, commit 162567c2cfa0b6eaf35339b35f106aa9bca606bb)",
  "generated": "2026-11-23",
- "note": "Table cells are compared within half a unit of the last printed digit. scripts/locked_values.json holds the table values that make all checks.",
- "n": 338,
+ "note": "Table cells are compared within half a unit of the last printed digit. Added in v1.5-artifact; the v1.4-artifact manuscript/expected_numbers.json describes an earlier draft.",
+ "n": 344,
  "n_fail": 0,
  "numbers": [
   {
@@ -3211,8 +3211,8 @@
   {
    "id": "text|7.3: Liberation Mono share 77%, 1.30 bits, truth-in 96.5%",
    "location": "text (see claim)",
-   "printed": "77% of the estimator’s score came from the 748 tokens",
-   "computed": "77% of the estimator’s score came from the 748 tokens",
+   "printed": "77% of the estimator’s exact-box score summed over all 1,936 tokens came from the 748 tokens",
+   "computed": "77% of the estimator’s exact-box score summed over all 1,936 tokens came from the 748 tokens",
    "tol": 0,
    "source": "truth_kept.csv (share column = Mono share of estimator score)",
    "script": "verify_numbers.py",
@@ -3239,22 +3239,42 @@
    "status": "PASS"
   },
   {
-   "id": "text|Abstract: uniform prior 5.7%, held-out font 7.4%",
+   "id": "text|Abstract: font unknown 38.2% (font known 48.6%, 16 px), uniform prior 5.7%",
    "location": "text (see claim)",
-   "printed": "top-10 fell to 5.7% and 7.4%",
-   "computed": "top-10 fell to 5.7% and 7.4%",
+   "printed": "38.2% without the font (48.6% with it, 16 px), 5.7% with a wrong prior",
+   "computed": "38.2% without the font (48.6% with it, 16 px), 5.7% with a wrong prior",
    "tol": 0,
-   "source": "test4_cases.csv.gz; realworld_validation/results/attacker_results.csv",
+   "source": "test4_cases.csv.gz (variants Fu, K, Pu_uniform_prior)",
    "script": "verify_numbers.py",
    "status": "PASS"
   },
   {
-   "id": "text|Abstract: generic top-10 0.038%",
+   "id": "text|7.1: held-out font 7.4%",
    "location": "text (see claim)",
-   "printed": "(top-10 0.038%)",
-   "computed": "(top-10 0.038%)",
+   "printed": "PDF-writer pages (7.4%)",
+   "computed": "PDF-writer pages (7.4%)",
    "tol": 0,
-   "source": "v2/summary.csv (Table A9)",
+   "source": "realworld_validation/results/attacker_results.csv",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|Abstract: renderer mismatch 0% (LibreOffice forms) and 24.1% (DocLayNet)",
+   "location": "text (see claim)",
+   "printed": "0% (LibreOffice forms) and 24.1% (DocLayNet) with another renderer",
+   "computed": "0% (LibreOffice forms) and 24.1% (DocLayNet) with another renderer",
+   "tol": 0,
+   "source": "mock_forms_reconstruction/summary.csv (pillow_mismatch, exact, 16 px clean); doclaynet_validation/results/summary.csv (renderer_mismatch, 16 px)",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|Table A9: generic top-10 0.038%",
+   "location": "text (see claim)",
+   "printed": "| 95.35 | 0.038",
+   "computed": "| 95.35 | 0.038",
+   "tol": 0,
+   "source": "| v2/summary.csv (Table A9)",
    "script": "verify_numbers.py",
    "status": "PASS"
   },
@@ -3385,6 +3405,46 @@
    "computed": "162567c2cfa0b6eaf35339b35f106aa9bca606bb",
    "tol": 0,
    "source": "git rev-parse v1.4-artifact^{commit}",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|6.2: singleton at 25 of 2,304 offset-cell pairs, 13 of 18 cells, mean mass 4.4e-8",
+   "location": "text (see claim)",
+   "printed": "25 of 2,304 offset–cell pairs (1.09%; 13 of 18 cells; mean prior mass 4.4 × 10−8)",
+   "computed": "25 of 2,304 offset–cell pairs (1.09%; 13 of 18 cells; mean prior mass 4.4 × 10−8)",
+   "tol": 0,
+   "source": "anchor_offsets.csv (anchor_offsets.py; d = 0, 2, 4, 8, 16 match tail_summary.csv and data/v1_5_anchor_margin/summary.csv)",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|7.4: FUNSD extra OCR drop vs exact (grid-16, grid-64, padding, field)",
+   "location": "text (see claim)",
+   "printed": "the extra drops were 0.82 [0.41, 1.25], 1.17 [0.54, 1.86] and 0.90 [0.32, 1.52] points (16-px grid, 64-px grid, padding) and 0.56 [−0.05, 1.23] for the field box",
+   "computed": "the extra drops were 0.82 [0.41, 1.25], 1.17 [0.54, 1.86] and 0.90 [0.32, 1.52] points (16-px grid, 64-px grid, padding) and 0.56 [−0.05, 1.23] for the field box",
+   "tol": 0,
+   "source": "research/area_eval/results/per_page.csv via ocr_relative.py (10,000 page resamples, seed 20261121)",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|6.1: width-only 64 px 3.01x, 0.61 bits; padding 0.08",
+   "location": "text (see claim)",
+   "printed": "width-only 64-px grid took 3.01 times yet leaked 0.61 bits (padding: 0.08)",
+   "computed": "width-only 64-px grid took 3.01 times yet leaked 0.61 bits (padding: 0.08)",
+   "tol": 0,
+   "source": "research/e1/review4/pooled.csv",
+   "script": "verify_numbers.py",
+   "status": "PASS"
+  },
+  {
+   "id": "text|B.1: word list construction",
+   "location": "text (see claim)",
+   "printed": "the first 20,000 all-letter ASCII words among the 60,000 most frequent English words of wordfreq 3.1.1",
+   "computed": "the first 20,000 all-letter ASCII words among the 60,000 most frequent English words of wordfreq 3.1.1",
+   "tol": 0,
+   "source": "research/e1/data/build_wordlist.py",
    "script": "verify_numbers.py",
    "status": "PASS"
   }

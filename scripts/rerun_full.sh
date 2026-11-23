@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 PY=${PYTHON:-python3}
 case "${1:-}" in
     -h|--help)
-        echo 'Usage: scripts/rerun_full.sh (see research/e1/README.md for renderer inputs)'
+        echo 'Usage: scripts/rerun_full.sh (see README.md and research/e1/requirements-render.txt for renderer inputs)'
         exit 0
         ;;
 esac
