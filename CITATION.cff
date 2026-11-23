@@ -1,20 +1,10 @@
 cff-version: 1.2.0
 message: "Cite the paper and the software revision you used."
-title: "What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction"
+title: "How Much Does a Redaction Box Reveal? Geometry Leakage and Over-Redaction Under Matched-Renderer Attacks"
 type: software
-version: "1.1"
+version: "1.6"
 authors:
   - given-names: Neer
     family-names: Vasa
 repository-code: "https://github.com/neervasa00000000/Guard"
 license: MIT
-doi: "PLACEHOLDER"
-preferred-citation:
-  type: article
-  title: "What the Black Box Reveals: Geometry Leakage and Over-Redaction in Template-Controlled Image Redaction"
-  authors:
-    - given-names: Neer
-      family-names: Vasa
-  journal: "Computers"
-  version: "1.1"
-  doi: "PLACEHOLDER"

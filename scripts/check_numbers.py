@@ -7,13 +7,13 @@ from pathlib import Path
 from v14_numbers import compare,compare_aggregate
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED = ROOT / "manuscript" / "expected_numbers.json"
+EXPECTED = ROOT / "scripts" / "locked_values.json"
 VALUES = ROOT / "out" / "tables" / "values.csv"
 
 
 def main():
     if not EXPECTED.is_file():
-        print("FAIL\tmanuscript/expected_numbers.json is missing")
+        print("FAIL\tscripts/locked_values.json is missing")
         return 1
     if not VALUES.is_file():
         print("FAIL\tout/tables/values.csv is missing; run scripts/regenerate_tables.py")

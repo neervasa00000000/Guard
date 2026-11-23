@@ -1,9 +1,0 @@
-name,layout,split,status,width_error_px,dark_frac_outside_mask,angle,label
-JOHNSON,court,test,measured,0.67999267578125,0.05472636815920395,-0.23505961301954692,simulated_scan_not_a_physical_scan
-JOHNSON,hospital,test,measured,0.32000732421875,0.04236641221374049,0.44042148951183957,simulated_scan_not_a_physical_scan
-JOHNSON,government,test,measured,0.33599853515625,0.024216524216524205,0.40985293993891664,simulated_scan_not_a_physical_scan
-JOHNSON,letter,test,measured,0.66400146484375,0.10232558139534886,0.37254585717423455,simulated_scan_not_a_physical_scan
-SMITH,court,test,measured,0.66400146484375,0.05251270468661773,-0.17614713159531287,simulated_scan_not_a_physical_scan
-SMITH,hospital,test,measured,0.33599853515625,0.0016949152542372614,0.11551221878637197,simulated_scan_not_a_physical_scan
-SMITH,government,test,measured,0.66400146484375,0.020998864926220162,-0.26532688512892416,simulated_scan_not_a_physical_scan
-SMITH,letter,test,measured,0.66400146484375,0.053047404063205406,-0.19193794248738616,simulated_scan_not_a_physical_scan

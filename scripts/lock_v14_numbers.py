@@ -9,7 +9,7 @@ def main():
     new=[str(p.relative_to(ROOT)) for folder in ['results/v1_4_archive','data/v1_6_email_digits'] for p in (ROOT/folder).rglob('summary.csv') if '.cache' not in p.parts]
     sources=sorted({p for p in changed+new if p.endswith('summary.csv')}|{'results/v1_4_archive/v931_figures/summary.csv','data/v1_6_email_digits/table_pooled.csv','results/v1_4_archive/noto_rerender/geometry_checks.csv'})
     records=[snapshot(ROOT,p) for p in sources]
-    path=ROOT/'manuscript/expected_numbers.json';spec=json.loads(path.read_text())
+    path=ROOT/'scripts/locked_values.json';spec=json.loads(path.read_text())
     spec['v1_4']=dict(status='complete with user-approved documented reconstructions; historical provenance limits retained',
         absolute_tolerance=1e-12,unknown_values='Blank/non-numeric cells preserved exactly; no unknown value replaced by a number.',
         pending_reproductions=[],scope_approval='2026-11-21: Use the documented new experiments',
