@@ -149,9 +149,9 @@ def load_synthetic_reference():
                 "knowledge": "matched renderer, dictionary prior, synthetic template",
                 "same_estimand_as_funsd": False,
             })
-    v12 = REPO / "research" / "e1" / "data" / "v1_2" / "summary.csv"
-    if v12.is_file():
-        frame = pd.read_csv(v12)
+    knowledge_matched = REPO / "research" / "e1" / "data" / "knowledge_matched" / "summary.csv"
+    if knowledge_matched.is_file():
+        frame = pd.read_csv(knowledge_matched)
         wanted = frame[
             frame["policy"].isin(["square", "start-aligned", "field"])
             & frame["size_px"].isin([16, 24])
@@ -159,7 +159,7 @@ def load_synthetic_reference():
         ]
         for record in wanted.itertuples(index=False):
             rows.append({
-                "dataset": "synthetic_v1_2",
+                "dataset": "synthetic_knowledge_matched",
                 "subset": f"surnames_{int(record.size_px)}px",
                 "policy": f"{record.policy}_{int(record.width_px)}",
                 "label": "",

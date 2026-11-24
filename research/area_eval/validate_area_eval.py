@@ -30,7 +30,7 @@ def main():
     assert r['force_ocr'] and r['fresh_ocr_jobs']==r['n_unique_ocr_jobs'] and r['cache_hits']==0
     assert c['source_script_sha256']==r['source_script_sha256']==digest(HERE/'run_area_eval.py')
     for key,path in [('policy_source_sha256','research/realworld_e1_eval/run_eval.py'),
-                     ('selection_source_sha256','research/realworld_e1_eval/run_v2.py'),
+                     ('selection_source_sha256','research/realworld_e1_eval/run_generic_attacker.py'),
                      ('funsd_helpers_sha256','research/funsd_validation/funsd_real.py')]:
         assert c[key]==r[key]==digest(ROOT/path),('Archived source changed',path)
     assert c['eng_traineddata_sha256']==r['eng_traineddata_sha256']==digest(c['eng_traineddata_path'])

@@ -8,7 +8,7 @@ import run_analysis as A
 
 def main():
     rows=A.read(A.OUT/'per_token.csv'); pages=A.read(A.OUT/'per_page.csv')
-    saved=[r for r in A.read(A.HERE/'results/v2/per_token.csv') if r['policy']=='exact']
+    saved=[r for r in A.read(A.HERE/'results/generic_attacker/per_token.csv') if r['policy']=='exact']
     original={r['token_id']:r for r in saved}
     assert len(rows)==len(original)==6071 and len(pages)==2050
     for r in rows:
@@ -37,7 +37,7 @@ def main():
     oldconfig=json.loads((A.HERE/'results/run_config.json').read_text())
     for name,sha in oldconfig['doclaynet_sample']['coco_sha256'].items():
         assert A.digest(A.base.COCO_DIR/name)==sha
-    config=json.loads((A.HERE/'results/v2/run_config.json').read_text())
+    config=json.loads((A.HERE/'results/generic_attacker/run_config.json').read_text())
     assert A.digest(A.base.FUNSD_ZIP)==config['funsd_scored']['sha256']
     matched_forms=0
     with zipfile.ZipFile(A.base.FUNSD_ZIP) as z:

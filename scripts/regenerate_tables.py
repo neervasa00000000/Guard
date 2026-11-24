@@ -12,7 +12,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "research" / "e1" / "data"
 CASES = ROOT / "research" / "e1" / "cases"
-POOLED = ROOT / "research" / "e1" / "review4" / "pooled.csv"
+POOLED = ROOT / "research" / "e1" / "pooled" / "pooled.csv"
 OUT = ROOT / "out" / "tables"
 VALUES = []
 
@@ -385,7 +385,7 @@ def attacker_and_extra():
 
 def table_a7():
     rows = [
-        ["Table 3, Figure 2, Figure 3, Table A6", "research/e1/review4/pooled.csv, research/e1/data/per_font.csv", "REPRODUCED"],
+        ["Table 3, Figure 2, Figure 3, Table A6", "research/e1/pooled/pooled.csv, research/e1/data/per_font.csv", "REPRODUCED"],
         ["Table 4, Figure not separate", "research/e1/data/foia_geometry_summary.csv", "REPRODUCED"],
         ["Table A1", "research/e1/e1_run.py cell matrix", "REPRODUCED"],
         ["Table A2, Figure 1", "research/e1/data/pooled_clean_dict_grid_attacker.csv and pooled.csv A2 column", "REPRODUCED"],
@@ -409,9 +409,9 @@ def table_a7():
     write_md(OUT / "table_a7.md", "Table A7. Evidence inventory for this artifact", ["Item", "File", "Status"], rows)
 
 
-def experiment_v12():
-    """Rebuild the v1.2 table and plot without changing manuscript values."""
-    source = DATA / "v1_2" / "summary.csv"
+def experiment_knowledge_matched():
+    """Rebuild the knowledge-matched table and plot without changing manuscript values."""
+    source = DATA / "knowledge_matched" / "summary.csv"
     if not source.is_file():
         return
     frame = pd.read_csv(source)
@@ -422,7 +422,7 @@ def experiment_v12():
         rows.append([row.size_px, labels[row.policy], row.width_px or "—", fmt(row.bits, 4),
                      f"[{fmt(row.ci_low, 4)}, {fmt(row.ci_high, 4)}]", fmt(row.top10_pct, 2),
                      fmt(row.median_area, 3), fmt(row.analytic_bits, 4) if pd.notna(row.analytic_bits) else "—"])
-    write_md(OUT / "v1_2.md", "v1.2. A1 on the first 1,000 Census surnames",
+    write_md(OUT / "knowledge_matched.md", "Knowledge-matched sweep: A1 on the first 1,000 Census surnames",
              ["Size (px)", "Policy", "C/G (px)", "Bits", "95% target-bootstrap CI",
               "Top-10 (%)", "Median area ratio", "Analytic H(k(W))"], rows)
 
@@ -457,7 +457,7 @@ def main():
     copies_and_jitter(pooled)
     attacker_and_extra()
     table_a7()
-    experiment_v12()
+    experiment_knowledge_matched()
     with (OUT / "values.csv").open("w", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["id", "value"])

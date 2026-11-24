@@ -24,7 +24,7 @@ Two tracks stay separate:
 
 ## Insertion
 
-- Font file: matplotlib `DejaVuSans.ttf`. Its SHA-256 is recorded. It is not assumed to be the font binary used for the archived v1.2 tables.
+- Font file: matplotlib `DejaVuSans.ttf`. Its SHA-256 is recorded. It is not assumed to be the font binary used for the archived knowledge-matched tables.
 - Sizes: 16 px is primary. 12 px is a sensitivity. Both use the same sampled surname when both fit on the page.
 - Prior: Census counts in `research/e1/data/surnames_head1000.csv`, normalized.
 - Anchor: 8 px inside the left of the first detected text band of an eligible layout region (Caption, List-item, Section-header, Text, Title), shifted left only to keep the ink on the page.

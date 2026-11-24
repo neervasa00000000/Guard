@@ -1,0 +1,459 @@
+[
+  {
+    "source": "research/doclaynet_validation/results/README.md",
+    "copy": "research/doclaynet_validation/results/README_notext.csv",
+    "source_sha256": "dd31d298937d37485acfa0916bc85557c36cfe33daca734e0604c7276ce9c1a2",
+    "copy_sha256": "c25e7515b7c08b4100cdb27fe1248d924dbefa42ad1fac6621339bcdafefe955",
+    "rows": 26,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 1872,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/examples/NOTES.md",
+    "copy": "research/doclaynet_validation/results/examples/NOTES_notext.csv",
+    "source_sha256": "7c559f459244a7d1d807745f0715cda641d9a7108e7381859074e72bbc223caa",
+    "copy_sha256": "aa5b3f4b449a897a188ec47513076b809d42da9b2c98f4eb3fc213dd7cb0db8e",
+    "rows": 6,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 465,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/false_accept.json",
+    "copy": "research/doclaynet_validation/results/false_accept_notext.csv",
+    "source_sha256": "02c9b5d086ae2064c57df41cd92871aff731c0337733f70caf44e9f984f315c8",
+    "copy_sha256": "17ce3e9e8bfbc7491309a92d703869650c8c77a5f55a96416ed26a284188ef0a",
+    "rows": 5880,
+    "method": "flattened JSON leaves; numeric lexemes unchanged; all string values hashed",
+    "text_columns": [
+      "all JSON string leaves"
+    ],
+    "copy_bytes": 441774,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/CORRECTIONS.md",
+    "copy": "research/doclaynet_validation/results/pilot/CORRECTIONS_notext.csv",
+    "source_sha256": "f09d08a5e768ab018ba6b148e506f1f40fc8a22157fe665bfa04f79c2e843c96",
+    "copy_sha256": "fb772e0a9073661c359704c96d04e76e9caf38c0b0b72b551c7b9e7efad8be7f",
+    "rows": 7,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 530,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/README.md",
+    "copy": "research/doclaynet_validation/results/pilot/README_notext.csv",
+    "source_sha256": "ece1dc907d5f699028c6d3ee8f2bbfdc6d4c54108b1aba567a2fc2c6e1162592",
+    "copy_sha256": "f5660eaa07f93eb1b93e47d2cccb7eef9459d8a343a4a3f7b9557c2a7beaa7e6",
+    "rows": 26,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 1872,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/examples/NOTES.md",
+    "copy": "research/doclaynet_validation/results/pilot/examples/NOTES_notext.csv",
+    "source_sha256": "b60114c4949721d1a49648e61062be0755ff537d2021045125384883b55fa11c",
+    "copy_sha256": "d1934e991fdcd795fe26bb8075d1fa3d7cc10327bea9ca1e20ca93c939499d50",
+    "rows": 6,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 465,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/false_accept.json",
+    "copy": "research/doclaynet_validation/results/pilot/false_accept_notext.csv",
+    "source_sha256": "122e174df3d08fc405ae508170704a6a2140eaff636bfb21b2fa160754af0c5c",
+    "copy_sha256": "fb51ad96256d63abc560de3e7cec5d6c3359c673469b3334503eec70f6b63a42",
+    "rows": 180,
+    "method": "flattened JSON leaves; numeric lexemes unchanged; all string values hashed",
+    "text_columns": [
+      "all JSON string leaves"
+    ],
+    "copy_bytes": 13316,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/region_log.csv",
+    "copy": "research/doclaynet_validation/results/pilot/region_log_notext.csv",
+    "source_sha256": "c8a5cada557932440433916f4c62aea60e19aedb3d468d0ee25067a41fe08030",
+    "copy_sha256": "ae0ed1ce4b214cf2d22a25a78021c914ae996ae726107042eff84e6e045ced28",
+    "rows": 11,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 2228,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/results.csv",
+    "copy": "research/doclaynet_validation/results/pilot/results_notext.csv",
+    "source_sha256": "d9cf262f9092f8cac4519e47d033ff0262c0a878a1407c69104a3a3048a147e5",
+    "copy_sha256": "0eb192fcb79258d7f84374c8af8f920ac736c3f48d08958a22e137757f34bf8e",
+    "rows": 1782,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "string"
+    ],
+    "copy_bytes": 1225557,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/true_accept.json",
+    "copy": "research/doclaynet_validation/results/pilot/true_accept_notext.csv",
+    "source_sha256": "cb32d3a9c19fab388e9ff93543a9963b82279b8ad5a1909baa05335b43533536",
+    "copy_sha256": "974c18a504fde1d4cafe47eb033cf1b5b54d55a29d827ce66b8869e37db00dc7",
+    "rows": 462,
+    "method": "flattened JSON leaves; numeric lexemes unchanged; all string values hashed",
+    "text_columns": [
+      "all JSON string leaves"
+    ],
+    "copy_bytes": 22428,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/pilot/validation_report.md",
+    "copy": "research/doclaynet_validation/results/pilot/validation_report_notext.csv",
+    "source_sha256": "f7c4801d247ce463dac46f33f213a45702ee780dc214c9a5d93eefecdbbec1c6",
+    "copy_sha256": "03fc6eeceffc34716a3af1b6469b3e632a31996287862a40d15a1b76a7b74465",
+    "rows": 98,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 6987,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/region_log.csv",
+    "copy": "research/doclaynet_validation/results/region_log_notext.csv",
+    "source_sha256": "b40d98258c7d791023bf6663da69447d63853f9dfa7933a622f1c21dce65aed9",
+    "copy_sha256": "10f30e0438dff6f617363804e2d0369de15a7c0bfef3dd4d9e638208d5f60186",
+    "rows": 298,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 58260,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/results.csv",
+    "copy": "research/doclaynet_validation/results/results_notext.csv",
+    "source_sha256": "196506f8ad1857a2c09737883970a93438d999b49ffc8a7385603187939f669e",
+    "copy_sha256": "1bc74f5406efc8fa6203e9e2b06cb476f851fadc34509370f9863d602cdc8b8f",
+    "rows": 63936,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "string"
+    ],
+    "copy_bytes": 43836690,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/true_accept.json",
+    "copy": "research/doclaynet_validation/results/true_accept_notext.csv",
+    "source_sha256": "b2bd6ee343e188e33d503a70a7b5b8cda0cb7a6bd881ff8c6dd567943e61e8d7",
+    "copy_sha256": "5a69725fb509a5e5595fa6ba146c89cc131f1c12db043a5f79c553269600adc2",
+    "rows": 16576,
+    "method": "flattened JSON leaves; numeric lexemes unchanged; all string values hashed",
+    "text_columns": [
+      "all JSON string leaves"
+    ],
+    "copy_bytes": 830743,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/doclaynet_validation/results/validation_report.md",
+    "copy": "research/doclaynet_validation/results/validation_report_notext.csv",
+    "source_sha256": "c6f12e4ab453e0b0c5be2c14ce86e524ceb93bf8fb794c8c50fb085e34d93d4c",
+    "copy_sha256": "c3d9dad744ba2fc0a5bb4523de60a067e1b2c7602ed6e8f88b442b1979e0a4e0",
+    "rows": 106,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 7562,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/LIMITATIONS.md",
+    "copy": "research/funsd_validation/docs/LIMITATIONS_notext.csv",
+    "source_sha256": "b806e36581ec8e4c8706cce71cc457089fdffa47091a8e5199d63c7ac58695e4",
+    "copy_sha256": "01e0d3ded8aff4820e6c50014e8b34192ff952eba87235577a35a8372971d6ff",
+    "rows": 29,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 2091,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/MANUSCRIPT_SECTION.md",
+    "copy": "research/funsd_validation/docs/MANUSCRIPT_SECTION_notext.csv",
+    "source_sha256": "841287277b1c46e8b03b4ebb9845cacc258101cd9f7a8729420d77b527e1b682",
+    "copy_sha256": "c9ffa300863f7531e66ca8b616a7eea0e9fa83a66d578d6ea20f1cab7b4f52a2",
+    "rows": 17,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 1238,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/METHODOLOGY.md",
+    "copy": "research/funsd_validation/docs/METHODOLOGY_notext.csv",
+    "source_sha256": "82ffb4d327846d2e3ee9597fac5bb54a86fbbb964bbf32467bcebb4010941ae5",
+    "copy_sha256": "790a8c6b7b826b77cf085046aa44a5811cda6da86de331951f01f3bd41e6d3eb",
+    "rows": 61,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 4353,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/PEER_REVIEW.md",
+    "copy": "research/funsd_validation/docs/PEER_REVIEW_notext.csv",
+    "source_sha256": "fec36d1a03173dea84954446df68321b2098fec00726c9a623ec33c96a2fa470",
+    "copy_sha256": "5dda49563d50baf2189e5ebd0fdd2f265062f8298d5dbba89d1915271001cec9",
+    "rows": 38,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 2731,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/REPRODUCIBILITY.md",
+    "copy": "research/funsd_validation/docs/REPRODUCIBILITY_notext.csv",
+    "source_sha256": "e2c85fad08dd3b08f083ff6d6118848004186fbc6188baaf32d197f126123500",
+    "copy_sha256": "07638eb6386aed7ae05beeb74947736f164fd8cb82fac2bd13a412b8546d418c",
+    "rows": 43,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 3078,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/RESULTS.md",
+    "copy": "research/funsd_validation/docs/RESULTS_notext.csv",
+    "source_sha256": "72db0c49d9406229b0a504a990e1c59f2a7a09a3c9940314b683945de36e3e1a",
+    "copy_sha256": "6272e760461235e711510721c9b6f50b8080f60d0edf15383e1045f53f71a5b4",
+    "rows": 109,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 7781,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/STATISTICAL_ANALYSIS.md",
+    "copy": "research/funsd_validation/docs/STATISTICAL_ANALYSIS_notext.csv",
+    "source_sha256": "d8ca5d53bfcdb56ff0f3adc0387902fecbe8e8ed371d36a135bd3066499a1908",
+    "copy_sha256": "38f25f960dce1c3ca3df5dc7dfb5034e4bafe0c3810c904a7f9ea4b7e9aa10bd",
+    "rows": 39,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 2794,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/docs/VERIFICATION.md",
+    "copy": "research/funsd_validation/docs/VERIFICATION_notext.csv",
+    "source_sha256": "10083501ccfc15e0033f3de93638a4584ba91d4d5447b68811da512f075503c8",
+    "copy_sha256": "55e55d3bfe285ac19b78277d5fc85531cd8ec3e1d6461bbf8a6dc040fe272c6e",
+    "rows": 63,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 4511,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/out/answer_entities.csv",
+    "copy": "research/funsd_validation/out/answer_entities_notext.csv",
+    "source_sha256": "65a2aec077946903195b2ace316ab2ebc69bbf8e271b1ad0e4e38d910f2cb3c1",
+    "copy_sha256": "16cce1d64aa409a815b1734aa594f4596ac72367853ad8bc90a71582f699d2cc",
+    "rows": 3623,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "text"
+    ],
+    "copy_bytes": 590868,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/out/scores.csv",
+    "copy": "research/funsd_validation/out/scores_notext.csv",
+    "source_sha256": "0d068a2beb10e2261a9e3c4a56bd05b86dd359c727dc40c8f06a9db9df11233a",
+    "copy_sha256": "ef16c225a58a2ab12381a9d92d6e1932d8e38104e54fc9a85b418b42b5b2f95d",
+    "rows": 28080,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "text"
+    ],
+    "copy_bytes": 9256563,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/funsd_validation/out/training_candidates.csv",
+    "copy": "research/funsd_validation/out/training_candidates_notext.csv",
+    "source_sha256": "ff7f4e6253e33a81f87fdfec9dfb3e6dc3b4a849da16ac4b8e4595e1e3ddce1d",
+    "copy_sha256": "d07129367645907773b917c8e8dae678b28da2593fcc88ea576f2703a4637d92",
+    "rows": 1687,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "text"
+    ],
+    "copy_bytes": 158566,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/DEVIATIONS.md",
+    "copy": "research/realworld_e1_eval/DEVIATIONS_notext.csv",
+    "source_sha256": "f74810bd2d126a92071a66b6aac03356520566a0f9c04737ce7d98456410efe0",
+    "copy_sha256": "c85ad1838da71c99e70dfeb50c292e3a8587d68542ec6a06b0e902ec50a0cfc2",
+    "rows": 67,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 4778,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/FONT_CONSISTENCY.md",
+    "copy": "research/realworld_e1_eval/FONT_CONSISTENCY_notext.csv",
+    "source_sha256": "648bd229a975891c21eca22879eb5a7e351158d7efc3ef24a75210fc95f97889",
+    "copy_sha256": "4a3d9c436c3681e122c5ab42da3c6c87cd1bfb523a6e7a4320487714de592fa0",
+    "rows": 92,
+    "method": "report lines hashed; original prose and quotations excluded",
+    "text_columns": [
+      "entire report line, including line terminator"
+    ],
+    "copy_bytes": 6584,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/font_consistency/attacker_calibration.csv",
+    "copy": "research/realworld_e1_eval/results/font_consistency/attacker_calibration_notext.csv",
+    "source_sha256": "938d68a1f8d7189057ba392d129a22703237a5c94f4f865023ac5d733ba6614c",
+    "copy_sha256": "0cd927d2a8e2a1a9fdd8445221d646de036763c1367f9d52b41a5f0888388d71",
+    "rows": 846,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 239804,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/font_consistency/attacker_per_token.csv",
+    "copy": "research/realworld_e1_eval/results/font_consistency/attacker_per_token_notext.csv",
+    "source_sha256": "a8efd5fc6a2e0b9a95579c3f4ae93ca7e159b4b88f8e3b38d20137be23768fe9",
+    "copy_sha256": "70b2d093d6ac98a7082789d247947b073ba000a5f03ee6086f27bb4329988c76",
+    "rows": 66,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 18362,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/font_consistency/examples.csv",
+    "copy": "research/realworld_e1_eval/results/font_consistency/examples_notext.csv",
+    "source_sha256": "2d0a283533c98cd58931e220c30c20113a612dbd372a45cb1780dfbf735261a3",
+    "copy_sha256": "a9d46e96e1236222fef57301c06d22d00e5f4b87e43f8b7ffb456fdb195e3fbe",
+    "rows": 10,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token",
+      "surface"
+    ],
+    "copy_bytes": 16654,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/font_consistency/per_token.csv",
+    "copy": "research/realworld_e1_eval/results/font_consistency/per_token_notext.csv",
+    "source_sha256": "64354c81388f269370dc826663488cd6c19345817ebda4daafbdbd1a92545a1e",
+    "copy_sha256": "3420db0e6783a426587cc6e28cba518618778512ef01390235d0da2e802b6d0f",
+    "rows": 6071,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token",
+      "surface"
+    ],
+    "copy_bytes": 13971642,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/per_token.csv",
+    "copy": "research/realworld_e1_eval/results/per_token_notext.csv",
+    "source_sha256": "866cc16e38140f00fab97847a5fdf923fdc0660539388b518e7c5f7633a1efe7",
+    "copy_sha256": "a0e08b9acd24277dfb9eb6d0b53c9a2ecbbd3ccbd89d41ebba9132a3bc6c536d",
+    "rows": 106712,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 23122419,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/generic_attacker/calibration.csv",
+    "copy": "research/realworld_e1_eval/results/generic_attacker/calibration_notext.csv",
+    "source_sha256": "cb9b3e5a77a201e59bab237468135120e19f193996138973d327ae8f46ee2a6b",
+    "copy_sha256": "f2f131fb5bc53a7f3c6c495cf0ba7f8d5b5ee78907dc7013657ed9539b4e7a3b",
+    "rows": 38214,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 7026923,
+    "original_unchanged": true
+  },
+  {
+    "source": "research/realworld_e1_eval/results/generic_attacker/per_token.csv",
+    "copy": "research/realworld_e1_eval/results/generic_attacker/per_token_notext.csv",
+    "source_sha256": "da061c856728e287a4807bb333ad0dbbfa445e4340b1350438dfd2654b395742",
+    "copy_sha256": "0314b849627e4ea8fe472d7c32950d1db836ae273bf4ce11ac8784659ed6dff4",
+    "rows": 43661,
+    "method": "source-text columns hashed; every other CSV cell preserved",
+    "text_columns": [
+      "token"
+    ],
+    "copy_bytes": 8927976,
+    "original_unchanged": true
+  }
+]

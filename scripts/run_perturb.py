@@ -36,8 +36,8 @@ sys.path.insert(0, str(ROOT / "research/e1"))
 import e1lib as E
 import policies as P
 
-OUT = ROOT / "research/e1/data/v1_4"
-TAIL = ROOT / "research/e1/data/v1_3/tail_summary.csv"
+OUT = ROOT / "research/e1/data/template_errors"
+TAIL = ROOT / "research/e1/data/per_person/tail_summary.csv"
 WIDTHS = (128, 192, 256)
 CHECK_WIDTHS = (64, 96, 128, 160, 192, 256)
 START_SETS = {

@@ -1,5 +1,5 @@
 """FUNSD OCR drop of each policy relative to the exact box on the same redactions (Section 7.4; Table A14).
-Input: research/area_eval/results/per_page.csv (tag v1.4-artifact). Pooled word counts as in run_area_eval.py;
+Input: research/area_eval/results/per_page.csv. Pooled word counts as in run_area_eval.py;
 95% CI: 10,000 page resamples (seed 20261121), paired by redaction.
 Check: every policy's drop reproduces ocr_drop_points in research/area_eval/results/summary.csv.
 Usage:  python ocr_relative.py [repo root]   Output: ocr_relative.csv in the current directory."""

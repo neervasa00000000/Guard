@@ -1,0 +1,55 @@
+{
+  "phase": "preflight_only",
+  "status": "blocked",
+  "main_attacker_runs_started": false,
+  "bootstrap_seed": 20261121,
+  "bootstrap_draws": 10000,
+  "bootstrap_unit": "page",
+  "requested_attackers": [
+    "font-known",
+    "font-estimated",
+    "renderer-mismatch",
+    "generic"
+  ],
+  "requested_policies": [
+    "no-box",
+    "exact",
+    "grid-16",
+    "grid-64",
+    "start-aligned-128",
+    "field-1000"
+  ],
+  "requested_tolerance_rule": "smallest symmetric integer width edge tolerance reaching >=95% calibration truth-in; original generic-attacker split",
+  "generic_original_tolerance_px": 31,
+  "study_sizes_px": [
+    12,
+    16,
+    24
+  ],
+  "eligibility": "known line-neighbour median embedded size (>1) and unique modal font; excludes unknowns; does not require target size or same-font flag",
+  "font_identity_rule": "exact PostScript name or full font name (name IDs 6 or 4), after removing PDF leading slash/subset prefix; no aliases or style substitutions",
+  "font_match_limit": "matching a local font name does not establish identity of the original source font binary/build",
+  "font_directories": [
+    "/Library/Fonts",
+    "/System/Library/Fonts",
+    "/Users/neervasa/Desktop/UI UX/Guard/.venv/lib/python3.13/site-packages/matplotlib/mpl-data/fonts",
+    "/Users/neervasa/Desktop/UI UX/Guard/research/realworld_e1_eval/fonts",
+    "/Users/neervasa/Library/Fonts"
+  ],
+  "font_file_count": 703,
+  "font_parse_failures": [],
+  "missing_pinned_study_fonts": [],
+  "missing_neighbour_font_identities": 17,
+  "inputs_sha256": {
+    "research/realworld_e1_eval/results/font_consistency/per_token_notext.csv": "3420db0e6783a426587cc6e28cba518618778512ef01390235d0da2e802b6d0f",
+    "research/realworld_e1_eval/results/generic_attacker/per_token_notext.csv": "0314b849627e4ea8fe472d7c32950d1db836ae273bf4ce11ac8784659ed6dff4",
+    "research/e1/data/fonts.json": "4ddbadc3ef53ae4267fd496eefdb5b00e1495292ef8782dcf2085a2212a1b51e"
+  },
+  "protected_git_refs": {
+    "f8f2558^{commit}": "f8f2558a5f82bb99842781a0e3bc03fec39fd3c5",
+    "source_commit": "18cfe521088c90750ba6bc627fbd1bbe10072fab"
+  },
+  "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "fonttools": "4.68.0",
+  "command": "python3 -B research/realworld_e1_eval/preflight_font_matched.py"
+}

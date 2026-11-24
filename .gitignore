@@ -48,7 +48,7 @@ fonts/
 # Approved synthetic/numerical figures and hash-only compressed results.
 !/research/realworld_validation/figures/
 !/research/realworld_validation/figures/*.png
-!/research/realworld_e1_eval/results/v4_fontmatched/**/*.csv.gz
+!/research/realworld_e1_eval/results/font_matched/**/*.csv.gz
 
 # Original text-bearing results stay local; release their *_notext.csv copies.
 /research/doclaynet_validation/results/**/README.md

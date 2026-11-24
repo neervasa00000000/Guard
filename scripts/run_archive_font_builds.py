@@ -4,10 +4,10 @@ import json,time
 from pathlib import Path
 import numpy as np
 from PIL import ImageFont
-from v14_runtime import ROOT,E,renderer,digest,text_hash,write,mean_intervals,SEED,DRAWS
+from rerun_common import ROOT,E,renderer,digest,text_hash,write,mean_intervals,SEED,DRAWS
 from run_email_digits import Scores
 def main():
-    out=ROOT/'results/v1_4_archive/font_builds';spec=json.loads((out/'protocol.json').read_text());versions=renderer()
+    out=ROOT/'results/reruns/font_builds';spec=json.loads((out/'protocol.json').read_text());versions=renderer()
     assert spec['cells'].startswith('6 fonts x 3 sizes x A1/A2')
     paths={r['font']:ROOT/r['path'] for r in spec['fonts']}
     for r in spec['fonts']:

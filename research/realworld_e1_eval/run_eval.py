@@ -3,7 +3,7 @@
 
 This file imports research/e1. It does not modify it and it does not render
 glyphs. Candidate boxes are the retained surname layout arrays, checked
-against research/e1/data/v1_3/geometry_receipts.csv.
+against research/e1/data/per_person/geometry_receipts.csv.
 """
 from __future__ import annotations
 
@@ -147,7 +147,7 @@ def load_dictionary():
 def load_geometry(dictionary) -> dict:
     receipts = {
         (row["font"], int(row["size_px"])): row["geometry_sha256"]
-        for _, row in read_rows(E1 / "data" / "v1_3" / "geometry_receipts.csv")
+        for _, row in read_rows(E1 / "data" / "per_person" / "geometry_receipts.csv")
     }
     bank = {}
     for font in E.FONTS:
@@ -177,7 +177,7 @@ def check_archived_classes(dictionary, bank) -> None:
     """Stop if width classes disagree with the archived analytic tail."""
     prior = dictionary["full"]["p"]
     archived = {}
-    for line, row in read_rows(E1 / "data" / "v1_3" / "tail_summary.csv"):
+    for line, row in read_rows(E1 / "data" / "per_person" / "tail_summary.csv"):
         if row["font"] == "pooled" or int(row["n_units"]) != 1:
             continue
         archived[(row["font"], int(row["size_px"]), row["policy"], int(row["width_px"]))] = (
@@ -918,11 +918,11 @@ def percent_from_fraction(text: str) -> str:
 
 
 def synthetic_sources() -> list[dict]:
-    pooled = E1 / "review4" / "pooled.csv"
-    v12 = E1 / "data" / "v1_2" / "summary.csv"
-    control = E1 / "data" / "v1_2" / "paper_control.csv"
+    pooled = E1 / "pooled" / "pooled.csv"
+    knowledge_matched = E1 / "data" / "knowledge_matched" / "summary.csv"
+    control = E1 / "data" / "knowledge_matched" / "paper_control.csv"
     baseline = E1 / "data" / "baselines_nobox.csv"
-    analytic = E1 / "data" / "v1_3" / "no_box.csv"
+    analytic = E1 / "data" / "per_person" / "no_box.csv"
     sources = []
     for policy, label in (("exact", "exact"), ("square-16", "16-px grid"), ("square-64", "64-px grid")):
         line, row = find_row(
@@ -941,20 +941,20 @@ def synthetic_sources() -> list[dict]:
             "top1": percent_from_fraction(row["top1"]),
             "top10": percent_from_fraction(row["top10"]),
             "nobox_top10": percent_from_fraction(base["top10"]),
-            "source": f"research/e1/review4/pooled.csv:{line}; no-box research/e1/data/baselines_nobox.csv:{base_line}",
+            "source": f"research/e1/pooled/pooled.csv:{line}; no-box research/e1/data/baselines_nobox.csv:{base_line}",
             "list": "50000",
         })
     line, row = find_row(
-        v12,
+        knowledge_matched,
         lambda item: item["size_px"] == "all" and item["policy"] == "start-aligned" and item["width_px"] == "128",
     )
     field_line, field = find_row(
-        v12,
+        knowledge_matched,
         lambda item: item["size_px"] == "all" and item["policy"] == "field" and item["width_px"] == "0",
     )
     control_line, control_row = find_row(control, lambda item: item["size_px"] == "all")
     analytic_line, analytic_row = find_row(analytic, lambda item: True)
-    require(field["bits"] == "0.0", "v1.2 field bits are not zero; the no-box reading of that top-10 is not valid")
+    require(field["bits"] == "0.0", "knowledge-matched field bits are not zero; the no-box reading of that top-10 is not valid")
     sources.append({
         "policy_label": "start-aligned padding",
         "policy_key": "start-aligned-128",
@@ -966,9 +966,9 @@ def synthetic_sources() -> list[dict]:
         "top10": row["top10_pct"],
         "nobox_top10": field["top10_pct"],
         "source": (
-            f"research/e1/data/v1_2/summary.csv:{line}; no-box is the field row "
-            f"research/e1/data/v1_2/summary.csv:{field_line} because its bits are 0; "
-            f"50,000-surname A1 bits are research/e1/data/v1_2/paper_control.csv:{control_line} "
+            f"research/e1/data/knowledge_matched/summary.csv:{line}; no-box is the field row "
+            f"research/e1/data/knowledge_matched/summary.csv:{field_line} because its bits are 0; "
+            f"50,000-surname A1 bits are research/e1/data/knowledge_matched/paper_control.csv:{control_line} "
             f"bits={control_row['bits']}"
         ),
         "list": "1000",
@@ -986,7 +986,7 @@ def synthetic_sources() -> list[dict]:
         "top1": "not in source",
         "top10": field["top10_pct"],
         "nobox_top10": field["top10_pct"],
-        "source": f"research/e1/data/v1_2/summary.csv:{field_line}; bits are 0 so top-10 is the prior top-10",
+        "source": f"research/e1/data/knowledge_matched/summary.csv:{field_line}; bits are 0 so top-10 is the prior top-10",
         "list": "1000",
     })
     return sources
@@ -1070,7 +1070,7 @@ def write_deviations(config: dict) -> None:
         "",
         "## Renderer and geometry",
         "",
-        f"This machine has Pillow {config['pillow']} and RAQM {config['raqm']}. The study renderer is Pillow 12.3.0 with RAQM 0.10.5, HarfBuzz 14.2.1 and FreeType 2.14.3 (`research/e1/data/v1_2/run.json`). New glyph renders, including the jpeg75 and scan edge-tolerance calibration in `e1_run.py`, were not run. Candidate layout arrays are the retained files in `out/retained-geom`. Each array's protocol-4 pickle digest matches `research/e1/data/v1_3/geometry_receipts.csv`, and the width-class entropy matches `research/e1/data/v1_3/tail_summary.csv` to 1e-9.",
+        f"This machine has Pillow {config['pillow']} and RAQM {config['raqm']}. The study renderer is Pillow 12.3.0 with RAQM 0.10.5, HarfBuzz 14.2.1 and FreeType 2.14.3 (`research/e1/data/knowledge_matched/run.json`). New glyph renders, including the jpeg75 and scan edge-tolerance calibration in `e1_run.py`, were not run. Candidate layout arrays are the retained files in `out/retained-geom`. Each array's protocol-4 pickle digest matches `research/e1/data/per_person/geometry_receipts.csv`, and the width-class entropy matches `research/e1/data/per_person/tail_summary.csv` to 1e-9.",
         "",
         "## Edge tolerance",
         "",
@@ -1097,9 +1097,9 @@ def write_deviations(config: dict) -> None:
         "",
         "## Lists",
         "",
-        "Exact, grid and start-aligned scores use the 50,000-surname list and its Census-count prior. The field-box row uses the first 1,000 surnames, with the prior renormalised on those 1,000, and only tokens inside that head. The synthetic start-aligned and field rows in RESULTS.md come from the v1.2 1,000-surname sweep. The archived 50,000-surname start-aligned bits are the paper_control value quoted in the source cell. Those top-10 rates are not on the same list. The 1,000-name prior top-10 is the v1.2 field row's top10_pct, because that row's bits are 0. The 50,000-name sampled no-box top-10 is the baselines_nobox.csv value. `research/e1/data/v1_3/no_box.csv` has the analytic 50,000-name top-10 and is not mixed into the 50,000-name table cells.",
+        "Exact, grid and start-aligned scores use the 50,000-surname list and its Census-count prior. The field-box row uses the first 1,000 surnames, with the prior renormalised on those 1,000, and only tokens inside that head. The synthetic start-aligned and field rows in RESULTS.md come from the knowledge-matched 1,000-surname sweep. The archived 50,000-surname start-aligned bits are the paper_control value quoted in the source cell. Those top-10 rates are not on the same list. The 1,000-name prior top-10 is the knowledge-matched field row's top10_pct, because that row's bits are 0. The 50,000-name sampled no-box top-10 is the baselines_nobox.csv value. `research/e1/data/per_person/no_box.csv` has the analytic 50,000-name top-10 and is not mixed into the 50,000-name table cells.",
         "",
-        f"The v1.2 summary has no top-1 column, so those synthetic top-1 cells say `not in source`.",
+        f"The knowledge-matched summary has no top-1 column, so those synthetic top-1 cells say `not in source`.",
         "",
         "## FUNSD",
         "",
@@ -1114,7 +1114,7 @@ def write_deviations(config: dict) -> None:
         "",
         "## Bootstrap",
         "",
-        f"Real intervals resample documents with replacement {BOOT_DRAWS} times using `numpy.random.Generator({BOOT_SEED})`, restarted for every metric, and take the 0.025 and 0.975 quantiles. The same seed makes the document draws match across metrics of one row. Page sampling uses `numpy.random.Generator({PAGE_SEED})`. Synthetic intervals are copied from their CSV columns and were not recomputed. v1.2 resampled target rows. `e1lib.boot_ci` uses 2,000 unclustered resamples. The real intervals are a different procedure from those files.",
+        f"Real intervals resample documents with replacement {BOOT_DRAWS} times using `numpy.random.Generator({BOOT_SEED})`, restarted for every metric, and take the 0.025 and 0.975 quantiles. The same seed makes the document draws match across metrics of one row. Page sampling uses `numpy.random.Generator({PAGE_SEED})`. Synthetic intervals are copied from their CSV columns and were not recomputed. knowledge-matched resampled target rows. `e1lib.boot_ci` uses 2,000 unclustered resamples. The real intervals are a different procedure from those files.",
         "",
         "## What was not substituted",
         "",

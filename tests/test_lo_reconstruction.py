@@ -2,6 +2,8 @@ import sys
 from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+import pytest
+pytest.importorskip("pymupdf")
 from lo_reconstruction_worker import words,measure
 
 def test_pdf_word_segmentation_preserves_origins_across_tab_gaps():

@@ -2,7 +2,7 @@
 
 Usage:  E1_CENSUS=/path/to/Names_2010Census.csv python research/e1/scripts/margin_sensitivity.py [repo root]
         (optional E1_FONT_DIR = folder with the Table A11 fonts)
-The 1-px rows must reproduce research/e1/data/v1_3/tail_summary.csv (mean bits and largest pointwise leak) in every cell.
+The 1-px rows must reproduce research/e1/data/per_person/tail_summary.csv (mean bits and largest pointwise leak) in every cell.
 Output: margin_sensitivity.csv in the current directory.
 """
 import csv, os, sys
@@ -19,7 +19,7 @@ if E.sha256(E.CENSUS) != E.FULL_CENSUS_SHA:
     sys.exit('Census CSV SHA-256 mismatch')
 full = E.dict_surnames()
 p = np.asarray(full['p'], dtype=np.float64)
-ref = {(r['font'], r['size_px'], int(r['width_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/v1_3/tail_summary.csv'))
+ref = {(r['font'], r['size_px'], int(r['width_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/per_person/tail_summary.csv'))
        if r['policy'] == 'start-aligned'}
 
 def score(k):

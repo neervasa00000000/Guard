@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import numpy as np
 from PIL import Image,ImageFilter
-from v14_runtime import ROOT,E,P,renderer,digest,text_hash,read,write,mean_intervals,area_intervals,SEED,DRAWS
+from rerun_common import ROOT,E,P,renderer,digest,text_hash,read,write,mean_intervals,area_intervals,SEED,DRAWS
 from run_email_digits import Scores
 FONTS=['DejaVuSans','LiberationSerif'];SIZES=[16,24]
 ATTACKERS=['pillow_mismatch','libreoffice_matched','pillow_lo_calibrated']
@@ -48,7 +48,7 @@ def prepare(work,pilot):
     return dictionary,plan
 
 def score(work,dictionary,plan,versions,image):
-    out=ROOT/'results/v1_4_archive/mock_forms_reconstruction';out.mkdir(parents=True,exist_ok=True)
+    out=ROOT/'results/reruns/mock_forms_reconstruction';out.mkdir(parents=True,exist_ok=True)
     raw=[];observations=[];calibration=[];candidate_rows=[];frames=[];tol={};banks={};source_metadata=json.loads((work/'worker_config.json').read_text())
     for fi,font in enumerate(FONTS):
         for size in SIZES:
@@ -151,7 +151,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--pilot',action='store_true');parser.add_argument('--skip-render',action='store_true')
     parser.add_argument('--image',default='guard-e1-review4-forms',help='Local compatible LibreOffice 25.2.3.2 image; resolved image ID is archived')
     args=parser.parse_args()
-    versions=renderer();work=ROOT/'out'/('v14-lo-reconstruction-pilot' if args.pilot else 'v14-lo-reconstruction')
+    versions=renderer();work=ROOT/'out'/('lo-reconstruction-pilot' if args.pilot else 'lo-reconstruction')
     dictionary,plan=prepare(work,args.pilot)
     image=subprocess.check_output(['docker','image','inspect',args.image,'--format','{{.Id}}'],text=True).strip()
     if not args.skip_render:

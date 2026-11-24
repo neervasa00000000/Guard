@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute v1.3 class tails from the retained paper geometry, without rendering."""
+"""Compute per-person class tails from the retained paper geometry, without rendering."""
 import argparse
 import csv
 import gzip
@@ -17,7 +17,7 @@ import e1lib as E
 import policies as P
 
 E1 = ROOT / "research/e1"
-OUT = E1 / "data/v1_3"
+OUT = E1 / "data/per_person"
 WIDTHS = (64, 96, 128, 160, 192, 256)
 N = 2000
 SEED = 20261029
@@ -107,7 +107,7 @@ def target_tail(path, font, size, grid, values):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--geometry",type=Path,required=True,help="Trusted retained e1-full/data/cache directory")
-    parser.add_argument("--scores",type=Path,required=True,help="Retained review4_grouped directory")
+    parser.add_argument("--scores",type=Path,required=True,help="Retained grouped_scores directory")
     args = parser.parse_args()
     if not E.CENSUS.is_file() or digest(E.CENSUS)!=E.FULL_CENSUS_SHA:
         parser.error("E1_CENSUS must point to the hash-verified full Census CSV.")

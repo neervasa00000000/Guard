@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Cite the paper and the software revision you used."
 title: "How Much Does a Redaction Box Reveal? Geometry Leakage and Over-Redaction Under Matched-Renderer Attacks"
 type: software
-version: "1.6"
+version: "V1"
 authors:
   - given-names: Neer
     family-names: Vasa

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Optional attacker, isolated from v2; no target selection or font substitution."""
+"""Optional attacker, isolated from generic-attacker; no target selection or font substitution."""
 import json
 import math
 import os
@@ -14,7 +14,7 @@ base=A.base
 base.E.RUN_ROOT=A.OUT
 base.E.CACHE=A.OUT/'cache'
 sys.path.insert(0,str(A.HERE))
-import run_v2 as v2
+import run_generic_attacker as generic_attacker
 
 def map_exact(name):
     # Subset tags and PDF leading slash are not family/style identity.
@@ -30,7 +30,7 @@ def enrich(r,metadata):
     return dict(**r,matched_font=f,neighbour_size_pt=med,render_size_px=med*coco/width)
 
 def calibration():
-    saved=A.read(A.HERE/'results/v2/calibration.csv')
+    saved=A.read(A.HERE/'results/generic_attacker/calibration.csv')
     by_page=defaultdict(list)
     for i,r in enumerate(saved):
         if r['dataset']=='DocLayNet': by_page[r['page_id']].append((i,r))
@@ -55,7 +55,7 @@ def calibration():
             for pos in range(cursor,len(source)):
                 c,box,ws=source[pos]; parts=base.alpha_tokens(c.get('text',''))
                 if len(parts)!=1 or parts[0].casefold()!=s['token'].casefold(): continue
-                rawh=float(c['bbox'][3]); choice,measured,kind=v2.size_choice((c.get('font') or {}).get('size'),rawh)
+                rawh=float(c['bbox'][3]); choice,measured,kind=generic_attacker.size_choice((c.get('font') or {}).get('size'),rawh)
                 if choice!=int(s['size_px']) or not math.isclose(measured,float(s['height_px']),abs_tol=1e-8): continue
                 matches=[w for w in ws if base.alpha_tokens(w['text'])==parts]
                 assert len(matches)==1
@@ -71,7 +71,7 @@ def calibration():
                     mapped_font_calibration_tokens=font_mapped,usable_calibration_tokens=len(out))
 
 def main():
-    before=A.protected(); renderer=v2.require_renderer(); dictionary=base.load_dictionary()
+    before=A.protected(); renderer=generic_attacker.require_renderer(); dictionary=base.load_dictionary()
     rows=A.read(A.OUT/'per_token.csv'); scored=[]; mapped=0
     for r in rows:
         if r['dataset']!='DocLayNet': continue
@@ -135,11 +135,11 @@ def main():
             scale=1 if k=='bits' else 100
             cells.append(f"{s[k]*scale:.4f} [{s[k+'_lo']*scale:.4f}, {s[k+'_hi']*scale:.4f}]")
         lines.append('| '+' | '.join(cells)+' |')
-    text=f'''The optional attacker maps **{mapped}/5,311** scored tokens to an exact regular font name; **{len(scored)}** also have a known neighbour size and page scale. It uses the **line** neighbour mode and median, with no fallback to block context. Mapping removes only PDF subset tags and a leading slash; bold, italic, condensed and other font-family substitutions are excluded. Mapped tokens are a selected subset and are not comparable to the full v2 sample.
+    text=f'''The optional attacker maps **{mapped}/5,311** scored tokens to an exact regular font name; **{len(scored)}** also have a known neighbour size and page scale. It uses the **line** neighbour mode and median, with no fallback to block context. Mapping removes only PDF subset tags and a leading slash; bold, italic, condensed and other font-family substitutions are excluded. Mapped tokens are a selected subset and are not comparable to the full generic-attacker sample.
 
-Embedded point sizes are converted to horizontal page pixels using the observed `coco_width / original_width`; the pinned Pillow/RAQM renderer renders all 50,000 surnames at that fractional size. No snapping to v2's three study sizes is used. This isolates the requested neighbour-font-and-size attacker while retaining v2's exact-box horizontal feasibility, Census prior, padding, rank/tie rules and entropy scorer. No-box top-10 uses the same mapped targets and full prior. Noto Sans's unavailable binary is never substituted.
+Embedded point sizes are converted to horizontal page pixels using the observed `coco_width / original_width`; the pinned Pillow/RAQM renderer renders all 50,000 surnames at that fractional size. No snapping to generic-attacker's three study sizes is used. This isolates the requested neighbour-font-and-size attacker while retaining generic-attacker's exact-box horizontal feasibility, Census prior, padding, rank/tie rules and entropy scorer. No-box top-10 uses the same mapped targets and full prior. Noto Sans's unavailable binary is never substituted.
 
-Calibration reuses v2's saved calibration token rows, joining them in original source order without rerunning selection. Only mapped DocLayNet calibration tokens can use this attacker (FUNSD has no font metadata): **{len(cal)} usable**, out of {coverage['doclaynet_calibration_tokens']} DocLayNet calibration tokens. The original scored/calibration page split is unchanged and disjoint. The smallest integer symmetric edge tolerance reaching at least 95% truth-in on that usable calibration subset is **±{tolerance} px**, achieving **{report['calibration_truth_in']*100:.2f}%**. Evaluation CIs use the same 10,000 page-cluster draws, seed 0. Bits retain v2's convention that an empty feasible set falls back to prior entropy.
+Calibration reuses generic-attacker's saved calibration token rows, joining them in original source order without rerunning selection. Only mapped DocLayNet calibration tokens can use this attacker (FUNSD has no font metadata): **{len(cal)} usable**, out of {coverage['doclaynet_calibration_tokens']} DocLayNet calibration tokens. The original scored/calibration page split is unchanged and disjoint. The smallest integer symmetric edge tolerance reaching at least 95% truth-in on that usable calibration subset is **±{tolerance} px**, achieving **{report['calibration_truth_in']*100:.2f}%**. Evaluation CIs use the same 10,000 page-cluster draws, seed 0. Bits retain generic-attacker's convention that an empty feasible set falls back to prior entropy.
 
 '''+ '\n'.join(lines)+'\n'
     path=A.HERE/'FONT_CONSISTENCY.md'

@@ -5,8 +5,8 @@ import argparse,json,math,time
 from concurrent.futures import ProcessPoolExecutor,as_completed
 from pathlib import Path
 import numpy as np
-from v14_runtime import ROOT,E,P,SEED,DRAWS,renderer,digest,text_hash,write,mean_intervals,area_intervals
-OUT=ROOT/'data/v1_6_email_digits'
+from rerun_common import ROOT,E,P,SEED,DRAWS,renderer,digest,text_hash,write,mean_intervals,area_intervals
+OUT=ROOT/'data/email_digits'
 SETTINGS=[('exact',1)]+[('square',g) for g in [8,16,32,64]]+[('width-only',64)]+[('start-aligned',c) for c in [64,128,192,256,384]]+[('field',0)]
 N=2000;NCAL=400;TARGET_SEED=20261029
 
@@ -68,7 +68,7 @@ def exact_email_bits(scorer,prep,policy,param):
 def one_cell(unit):
     name,font,size=unit;start=time.monotonic();cache=OUT/'.cache';cache.mkdir(parents=True,exist_ok=True)
     saved=cache/f'{name}_{font}_{size}.npz';table=cache/f'{name}_{font}_{size}.csv.gz'
-    signature=text_hash(json.dumps([digest(__file__),digest(ROOT/'scripts/v14_runtime.py'),digest(E.checked_font_path(font)),N,NCAL,SETTINGS]))
+    signature=text_hash(json.dumps([digest(__file__),digest(ROOT/'scripts/rerun_common.py'),digest(E.checked_font_path(font)),N,NCAL,SETTINGS]))
     if saved.exists() and table.exists():
         with np.load(saved) as old:
             if json.loads(str(old['metadata'])).get('signature')==signature:return str(saved)
@@ -160,7 +160,7 @@ def main():
                 r=csv.DictReader(f)
                 if writer is None:writer=csv.DictWriter(stream,r.fieldnames,lineterminator='\n');writer.writeheader()
                 writer.writerows(r)
-            summary.extend(__import__('v14_runtime').read(p.with_name(p.stem+'_summary.csv')))
+            summary.extend(__import__('rerun_common').read(p.with_name(p.stem+'_summary.csv')))
             with np.load(p) as a:metadata.append(json.loads(str(a['metadata'])))
     write(OUT/'summary.csv',summary);pooled=[]
     for name in ['emails','digits']:
@@ -190,7 +190,7 @@ def main():
         uncertainty='10k exact target-bootstrap means via multinomial sufficient counts; quantile marginal bootstrap via adjacent uniform order statistics; no joint/paired quantile CI claimed',
         pooled_design='all 36000 targets per list-policy pooled, not averaging cell medians; pooled exact_bits equally averages identical target-count font-size cells',
         policies=SETTINGS,workers=args.workers,cells=metadata,n_raw_rows=36*N*len(SETTINGS),n_summary_rows=len(summary),elapsed_seconds=time.monotonic()-started,
-        source_sha256={p:digest(ROOT/p) for p in ['scripts/run_email_digits.py','scripts/v14_runtime.py','research/e1/e1lib.py','research/e1/policies.py','research/e1/e1_run.py']})
+        source_sha256={p:digest(ROOT/p) for p in ['scripts/run_email_digits.py','scripts/rerun_common.py','research/e1/e1lib.py','research/e1/policies.py','research/e1/e1_run.py']})
     (OUT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
     (OUT/'README.md').write_text('# E-mail and digit sweep\n\nSix hash-verified fonts, sizes 12/16/24, 2000 paired targets per cell and 12 policies. All targets are synthetic; only hashes and character lengths are archived. Exact geometry comes from the pinned clean E1 RAQM renderer. Width-only grid snaps both horizontal edges to the page; start padding uses the shared list anchor.\n\nEmail bits are sampled target estimates with CIs; exact_bits separately enumerates the entire prior and every uniform pen phase, compressed only by identical observation partitions. Digit scoring retains the original multiplicity classes and independently calibrated 400-string edge tolerance; entropy inference is not exact for this approximate geometry model, so digit bits are explicitly unknown except the common field geometry (zero). n_bits_unknown records these omissions. Field target containment is separately reported.\n\nConfidence limits use 10000 target-bootstrap resamples, seed 20261121. Means use exact multinomial sufficient counts. Area quantiles use the mathematically identical marginal bootstrap generated from adjacent uniform order statistics; these are marginal intervals, not a joint paired confidence region. Pooled quantiles use all target-level areas.\n\nRun the command in config.json after obtaining checked font inputs. Per-cell numeric working files are cached under ignored .cache/. No fonts, rendered images, original document text or private keys are redistributed.\n')
     print('Completed sweep',len(summary),'cells/policies;',len(pooled),'pooled rows',flush=True)

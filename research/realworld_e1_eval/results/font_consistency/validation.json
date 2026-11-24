@@ -29,10 +29,19 @@
     "examples.csv": "2d0a283533c98cd58931e220c30c20113a612dbd372a45cb1780dfbf735261a3",
     "per_page.csv": "50fb350506dcb56f4d3fc19da98f5b8ce30d5f6d247c22200988a723b795e409",
     "per_token.csv": "64354c81388f269370dc826663488cd6c19345817ebda4daafbdbd1a92545a1e",
-    "run_analysis.py": "19ae880b32922182b86452e04400b83520236a64a8e06f4d33a683b18ff202aa",
-    "run_attacker.py": "105535ce70366e09fca33cd471e5b3ef10b55c939a333aeda57c7a25f4bdf732",
+    "run_analysis.py": "6f53d7120b1ec31c27888169d43cd4e38cf3378fa2896f3459f1c3693059e5c1",
+    "run_attacker.py": "ff7605c004ffff96809219daf00acfe44b155c90971d668e761e5e8a190457b5",
     "run_manifest.json": "600a042297a3bc441ddc4ca3e58b4449155ea33c58a8fb43160f7bd9f8f20d6f",
     "summary.csv": "41882e307ca7c9f08f36f2bdaf404d8f70c1862aa0a02850b0077545f650ead8",
-    "validate_and_report.py": "7508288a023ee95b4e1eaeef5658ef5acaa011adc6c857d3025164d7af080ac2"
+    "validate_and_report.py": "43123af3474c43bd8637df900811789ed814dba45a94170be6de34d95afcaa1a"
+  },
+  "source_sha256_at_run": {
+    "commit": "bd8ec64da8f5b500e3bb3c82ad1dbc252d1eaa78",
+    "note": "Original source hashes are retained here; current code/doc hashes reflect mechanical path and label edits.",
+    "files": {
+      "research/realworld_e1_eval/results/font_consistency/run_analysis.py": "19ae880b32922182b86452e04400b83520236a64a8e06f4d33a683b18ff202aa",
+      "research/realworld_e1_eval/results/font_consistency/run_attacker.py": "105535ce70366e09fca33cd471e5b3ef10b55c939a333aeda57c7a25f4bdf732",
+      "research/realworld_e1_eval/results/font_consistency/validate_and_report.py": "7508288a023ee95b4e1eaeef5658ef5acaa011adc6c857d3025164d7af080ac2"
+    }
   }
 }

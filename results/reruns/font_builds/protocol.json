@@ -1,0 +1,48 @@
+{
+  "scope": "Documented new sensitivity run; original alternative-build manifest unavailable",
+  "cells": "6 fonts x 3 sizes x A1/A2 = 36 cells; surnames, exact clean layout boxes, matched renderer per build",
+  "targets": "Same original 2000 seeded surname targets and positions per font-size for both builds",
+  "target_seed": 20261029,
+  "bootstrap_seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "delta_threshold_pp": 4,
+  "fonts": [
+    {
+      "font": "DejaVuSans",
+      "path": "out/alternative-fonts/DejaVuSans.ttf",
+      "sha256": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+      "source_path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf"
+    },
+    {
+      "font": "DejaVuSerif",
+      "path": "out/alternative-fonts/DejaVuSerif.ttf",
+      "sha256": "107244956e9962b9e96faccdc551825e0ae0898ae13737133e1b921a2fd35ffa",
+      "source_path": "/Users/neervasa/Library/Python/3.13/lib/python/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf"
+    },
+    {
+      "font": "LiberationSans",
+      "path": "out/alternative-fonts/LiberationSans.ttf",
+      "sha256": "f8ace1f892b2bd9dc1792ba7f097fa7588f84fed48321480e04de5390828221f",
+      "source_path": "research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSans-Regular.ttf"
+    },
+    {
+      "font": "LiberationSerif",
+      "path": "out/alternative-fonts/LiberationSerif.ttf",
+      "sha256": "1c9c77c2cd0f3c2d2aeef53ea50a4d5d3d684ac73a431d7c70d7864887d194a3",
+      "source_path": "research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationSerif-Regular.ttf"
+    },
+    {
+      "font": "LiberationMono",
+      "path": "out/alternative-fonts/LiberationMono.ttf",
+      "sha256": "a2e642d350acb1c5e368f375db8a4ef5a2f4ff2b79056d8c3be8bd8a7e9fcb44",
+      "source_path": "research/realworld_e1_eval/fonts/context/fonts-liberation-1/LiberationMono-Regular.ttf"
+    },
+    {
+      "font": "NotoSans",
+      "path": "out/alternative-fonts/NotoSans.ttf",
+      "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "source_path": "/private/tmp/guard-noto-candidate.ttf"
+    }
+  ],
+  "input_validation_note": "Initial protocol rejected before any scores: Liberation 2 binaries were identical to baseline. Replaced with preexisting Liberation 1.07.4 alternatives, then re-frozen before scoring."
+}

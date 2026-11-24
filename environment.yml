@@ -1,4 +1,4 @@
-name: guard-artifact
+name: guard
 channels:
   - conda-forge
 dependencies:

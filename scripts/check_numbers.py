@@ -4,7 +4,7 @@ import csv
 import json
 import sys
 from pathlib import Path
-from v14_numbers import compare,compare_aggregate
+from number_checks import compare,compare_aggregate
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = ROOT / "scripts" / "locked_values.json"
@@ -53,20 +53,20 @@ def main():
             failed += 1
             print(f"FAIL\t{label}\t{detail}")
     print(f"SUMMARY\tPASS {passed}\tFAIL {failed}\tEXPLORATORY {exploratory}")
-    section=spec.get('v1_4',{})
+    section=spec.get('reruns',{})
     numeric_passed=0
     for source in section.get('sources',[]):
         count,errors=compare(ROOT,source,section.get('absolute_tolerance',1e-12))
         numeric_passed+=count;failed+=len(errors)
-        print(f"V1_4\t{source['path']}\tPASS {count}\tFAIL {len(errors)}")
-        for error in errors[:20]:print('FAIL\tV1_4\t'+error)
+        print(f"RERUNS\t{source['path']}\tPASS {count}\tFAIL {len(errors)}")
+        for error in errors[:20]:print('FAIL\tRERUNS\t'+error)
     for item in section.get('aggregates',[]):
         count,errors=compare_aggregate(ROOT,item,section.get('absolute_tolerance',1e-12))
         numeric_passed+=count;failed+=len(errors)
-        print(f"V1_4 AGGREGATE\t{item['id']}\tPASS {count}\tFAIL {len(errors)}")
-        for error in errors:print('FAIL\tV1_4\t'+error)
+        print(f"RERUNS AGGREGATE\t{item['id']}\tPASS {count}\tFAIL {len(errors)}")
+        for error in errors:print('FAIL\tRERUNS\t'+error)
     if section:
-        print(f"V1_4 SUMMARY\tPASS {numeric_passed}\tOVERALL FAIL {failed}\t{section['status']}")
+        print(f"RERUNS SUMMARY\tPASS {numeric_passed}\tOVERALL FAIL {failed}\t{section['status']}")
     return 1 if failed else 0
 
 

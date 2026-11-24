@@ -3,7 +3,7 @@
 Usage:  E1_CENSUS=/path/to/Names_2010Census.csv python research/e1/scripts/field_overflow.py [repo root]
         (optional E1_FONT_DIR = folder with the Table A11 fonts)
 Uses the repository's research/e1/e1lib.py and policies.py; fonts and the Census CSV are SHA-256 checked.
-Checks every field width and anchor against research/e1/data/v1_2/field_widths.csv before reporting.
+Checks every field width and anchor against research/e1/data/knowledge_matched/field_widths.csv before reporting.
 Output: field_overflow.csv in the current directory.
 """
 import csv, os, sys
@@ -21,7 +21,7 @@ if E.sha256(E.CENSUS) != E.FULL_CENSUS_SHA:
     sys.exit('Census CSV SHA-256 mismatch')
 full = E.dict_surnames()
 assert len(full['strings']) == 50000
-ref = {(r['font'], int(r['size_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/v1_2/field_widths.csv'))}
+ref = {(r['font'], int(r['size_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/knowledge_matched/field_widths.csv'))}
 rows = []
 for font in E.FONTS:
     for size in E.SIZES:

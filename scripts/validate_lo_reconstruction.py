@@ -3,8 +3,8 @@
 import json,math
 from collections import defaultdict
 import numpy as np
-from v14_runtime import ROOT,E,read,mean_intervals,area_intervals,digest
-OUT=ROOT/'results/v1_4_archive/mock_forms_reconstruction'
+from rerun_common import ROOT,E,read,mean_intervals,area_intervals,digest
+OUT=ROOT/'results/reruns/mock_forms_reconstruction'
 CHECKS=0
 def eq(a,b):
     global CHECKS

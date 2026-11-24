@@ -109,7 +109,7 @@ def prepare(out,B,V,real,D):
     assert digest(B.FUNSD_ZIP)==archived,'FUNSD archive differs from the archived experiment'
     for label,split in [('calibration','training'),('scored','testing')]:
         selected,stats=V.collect_funsd_tokens(D,set(),None,label)
-        assert not stats['add_one'],'v2 coordinate convention changed; stop rather than silently altering geometry'
+        assert not stats['add_one'],'generic-attacker coordinate convention changed; stop rather than silently altering geometry'
         splitdir=B.funsd_split_dir('training_data' if split=='training' else 'testing_data')
         grouped=defaultdict(list)
         for i,t in enumerate(selected):t['legacy_token_id']=('funsd-' if split=='testing' else 'training-funsd-')+str(i);grouped[t['page_id']].append(t)
@@ -253,7 +253,7 @@ def main():
         image_transport='uncompressed temporary local TIFF; pixels/mode preserved; DPI metadata unset for baseline and every policy; no invented DPI',
         normalization='Unicode NFKC and strip boundary whitespace; case-insensitive uses Unicode casefold; punctuation retained',
         matching='one-to-one descending-IoU greedy geometry-only matching, IoU>=0.5; ties by annotation order then OCR output order; no text-assisted matching',
-        target_selection='existing run_v2.collect_funsd_tokens on all 149 training and 50 test forms, all surname-list answer words, no likely-name filter; every target redacted independently',
+        target_selection='existing run_generic_attacker.collect_funsd_tokens on all 149 training and 50 test forms, all surname-list answer words, no likely-name filter; every target redacted independently',
         ground_truth='all nonempty FUNSD annotated word entries, all entity labels; existing funsd_real.inclusive_to_half_open, clipped to image; exact target word excluded from utility denominators',
         gt_quality=quality,n_forms=199,n_forms_with_targets=len(pages),n_forms_skipped=199-len(pages),n_targets=len(targets),
         field_policy='existing Table A9 first-1000 DejaVuSans surrogate field at nearest 12/16/24px word-height proxy; only truths within first 1000; not an annotated native FUNSD field',
@@ -263,7 +263,7 @@ def main():
         units=dict(words_covered50_pct='percent',words_covered_any_pct='percent',ocr_word_acc='fraction',ocr_word_acc_ci='case-insensitive fraction (not confidence interval)',ocr_drop_points='percentage points'),
         workers=args.workers,force_ocr=args.force_ocr,source_script_sha256=digest(Path(__file__)),
         policy_source_sha256=digest(ROOT/'research/realworld_e1_eval/run_eval.py'),
-        selection_source_sha256=digest(ROOT/'research/realworld_e1_eval/run_v2.py'),
+        selection_source_sha256=digest(ROOT/'research/realworld_e1_eval/run_generic_attacker.py'),
         funsd_helpers_sha256=digest(ROOT/'research/funsd_validation/funsd_real.py'),
         import_adapter='only unused import of unreleased DocLayNet download_sample omitted in memory; all selected function bodies unchanged',
         census_sha256=D['census_sha256'],source_funsd_zip_sha256=digest(B.FUNSD_ZIP),policies=POLICIES,
@@ -286,7 +286,7 @@ def main():
                 area_ratio=area(clip)/area(exactclip),area_ratio_nominal=area(box)/area(exact),
                 ocr_job=jobkey(t['page_id'],clip)))
     config.update(n_redactions=len(records),n_unique_ocr_jobs=len(jobs),n_baseline_jobs=len(baselines),field_targets=sum(t['truth']<1000 for t in targets))
-    early_archive={(r['token_id'],r['policy']):r for r in read(ROOT/'research/realworld_e1_eval/results/v2/per_token_notext.csv') if r['dataset']=='FUNSD'}
+    early_archive={(r['token_id'],r['policy']):r for r in read(ROOT/'research/realworld_e1_eval/results/generic_attacker/per_token_notext.csv') if r['dataset']=='FUNSD'}
     early_checks=0
     for r in records:
         key=(r['legacy_token_id'],r['policy'])
@@ -305,7 +305,7 @@ def main():
             results[futures[future]]=future.result()
             if i%100==0 or i==len(jobs):print('OCR jobs',i,'/',len(jobs),'elapsed_s',round(time.monotonic()-start,1),flush=True)
     per=[];reference=[]
-    archive={(r['token_id'],r['policy']):r for r in read(ROOT/'research/realworld_e1_eval/results/v2/per_token_notext.csv') if r['dataset']=='FUNSD'}
+    archive={(r['token_id'],r['policy']):r for r in read(ROOT/'research/realworld_e1_eval/results/generic_attacker/per_token_notext.csv') if r['dataset']=='FUNSD'}
     for r in sorted(records,key=lambda r:(r['page_id'],r['target_id'],POLICIES.index(r['policy']))):
         page=pages[r['page_id']];gt=page['words'];g=np.array([w['box'] for w in gt],dtype=np.int64)
         inter=overlaps(g,r['paint_box']);a=(g[:,2]-g[:,0])*(g[:,3]-g[:,1])

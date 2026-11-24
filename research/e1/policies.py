@@ -1,4 +1,4 @@
-"""Redaction policies for the v1.2 experiments.
+"""Redaction policies for the knowledge-matched experiments.
 
 Boxes are in pen and baseline coordinates, half-open, with the same 1 px
 expansion as the paper's Geometry. x_L is the shared text start: one less

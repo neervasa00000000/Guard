@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read v2's persisted targets; write only this directory and FONT_CONSISTENCY.md."""
+"""Read generic-attacker's persisted targets; write only this directory and FONT_CONSISTENCY.md."""
 from __future__ import annotations
 import csv
 import hashlib
@@ -26,7 +26,7 @@ def digest(p):
     return h.hexdigest()
 
 def protected():
-    return {str(p.relative_to(ROOT)): digest(p) for folder in [base.E1, HERE/'results/v2']
+    return {str(p.relative_to(ROOT)): digest(p) for folder in [base.E1, HERE/'results/generic_attacker']
             for p in sorted(folder.rglob('*')) if p.is_file()}
 
 def read(p):
@@ -153,7 +153,7 @@ def doc_page(page, saved, blocks):
         target_box=(x0+base.E.PAD,y0+base.E.PAD,x1-base.E.PAD,y1-base.E.PAD)
         matches=[]
         for ci,(cell,box,source) in sources.items():
-            # This identifies a persisted v2 target; no surname dictionary/filter is run.
+            # This identifies a persisted generic-attacker target; no surname dictionary/filter is run.
             parts=base.alpha_tokens(cell.get('text',''))
             if box!=target_box or len(parts)!=1 or parts[0].casefold()!=saved_row['token'].casefold(): continue
             matches += [w for w in source if base.alpha_tokens(w['text'])==parts and w['source_id'] not in consumed]
@@ -247,7 +247,7 @@ def table(rows):
 
 def main():
     before=protected()
-    targets=[r for r in read(HERE/'results/v2/per_token.csv') if r['policy']=='exact']
+    targets=[r for r in read(HERE/'results/generic_attacker/per_token.csv') if r['policy']=='exact']
     assert len({r['token_id'] for r in targets})==6071
     assert Counter(r['dataset'] for r in targets)=={'DocLayNet':5311,'FUNSD':760}
     assert Counter(r['dataset'] for r in targets if int(r['likely_name']))=={'DocLayNet':524,'FUNSD':209}
@@ -266,7 +266,7 @@ def main():
     for i,p in enumerate(selected):
         rs,pr=doc_page(p,by_page[p['page_id']],blocks[p['page_id']]); rows+=rs; pages.append(pr)
         if (i+1)%500==0: print('DocLayNet pages',i+1,flush=True)
-    config=json.loads((HERE/'results/v2/run_config.json').read_text())
+    config=json.loads((HERE/'results/generic_attacker/run_config.json').read_text())
     paths=sorted((base.funsd_split_dir('testing_data')/'annotations').glob('*.json')); assert len(paths)==50
     for path in paths:
         rs,pr=fun_page(path,by_page[path.stem],int(config['funsd_scored']['add_one'])); rows+=rs; pages.append(pr)
@@ -289,11 +289,11 @@ def main():
     ex=['| Dataset | Token (likely) | Page id | Box | Token size; font | Line median; mode | Block median; mode |','|---|---|---|---|---|---|---|']
     for r in examples:
         ex.append('| '+' | '.join(map(str,[r['dataset'],f"{r['surface']} ({r['likely_name']})",r['page_id'],r['box'],f"{r['token_size']}; {r['token_font']}",f"{r['line_median_size']}; {r['line_modal_font']}",f"{r['block_median_size']}; {r['block_modal_font']}"]))+' |')
-    text='''# Font consistency on the v2 targets
+    text='''# Font consistency on the generic-attacker targets
 
-The saved v2 exact-policy rows are the target list: **5,311 DocLayNet tokens (524 likely names), 760 FUNSD tokens (209 likely names)**. No target or likely-name filter is rerun. All 2,000 saved DocLayNet pages and all 50 FUNSD test forms are read. Percentages below exclude unknown comparisons; each cell gives its own usable/unknown denominator. Missing target metadata is additionally counted in the size column and summary.csv (including font counts).
+The saved generic-attacker exact-policy rows are the target list: **5,311 DocLayNet tokens (524 likely names), 760 FUNSD tokens (209 likely names)**. No target or likely-name filter is rerun. All 2,000 saved DocLayNet pages and all 50 FUNSD test forms are read. Percentages below exclude unknown comparisons; each cell gives its own usable/unknown denominator. Missing target metadata is additionally counted in the size column and summary.csv (including font counts).
 
-DocLayNet sizes are the stored embedded point sizes, with size 1 (and invalid/nonpositive values) unknown; no box-height fallback. Font equality compares exact stored names, including subset prefixes and styles. A tied neighbour font mode has unknown identity. A token matches size when its absolute distance from the median of known neighbour sizes is ≤0.5 pt. FUNSD uses the v2 box convention and word-box heights in pixels, matching within 10% of the neighbour median; all font names are unknown.
+DocLayNet sizes are the stored embedded point sizes, with size 1 (and invalid/nonpositive values) unknown; no box-height fallback. Font equality compares exact stored names, including subset prefixes and styles. A tied neighbour font mode has unknown identity. A token matches size when its absolute distance from the median of known neighbour sizes is ≤0.5 pt. FUNSD uses the generic-attacker box convention and word-box heights in pixels, matching within 10% of the neighbour median; all font names are unknown.
 
 Neighbours exclude the target. Line membership uses pairwise vertical overlap ≥50% of **both** boxes' heights, across the page, without transitive merging. This is an operational geometric line definition: separate columns at the same height can share a line, and no baseline metadata exists. DocLayNet whitespace tokens inherit their extracted cell's font and box; no positions are invented inside a cell. Layout-block membership uses the unique COCO annotation with greatest overlap covering >50% of the extracted cell; ambiguous/unassigned blocks are unknown. Block neighbours are other text tokens in that layout block (including tables); same-extraction-cell neighbours are also saved. FUNSD block neighbours are the union of the same entity and directly linked fields (undirected links, deduplicated); separate entity-only and linked-only statistics are saved too. Missing neighbour sizes are excluded from medians and counted; a comparison with no known neighbours is unknown.
 
@@ -304,7 +304,7 @@ Page shares use all whitespace tokens in COCO **Text** blocks as DocLayNet body 
 '''+table([r for r in summary if r['doc_category']=='ALL'])+'\n\n## DocLayNet document categories\n\n'+table([r for r in summary if r['doc_category']!='ALL'])+'\n\n## Ten examples to inspect\n\nNone means unknown. Full source-cell/entity ids, differences, neighbour counts and comparison flags are in examples.csv; these examples were selected deterministically, preferring likely names, at most one per page.\n\n'+'\n'.join(ex)+'\n\n## Optional font-matched attacker\n\nNot yet run.\n'
     (HERE/'FONT_CONSISTENCY.md').write_text(text)
     after=protected(); assert before==after, 'Protected inputs changed'
-    manifest=dict(target_source='results/v2/per_token.csv; policy=exact',target_source_sha256=digest(HERE/'results/v2/per_token.csv'),
+    manifest=dict(target_source='results/generic_attacker/per_token.csv; policy=exact',target_source_sha256=digest(HERE/'results/generic_attacker/per_token.csv'),
                   pages=2000,forms=50,n=6071,bootstrap_seed=0,bootstrap_draws=10000,bootstrap_unit='page',
                   protected_inputs_unchanged=True,protected_sha256=before,script_sha256=digest(Path(__file__)))
     (OUT/'run_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

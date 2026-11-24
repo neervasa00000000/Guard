@@ -924,7 +924,7 @@ def main():
     if args.limit:
         sampled = sampled[:args.limit]
     print(f"catalogs for {len(names)} names; documents for {len(sampled)}", flush=True)
-    cache = HERE / "data" / "catalogs_v1.npz"
+    cache = HERE / "data" / "catalogs.npz"
     if cache.is_file():
         loaded = np.load(cache)
         catalogs = {}

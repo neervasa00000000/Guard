@@ -3,12 +3,12 @@
 import ast,functools,importlib.util,json,sys,time
 from pathlib import Path
 import numpy as np
-from v14_runtime import ROOT,E,P,renderer,read,write,digest,text_hash,mean_intervals,SEED,DRAWS
-SOURCES=ROOT/'results/v1_4_archive/recovered_sources'
+from rerun_common import ROOT,E,P,renderer,read,write,digest,text_hash,mean_intervals,SEED,DRAWS
+SOURCES=ROOT/'results/reruns/recovered_sources'
 def load(name):
     spec=importlib.util.spec_from_file_location(name,SOURCES/(name+'.py'));module=importlib.util.module_from_spec(spec);sys.modules[name]=module;spec.loader.exec_module(module);return module
 def main():
-    out=ROOT/'results/v1_4_archive/rerender_class_changes';out.mkdir(parents=True,exist_ok=True)
+    out=ROOT/'results/reruns/rerender_class_changes';out.mkdir(parents=True,exist_ok=True)
     versions=renderer();geom=load('geometry');scoring=load('grouped_scores');dictionary=E.get_dict('surnames');start=time.monotonic();fresh={}
     for font in E.FONTS:
         face=E.font(font,24);g=np.array([face.getbbox(s,anchor='ls') for s in dictionary['strings']],dtype=np.int32)

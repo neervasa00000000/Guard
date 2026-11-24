@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "summary_rows": 24,
+  "per_target_policy_rows": 39356,
+  "evaluation_targets": 1936,
+  "calibration_targets": 15490,
+  "generic_matches_generic_run": true,
+  "paired_cohorts": true,
+  "evaluation_pages": 480,
+  "calibration_pages": 3791,
+  "calibration_evaluation_pages_disjoint": true,
+  "tolerances_minimal_at_95_percent": true,
+  "point_estimates_recomputed": true,
+  "no_document_text_columns": true,
+  "source_hashes_unchanged": true
+}

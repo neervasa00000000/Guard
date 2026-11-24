@@ -390,7 +390,7 @@ def judgment(summary, contrasts, diagnostics, analytic):
             continue
         gaps.append(f"{policy} sample {_fmt(current['bits'])} vs layout-free {_fmt(analytic_bits[policy])}")
     lines.append(
-        "6. Comparison with the synthetic study is directional. The manuscript's locked surname table is not recomputed here, and this DejaVu file is not the v1.2 font binary. "
+        "6. Comparison with the synthetic study is directional. The manuscript's locked surname table is not recomputed here, and this DejaVu file is not the knowledge-matched font binary. "
         "Layout-free leakage from this font and the 1,000-name prior, placed far from a page edge, is the right numerical reference for the matched attack. "
         + " ".join(gaps)
         + ". Original printed text was not given a matched-renderer score: DocLayNet core has no transcription, and a Pillow font hypothesis is not the renderer that produced the page."
@@ -420,7 +420,7 @@ Stage: `{stage}`. {"These are pilot wiring checks, not the validation estimates.
 
 DocLayNet 1.0.0 core, license CDLA-Permissive-1.0, was read from `dataset/DocLayNet_core`. The COCO files were checked against the SHA-256 values in `experiment_config.json`. The archive contains page PNGs and layout boxes. It does not contain PDF text or the DocLayNet extra JSON cells, so layout labels were not treated as transcriptions.
 
-Pages were drawn with seed {config["seed"]}, at most two pages from a document, with no document shared by the calibration and evaluation roles. The primary insertion uses DejaVu Sans at 16 px. A 12 px run is a sensitivity. Surnames are the existing 1,000-name Census list. The font file hash is recorded and is not the hash in the v1.2 font manifest.
+Pages were drawn with seed {config["seed"]}, at most two pages from a document, with no document shared by the calibration and evaluation roles. The primary insertion uses DejaVu Sans at 16 px. A 12 px run is a sensitivity. Surnames are the existing 1,000-name Census list. The font file hash is recorded and is not the hash in the knowledge-matched font manifest.
 
 Policies call `guard_rw.exact_box`, `snap_out`, `candidate_boxes`, and `shared_frame`. Exact and square masks need the painted ink. Width-only, start-aligned, and field masks also need the template this protocol creates by inserting the string. Those three are not scored on original page text.
 

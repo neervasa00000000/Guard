@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--out',type=Path,default=ROOT/'data/v1_5_anchor_margin')
+    parser.add_argument('--out',type=Path,default=ROOT/'data/anchor_margin')
     p=parser.parse_args().out
     with (p/'summary.csv').open() as f:rows=list(csv.DictReader(f))
     config=json.loads((p/'config.json').read_text())

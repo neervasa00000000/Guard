@@ -22,7 +22,7 @@ def load():
     sys.modules['run_eval']=module
     exec(compile(tree,str(path),'exec'),module.__dict__)
     sys.path.insert(0,str(path.parent))
-    v2=importlib.import_module('run_v2')
+    generic_attacker=importlib.import_module('run_generic_attacker')
     sys.path.insert(0,str(ROOT/'research/funsd_validation'))
     real=importlib.import_module('funsd_real')
-    return module,v2,real
+    return module,generic_attacker,real

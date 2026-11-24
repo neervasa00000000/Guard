@@ -27,6 +27,8 @@ def test_e1lib_imports_and_email_head_is_one_thousand():
     import sys
     sys.path.insert(0, str(ROOT / "research" / "e1"))
     import e1lib
+    # Other tests may point E1_CENSUS at the full Census CSV; this check uses the shipped head.
+    e1lib.CENSUS = ROOT / "research/e1/data/surnames_head1000.csv"
     names, counts = e1lib.census(1000)
     assert len(names) == 1000
     assert names[0] == "Smith"

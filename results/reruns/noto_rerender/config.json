@@ -1,0 +1,43 @@
+{
+  "status": "complete",
+  "command": "research/realworld_e1_eval/.venv/bin/python -B scripts/run_archive_noto.py",
+  "versions": {
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "numpy": "2.5.4",
+    "pillow": "12.3.0",
+    "raqm": "0.10.5",
+    "harfbuzz": "14.2.1",
+    "fribidi": "1.0.16",
+    "freetype2": "2.14.3",
+    "fonts": {
+      "DejaVuSans": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "DejaVuSerif": "8cb29f7db250ebb2551a6ce2c1e0bfd5a0eb520e9e233370db0493e82e1f36f7",
+      "LiberationSans": "bade59d822652f76e6941aa87b40a87c13d1cc70db98ededb5011127efafd1d3",
+      "LiberationSerif": "9caef765d2e891c10dd73658894f01e660fe0c1c83e0bda7d6edf561d8f623d4",
+      "NotoSans": "7b8cac46a1c86d2533a616b1fcf4e1926b8e39bda69034508b0df96791f56d97",
+      "LiberationMono": "5883330d94debd992952cd8f0571b225f478c2d797d3f36c7521b0a5c9bde0f2"
+    },
+    "census_sha256": "6b4933178060b4e5ac8dd9a611ec15472d35eab98fe9027474bc5ccc5b7a8708"
+  },
+  "target_seed": 20261029,
+  "bootstrap_seed": 20261121,
+  "bootstrap_resamples": 10000,
+  "bootstrap": "exact target-bootstrap means via multinomial sufficient counts; marginal quantile CIs via exact adjacent uniform order statistics",
+  "original_code_sha256": "acab64457f6e258a73d15344c4a44854d5a58c724df032635e9c5dd7f9b3aa4b",
+  "script_sha256": "29a5f2b4893b7d5e6d2cac1f9ca1510865d0620754706c305a60cae76e07ddff",
+  "elapsed_seconds": 22.569001041993033,
+  "n_target_policy_rows": 126000,
+  "n_summary_rows": 63,
+  "geometry_mismatches": 0,
+  "all_target_scores_match": true,
+  "comparison": "Noto-specific archived per-target knowledge-matched rows; old summary.csv pools fonts so is not compared to a single-font mean",
+  "font_source_config_sha256": "7db35a07279270d560663578eed21405da8b4f49d60dbc460699fdaf196593c9",
+  "source_sha256_at_run": {
+    "commit": "bd8ec64da8f5b500e3bb3c82ad1dbc252d1eaa78",
+    "note": "Original source hashes are retained here; current code/doc hashes reflect mechanical path and label edits.",
+    "files": {
+      "scripts/run_knowledge_matched.py": "cd31cdbfc3ed7a96b091e5eddadf7136a0f9505491bdfbe10406124d7ca9f6f4",
+      "scripts/run_archive_noto.py": "24e327dd0947cc750e41a928577c4553cc5b769898dd868623e4a9f5d9b0aa05"
+    }
+  }
+}

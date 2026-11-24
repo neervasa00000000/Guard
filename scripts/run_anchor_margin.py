@@ -78,15 +78,15 @@ def channel(spans,counts,margin,width,error,font,size,heights,tight):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--geometry',type=Path,default=ROOT/'out/retained-geom')
-    parser.add_argument('--out',type=Path,default=ROOT/'data/v1_5_anchor_margin')
+    parser.add_argument('--out',type=Path,default=ROOT/'data/anchor_margin')
     args=parser.parse_args();out=args.out;out.mkdir(parents=True,exist_ok=True)
     assert sha(E.CENSUS)==E.FULL_CENSUS_SHA
     names,counts=E.census(50000);counts=np.array(counts,dtype=np.int64)
     assert len(names)==len(set(names))==50000
-    receipts={(r['font'],int(r['size_px'])):r for r in read(ROOT/'research/e1/data/v1_3/geometry_receipts.csv')}
-    tail={(r['font'],int(r['size_px']),r['policy'],int(r['width_px'])):r for r in read(ROOT/'research/e1/data/v1_3/tail_summary.csv') if r['font']!='pooled'}
-    oldclasses=read(ROOT/'research/e1/data/v1_3/tail_per_class.csv')
-    archived=json.loads((ROOT/'research/e1/data/v1_2/run.json').read_text())['sources']
+    receipts={(r['font'],int(r['size_px'])):r for r in read(ROOT/'research/e1/data/per_person/geometry_receipts.csv')}
+    tail={(r['font'],int(r['size_px']),r['policy'],int(r['width_px'])):r for r in read(ROOT/'research/e1/data/per_person/tail_summary.csv') if r['font']!='pooled'}
+    oldclasses=read(ROOT/'research/e1/data/per_person/tail_per_class.csv')
+    archived=json.loads((ROOT/'research/e1/data/knowledge_matched/run.json').read_text())['sources']
     checks=[];error_checks=[];inputs=[];summary=[];classes=[]
     for font in E.FONTS:
         for size in E.SIZES:
@@ -147,11 +147,11 @@ def main():
         width_error='C is replaced by C-8 or C+8 with equal probability; only released width observed; marginalize latent delta as run_perturb.py',
         singleton_count='expected number of singleton output classes across visible start-error states; may be fractional',
         max_class_mass='sum of original priors of names compatible with the worst pointwise output; output_probability separately records likelihood-weighted output mass; stochastic-width pointwise bits=log2(likelihood/output_probability)',
-        areas='prior-weighted left-continuous quantiles over all names and error draws; requested box is layout bounds plus PAD on all sides; full-line height from archived v1_2 metrics',
+        areas='prior-weighted left-continuous quantiles over all names and error draws; requested box is layout bounds plus PAD on all sides; full-line height from archived knowledge-matched metrics',
         extra_area_vs_m0='prior/error-weighted mean of (painted_area_m - painted_area_0)/painted_area_0, paired on name and error state',
         field='one full-50000-name field per font-size, anchor x_L-m+e, common right edge max padded right; width errors do not change the field',
         numpy=np.__version__,python=sys.version,census_sha256=sha(E.CENSUS),geometry=inputs,
-        source_sha256={s:sha(ROOT/s) for s in ['scripts/run_anchor_margin.py','scripts/run_tail.py','scripts/run_perturb.py','research/e1/policies.py','research/e1/data/v1_2/run.json','research/e1/data/v1_3/tail_summary.csv','research/e1/data/v1_3/tail_per_class.csv']},
+        source_sha256={s:sha(ROOT/s) for s in ['scripts/run_anchor_margin.py','scripts/run_tail.py','scripts/run_perturb.py','research/e1/policies.py','research/e1/data/knowledge_matched/run.json','research/e1/data/per_person/tail_summary.csv','research/e1/data/per_person/tail_per_class.csv']},
         command='.venv/bin/python -B scripts/run_anchor_margin.py',n_summary_rows=len(summary),n_class_rows=len(classes),m0_summary_checks=len(checks),m0_class_checks_pass=True,
         existing_error_model_checks=len(error_checks))
     (out/'config.json').write_text(json.dumps(config,indent=2)+'\n')

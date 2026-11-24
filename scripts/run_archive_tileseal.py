@@ -3,7 +3,7 @@
 from __future__ import annotations
 import ast,contextlib,io,json,os,subprocess,sys,time
 from pathlib import Path
-from v14_runtime import ROOT,E,renderer,read,write,digest,text_hash
+from rerun_common import ROOT,E,renderer,read,write,digest,text_hash
 PIN='f8f2558a5f82bb99842781a0e3bc03fec39fd3c5'
 ORIGINAL='733d48a'
 def cells(rects):
@@ -16,8 +16,8 @@ def predicted(box):
     x0,x1,y0,y1=box
     return cells([(x0,y0,x1-x0,y1-y0)])
 def main():
-    out=ROOT/'results/v1_4_archive/tileseal';out.mkdir(parents=True,exist_ok=True)
-    work=ROOT/'out/v14-tileseal';work.mkdir(parents=True,exist_ok=True)
+    out=ROOT/'results/reruns/tileseal';out.mkdir(parents=True,exist_ok=True)
+    work=ROOT/'out/tileseal-check';work.mkdir(parents=True,exist_ok=True)
     checkout=ROOT/'out/tileseal-f8f2558-readonly'
     if not checkout.exists():
         subprocess.run(['git','clone','--quiet','--no-hardlinks','--no-checkout',str(ROOT),str(checkout)],check=True)

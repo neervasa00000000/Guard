@@ -3,8 +3,8 @@
 Start-aligned padding with its anchor moved left by d = 0, 1, ..., C-1 px (every class-boundary phase), scored exactly
 over all 50,000 Census surnames in the 18 font-size cells. A singleton is a class holding one name.
 Usage:  E1_CENSUS=/path/to/Names_2010Census.csv python anchor_offsets.py [repo root]
-Checks: d = 0 reproduces research/e1/data/v1_3/tail_summary.csv (mean bits, largest pointwise leak) and
-d = 2, 4, 8, 16 reproduce the clean rows of data/v1_5_anchor_margin/summary.csv (singletons, singleton mass, mean bits).
+Checks: d = 0 reproduces research/e1/data/per_person/tail_summary.csv (mean bits, largest pointwise leak) and
+d = 2, 4, 8, 16 reproduce the clean rows of data/anchor_margin/summary.csv (singletons, singleton mass, mean bits).
 Output: anchor_offsets.csv (one row per cell, C and offset) in the current directory.
 """
 import csv, os, sys
@@ -20,9 +20,9 @@ if E.sha256(E.CENSUS) != E.FULL_CENSUS_SHA:
     sys.exit('Census CSV SHA-256 mismatch')
 full = E.dict_surnames()
 p = np.asarray(full['p'], dtype=np.float64)
-tail = {(r['font'], r['size_px'], int(r['width_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/v1_3/tail_summary.csv'))
+tail = {(r['font'], r['size_px'], int(r['width_px'])): r for r in csv.DictReader(open(root / 'research/e1/data/per_person/tail_summary.csv'))
         if r['policy'] == 'start-aligned'}
-am = {(r['font'], r['size_px'], int(r['margin_px']), int(r['C_px'])): r for r in csv.DictReader(open(root / 'data/v1_5_anchor_margin/summary.csv'))
+am = {(r['font'], r['size_px'], int(r['margin_px']), int(r['C_px'])): r for r in csv.DictReader(open(root / 'data/anchor_margin/summary.csv'))
       if r['policy'] == 'start-aligned' and r['template_error'] == 'clean'}
 rows = []; checks = 0
 for font in E.FONTS:
